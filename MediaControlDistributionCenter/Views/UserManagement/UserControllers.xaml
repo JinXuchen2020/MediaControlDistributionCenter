@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.UserManagement.UserControllers"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
+             xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.UserManagement">
+    <!--<UserControl.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2" Background="{TemplateBinding Background}">
+                            <materialDesign:Card Padding="12,8" Margin="2,2,2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <ContentPresenter ContentSource="Header"/>
+                            </materialDesign:Card>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>-->
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid Background="#16171D"  Margin="20,8,20,0">
+        <StackPanel Background="#16171D">
+            <!--界面导航-->
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,16">
+                <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_Management}" />
+                <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
+                <TextBlock Foreground="White" FontSize="13" Opacity="0.7" Text="{DynamicResource LanguageKey_Code_Management_Controls}" />
+                <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
+                <TextBlock Foreground="White" FontSize="13" Opacity="1" Text="{Binding CurrentPageName}" />
+            </StackPanel>
+            <!--<CustomControls:Breadcrumb BreadcrumbItems="{Binding BreadcrumbItems}" />-->
+            <!--标题-->
+            <Grid Margin="0,10,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  HorizontalAlignment="Left">
+                    <StackPanel Margin="0,0,0,0">
+                        <TextBlock x:Name="MediaManage" Text="{DynamicResource LanguageKey_Code_Management_Media}" Tag="1" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
+                        <Grid Height="2" Margin="0,10,0,0" Visibility="{Binding CurrentTabName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=MediaManage}">
+                            <Border Width="auto" Background="Blue"/>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="30,0,0,0">
+                        <TextBlock  x:Name="DeviceManage" Text="{DynamicResource LanguageKey_Code_Management_Device}" Tag="2" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
+                        <Grid Height="2" Margin="0,10,0,0" Visibility="{Binding CurrentTabName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=DeviceManage}">
+                            <Border Width="auto" Background="Blue"/>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="30,0,0,0">
+                        <TextBlock x:Name="DeviceControl" MouseDown="TopMenu_MouseDown" Cursor="Hand" Tag="3" Text="{DynamicResource LanguageKey_Code_Control_Device}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
+                        <Grid Height="2" Margin="0,10,0,0" Visibility="{Binding CurrentTabName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=DeviceControl}">
+                            <Border Width="auto" Background="Blue"/>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="30,0,0,0">
+                        <TextBlock x:Name="Settings" MouseDown="TopMenu_MouseDown" Cursor="Hand"  Tag="4" Text="{DynamicResource LanguageKey_Code_User_Config}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
+                        <Grid Height="2" Margin="0,10,0,0" Visibility="{Binding CurrentTabName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Settings}">
+                            <Border Width="auto" Background="Blue"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
+                    <TextBlock Height="32" Text="当前正在控制" FontSize="15" Padding="12,0,0,0"  Foreground="White"></TextBlock>
+                    <TextBlock Height="32" Text="{Binding CurrentUser.Name}" Padding="5,0,5,0" FontSize="15" Foreground="White"></TextBlock>
+                    <TextBlock Height="32" Text="的设备" FontSize="15" Foreground="White"></TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Height="2">
+                <Border Width="auto" Background="#40476F"/>
+            </Grid>
+            <Grid Height="Auto" Background="#16171D" Margin="0,10,0,0">
+                <Border Background="#16171D"/>
+                <ContentControl x:Name="TabContentControl"   />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

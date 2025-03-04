@@ -1,0 +1,158 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    >
+    <sys:String x:Key="LanguageKey_LanguageResourceKey">English</sys:String>
+
+
+
+    <sys:String x:Key="LanguageKey_Code_ZH">中国語</sys:String>
+    <sys:String x:Key="LanguageKey_Code_EN">英語</sys:String>
+    <sys:String x:Key="LanguageKey_Code_KO">韓国語</sys:String>
+    <sys:String x:Key="LanguageKey_Code_JP">日本語</sys:String>
+
+
+    <sys:String x:Key="LanguageKey_Code_SystemTitle">統一メディア管理プラットフォーム</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginDescription">ログイン 標準メディア管理システム</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature1">マルチメディア全チェーン</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature2">デジタル情報ソリューション</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature3">多言語対応</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemExitTip">ソフトウェアを閉じて終了します</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">会社のスローガンはこちら：自強不息 厚徳載物</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_LoginTitle">Sign Plexアカウントにログイン</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginAccount">アカウント</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginPassword">パスワード</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginBtn">ログイン</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">アカウントに関するご質問は、サプライヤーにお問い合わせください：73764@qq.com</sys:String>
+
+    
+    <sys:String x:Key="LanguageKey_Code_HelloWorld">Hello World</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">Switch Language</sys:String>
+
+
+    <sys:String x:Key="LanguageKey_Code_InputUserName">ユーザー名を入力してください</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputPassword">パスワードを入力してください</sys:String> 
+
+
+    <sys:String x:Key="LanguageKey_Code_Totip_100">Invalid parameter'</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_102">No relevant data'</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_104">Unauthorized client IP address:%s</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_106">Unsupported  method</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_108">Service temporarily unavailable</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_110">Too many parameters</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_112">No permission to access data</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_114">Update Failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_116">Delete Failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_118">Add Failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_120">Operate Failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_122">Interface request too much</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_124">No such application exists</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_126">Unsupported method</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_128">Send Message Failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_130">Custom Error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_132">Parameters format error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_134">File Error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_136">Http Action Not Allowed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_138">Service Currently Unavailable</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_140">No matching resource was retrieved</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_142">Resource created</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_144">Invoke exception</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_146">inner exception</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_148">Is upgrading</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_150">Need GET request</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_152">Requires a POST request</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_154">TCP request required</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_156">UDP request required</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_200">Port not open</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_202">The thread deadlock</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_204">Implicit deadlocks</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_206">Possess and wait</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_208">Thread concurrency error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_210">Unable to convert data</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_212">Operation in progress</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_214">The content-type file is invalid</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_216">Unable to parse files</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_218">The cycle is stuck in an endless loop</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_220">nullptr error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_222">Don't have access to</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_224">An array</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_226">The divisor cannot be 0</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_228">Unable to release resources</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_300">The input is invalid</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_302">Regular expression verification failed. Procedure</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_304">You must choose one</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_306">The entered value does not match email</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_308">The entered value does not match the URL</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_310">The input cannot be null</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_312">Non-negative integer</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_314">A positive integer</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_316">Passwords must be 8 to 16 characters long and case sensitive</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_318">A non-positive floating point number</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_320">Non-negative floating point number</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_322">Only Chinese characters</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_324">English only</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_326">The two passwords are different</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_328">The phone format is not correct</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_330">The mobile phone number format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_332">The id number format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_334">Incorrect bank account format</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_336">The zip code format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_338">Pitch Angle must be plus or minus 90 degrees</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_340">Yaw Angle must be plus or minus 90 degrees</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_342">The geographic information must be plus or minus 180 degrees</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_344">The position information must be plus or minus 180 degrees</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_346">Photos should be JPG,BMP,PNG format</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_348">The file format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_350">The date format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_352">The IP address format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_354">The port number format is incorrect</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_356">The entered date is less than the minimum date</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_358">The entered date is greater than the maximum date</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_360">The input value exceeds the maximum limit</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_362">The input value is less than the minimum limit</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_364">The number of characters entered exceeds the maximum length</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_366">The number of characters entered is less than the minimum length</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_368">The number entered does not comply with step limits</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_370">Verification code error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_372">Verification code has expired</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_400">User not logged in</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_402">User name or password error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_404">The user does not exist</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_406">The user name must be in English</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_408">Password is empty</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_410">The user name already exists'</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_412">User registration failure</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_414">No password set</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_416">The account has been deactivated</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_418">password error</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_501">Insufficient user permissions</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_502">User session has expired</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_503">User operations are too frequent</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_504">User is locked</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_505">Excessive user attempts</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_506">User account is abnormal</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_507">User authentication failed</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_508">User role does not exist</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_509">User permissions have been revoked</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_510">User account has been deactivated</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_511">User account has been frozen</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_512">User account has been disabled</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_513">User account has expired</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_514">User account is not activated</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_515">User account is not verified</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_516">User account is not bound to an email</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_517">User account is not bound to a mobile number</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_518">User account has not completed security verification</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_519">User account has not completed real-name authentication</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_520">User account has not completed email verification</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_521">User account has not completed mobile number verification</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_522">User account has not completed identity verification</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_523">User account has not completed security settings</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_524">User account has not completed security binding</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_525">User account has not completed security certification</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_526">User account has not completed security review</sys:String>
+
+
+</ResourceDictionary>

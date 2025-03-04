@@ -1,0 +1,154 @@
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.Setting"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MediaControlDistributionCenter.Views"
+             xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#FEFEFE"/>
+
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,10,0">
+            <CustomControls:RoundRectButton
+                IconSource="/Assets/windows-fill.png"
+                IconVisibility="Visible"
+                CornerRadius="2"
+                BorderWidth="0"
+                Content="基本情报"/>
+            <CustomControls:RoundRectButton
+                IconSource="/Assets/齿轮.png"
+                IconVisibility="Visible"
+                CornerRadius="2"
+                BorderWidth="0"
+                Content="用户编辑"/>
+            <CustomControls:RoundRectButton
+                IconSource="/Assets/日志.png"
+                IconVisibility="Visible"
+                CornerRadius="2"
+                BorderWidth="0"
+                Content="LOG记录"/>
+        </StackPanel>
+
+        <Border Grid.Column="1" Background="#E1E1E1" Width="1"/>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Border Background="#FEFEFE"/>
+            <Border  Grid.Row="0" CornerRadius="10" Height="60" Margin="30" Background="#F4F4F4">
+                <Grid VerticalAlignment="Center" Margin="50,5,0,5">
+                    <Label HorizontalAlignment="Left" FontSize="25" FontWeight="Bold" Content="综合媒体管理平台"/>
+                    <Label HorizontalAlignment="Right"
+                           FontSize="25"
+                           Margin="0,0,50,0"
+                           Content="Last Login:2025-01-14"/>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="50,5,0,5">
+                        <CustomControls:LabeledTextBox  FontSize="18" FontWeight="Bold" LabelText="登录自动退出时间：" Width="250"/>
+                        <Label  FontSize="18" FontWeight="Bold" Content="分钟" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Separator Width="auto"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel>
+                    <Grid Margin="50,5,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <Label  FontSize="18" FontWeight="Bold" Content="设备编号：" VerticalAlignment="Center"/>
+                            <Label  FontSize="18" FontWeight="Bold" Content="Q54DT355ABCD" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="0,0,50,0" HorizontalAlignment="Right">
+                            <Label  FontSize="18" FontWeight="Bold" Content="分辨率：" VerticalAlignment="Center"/>
+                            <Label  FontSize="18" FontWeight="Bold" Content="1920 x 640 Pixel (WxH)" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Width="auto"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="3">
+                <StackPanel>
+                    <Grid Margin="50,5,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <Label  FontSize="18" FontWeight="Bold" Content="ID：" VerticalAlignment="Center"/>
+                            <Label  FontSize="18" FontWeight="Bold" Content="khlim" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="0,0,50,0" HorizontalAlignment="Right">
+                            <Label  FontSize="18" FontWeight="Bold" Content="公司：" VerticalAlignment="Center"/>
+                            <Label FontSize="18" FontWeight="Bold"  Content="XXX公司" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Width="auto"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="4">
+                <StackPanel>
+                    <Grid Margin="50,5,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <Label  FontSize="18" FontWeight="Bold" Content="联系方式：" VerticalAlignment="Center"/>
+                            <Label FontSize="18" FontWeight="Bold"  Content="010-00000000" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="0,0,50,0" HorizontalAlignment="Right">
+                            <Label  FontSize="18" FontWeight="Bold" Content="Email：" VerticalAlignment="Center"/>
+                            <Label  FontSize="18" FontWeight="Bold" Content="abcde@qq.com" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Width="auto"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="5">
+                <StackPanel>
+                    <Grid Margin="0,5,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="密码：" FontSize="18" FontWeight="Bold" Margin="50,0,0,0" VerticalAlignment="Center"/>
+                            <CustomControls:CustomPasswordBox x:Name="pwdInput"
+                                   Width="350" Height="50"
+                                   CornerRadius="5"
+                                   FontSize="18"
+                                   Icon="/Assets/不显示密码.png"
+                                   AlternateIcon="/Assets/显示密码.png"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Label Content="确认密码：" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <CustomControls:CustomPasswordBox x:Name="pwdInputRepeat"
+                                   Margin="0,0,50,0"
+                                   Width="350" Height="50"
+                                   CornerRadius="5"
+                                   FontSize="18"
+                                   Icon="/Assets/不显示密码.png"
+                                   AlternateIcon="/Assets/显示密码.png"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Width="auto"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="6" HorizontalAlignment="Left" Margin="50,0">
+                <CustomControls:RoundRectButton
+                    Content="保存"
+                    Width="200"
+                    Height="60"
+                    BorderWidth="0"
+                    IconVisibility="Collapsed"
+                    Background="#00AFEF"/>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,18 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ResourceDictionary.MergedDictionaries>
+        <!-- 图标文本框 -->
+        <ResourceDictionary Source="\Themes\IconTextBoxTheme.xaml" />
+        <!-- 圆角矩形 -->
+        <ResourceDictionary Source="\Themes\RoundRectButtonTheme.xaml"/>
+        <!-- 圆角矩形 -->
+        <!--<ResourceDictionary Source="\Themes\GradientBorder.xaml"/>-->
+        <ResourceDictionary Source="\Themes\LabeledTextBox.xaml"/>
+        <ResourceDictionary Source="\Themes\CheckButton.xaml"/>
+        <ResourceDictionary Source="\Themes\CustomPasswordBox.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

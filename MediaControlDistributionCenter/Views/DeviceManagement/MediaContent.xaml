@@ -1,0 +1,107 @@
+﻿<LocalCore:FrameControl 
+                      x:Class="MediaControlDistributionCenter.Views.MediaContent"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+     xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"  
+    
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    >
+    <Grid Background="#16171D" Margin="16,8,16,0" >
+        <TabControl  Margin="20,12"
+    materialDesign:ColorZoneAssist.Foreground="White"
+    materialDesign:ColorZoneAssist.Background="#141726" >
+            <TabItem Header="全部(17)" Height="60" >
+                <StackPanel Background="#16171D">
+                    <!--结果表格-->
+                    <Border   Grid.Row="1" Height="750"    BorderThickness="0,2,0,0" Background="#16171D">
+                        <Grid>
+                            <Border Background="#1A1E30" Height="40" VerticalAlignment="Top">
+
+                            </Border>
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False"  FontSize="14" IsReadOnly="True" SelectionMode="Single"
+           DataContext="{Binding GridPagingService}" FrozenColumnCount="1" Background="Transparent"
+           ItemsSource="{Binding Items}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding Id}" Visibility="Collapsed" Header="id"  />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding DeviceName}" Header="媒体名称" />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding State}" Header="类型"  />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="标签" />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="大小" />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="分辨率" />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="关联节目数量" />
+                                    <DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="工作组" />
+                                    <DataGridTemplateColumn Header="操作"  Width="160" >
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel   Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <Button Content="编辑"   Name="DataEdit"   Margin="3" Height="28"
+                     Command="{Binding DataContext.DataEditCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=LocalCore:FrameControl}}"
+                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=SelectedItem}"
+                     />
+                                                    <Button Content="预览"   Name="DataFind"   Margin="3" Height="28"
+Command="{Binding DataContext.DataFindCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=LocalCore:FrameControl}}"
+CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=SelectedItem}"
+/>
+                                                    <Button Content="删除" Name="DataDel"   Margin="3" Height="28"
+                     Command="{Binding DataContext.DataDelCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=LocalCore:FrameControl}}"
+                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=SelectedItem}"
+                     />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <!--分页及统计说明-->
+                    <Grid Grid.Row="2" Background="Transparent" HorizontalAlignment="Right" >
+                        <WrapPanel  HorizontalAlignment="Right"
+        Margin="6"
+        DataContext="{Binding GridPagingService}">
+                            <Button  Content="&lt;"  Background="Transparent" BorderBrush="Transparent"  Foreground="White"  Command="{Binding PrevPage}"  Margin="2"  >
+                            </Button>
+
+
+                            <ItemsControl  ItemsSource="{Binding PageNumberList}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding Page}"    Background="Transparent" BorderBrush="Transparent"      Foreground="White"
+                                        Command="{Binding GotoPage}"
+                                        CommandParameter="{Binding Page}"
+                                        Margin="2" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Button Content=">"    Background="Transparent" BorderBrush="Transparent"      Foreground="White"  Command="{Binding NextPage}" Margin="2" />
+                        </WrapPanel>
+                    </Grid>
+
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="图片(6)" Height="60" >
+            </TabItem>
+            <TabItem Header="音频(0)" Height="60">
+            </TabItem>
+            <TabItem Header="混合媒体" Height="60">
+            </TabItem>
+            <TabItem Header="视频(11)" Height="60">
+            </TabItem>
+            <TabItem Header="文档(0)" Height="60">
+            </TabItem>
+            <TabItem Header="网页" Height="60">
+            </TabItem>
+            <TabItem Header="rss" Height="60">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</LocalCore:FrameControl>

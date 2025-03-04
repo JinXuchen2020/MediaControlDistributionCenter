@@ -1,0 +1,17 @@
+﻿
+
+using MediaControlDistributionCenter.Views.CustomControls;
+
+namespace MediaControlDistributionCenter.Views
+{
+    /// <summary>
+    /// 界面 的交互逻辑
+    /// </summary>
+    public partial class PaintContent : FrameControl
+    {
+        public PaintContent(object obj)
+        {
+            InitializeComponent(); 
+        } 
+    }
+}

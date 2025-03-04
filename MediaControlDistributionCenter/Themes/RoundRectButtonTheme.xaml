@@ -1,0 +1,50 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:customControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:MediaControlDistributionCenter">
+    <Style TargetType="customControls:RoundRectButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="customControls:RoundRectButton">
+                    <Grid>
+                        <!-- 圆角矩形背景 -->
+                        <Border x:Name="BorderElement"
+                            Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=Black}"
+                            BorderBrush="{Binding BorderColor, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=Black}"
+                            Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}"
+                            BorderThickness="{Binding BorderWidth, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=1}"
+                            CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}}"
+                            Opacity="1">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <!-- 图标 -->
+                                    <Image Source="{Binding IconSource, RelativeSource={RelativeSource TemplatedParent}, FallbackValue='/Assets/齿轮.png'}"
+                                       Visibility="{Binding IconVisibility, RelativeSource={RelativeSource TemplatedParent}}"
+                                       Width="24" Height="24" Margin="5"/>
+                                    <!-- 按钮内容 -->
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BorderElement" Property="Background" Value="{Binding PressedColor, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BorderElement" Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="BorderElement" Property="Opacity" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="False">
+                            <Setter TargetName="BorderElement" Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=Black}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

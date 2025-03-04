@@ -1,0 +1,201 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    >
+
+
+    <sys:String x:Key="LanguageKey_LanguageResourceKey">中文</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_ZH">简体中文</sys:String>
+    <sys:String x:Key="LanguageKey_Code_EN">英文</sys:String>
+    <sys:String x:Key="LanguageKey_Code_KO">韩国节点</sys:String>
+    <sys:String x:Key="LanguageKey_Code_JP">日本节点</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_SystemTitle">统一媒体管理平台</sys:String>
+    
+    
+    <sys:String x:Key="LanguageKey_Code_LoginDescription">统一媒体管理平台登录</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature1">多媒体全链路</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature2">数字信息解决方案</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemFeature3">多语言</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemExitTip">关闭并退出软件</sys:String>
+    
+    
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">此处是公司宣传语：自强不息 厚德载物</sys:String>
+
+
+    <sys:String x:Key="LanguageKey_Code_LoginTitle">登录你的Sign Plex账号</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginAccount">账号</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginPassword">密码</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginBtn">登录</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 73764@qq·com</sys:String>
+
+
+
+
+
+
+    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好世界</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management">用户管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Users">会员管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Register">会员登记</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Save">保存</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Register_Success">会员登记成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Confirm">确定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Reset">重置</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_ChangGroup">变更组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_GroupDialogTitle">用户分组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Delete">删除</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Control">控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Groups">管理组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Controls">控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_Management_Media">媒体管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_GroupDialogTitle">媒体分组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_Send">发布</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_Create">新增节目</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_Copy">复制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_SelectDeviceDialogTitle">选择显示屏</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ChangGroup">变更分组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Save">保存</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Cancel">取消</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Device">设备管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Create">新增显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_GroupDialogTitle">设备分组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_DialogTitle">显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_More">更多</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Media_Screens">显示器管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Medias">文件管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Device">设备控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_DialogTitle">定时控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>
+
+
+    <sys:String x:Key="LanguageKey_Code_Totip_100">参数无效或缺失</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_102">没有相关数据</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_104">调用端的IP未被授权</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_106">接口不被支持</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_108">服务暂时不可用</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_110">参数过多</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_112">没有权限访问数据</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_114">修改失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_116">删除失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_118">添加失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_120">操作失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_122">接口请求太过频繁</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_124">应用不存在</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_126">算法未被平台所支持</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_128">发送信息失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_130">用户级自定义错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_132">必选参数格式错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_134">文件错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_136">HTTP方法被禁止</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_138">服务不可用</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_140">未检索到匹配的资源</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_142">资源已经创建</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_144">调用异常</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_146">内部异常</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_148">正在升级</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_150">需要GET请求</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_152">需要POST请求</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_154">需要TCP请求</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_156">需要UDP请求</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_200">端口未开放</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_202">线程死锁</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_204">隐性死锁</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_206">占有并等待</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_208">线程并发错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_210">无法转换数据</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_212">操作正在执行</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_214">文件Content-type不合法</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_216">无法解析文件</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_218">循环陷入死循环</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_220">空指针错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_222">无法访问</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_224">数组越界</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_226">除数不能为0</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_228">无法释放资源</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_300">输入无效</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_302">正则表达式验证失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_304">必须选择一项</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_306">输入值不符合email</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_308">输入值不符合url</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_310">输入不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_312">非负整数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_314">非正整数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_316">密码必须是8-16个字符之间且包含大小写</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_318">非正浮点数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_320">非负浮点数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_322">只能是汉字</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_324">只能是英文</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_326">两次输入密码不相同</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_328">电话格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_330">手机号码格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_332">身份证号码格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_334">银行账户格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_336">邮政编码格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_338">俯仰角度必须是正负90度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_340">偏航角度必须是正负90度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_342">地理信息必须是正负180度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_344">位置信息必须是正负180度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_346">照片应该为JPG,BMP,PNG格式的</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_348">文件格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_350">日期格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_352">IP地址格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_354">端口号格式不正确</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_356">输入日期小于最小日期</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_358">输入日期大于最大日期</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_360">输入值超过最大的限定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_362">输入值小于最小的限定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_364">输入的字符数超过最大长度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_366">输入的字符数小于最小长度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_368">输入的数字不符合step限制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_370">验证码错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_372">验证码已过期</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_400">用户未登录</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_402">用户名或密码错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_404">用户名不存在</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_406">用户名必须是英文</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_408">用户密码不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_410">该用户名已经存在</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_412">用户注册失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_414">用户未设置密码</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_416">该账号已停用</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_418">用户密码错误</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_501">用户权限不足</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_502">用户会话已过期</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_503">用户操作过于频繁</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_504">用户被锁定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_505">用户尝试次数过多</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_506">用户账户异常</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_507">用户认证失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_508">用户角色不存在</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_509">用户权限被撤销</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_510">用户账户已注销</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_511">用户账户已冻结</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_512">用户账户已禁用</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_513">用户账户已过期</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_514">用户账户未激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_515">用户账户未验证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_516">用户账户未绑定邮箱</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_517">用户账户未绑定手机号</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_518">用户账户未完成安全验证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_519">用户账户未完成实名认证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_520">用户账户未完成邮箱验证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_521">用户账户未完成手机号验证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_522">用户账户未完成身份验证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_523">用户账户未完成安全设置</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_524">用户账户未完成安全绑定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_525">用户账户未完成安全认证</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Totip_526">用户账户未完成安全审核</sys:String>
+
+
+</ResourceDictionary>

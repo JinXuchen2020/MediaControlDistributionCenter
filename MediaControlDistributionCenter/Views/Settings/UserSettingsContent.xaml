@@ -1,0 +1,78 @@
+﻿<UserControl  x:Class="MediaControlDistributionCenter.Views.UserSettingsContent"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
+    xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
+>
+    <UserControl.Resources>
+        <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid Background="#0F0F10">
+        <Grid Margin="112,124" Background="#16171D" Width="1215" Height="829" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}">
+            <StackPanel Width="400" Margin="0,100,0,0" >
+                <StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label FontSize="16" Foreground="White" Width="71" >用户名</Label>
+                    <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255"/>
+                </StackPanel> 
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label FontSize="16" Foreground="White"  Width="71">原密码</Label>
+                    <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255"/>
+                </StackPanel>
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label FontSize="16" Foreground="White" >修改密码</Label>
+                    <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255"/>
+                </StackPanel>
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label FontSize="16" Foreground="White" >确认密码</Label>
+                    <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255"/>
+                </StackPanel>
+                <StackPanel Margin="0,88,0,0"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Button Background="#30479C" Foreground="White" BorderThickness="0">
+                        确认修改
+                    </Button>
+                    <Button Margin="32,0,0,0" Background="#090A0E" Foreground="White" BorderThickness="0">
+                        取消
+                    </Button>
+                </StackPanel>
+            </StackPanel>            
+        </Grid>
+        <Grid Background="#0F0F10" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}">
+            <StackPanel Width="800" Height="750" Margin="0,40,0,0" >
+                <StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" Foreground="White" Width="150" Text="系统日期和时间：" />
+                    <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Height="32" Width="464" Background="#2A3255" Padding="5" ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="DisplayName" SelectedValue="{Binding UserDetail.TimeZone}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+                </StackPanel>
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" Foreground="White"  Width="150" Text="企业LOGO：" />
+
+                    <StackPanel>
+                        <Border Width="110" Height="110" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="Button_Click" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding UserDetail.IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
+                            <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />                        
+                        </Border>
+                        <Border Width="110" Height="110" Background="#0F0F10" BorderBrush="#404870" BorderThickness="1" HorizontalAlignment="Left" MouseDown="Button_Click" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding UserDetail.IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                            <Image Source="{Binding UserDetail.LogoThumbnail}" Width="110" Height="110" />
+                        </Border>
+                        <TextBlock FontSize="12" Foreground="White" Width="300" VerticalAlignment="Bottom" Margin="0,20,0,0" Text="添加LOGO尺寸描述和图片格式,JPG,PNG." />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" Foreground="White" Width="150" Text="公司名称："/>
+                    <TextBox Width="464" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Foreground="White" Text="{Binding UserDetail.CompanyName}" />
+                </StackPanel>
+                <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" Foreground="White" Width="150" Text="宣传语："/>
+                    <TextBox AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="464" Height="64" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding UserDetail.TagLine}" />
+                </StackPanel>
+                <StackPanel Margin="0,88,0,0"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Button Background="#30479C" Foreground="White" Content="保存" Name="btnSave" Click="btnSave_Click" />
+                    <Button Margin="32,0,0,0" Background="#090A0E" Foreground="White" Content="取消" Command="{Binding UserDetail.ResetCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+    
+</UserControl>

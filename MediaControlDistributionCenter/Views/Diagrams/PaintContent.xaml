@@ -1,0 +1,17 @@
+﻿<LocalCore:FrameControl 
+                      x:Class="MediaControlDistributionCenter.Views.PaintContent"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+     xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"  
+    
+    >
+    <Grid Background="Transparent" >
+
+        <TextBlock FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
+            寻找开源的 "设计器控件" 或 "可视化编辑控件"  在二次开发.
+            或使用 inkCanvas 加Grid控件二次封装实现。
+        </TextBlock>
+    </Grid>
+</LocalCore:FrameControl>

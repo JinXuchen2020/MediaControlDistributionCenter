@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.CustomControls.Breadcrumb"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <ItemsControl ItemsSource="{Binding BreadcrumbItems}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                    <Button Content="{Binding Name}" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,4,0" Visibility="{Binding IsLastItem, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=False}"/>
+                    <TextBlock Text="{Binding Name}" Margin="0,0,4,0" Visibility="{Binding IsLastItem, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Path Data="M10,6L8.59,7.41L13.17,12L8.59,16.59L10,18L16,12L10,6Z" Fill="Gray" Width="16" Height="16" Visibility="{Binding IsLastItem, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=False}"/>
+                </StackPanel>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>
+

@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.UserRegister"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="900">
+    <Grid>
+        <Border Background="AliceBlue"/>
+        <TextBlock Text="用户登记" Margin="50,20" FontSize="18" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <CustomControls:GradientBorder 
+            Margin="60" Padding="60" 
+            CornerRadius="12" 
+            GradientStartColor="White" 
+            GradientEndColor="WhiteSmoke">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Content="所有带*的都是必须要填写的" FontSize="18" FontWeight="Bold"/>
+                <Grid Grid.Row="0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="权限*" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="comboBoxTrans"
+                                      HorizontalAlignment="Left"
+                                      VerticalContentAlignment="Center"
+                                      FontSize="16"
+                                      Width="200" Height="50" Margin="10">
+                                <ComboBox.Items>
+                                    <ComboBoxItem Content="最高管理者"/>
+                                    <ComboBoxItem Content="代理店"/>
+                                    <ComboBoxItem Content="用户"/>
+                                </ComboBox.Items>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" >
+                            <CustomControls:LabeledTextBox LabelText="ID*" FontSize="18" FontWeight="Bold" Width="300" Height="60" CornerRadius="5"/>
+                            <CustomControls:RoundRectButton
+                                Background="White"
+                                CornerRadius="5"
+                                BorderColor="LightGray"
+                                BorderThickness="0"
+                                IconVisibility="Collapsed"
+                                Content="确认重复"
+                                Width="150" Height="50"/>
+                            <Label Content="状态*" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ComboBox x:Name="comboBoxStatus" Grid.Column="2"
+                              HorizontalAlignment="Left"
+                              VerticalContentAlignment="Center"
+                              FontSize="16"
+                              Width="200" Height="50" Margin="10">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="正常运营"/>
+                                <ComboBoxItem Content="停止服务"/>
+                            </ComboBox.Items>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.ColumnSpan="3" x:Name="aa" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <CustomControls:LabeledTextBox LabelText="所属代理店*"
+                                                       FontSize="18" FontWeight="Bold"
+                                                       Width="450" Height="60" CornerRadius="5"/>
+                        <CustomControls:RoundRectButton
+                          Background="White"
+                          CornerRadius="5"
+                          BorderColor="LightGray"
+                          BorderThickness="0"
+                          IconVisibility="Collapsed"
+                          Content="代理店检索"
+                          Width="150" Height="50"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="地区*"
+                               FontSize="18" FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                        <ComboBox x:Name="comboBoxCompanyStatus"
+                                  VerticalContentAlignment="Center"
+                                  FontSize="16"
+                                  Width="200" Height="50" Margin="10">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="中国"/>
+                                <ComboBoxItem Content="日本"/>
+                                <ComboBoxItem Content="韩国"/>
+                                <ComboBoxItem Content="北京"/>
+                                <ComboBoxItem Content="北海道"/>
+                                <ComboBoxItem Content="首尔"/>
+                            </ComboBox.Items>
+                        </ComboBox>
+                        <CustomControls:LabeledTextBox LabelText="公司名称*"
+                                                       FontSize="18" FontWeight="Bold"
+                                                       Width="450" Height="60" CornerRadius="5"/>
+                        <CustomControls:RoundRectButton
+                            Background="White"
+                            CornerRadius="5"
+                            BorderColor="LightGray"
+                            BorderThickness="0"
+                            IconVisibility="Collapsed"
+                            Content="代理店检索"
+                            Width="150" Height="50"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="3">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                        <StackPanel VerticalAlignment="Center" >
+                            <RadioButton Content="自动生成"  FontWeight="Bold" IsChecked="False" Checked="AutoGeneratePasswordRadioButton_Checked"/>
+                            <RadioButton Content="自定义密码" IsChecked="True"  FontWeight="Bold" Checked="CustomPasswordRadioButton_Checked"/>
+                        </StackPanel>
+                        <Label Content="密码*" FontSize="18" FontWeight="Bold" Margin="50,0,0,0" VerticalAlignment="Center"/>
+                        <CustomControls:CustomPasswordBox x:Name="pwdInput"
+                                                        
+                                                          Width="350" Height="50"
+                                                          CornerRadius="5"
+                                                          FontSize="18"
+                                                          Icon="/Assets/不显示密码.png"
+                                                          AlternateIcon="/Assets/显示密码.png"/>
+                    </StackPanel>
+                </Grid>
+                <CustomControls:RoundRectButton
+                    Grid.Row="4"
+                    Background="#00AFEF"
+                    Width="150" Height="60" CornerRadius="5"
+                    Foreground="White"
+                    IconVisibility="Collapsed"
+                    Click="SaveUserButton_Clicked"
+                    Content="保存"/>
+            </Grid>
+        </CustomControls:GradientBorder>
+    </Grid>
+</UserControl>

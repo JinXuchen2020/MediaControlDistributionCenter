@@ -1,0 +1,349 @@
+﻿using FluentFTP;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Server;
+using MediaControlDistributionCenter.Helpers.SocketClient;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace MediaControlDistributionCenter.Helpers.Broadcast
+{
+    public class Communication
+    {
+        //Ftp服务
+        public FTP.Server.FtpServer ftpServer = new FTP.Server.FtpServer();
+
+        //启动socket 链接
+        System.Timers.Timer _heartbeatTimer;
+        /// <summary>
+        /// 接收到的命令列表
+        /// </summary>
+        List<string> ReceiveOverCmdStr = new List<string>();
+
+
+        //本机及播控盒心跳数据
+        public SocketHeart Heart = new SocketHeart();
+        public NetClient netClient = new NetClient(false); //链接信息
+        public string IpAddr; //Ip地址
+        public string Port; //端口
+
+        /// <summary>
+        /// 定时心跳包 保持长连接
+        /// </summary>
+        public void StartHeart()
+        {
+
+            //开启链接
+            // 设置心跳包发送的间隔（例如，每5秒发送一次）
+            int interval = 1000; // 5000毫秒即5秒 
+            // 创建定时器并设置间隔
+            _heartbeatTimer = new System.Timers.Timer(interval);
+
+            // 设置定时器的回调方法
+            _heartbeatTimer.Elapsed += _heartbeatTimer_Elapsed;
+
+            // 启动定时器
+            _heartbeatTimer.Start();
+        }
+        /// <summary>
+        /// 心跳处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _heartbeatTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            Heart.FtpIp = ftpServer._Ip;
+            Heart.FtpPort = ftpServer._port;
+            Heart.FtpUserName = ftpServer._userName;
+            Heart.FtpUserPwd = ftpServer._userPwd;
+            Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+
+            string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
+            string path = "Heart|Client|" + HeartStr;
+
+            byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
+
+            if (netClient.state == SocketState.Connected)
+            {
+                netClient.Send(utf8Bytes);
+            }
+            else
+            {
+
+                Thread thread = new Thread(() =>
+                {
+
+                    IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
+                    netClient.Connect(iPEnd);
+                    netClient.Send(utf8Bytes);
+                });
+
+                thread.Start();
+            }
+        }
+        /// <summary>
+        /// 链接播控盒
+        /// </summary>
+        /// <param name="IpAddr"></param>
+        /// <param name="Port"></param>
+        public void Connect(string IpAddr, string Port)
+        {
+            this.IpAddr = IpAddr;
+            this.Port = Port;
+            IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
+            netClient.Connect(iPEnd);
+            netClient.ReceiveCompleted += NetClient_ReceiveCompleted; ;
+        }
+
+        public void StartFtpServer()
+        { 
+            ftpServer.FtpServerStart();
+        }
+
+        public bool UploadFileToFtpServer(string filePath)
+        {
+            var loginCmd = $"USER {ftpServer._userName}\n";
+            var verifyCmd = $"PASS {ftpServer._userPwd}\n";
+            var fileName = Path.GetFileName(filePath);
+            var storeCmd = $"STOR {fileName}\n";
+            var result = false;
+            using (TcpClient tcpClient = new TcpClient(ftpServer._Ip, int.Parse(ftpServer._port)))
+            {
+                var stream = tcpClient.GetStream();
+                byte[] buffer = new byte[1024];
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!connectRsp.Contains("220"))
+                {
+                    return false;
+                }
+
+                byte[] loginData = Encoding.UTF8.GetBytes(loginCmd);
+                stream.Write(loginData, 0, loginData.Length);
+
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!connectRsp.Contains("331"))
+                {
+                    return false;
+                }
+
+                byte[] verifyData = Encoding.UTF8.GetBytes(verifyCmd);
+                stream.Write(verifyData, 0, verifyData.Length);
+
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!connectRsp.Contains("230"))
+                {
+                    return false;
+                }
+
+                byte[] fileData = File.ReadAllBytes(filePath);
+
+                byte[] fileSizeData = Encoding.UTF8.GetBytes($"FILESIZE {fileData.LongLength}\n");
+                stream.Write(fileSizeData, 0, fileSizeData.Length);
+
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!connectRsp.Contains("225"))
+                {
+                    return false;
+                }
+
+                byte[] storeData = Encoding.UTF8.GetBytes(storeCmd);
+                stream.Write(storeData, 0, storeData.Length);
+
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!connectRsp.Contains("150"))
+                {
+                    return false;
+                }
+
+                stream.Write(fileData, 0, fileData.Length);
+                byte[] endSignal = Encoding.ASCII.GetBytes("\n");
+                stream.Write(endSignal, 0, endSignal.Length);
+
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (connectRsp.Contains("226"))
+                {
+                    return true;
+                }
+                //while (true)
+                //{
+                //    byte[] buffer = new byte[1024];
+                //    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                //    string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                //    switch (connectRsp)
+                //    {
+                //        case string o when o.Contains("220"):
+                //            break;
+                //        case string o when o.Contains("331"):
+                //            break;
+                //        case string o when o.Contains("230"):
+                //            break;
+                //        case string o when o.Contains("226"):
+                //            result = true;
+                //            break;
+                //    }
+
+                //    if (result) break;
+                //}
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 断开与 播控盒链接
+        /// </summary>
+        public void Disconnect()
+        {
+            if (_heartbeatTimer != null)
+            {
+                _heartbeatTimer.Stop();
+                _heartbeatTimer.Dispose();
+                netClient.Close("主动断开");
+            }
+        }
+        /// <summary>
+        /// 接收数据完成后的命令处理
+        /// </summary>
+        /// <param name="obj"></param>
+        private void NetClient_ReceiveCompleted(byte[] obj)
+        {
+            string str = Encoding.UTF8.GetString(obj);
+            string[] data = str.Replace("\0", "").Split("|");
+            switch (data[0])
+            {
+                case "CMD":
+                    try
+                    {
+                        ReceiveOverCmdStr.Add(data[1]);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+
+                case "Heart":
+                    try
+                    {
+                        Heart = JsonConvert.DeserializeObject<SocketHeart>(data[2]);
+
+                        string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        /// <summary>
+        /// 执行命令异步
+        /// </summary>
+        /// <param name="Cmd"></param>
+        /// <param name="waitExecTime"></param>
+        /// <returns></returns>
+        public async Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime)
+        {
+            // 设置 
+            using (var cancellationTokenSource = new CancellationTokenSource(waitExecTime))
+            {
+                try
+                {
+                    // 执行任务，传入取消令牌
+                    bool completed = await Task.Run(() => SendCmd(cancellationTokenSource.Token, Cmd), cancellationTokenSource.Token);
+
+                    // 如果工作完成，返回 true
+                    return completed;
+                }
+                catch (OperationCanceledException)
+                {
+                    // 如果超时了，捕获取消异常并返回 false
+                    return false;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 实际的发送命令
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <param name="Cmd"></param>
+        /// <returns></returns>
+        bool SendCmd(CancellationToken cancellationToken, string Cmd)
+        {
+            // 获取等接收返回指令
+            string[] CmdArr = Cmd.Replace("\0", "").Split("|");
+            string CmdOver = CmdArr[1] + "Over";
+
+            byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
+            netClient.Send(utf8Bytes);
+
+            while (true)
+            {
+                // 检查是否被取消
+                if (cancellationToken.IsCancellationRequested || netClient.state != SocketState.Connected)
+                {
+                    return false;
+                }
+
+                if (ReceiveOverCmdStr.Contains(CmdOver))
+                {
+                    lock (this)
+                    {
+
+                        ReceiveOverCmdStr.Remove(CmdOver);
+                        break;
+                    }
+                }
+            }
+            return true;  // 如果成功完成计算
+        }
+
+        //ExecuteCmdAsync 调用示例
+        //string path = "CMD|Brightness|2";
+        //bool t = await ExecuteWithTimeoutAsync(path, TimeSpan.FromMilliseconds(3000));
+        //if (t)
+        //{
+        //    SendState.Text += "命令处理成功\r\n";
+        //}
+        //else
+        //{
+        //    SendState.Text += "命令无法被处理\r\n";
+        //}
+    }
+}
