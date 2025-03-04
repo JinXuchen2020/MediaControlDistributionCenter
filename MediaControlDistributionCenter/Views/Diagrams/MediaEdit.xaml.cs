@@ -665,6 +665,7 @@ namespace MediaControlDistributionCenter.Views
                             Name = $"视频{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
+                            PlayCount = 1,
                         });
                         break;
                     case MediaType.Image:
@@ -674,6 +675,11 @@ namespace MediaControlDistributionCenter.Views
                             Name = $"图片{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
+                            PlayCount = 1,
+                            PlayDuration = "00:00:05",
+                            Timeline = 5,
+                            ComponentEffect = "淡入",
+                            EffectDuration = 1000
                         });
                         break;
                     case MediaType.Text:
@@ -683,7 +689,21 @@ namespace MediaControlDistributionCenter.Views
                             Name = $"文本{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
-                            Source = "空文本"
+                            Source = "空文本",
+                            PlayCount = 1,
+                            PlayDuration = "00:00:05",
+                            PlayMode = "翻页",
+                            ComponentEffect = "淡入",
+                            EffectDuration = 1000,
+                            Direction = "向右滚动",
+                            Timeline = 5,
+                            Background ="Blue",
+                            TextColor ="White",
+                            TextSize = 16,
+                            IsLoopEnabled = true,
+                            LetterSpacing = 2,
+                            LineSpacing = 2,
+                            RollingSpeed = 2,
                         });
                         break;
                 }

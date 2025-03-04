@@ -237,8 +237,8 @@ namespace MediaControlDistributionCenter.ViewModels
             return new Scheduler
             {
                 Id = Id,
-                StartTime = StartTime.ToString("hh:mm:ss"),
-                EndTime = EndTime.ToString("hh:mm:ss"),
+                StartTime = StartTime.ToString("HH:mm:ss"),
+                EndTime = EndTime.ToString("HH:mm:ss"),
                 ScheduleDays = ScheduleDays.ToList()
             };
         }
