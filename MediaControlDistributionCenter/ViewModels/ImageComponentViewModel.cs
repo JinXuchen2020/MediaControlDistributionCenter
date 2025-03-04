@@ -166,8 +166,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private void Result_Loaded(object sender, RoutedEventArgs e)
         {
-            var image = sender as Image;
-            Effects[ComponentEffect](image);
+            if(sender is Image image && ComponentEffect != null)
+            {
+                Effects[ComponentEffect](image);
+            }
         }
 
         private void FadeIn(Image image)
@@ -196,7 +198,6 @@ namespace MediaControlDistributionCenter.ViewModels
             var storyboard = new Storyboard();
             int windowHeight = (int)image.ActualHeight;
             int sliceHeight = windowHeight / 10;
-
 
             var clipGroup = new GeometryGroup();
             for (int i = 0; i < 10; i++)

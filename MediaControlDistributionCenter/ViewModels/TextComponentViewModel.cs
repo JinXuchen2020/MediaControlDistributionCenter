@@ -299,7 +299,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (sender is RichTextBox richTextBox)
             {
-                if (PlayMode == "翻页")
+                if (PlayMode == "翻页" && ComponentEffect != null)
                 {
                     Effects[ComponentEffect](richTextBox);
                 }

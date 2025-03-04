@@ -694,11 +694,11 @@
                                                         <TextBlock Text="播放次数" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding SelectedComponent.PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <TextBlock Text="播放时长（s）" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.Timeline, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -716,9 +716,9 @@
                                                             </Style>
                                                         </StackPanel.Style>
                                                         <TextBlock Text="特效" Width="80" VerticalAlignment="Center"/>
-                                                        <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
+                                                        <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -738,7 +738,7 @@
                                                         <TextBlock Text="特效时长(ms)" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -753,14 +753,14 @@
                                                             </Style>
                                                         </StackPanel.Style>
                                                         <TextBlock Text="方向" Width="80" VerticalAlignment="Center"/>
-                                                        <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Content" >
+                                                        <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Content" >
                                                             <ComboBoxItem Content="向左滚动" />
                                                             <ComboBoxItem Content="向上滚动" />
                                                             <ComboBoxItem Content="向右滚动" />
                                                             <ComboBoxItem Content="向下滚动" />
                                                         </ComboBox>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -777,7 +777,7 @@
                                                         <TextBlock Text="滚动速度" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
