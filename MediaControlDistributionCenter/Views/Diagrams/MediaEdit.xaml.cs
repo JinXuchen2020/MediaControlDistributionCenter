@@ -35,13 +35,10 @@ namespace MediaControlDistributionCenter.Views
     /// <summary>
     /// MediaEdit.xaml 的交互逻辑
     /// </summary>
-    public partial class MediaEdit : FrameControl
+    public partial class MediaEdit : UserControl
     {
         private IFileService fileService;
-        private IDeviceService deviceService;
-        //private bool isDragging = false;
-        //private Point startPoint;
-        //private FrameworkElement selectedElement;        
+        private IDeviceService deviceService;       
 
         public MediaEdit(MediaViewModel currentMedia, UserViewModel currentUser, bool showNavigation)
         {
@@ -77,6 +74,14 @@ namespace MediaControlDistributionCenter.Views
             DataContext = viewModel;
 
             this.Loaded += MediaEdit_Loaded;
+            this.Unloaded += MediaEdit_Unloaded;
+        }
+
+        private void MediaEdit_Unloaded(object sender, RoutedEventArgs e)
+        {
+            MainCanvas.Children.Clear();
+            var viewModel = (DataContext as MediaEditViewModel)!;
+            viewModel.DisposeCommand.Execute(null);
         }
 
         private void MediaEdit_Loaded(object sender, RoutedEventArgs e)
@@ -112,87 +117,9 @@ namespace MediaControlDistributionCenter.Views
             }
         }
 
-        //private Image CreateTextElement(TextComponentViewModel viewModel)
-        //{            
-        //    FormattedText formattedText = new FormattedText(
-        //            viewModel.Source,
-        //            CultureInfo.CurrentCulture,
-        //            FlowDirection.LeftToRight,
-        //            new Typeface("Arial"),
-        //            20,
-        //            Brushes.White,1.25);
-
-        //    // 创建一个 DrawingVisual 对象
-        //    DrawingVisual drawingVisual = new DrawingVisual();
-        //    DrawingContext drawingContext = drawingVisual.RenderOpen();
-
-        //    // 绘制格式化文本
-        //    drawingContext.DrawText(formattedText, new Point(10, 10));
-        //    drawingContext.Close();
-
-        //    // 创建一个 DrawingImage 对象
-        //    DrawingImage drawingImage = new DrawingImage(drawingVisual.Drawing);
-
-        //    // 创建一个 Image 对象并将其添加到 Canvas
-        //    Image result = new Image()
-        //    {
-        //        Source = drawingImage,
-        //        Width = viewModel.Width,
-        //        Height = viewModel.Height,
-        //        DataContext = viewModel
-        //    };
-
-        //    var widthBinding = new Binding("Width")
-        //    {
-        //        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-        //        Mode = BindingMode.TwoWay
-        //    };
-
-        //    var heightBinding = new Binding("Height")
-        //    {
-        //        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-        //        Mode = BindingMode.TwoWay
-        //    };
-
-        //    result.SetBinding(WidthProperty, widthBinding);
-        //    result.SetBinding(HeightProperty, heightBinding);
-
-        //    // 设置 Image 的 Canvas 定位属性
-        //    Canvas.SetLeft(result, viewModel.Left);
-        //    Canvas.SetTop(result, viewModel.Top);
-
-        //    // 添加鼠标事件处理
-        //    result.MouseLeftButtonDown += Element_MouseLeftButtonDown;
-        //    result.MouseLeftButtonUp += Element_MouseLeftButtonUp;
-        //    result.MouseMove += Element_MouseMove;
-        //    result.MouseWheel += Element_MouseWheel;
-
-        //    return result;
-        //}
-
-        private void PackIcon_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var viewModel = (DataContext as MediaEditViewModel)!;
-            viewModel.IsEditingName = true;
-        }
-
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Enter)
-            {
-                var viewModel = (DataContext as MediaEditViewModel)!;
-                viewModel.IsEditingName = false;
-            }
-        }
-
         private void btnBack_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var viewModel = (DataContext as MediaEditViewModel)!;
-            if (viewModel.IsEditingName)
-            {
-                MessageBox.Show("请先保存节目名");
-                return;
-            }
 
             if (viewModel.ShowNavigation)
             {
@@ -329,15 +256,6 @@ namespace MediaControlDistributionCenter.Views
             var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, configModel.Name);
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
-
-            if (viewModel.CurrentMedia.Id == 0)
-            {
-                SQLite.InserTable(viewModel.CurrentMedia.ToModel());
-            }
-            else
-            {
-                SQLite.UpdateTable(viewModel.CurrentMedia.ToModel());
-            }
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
@@ -770,13 +688,6 @@ namespace MediaControlDistributionCenter.Views
             {
                 Canvas.SetZIndex(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.ZIndex);
             }
-
-        }
-
-        private void NameEdit_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var viewModel = (DataContext as MediaEditViewModel)!;
-            viewModel.IsEditingName = false;
         }
     }
 }

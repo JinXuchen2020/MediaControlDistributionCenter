@@ -26,9 +26,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private MediaViewModel currentMedia;
 
         [ObservableProperty]
-        private bool isEditingName;
-
-        [ObservableProperty]
         private MediaConfigViewModel mediaConfig;
 
         [ObservableProperty]
@@ -57,15 +54,15 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ShowDialogContent(UserControl dialogContent)
-        {
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialogContent, DialogHostId);
-        }
-
-        [RelayCommand]
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        [RelayCommand]
+        private void Dispose()
+        {
+            MediaConfig.DisposeCommand.Execute(null);
         }
     }
 }

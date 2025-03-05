@@ -38,9 +38,21 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             MainCanvas.Width = Width;
             MainCanvas.Height = Height;
             _ratio = MainCanvas.Width / 768;
-
-            LoadCanvasComponents(viewModel);
             this.SizeChanged += MediaPreview_SizeChanged;
+            this.Loaded += MediaPreview_Loaded;
+            this.Unloaded += MediaPreview_Unloaded;
+        }
+
+        private void MediaPreview_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (MediaEditViewModel)DataContext;
+            DisposeCanvasComponents();
+        }
+
+        private void MediaPreview_Loaded(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (MediaEditViewModel)DataContext;
+            LoadCanvasComponents(viewModel);
         }
 
         private void MediaPreview_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -122,6 +134,11 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     }
                 }
             }
+        }
+
+        private void DisposeCanvasComponents()
+        {
+            MainCanvas.Children.Clear();
         }
     }
 }

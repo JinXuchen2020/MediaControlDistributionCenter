@@ -68,6 +68,15 @@ namespace MediaControlDistributionCenter.ViewModels
                 Pages = Pages.Select(c => c.ToModel(Ratio)).ToList()
             };
         }
+
+        [RelayCommand]
+        private void Dispose()
+        {
+            foreach (var page in Pages)
+            {
+                page.DisposeCommand.Execute(null);
+            }
+        }
     }
 
     public partial class MediaPageViewModel : ObservableObject
@@ -106,7 +115,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<SchedulerViewModel> schedulers;
 
         [ObservableProperty]
-        private ObservableCollection<BaseComponentViewModel?> components;
+        private ObservableCollection<BaseComponentViewModel> components;
 
         public MediaPageViewModel(MediaPage mediaPage, double ratio = 1)
         {
@@ -118,9 +127,9 @@ namespace MediaControlDistributionCenter.ViewModels
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
-            components = new ObservableCollection<BaseComponentViewModel?>(mediaPage.Components.Select(c =>
+            components = new ObservableCollection<BaseComponentViewModel>(mediaPage.Components.Select(c =>
             {
-                BaseComponentViewModel? result = null;
+                BaseComponentViewModel result = new BaseComponentViewModel();
 
                 switch (c.Type)
                 {
@@ -153,6 +162,15 @@ namespace MediaControlDistributionCenter.ViewModels
                 Schedulers = Schedulers.Select(c => c.ToModel()).ToList(),
                 Components = Components.Select(c => c!.ToModel(ratio)).ToList()
             };
+        }
+
+        [RelayCommand]
+        private void Dispose()
+        {
+            foreach (var component in Components)
+            {
+                component.DisposeCommand.Execute(null);
+            }
         }
     }
 

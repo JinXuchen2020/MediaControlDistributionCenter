@@ -22,6 +22,11 @@ using MaterialDesignThemes.Wpf;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Services;
 using SqlSugar;
+using System.IO;
+using MediaControlDistributionCenter.Helpers;
+using Path = System.IO.Path;
+using MediaControlDistributionCenter.Converters;
+using Newtonsoft.Json;
 
 namespace MediaControlDistributionCenter.Views.MediaManagement
 {
@@ -247,6 +252,42 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             {
                 if (viewModel.Id != 0)
                 {
+                    var dbModel = SQLite.QueryTable<Media>().First(c => c.Id == viewModel.Id);
+                    if (dbModel.Name != viewModel.Name)
+                    {
+                        var oldFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, dbModel.Name);
+                        var newFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, viewModel.Name);
+                        if (Directory.Exists(oldFolderPath))
+                        {
+                            var config = fileService.ReadFileContent<MediaConfig>(Path.Combine(Helpers.Constants.OutPath, dbModel.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
+                            if (config != null)
+                            {
+                                config.Name = viewModel.Name;
+                                config.Pages.ForEach(page => page.Components.ForEach(c =>
+                                {
+                                    switch (c.Type)
+                                    {
+                                        case Models.MediaType.Image:
+                                        case Models.MediaType.Video:
+                                            c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }));
+
+                                var configContent = JsonConvert.SerializeObject(config);
+
+                                var mediaResourcePath = Path.Combine(Helpers.Constants.OutPath, dbModel.Name);
+
+                                fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
+                            }
+
+                            // 重命名文件夹
+                            Directory.Move(oldFolderPath, newFolderPath);
+                        }
+                    }
+
                     SQLite.UpdateTable(viewModel.ToModel());
                 }
                 else
@@ -257,7 +298,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
                 manageViewModel.CloseDialogCommand.Execute(null);
 
-                (App.Current.MainWindow as MainWindow).MainContentControl.Content = new MediaEdit(viewModel, manageViewModel.CurrentUser, manageViewModel.ShowNavigation);
+                (App.Current.MainWindow as MainWindow).GoCotent(new MediaEdit(viewModel, manageViewModel.CurrentUser, manageViewModel.ShowNavigation), 2);
             }
         }
 
@@ -270,7 +311,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if(viewModel.Id != 0)
             {
-                (App.Current.MainWindow as MainWindow).MainContentControl.Content = new MediaEdit(viewModel, manageViewModel.CurrentUser, manageViewModel.ShowNavigation);
+                (App.Current.MainWindow as MainWindow).GoCotent(new MediaEdit(viewModel, manageViewModel.CurrentUser, manageViewModel.ShowNavigation), 2);
             }
         }
     }

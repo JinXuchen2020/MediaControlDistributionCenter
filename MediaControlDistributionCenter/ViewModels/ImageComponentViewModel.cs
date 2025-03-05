@@ -107,10 +107,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingContent()
         {
-            BitmapImage bitmap = new BitmapImage(new Uri(Source!));
             Image result = new()
             {
-                Source = bitmap,
+                Source = GetBitmap(Source!),
                 Width = Width,
                 Height = Height,
                 DataContext = this
@@ -148,15 +147,24 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingRunningContent()
         {
-            BitmapImage bitmap = new BitmapImage(new Uri(Source!));
             Image result = new()
             {
-                Source = bitmap,
+                Source = GetBitmap(Source!),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
             };
 
-            result.Loaded += Result_Loaded;
+            result.Loaded += (sender, e) =>
+            {
+                if (sender is Image image && ComponentEffect != null)
+                {
+                    Effects[ComponentEffect](image);
+                }
+            };
+            result.Unloaded += (sender, e) =>
+            {
+                DisposeImage(result);
+            };
 
             Canvas.SetLeft(result, Left * Ratio);
             Canvas.SetTop(result, Top * Ratio);
@@ -164,11 +172,35 @@ namespace MediaControlDistributionCenter.ViewModels
             return result;
         }
 
-        private void Result_Loaded(object sender, RoutedEventArgs e)
+        protected override void DisposeContent()
         {
-            if(sender is Image image && ComponentEffect != null)
+            if (FrameworkElement is Image target)
             {
-                Effects[ComponentEffect](image);
+                DisposeImage(target);
+            }
+        }
+
+        private BitmapImage GetBitmap(string source)
+        {
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bitmap.UriSource = new Uri(source);
+            bitmap.EndInit();
+
+            return bitmap;
+        }
+
+        private void DisposeImage(Image target)
+        {
+            BitmapImage bitmap = (BitmapImage)target.Source;
+            if (bitmap != null)
+            {
+                bitmap.UriSource = new Uri("about:blank");
+                bitmap.DecodePixelHeight = 0;
+                bitmap.DecodePixelWidth = 0;
+                target.Source = null;
             }
         }
 

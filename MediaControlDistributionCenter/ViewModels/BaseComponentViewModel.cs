@@ -67,6 +67,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
+        public BaseComponentViewModel()
+        {
+
+        }
+
         public BaseComponentViewModel(BaseComponent component, double ratio)
         {
             Id = component.Id;
@@ -127,6 +132,15 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        [RelayCommand]
+        private void Dispose()
+        {
+            if (IsFile && !string.IsNullOrEmpty(Source) && FrameworkElement != null)
+            {
+                DisposeContent();
+            }
+        }
+
         protected virtual FrameworkElement DrawingContent()
         {
             return default;
@@ -135,6 +149,11 @@ namespace MediaControlDistributionCenter.ViewModels
         protected virtual FrameworkElement DrawingRunningContent()
         {
             return default;
+        }
+
+        protected virtual void DisposeContent()
+        {
+            return;
         }
 
         protected void Element_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

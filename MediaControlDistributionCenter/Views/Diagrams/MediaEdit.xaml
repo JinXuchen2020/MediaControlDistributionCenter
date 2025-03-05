@@ -1,4 +1,4 @@
-﻿<LocalCore:FrameControl x:Class="MediaControlDistributionCenter.Views.MediaEdit"
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.MediaEdit"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -163,9 +163,7 @@
                 <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="ArrowLeftThin" MouseDown="btnBack_MouseDown" Width="50" Cursor="Hand" Padding="0" Height="35" Foreground="White" />
-                        <TextBlock Text="{Binding CurrentMedia.Name}" Visibility="{Binding IsEditingName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}" Foreground="White" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding CurrentMedia.Name}" KeyDown="TextBox_KeyDown" LostFocus="NameEdit_LostFocus" Visibility="{Binding IsEditingName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" Foreground="White" VerticalAlignment="Center"/>
-                        <materialDesign:PackIcon Kind="SquareEditOutline" MouseDoubleClick="PackIcon_MouseDoubleClick" Cursor="Hand" Margin="15,0,0,0" Foreground="White" Width="30" Height="30" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding CurrentMedia.Name}" Foreground="White" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -883,4 +881,4 @@
             </Border>
         </Grid>
     </materialDesign:DialogHost>
-</LocalCore:FrameControl>
+</UserControl>

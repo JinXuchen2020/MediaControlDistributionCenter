@@ -81,6 +81,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             return video;
         }
+
         protected override FrameworkElement DrawingRunningContent()
         {
             MediaElement result = new()
@@ -97,12 +98,39 @@ namespace MediaControlDistributionCenter.ViewModels
             Canvas.SetZIndex(result, ZIndex);
 
             // 添加鼠标事件处理
-            result.MediaFailed += Result_MediaFailed;
-            result.MediaEnded += Result_MediaEnded;
+            result.MediaFailed += (sender, e) =>
+            {
+                MessageBox.Show($"视频加载失败，错误: {e.ErrorException.Message}");
+            };
+
+            result.MediaEnded += (sender, e) =>
+            {
+                if (currentPlayCount < PlayCount)
+                {
+                    result.Position = TimeSpan.Zero;
+                    result.Play();
+                    currentPlayCount++;
+                }
+            };
+
+            result.Unloaded += (sender, e) =>
+            {
+                result.Stop();
+                result.Source = null;
+            };
 
             result.Play();
             currentPlayCount = 1;
             return result;
+        }
+
+        protected override void DisposeContent()
+        {
+            if (FrameworkElement is MediaElement target)
+            {
+                target.Stop();
+                target.Source = null;
+            }
         }
 
         private void Video_LayoutUpdated(object sender, EventArgs e)
@@ -151,6 +179,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 canvas.Children.Add(result);
                 canvas.Children.Remove(video);
+                video.Stop();
+                video.Source = null;
 
                 FrameworkElement = result;
             }
@@ -169,21 +199,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
             
-        }
-
-        private void Result_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            if (currentPlayCount < PlayCount)
-            {
-                (sender as MediaElement).Position = TimeSpan.Zero;
-                (sender as MediaElement).Play();
-                currentPlayCount++;
-            }
-        }
-
-        private void Result_MediaFailed(object? sender, ExceptionRoutedEventArgs e)
-        {
-            MessageBox.Show($"视频加载失败，错误: {e.ErrorException.Message}");
         }
 
         private BitmapSource CaptureMediaElement(MediaElement mediaElement)
