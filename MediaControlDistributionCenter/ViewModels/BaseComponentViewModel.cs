@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Views.CustomControls;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -118,7 +120,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var element = DrawingContent();
                 canvas.Children.Add(element);
-
             }
         }
 
@@ -175,6 +176,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 manageViewModel.SelectedComponent = viewModel;
                 manageViewModel.SelectedComponent.IsSelected = true;
                 manageViewModel.SelectedElement = selectedElement;
+                var resizableControl = new ResizableControl();
+                resizableControl.MakeResizable(selectedElement, canvas);
             }
         }
 
@@ -199,15 +202,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 double offsetX = currentPoint.X - startPoint.X;
                 double offsetY = currentPoint.Y - startPoint.Y;
 
-                double left = Canvas.GetLeft(selectedElement) + offsetX;
-                double top = Canvas.GetTop(selectedElement) + offsetY;
+                double newLeft = Canvas.GetLeft(selectedElement);
+                double newTop = Canvas.GetTop(selectedElement);
+                double maxLeft = canvas.Width - selectedElement.Width;
+                double maxTop = canvas.Height - selectedElement.Height;
+
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(selectedElement, canvas);
+
+                newLeft = Math.Min(Math.Max(newLeft + offsetX, 0), maxLeft);
+                newTop = Math.Min(Math.Max(newTop + offsetY, 0), maxTop);
 
                 // 更新图片位置
-                Canvas.SetLeft(selectedElement, left);
-                Canvas.SetTop(selectedElement, top);
+                Canvas.SetLeft(selectedElement, newLeft);
+                Canvas.SetTop(selectedElement, newTop);
 
-                Left = left;
-                Top = top;
+                resizableControl.MakeResizable(selectedElement, canvas);
+
+                Left = newLeft;
+                Top = newTop;
 
                 startPoint = currentPoint;
             }

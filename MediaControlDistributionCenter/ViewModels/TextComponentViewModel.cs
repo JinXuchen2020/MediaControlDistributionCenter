@@ -66,7 +66,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
         {
-            Timeline = string.IsNullOrEmpty(component.PlayDuration) ? 0 : TimeSpan.Parse(component.PlayDuration).Seconds;
             background = component.Background;
             textColor = component.TextColor;
             playMode = component.PlayMode;
@@ -141,7 +140,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayMode = PlayMode,
                 Direction = Direction,
                 PlayCount = PlayCount,
-                PlayDuration = TimeSpan.FromSeconds(Timeline).ToString(),
+                PlayDuration = PlayDuration,
                 EffectDuration = EffectDuration,
                 ComponentEffect = ComponentEffect,
                 RollingSpeed = RollingSpeed == 0 ? 1 : RollingSpeed,

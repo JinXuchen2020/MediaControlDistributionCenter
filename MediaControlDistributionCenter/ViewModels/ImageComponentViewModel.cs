@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Views.CustomControls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +27,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private int playCount;
 
         [ObservableProperty]
-        private TimeSpan playDuration;
+        private string playDuration;
 
         [ObservableProperty]
         private int effectDuration;  //特效时长    -毫秒
@@ -39,7 +40,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public ImageComponentViewModel(ImageComponent component, double ratio = 1) : base(component, ratio)
         {
             playCount = component.PlayCount;
-            playDuration = string.IsNullOrEmpty(component.PlayDuration) ? TimeSpan.Zero : TimeSpan.Parse(component.PlayDuration);
+            playDuration = component.PlayDuration;
             effectDuration = component.EffectDuration;
             componentEffect = component.ComponentEffect;
             Effects = new Dictionary<string, Action<Image>>
@@ -99,7 +100,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
-                PlayDuration = TimeSpan.FromSeconds(Timeline).ToString(),
+                PlayDuration = PlayDuration,
                 ComponentEffect = ComponentEffect,
                 EffectDuration = EffectDuration,
             };

@@ -2,10 +2,12 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Xml.Linq;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -33,7 +36,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private int playCount;
 
         [ObservableProperty]
-        private TimeSpan playDuration;
+        private string playDuration;
 
         private int currentPlayCount;
 
@@ -41,7 +44,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             playMode = component.PlayMode;
             playCount = component.PlayCount;
-            playDuration = string.IsNullOrEmpty(component.PlayDuration) ? TimeSpan.Zero : TimeSpan.Parse(component.PlayDuration);
+            playDuration = component.PlayDuration;
         }
 
         public override VideoComponent ToModel(double ratio)
@@ -60,7 +63,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = Timeline,
                 PlayMode = PlayMode,
                 PlayCount = PlayCount,
-                PlayDuration = PlayDuration.ToString()
+                PlayDuration = PlayDuration
             };
         }
 
@@ -195,7 +198,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (video.NaturalDuration.HasTimeSpan)
                 {
                     Timeline = video.NaturalDuration.TimeSpan.TotalSeconds;
-                    PlayDuration = video.NaturalDuration.TimeSpan;
+                    PlayDuration = video.NaturalDuration.TimeSpan.ToString();
                 }
             }
             

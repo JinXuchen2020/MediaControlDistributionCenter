@@ -9,7 +9,7 @@
         WindowStyle="None"
         WindowStartupLocation="Manual"
     >
-    <Grid Background="#090A0E">
+    <Grid Background="#090A0E" MouseDown="DragMove_MouseDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="2" />
