@@ -32,19 +32,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string playMode;
 
-        [ObservableProperty]
-        private int playCount;
-
-        [ObservableProperty]
-        private string playDuration;
-
         private int currentPlayCount;
 
         public VideoComponentViewModel(VideoComponent component, double ratio = 1) : base(component, ratio)
         {
             playMode = component.PlayMode;
-            playCount = component.PlayCount;
-            playDuration = component.PlayDuration;
         }
 
         public override VideoComponent ToModel(double ratio)
@@ -155,20 +147,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     DataContext = this
                 };
 
-                var widthBinding = new Binding("Width")
-                {
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                    Mode = BindingMode.TwoWay
-                };
-
-                var heightBinding = new Binding("Height")
-                {
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                    Mode = BindingMode.TwoWay
-                };
-
-                result.SetBinding(FrameworkElement.WidthProperty, widthBinding);
-                result.SetBinding(FrameworkElement.HeightProperty, heightBinding);
+                CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
+                CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
 
                 Canvas.SetLeft(result, Left);
                 Canvas.SetTop(result, Top);

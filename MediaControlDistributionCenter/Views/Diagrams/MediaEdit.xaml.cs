@@ -8,6 +8,7 @@ using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.Diagrams;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using SqlSugar;
 using System;
@@ -154,74 +155,10 @@ namespace MediaControlDistributionCenter.Views
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                var manageViewModel = (DataContext as MediaEditViewModel)!;
-                var pageViewModel = manageViewModel.SelectedPage;
-                var currentComponent = pageViewModel!.Components.FirstOrDefault(c => c!.IsSelected);
-                if (currentComponent == null) 
-                {
-                    MessageBox.Show("请先选择组件！");
-                    return;
-                }
-
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 string filePath = files.FirstOrDefault()!;
-                string fileName = System.IO.Path.GetFileName(filePath);
-                string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
 
-                if (IsImageFile(filePath))
-                {
-                    if (currentComponent.Type != MediaType.Image.ToString())
-                    {
-                        MessageBox.Show("图片组件只能包含图片格式文件！");
-                        return;
-                    }
-
-                    var uploadPath = System.IO.Path.Combine(localFolder, fileName);
-                    if (!File.Exists(uploadPath))
-                    {
-                        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                        uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
-                    }
-
-                    var viewModel = (currentComponent as ImageComponentViewModel)!;
-                    viewModel.Left = e.GetPosition(MainCanvas).X;
-                    viewModel.Top = e.GetPosition(MainCanvas).Y;
-                    viewModel.Width = 300;
-                    viewModel.Height = 200;
-                    viewModel.Source = uploadPath;
-                    viewModel.FileName = fileName;
-                    viewModel.IsShowInfo = true;
-
-                    viewModel.DrawContentCommand.Execute(MainCanvas);
-                    manageViewModel.SelectedElement = viewModel.FrameworkElement;
-                }
-                else if (IsVideoFile(filePath))
-                {
-                    if (currentComponent.Type != MediaType.Video.ToString())
-                    {
-                        MessageBox.Show("视频组件只能包含视频格式文件！");
-                        return;
-                    }
-
-                    var uploadPath = System.IO.Path.Combine(localFolder, fileName);
-                    if (!File.Exists(uploadPath))
-                    {
-                        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                        uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
-                    }
-
-                    var viewModel = currentComponent;
-                    viewModel.Left = e.GetPosition(MainCanvas).X;
-                    viewModel.Top = e.GetPosition(MainCanvas).Y;
-                    viewModel.Width = 300;
-                    viewModel.Height = 200;
-                    viewModel.Source = uploadPath;
-                    viewModel.FileName = fileName;
-                    viewModel.IsShowInfo = true;
-
-                    viewModel.DrawContentCommand.Execute(MainCanvas);
-                    manageViewModel.SelectedElement = viewModel.FrameworkElement;
-                }
+                UpdateFileComponent(filePath, e.GetPosition(MainCanvas).X, e.GetPosition(MainCanvas).Y);
             }
         }
 
@@ -237,6 +174,76 @@ namespace MediaControlDistributionCenter.Views
             string[] imageExtensions = { ".mp4", ".avi", ".wmv", ".mkv" };
             string ext = System.IO.Path.GetExtension(filePath);
             return imageExtensions.Contains(ext);
+        }
+
+        private void UpdateFileComponent(string filePath, double left = 0 , double top = 0)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            var pageViewModel = manageViewModel.SelectedPage;
+            var currentComponent = pageViewModel!.Components.FirstOrDefault(c => c!.IsSelected);
+            if (currentComponent == null)
+            {
+                MessageBox.Show("请先选择组件！");
+                return;
+            }
+
+            string fileName = System.IO.Path.GetFileName(filePath);
+            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
+
+            if (IsImageFile(filePath))
+            {
+                if (currentComponent.Type != MediaType.Image.ToString())
+                {
+                    MessageBox.Show("图片组件只能包含图片格式文件！");
+                    return;
+                }
+
+                var uploadPath = System.IO.Path.Combine(localFolder, fileName);
+                if (!File.Exists(uploadPath))
+                {
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
+                }
+
+                var viewModel = (currentComponent as ImageComponentViewModel)!;
+                viewModel.Left = left;
+                viewModel.Top = top;
+                viewModel.Width = 300;
+                viewModel.Height = 200;
+                viewModel.Source = uploadPath;
+                viewModel.FileName = fileName;
+                viewModel.IsShowInfo = true;
+
+                viewModel.DrawContentCommand.Execute(MainCanvas);
+                manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            }
+            else if (IsVideoFile(filePath))
+            {
+                if (currentComponent.Type != MediaType.Video.ToString())
+                {
+                    MessageBox.Show("视频组件只能包含视频格式文件！");
+                    return;
+                }
+
+                var uploadPath = System.IO.Path.Combine(localFolder, fileName);
+                if (!File.Exists(uploadPath))
+                {
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
+                }
+
+                var viewModel = currentComponent;
+                viewModel.Left = left;
+                viewModel.Top = top;
+                viewModel.Width = 300;
+                viewModel.Height = 200;
+                viewModel.Source = uploadPath;
+                viewModel.FileName = fileName;
+                viewModel.IsShowInfo = true;
+
+                viewModel.DrawContentCommand.Execute(MainCanvas);
+                manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -585,6 +592,7 @@ namespace MediaControlDistributionCenter.Views
                             ZIndex = 1,
                             Type = (MediaType)type,
                             PlayCount = 1,
+                            PlayDuration = "",
                         });
                         break;
                     case MediaType.Image:
@@ -616,8 +624,8 @@ namespace MediaControlDistributionCenter.Views
                             EffectDuration = 1000,
                             Direction = "向右滚动",
                             Timeline = 5,
-                            Background ="Blue",
-                            TextColor ="White",
+                            Background ="black",
+                            TextColor = "black",
                             TextSize = 16,
                             IsLoopEnabled = true,
                             LetterSpacing = 2,
@@ -688,6 +696,62 @@ namespace MediaControlDistributionCenter.Views
             if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
             {
                 Canvas.SetZIndex(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.ZIndex);
+            }
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if(sender is TextBox textBox)
+            {
+                var viewModel = (MediaEditViewModel)textBox.DataContext;
+                ((TextComponentViewModel)viewModel.SelectedComponent).Foreground = (Color)ColorConverter.ConvertFromString(textBox.Text);
+            }
+
+        }
+
+        private void SelectColor_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            var viewModel = (TextComponentViewModel)manageViewModel.SelectedComponent;
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void btnUpload_Click(object sender, MouseButtonEventArgs e)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // 获取所选文件的路径
+                string filePath = openFileDialog.FileName;
+
+                UpdateFileComponent(filePath);
+            }
+        }
+
+        private void btnPageCapture_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            if(manageViewModel.SelectedPage != null)
+            {
+                manageViewModel.SelectedPage.CaptureCommand.Execute(MainCanvas);
+            }
+        }
+
+        private void LeftTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(sender is TabControl tab)
+            {
+                var tabItem = (TabItem)tab.SelectedItem;
+                if (tabItem.Header.Equals("页面"))
+                {
+                    var manageViewModel = (DataContext as MediaEditViewModel)!;
+                    if (manageViewModel.SelectedPage != null)
+                    {
+                        manageViewModel.SelectedPage.CaptureCommand.Execute(MainCanvas);
+                    }
+                }
             }
         }
     }

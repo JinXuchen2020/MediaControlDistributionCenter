@@ -6,13 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -91,9 +93,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private int order;
 
         [ObservableProperty]
-        private string thumbnail;
-
-        [ObservableProperty]
         private bool isHasValidity;
 
         [ObservableProperty]
@@ -112,6 +111,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSelected;
 
         [ObservableProperty]
+        private BitmapSource thumbnail;
+
+        [ObservableProperty]
         private ObservableCollection<SchedulerViewModel> schedulers;
 
         [ObservableProperty]
@@ -126,6 +128,7 @@ namespace MediaControlDistributionCenter.ViewModels
             validStartDate = mediaPage.ValidStartDate;
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
+            thumbnail = new BitmapImage(new Uri($"pack://application:,,,/MediaControlDistributionCenter;component/Assets/windows-fill.png"));
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
             components = new ObservableCollection<BaseComponentViewModel>(mediaPage.Components.Select(c =>
             {
@@ -171,6 +174,34 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 component.DisposeCommand.Execute(null);
             }
+        }
+
+        [RelayCommand]
+        private void Capture(Canvas canvas)
+        {
+            Thumbnail = canvas.Dispatcher.Invoke<BitmapSource>(() =>
+            {
+                // 创建一个RenderTargetBitmap
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+                    (int)canvas.ActualWidth,
+                    (int)canvas.ActualHeight,
+                    96, 96,
+                    PixelFormats.Pbgra32);
+                //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
+                //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+                // 将MediaElement绘制到RenderTargetBitmap
+                renderTargetBitmap.Render(canvas);
+                return renderTargetBitmap;
+
+                //// 保存位图为PNG文件
+                //PngBitmapEncoder png = new PngBitmapEncoder();
+                //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                //using (Stream stream = File.Create("screenshot.png"))
+                //{
+                //    png.Save(stream);
+                //}
+            });
         }
     }
 

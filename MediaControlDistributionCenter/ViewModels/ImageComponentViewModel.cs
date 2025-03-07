@@ -24,12 +24,6 @@ namespace MediaControlDistributionCenter.ViewModels
         public override string Type => "Image";
 
         [ObservableProperty]
-        private int playCount;
-
-        [ObservableProperty]
-        private string playDuration;
-
-        [ObservableProperty]
         private int effectDuration;  //特效时长    -毫秒
 
         [ObservableProperty]
@@ -39,8 +33,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public ImageComponentViewModel(ImageComponent component, double ratio = 1) : base(component, ratio)
         {
-            playCount = component.PlayCount;
-            playDuration = component.PlayDuration;
             effectDuration = component.EffectDuration;
             componentEffect = component.ComponentEffect;
             Effects = new Dictionary<string, Action<Image>>
@@ -116,20 +108,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 DataContext = this
             };
 
-            var widthBinding = new Binding("Width")
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
-
-            var heightBinding = new Binding("Height")
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
-
-            result.SetBinding(FrameworkElement.WidthProperty, widthBinding);
-            result.SetBinding(FrameworkElement.HeightProperty, heightBinding);
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
 
             Canvas.SetLeft(result, Left);
             Canvas.SetTop(result, Top);

@@ -54,15 +54,15 @@
     <None Remove="Assets\pwd.png" />
     <None Remove="Assets\ReadMe.txt" />
     <None Remove="Assets\screens-01.png" />
-    <None Remove="Assets\svg-001.png" />
-    <None Remove="Assets\svg-002.png" />
     <None Remove="Assets\svg-colortext.png" />
     <None Remove="Assets\svg-doc.png" />
     <None Remove="Assets\svg-hdmi.png" />
     <None Remove="Assets\svg-image.png" />
+    <None Remove="Assets\svg-mixed.png" />
     <None Remove="Assets\svg-rss.png" />
     <None Remove="Assets\svg-stream.png" />
     <None Remove="Assets\svg-text.png" />
+    <None Remove="Assets\svg-video.png" />
     <None Remove="Assets\svg-web.png" />
     <None Remove="Assets\username.png" />
     <None Remove="Assets\user_control.png" />
@@ -136,8 +136,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\screens-01.png" />
-    <Resource Include="Assets\svg-001.png" />
-    <Resource Include="Assets\svg-002.png" />
+    <Resource Include="Assets\svg-mixed.png" />
+    <Resource Include="Assets\svg-video.png" />
     <Resource Include="Assets\svg-colortext.png" />
     <Resource Include="Assets\svg-doc.png" />
     <Resource Include="Assets\svg-hdmi.png" />

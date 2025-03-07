@@ -110,6 +110,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
         {
+            LoadingOverlay.Visibility = Visibility.Visible;
             MainCanvas.Children.Clear();
             if (viewModel.SelectedPage != null)
             {
@@ -134,6 +135,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     }
                 }
             }
+
+            LoadingOverlay.Visibility = Visibility.Collapsed;
         }
 
         private void DisposeCanvasComponents()
@@ -143,7 +146,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 this.DragMove();

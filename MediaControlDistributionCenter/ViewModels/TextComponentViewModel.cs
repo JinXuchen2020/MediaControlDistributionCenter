@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
@@ -26,23 +26,18 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class TextComponentViewModel : BaseComponentViewModel
     {
         public override string Type => "Text";
-        [ObservableProperty]
-        private string background;
 
         [ObservableProperty]
-        private string textColor;
+        private Color background;
+
+        [ObservableProperty]
+        private Color foreground;
 
         [ObservableProperty]
         private string playMode; //"翻页"
 
         [ObservableProperty]
-        private string direction; //"向右滚动"
-
-        [ObservableProperty]
-        private int playCount; //播放次数
-
-        [ObservableProperty]
-        private string playDuration; //播放时长   当前文本组件的展示时长      时分秒  -->> 30:10:08
+        private string direction; //"向右滚动"        
 
         [ObservableProperty]
         private int effectDuration; //特效时长    -毫秒   文本翻页时才用到
@@ -66,12 +61,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
         {
-            background = component.Background;
-            textColor = component.TextColor;
+            background = (Color)ColorConverter.ConvertFromString(component.Background);
+            foreground = (Color)ColorConverter.ConvertFromString(component.TextColor);
             playMode = component.PlayMode;
             direction = component.Direction;
-            playCount = component.PlayCount;
-            playDuration = component.PlayDuration;
             effectDuration = component.EffectDuration;
             componentEffect = component.ComponentEffect;
             rollingSpeed = component.RollingSpeed;
@@ -135,8 +128,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height / ratio,
                 Source = Source,
                 Timeline = Timeline,
-                Background = Background,
-                TextColor = TextColor,
+                Background = Background.ToString(),
+                TextColor = Foreground.ToString(),
                 PlayMode = PlayMode,
                 Direction = Direction,
                 PlayCount = PlayCount,
@@ -161,46 +154,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 BorderThickness = new Thickness(2),
                 BorderBrush = new SolidColorBrush(Colors.White),
                 Background = new SolidColorBrush(Colors.Black),
-                DataContext = this,                
+                DataContext = this,
             };
 
             Paragraph paragraph = new Paragraph();
             Run run = new Run(Source);
-            run.FontSize = TextSize !=0 ? TextSize : run.FontSize;
-            run.Foreground = new SolidColorBrush(System.Windows.Media.Colors.White);
-            run.Background = (SolidColorBrush?)new BrushConverter().ConvertFromString(Background?? Colors.Blue.ToString()) ?? new SolidColorBrush(Colors.Blue);
 
-            var textBinding = new Binding(nameof(Source))
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
+            CreateBinding(paragraph, Paragraph.LineHeightProperty, nameof(LineSpacing));
 
-            run.SetBinding(Run.TextProperty, textBinding);
+            CreateBinding(run, Run.TextProperty, nameof(Source));
+            CreateBinding(run, Run.BackgroundProperty, nameof(Background), new ColorToBrushConverter());
+            CreateBinding(run, Run.ForegroundProperty, nameof(Foreground), new ColorToBrushConverter());
+
             paragraph.Inlines.Add(run);
+            result.Document.Blocks.Clear();
             result.Document.Blocks.Add(paragraph);
 
-            var fontSizeBinding = new Binding(nameof(TextSize))
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
-
-            var widthBinding = new Binding("Width")
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
-
-            var heightBinding = new Binding("Height")
-            {
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Mode = BindingMode.TwoWay
-            };
-
-            result.SetBinding(FrameworkElement.WidthProperty, widthBinding);
-            result.SetBinding(FrameworkElement.HeightProperty, heightBinding);
-            result.SetBinding(TextBlock.FontSizeProperty, fontSizeBinding);
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+            CreateBinding(result, TextBlock.FontSizeProperty, nameof(TextSize));
 
             Canvas.SetLeft(result, Left);
             Canvas.SetTop(result, Top);
@@ -258,16 +230,18 @@ namespace MediaControlDistributionCenter.ViewModels
                 Focusable = false,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏垂直滚动条
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏水平滚动条
-                Background = System.Windows.Media.Brushes.Transparent, // 设置背景透明
-                BorderThickness = new Thickness(0) // 去掉边框
+                Background = Brushes.Transparent, // 设置背景透明
+                BorderThickness = new Thickness(0), // 去掉边框
+                FontSize = TextSize != 0 ? TextSize : 12
             };
 
             Paragraph paragraph = new Paragraph();
             Run run = new Run(Source);
-            run.FontSize = TextSize != 0 ? TextSize : run.FontSize;
-            run.Foreground = new SolidColorBrush(System.Windows.Media.Colors.White);
-            run.Background = (SolidColorBrush?)new BrushConverter().ConvertFromString(Background ?? Colors.Blue.ToString()) ?? new SolidColorBrush(Colors.Blue);
+            run.Foreground = new SolidColorBrush(Foreground);
+            run.Background = new SolidColorBrush(Background);
+            paragraph.LineHeight = LineSpacing;
             paragraph.Inlines.Add(run);
+            result.Document.Blocks.Clear();
             result.Document.Blocks.Add(paragraph);
 
             // 创建一个Canvas来放置RichTextBox
@@ -342,7 +316,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 FlowDirection.LeftToRight,
                 new Typeface(fontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
                 fontSize,
-                System.Windows.Media.Brushes.Black, 1.25
+                Brushes.Black, 1.25
             );
 
             return formattedText.WidthIncludingTrailingWhitespace;

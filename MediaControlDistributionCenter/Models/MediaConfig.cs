@@ -90,6 +90,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Timeline { get; set; }
 
+        public int PlayCount { get; set; }
+
+        public string PlayDuration { get; set; }
+
         [JsonConverter(typeof(StringEnumConverter))]
         public virtual MediaType Type { get; set; }
     }
@@ -98,20 +102,12 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override MediaType Type => MediaType.Video;
 
-        public string PlayMode { get; set; }
-
-        public int PlayCount { get; set; }
-
-        public string PlayDuration { get; set; }
+        public string PlayMode { get; set; }       
     }
 
     public class ImageComponent : BaseComponent
     {
         public override MediaType Type => MediaType.Image;
-        
-        public int PlayCount { get; set; }
-
-        public string PlayDuration { get; set; }
 
         public int EffectDuration { get; set; }  //特效时长    -毫秒
         
@@ -130,10 +126,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string Direction{ get; set; } //"向右滚动"
 
-        public int PlayCount { get; set; } //播放次数
-
-        public string PlayDuration { get; set; } //播放时长   当前文本组件的展示时长      时分秒  -->> 30:10:08
-
         public int EffectDuration { get; set; } //特效时长    -毫秒   文本翻页时才用到
 
         public string ComponentEffect { get; set; } //入场特效               文本翻页时才用到     
@@ -141,8 +133,11 @@ namespace MediaControlDistributionCenter.ViewModels
         public int RollingSpeed { get; set; }  //滚动速度档位        一共1-10个档位
 
         public double TextSize { get; set; } //20,                            //字体大小
+        
         public bool IsLoopEnabled { get; set; } // true,                //是否首尾相接
+        
         public double LetterSpacing{ get; set; } //10",                  //字体间距
+        
         public double LineSpacing { get; set; } //16", 
           
     }

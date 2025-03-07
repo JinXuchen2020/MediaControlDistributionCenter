@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -57,6 +58,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private double timeline;
 
         [ObservableProperty]
+        private int playCount;
+
+        [ObservableProperty]
+        private string playDuration;
+
+        [ObservableProperty]
         private bool isShowInfo;
 
         private bool isDragging = false;
@@ -85,6 +92,8 @@ namespace MediaControlDistributionCenter.ViewModels
             Width = component.Width * ratio;
             Height = component.Height * ratio;
             timeline = component.Timeline;
+            playCount = component.PlayCount;
+            playDuration = component.PlayDuration;
 
             switch (component.Type)
             {
@@ -254,6 +263,32 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             return null; // 如果没有找到Canvas，则返回null
+        }
+
+        protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null)
+        {
+            var binding = new Binding(path)
+            {
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.TwoWay
+            };
+
+            if (converter != null)
+            {
+                binding.Converter = converter;
+            }
+
+            if (element is FrameworkContentElement contentElement)
+            {
+                contentElement.SetBinding(dp, binding);
+                return;
+            }
+
+            if (element is FrameworkElement frameworkElement)
+            {
+                frameworkElement.SetBinding(dp, binding);
+                return;
+            }
         }
     }
 }

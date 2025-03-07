@@ -7,6 +7,14 @@ namespace MediaControlDistributionCenter.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (parameter != null)
+            {
+                if (bool.TryParse(parameter.ToString(), out var result))
+                {
+                    return !string.IsNullOrEmpty(value?.ToString()) == result;
+                }
+            }
+
             return !string.IsNullOrEmpty(value?.ToString());
         }
 

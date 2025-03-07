@@ -15,5 +15,6 @@
         <ResourceDictionary Source="\Themes\CheckButton.xaml"/>
         <ResourceDictionary Source="\Themes\CustomPasswordBox.xaml"/>
         <ResourceDictionary Source="\Themes\TimeTextBox.xaml"/>
+        <ResourceDictionary Source="\Themes\CustomIcon.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

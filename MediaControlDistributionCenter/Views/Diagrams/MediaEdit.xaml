@@ -8,13 +8,14 @@
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels"
-                        mc:Ignorable="d" 
+             mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:StringToTimeSpanConverter x:Key="StringToTimeSpanConverter" />
+        <converters:NotEmptyConverter x:Key="NotEmptyConverter" />
         <Style x:Key="LeftAlignedCheckBoxStyle" TargetType="CheckBox">
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -143,6 +144,42 @@
                             </Grid>
                         </Border>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:TextComponentViewModel}">
+                        <Border BorderThickness="1" Background="#090A0E">
+                            <Grid Width="800" Height="600" Background="#090A0E" HorizontalAlignment="Center" Margin="10" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40" />
+                                    <RowDefinition Height="280" />
+                                    <RowDefinition Height="280" />
+                                </Grid.RowDefinitions>
+                                <StackPanel HorizontalAlignment="Right">
+                                    <Button Width="60" Height="38" HorizontalAlignment="Right"
+                                        Background="#090A0E" Foreground="WhiteSmoke"
+                                        BorderThickness="0"
+                                        HorizontalContentAlignment="Center"
+                                        materialDesign:ColorZoneAssist.Mode="Custom"
+                                        materialDesign:ColorZoneAssist.Background="#090A0E"
+                                        materialDesign:ButtonAssist.CornerRadius="5"
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="背景色" Width="80"/>
+                                    <StackPanel Width="700">
+                                        <materialDesign:ColorPicker x:Name="bgColorPicker" Color="{Binding Background}" Height="250" />
+                                        <TextBlock Text="{Binding Background}" Width="700" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="字体色" Width="80"/>
+                                    <StackPanel Width="700">
+                                        <materialDesign:ColorPicker x:Name="textColorPicker" Color="{Binding Foreground}" Height="250" />
+                                        <TextBlock Text="{Binding Foreground}" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
                 </DataTemplate.Resources>
                 <ContentControl Content="{Binding}" />
             </DataTemplate>
@@ -175,13 +212,13 @@
                     </StackPanel.Resources>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Mixed" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
-                            <Image Source="/Assets/svg-001.png" Width="30" Height="30"/>
+                            <Image Source="/Assets/svg-mixed.png" Width="30" Height="30"/>
                             <TextBlock Text="混合媒体"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Video" Cursor="Hand" MouseDown="CreateComponent_MouseDown" >
-                            <Image Source="/Assets/svg-002.png" Width="30" Height="30"/>
+                            <Image Source="/Assets/svg-video.png" Width="30" Height="30"/>
                             <TextBlock Text="视频"/>
                         </StackPanel>
                     </Border>
@@ -198,7 +235,7 @@
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
-                        <StackPanel VerticalAlignment="Center" Tag="WebPage" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
+                        <StackPanel VerticalAlignment="Center" Tag="Web" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-web.png" Width="30" Height="30"/>
                             <TextBlock Text="网页"/>
                         </StackPanel>
@@ -222,7 +259,7 @@
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
-                        <StackPanel VerticalAlignment="Center" Tag="ColourText" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
+                        <StackPanel VerticalAlignment="Center" Tag="ColorText" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-colortext.png" Width="30" Height="30"/>
                             <TextBlock Text="炫彩字"/>
                         </StackPanel>
@@ -290,6 +327,7 @@
                     <TabControl Width="auto" Height="auto" Cursor="Hand"
                         materialDesign:ColorZoneAssist.Background="#16171D"
                         materialDesign:ColorZoneAssist.Foreground="White"
+                        SelectionChanged="LeftTab_SelectionChanged"
                         materialDesign:ColorZoneAssist.Mode="Custom">
                         <TabItem Header="媒体">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -318,20 +356,20 @@
                                                     <Expander Visibility="{Binding IsFile, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" Margin="0,10" HorizontalAlignment="Stretch" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.HorizontalHeaderPadding="5" materialDesign:ExpanderAssist.HeaderBackground="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                         <Expander.Header>
                                                             <DockPanel>
-                                                                <materialDesign:PackIcon Kind="{Binding Type}" Foreground="LightGray"  Width="24" Height="24"/>
+                                                                <LocalCore:CustomIcon Type="{Binding Type}" />
                                                                 <TextBlock Text="{Binding Name}" Margin="5,0,0,0" VerticalAlignment="Center" Foreground="White" Cursor="Hand" />
                                                                 <materialDesign:PackIcon Kind="ClearOutline" MouseDown="ClearContent_MouseDown" Cursor="Hand" Foreground="LightGray"  Width="22" Height="22" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,0,5,0"/>
                                                             </DockPanel>
                                                         </Expander.Header>
                                                         <Border BorderThickness="0,0,0,0" BorderBrush="#404870">
                                                             <DockPanel Margin="10,10,0,0" Height="54" MouseDown="SelectComponent_MouseDown" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
-                                                                <materialDesign:PackIcon Kind="{Binding Type}" Margin="30,0,0,0" VerticalAlignment="Center" Foreground="LightGray"  Width="22" Height="22"/>
+                                                                <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0" VerticalAlignment="Center" />
                                                                 <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding FileName}"/>
                                                             </DockPanel>
                                                         </Border>
                                                     </Expander>
                                                     <DockPanel Visibility="{Binding IsFile, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}" Margin="0,10, 0, 0" Height="54" MouseDown="SelectComponent_MouseDown" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
-                                                        <materialDesign:PackIcon Kind="{Binding Type}" Foreground="LightGray" VerticalAlignment="Center" Width="24" Height="24" Margin="30,0,0,0"/>
+                                                        <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0"/>
                                                         <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
                                                         <materialDesign:PackIcon Kind="ClearOutline" Cursor="Hand" MouseDown="ClearContent_MouseDown" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="LightGray"  Width="22" Height="22"/>
                                                     </DockPanel>
@@ -349,9 +387,9 @@
                                         <Button Width="22" Height="22" Padding="0" Click="btnPageAdd_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="Add" Foreground="LightGray"  Width="22" Height="22"/>
                                         </Button>
-                                        <!--<Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" Click="btnPageSave_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                        <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" Click="btnPageCapture_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="ContentSave" Foreground="LightGray"  Width="22" Height="22"/>
-                                        </Button>-->
+                                        </Button>
                                         <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" Click="btnPageUpOrder_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="ArrowUp" Foreground="LightGray"  Width="22" Height="22"/>
                                         </Button>
@@ -367,7 +405,7 @@
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                                     <TextBlock Margin="20,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Id}"/>
-                                                    <Image Margin="10,0,0,0" Width="180" Height="82" Source="/Assets/windows-fill.png"/>
+                                                    <Image Margin="10,0,0,0" Width="180" Height="100" Source="{Binding Thumbnail}"/>
                                                     <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="播放"/>
                                                     <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding PlayCount}"/>
                                                     <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="次"/>
@@ -548,7 +586,7 @@
                     materialDesign:ColorZoneAssist.Background="#16171D"
                     materialDesign:ColorZoneAssist.Foreground="White"
                     materialDesign:ColorZoneAssist.Mode="Custom">
-                        <TabItem Header="组件属性">
+                        <TabItem Header="组件属性" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=true}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <materialDesign:Card Background="#16171D" Cursor="">
                                     <StackPanel>
@@ -570,36 +608,23 @@
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <!--<Expander Header="选择文件" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
+                                        <Expander Header="选择文件" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
-                                                    <StackPanel Orientation="Horizontal" Height="60">
-                                                        <TextBlock Text="名称" Width="80" VerticalAlignment="Center"/>
-                                                        <TextBox Text="{Binding SelectedComponent.Name}" Padding="5,0" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#404870" Width="150" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,10,0,0" Height="60">
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Video">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <TextBlock Text="显示方式" Width="80" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <RadioButton VerticalAlignment="Center" Content="铺满窗口" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=铺满窗口}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="原始比例" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=原始比例}" />
-                                                        </StackPanel>
-                                                    </StackPanel>
+                                                    <TabControl Width="auto" Height="auto" Cursor="Hand" materialDesign:ColorZoneAssist.Background="#16171D" materialDesign:ColorZoneAssist.Foreground="White">
+                                                        <TabItem Header="本地文件">
+                                                            <Border Width="250" Height="110" Margin="10,20,0,0" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_Click" materialDesign:ButtonAssist.CornerRadius="5">
+                                                                <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </Border>
+                                                        </TabItem>
+                                                        <TabItem Header="媒体库" Cursor="">
+                                                            <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
+                                                            </ScrollViewer>
+                                                        </TabItem>
+                                                    </TabControl>
                                                 </StackPanel>
                                             </Border>
-                                        </Expander>-->
+                                        </Expander>
                                         <StackPanel>
                                             <Expander Header="基础属性"  Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
@@ -617,7 +642,7 @@
                                                                 <Style TargetType="StackPanel">
                                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
+                                                                        <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
                                                                             <Setter Property="Visibility" Value="Collapsed" />
                                                                         </DataTrigger>
                                                                         <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Video">
@@ -637,7 +662,7 @@
                                                                 <Style TargetType="StackPanel">
                                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
+                                                                        <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
                                                                             <Setter Property="Visibility" Value="Collapsed" />
                                                                         </DataTrigger>
                                                                         <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
@@ -648,30 +673,30 @@
                                                             </StackPanel.Style>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                                 <TextBlock Text="内容" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.Source}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
+                                                                <TextBox Text="{Binding SelectedComponent.Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="背景色" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.Background}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
-                                                                <!--<materialDesign:ColorPicker x:Name="bgColorPicker"  />
-                                                                <Rectangle Fill="{Binding Color, ElementName=bgColorPicker}" Height="100" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0"/>-->
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="字体色" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.TextColor}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
-                                                                <!--<materialDesign:ColorPicker />-->
+                                                                <TextBlock Text="文字颜色" Width="80" VerticalAlignment="Center"/>
+                                                                <Button Width="25" Height="25"
+                                                                    Padding="0"
+                                                                    materialDesign:ButtonAssist.CornerRadius="2"
+                                                                    Click="SelectColor_Click"
+                                                                    Background="#16171D"
+                                                                    BorderBrush="Gray">
+                                                                    <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
+                                                                </Button>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                                 <TextBlock Text="字体大小" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.TextSize}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
+                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                                 <TextBlock Text="字体间距" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.LetterSpacing}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
+                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                                 <TextBlock Text="字体行间距" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.LineSpacing}" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="30"  VerticalAlignment="Center"/>
+                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LineSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
                                                             <TextBlock Text="显示方式" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
@@ -696,102 +721,72 @@
                                                         <TextBlock Text="播放时长（s）" Width="80" VerticalAlignment="Center"/>
                                                         <LocalCore:TimeTextBox IsDisabled="{Binding SelectedComponent.Type, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=Video}"  Timeline="{Binding SelectedComponent.Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding SelectedComponent.PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                    <StackPanel>
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
+                                                                    <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
                                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                                     </DataTrigger>
                                                                     <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Image">
                                                                         <Setter Property="Visibility" Value="Visible" />
                                                                     </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="翻页" />
+                                                                        </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
+                                                                    </MultiDataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </StackPanel.Style>
-                                                        <TextBlock Text="特效" Width="80" VerticalAlignment="Center"/>
-                                                        <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
+                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                            <TextBlock Text="特效" Width="80" VerticalAlignment="Center"/>
+                                                            <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                            <TextBlock Text="特效时长(ms)" Width="80" VerticalAlignment="Center"/>
+                                                            <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                                        </StackPanel>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                    <StackPanel>
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
+                                                                    <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
                                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                                     </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Image">
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="滚动" />
+                                                                        </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
+                                                                    </MultiDataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </StackPanel.Style>
-                                                        <TextBlock Text="特效时长(ms)" Width="80" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
-                                                    </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <TextBlock Text="方向" Width="80" VerticalAlignment="Center"/>
-                                                        <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Content" >
-                                                            <ComboBoxItem Content="向左滚动" />
-                                                            <ComboBoxItem Content="向上滚动" />
-                                                            <ComboBoxItem Content="向右滚动" />
-                                                            <ComboBoxItem Content="向下滚动" />
-                                                        </ComboBox>
-                                                    </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <TextBlock Text="滚动速度" Width="80" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
-                                                    </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComonent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <CheckBox IsChecked="{Binding SelectedComponent.IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
-                                                        <TextBlock Margin="5,0,0,0" Text="首尾相连" Width="80" VerticalAlignment="Center"/>
-                                                    </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                            <TextBlock Text="方向" Width="80" VerticalAlignment="Center"/>
+                                                            <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Content" >
+                                                                <ComboBoxItem Content="向左滚动" />
+                                                                <ComboBoxItem Content="向上滚动" />
+                                                                <ComboBoxItem Content="向右滚动" />
+                                                                <ComboBoxItem Content="向下滚动" />
+                                                            </ComboBox>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                            <TextBlock Text="滚动速度" Width="80" VerticalAlignment="Center"/>
+                                                            <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                                                            <CheckBox IsChecked="{Binding SelectedComponent.IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
+                                                            <TextBlock Margin="5,0,0,0" Text="首尾相连" Width="80" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </StackPanel>                                                    
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
@@ -799,7 +794,7 @@
                                 </materialDesign:Card>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="页面属性">
+                        <TabItem Header="页面属性" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=false}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <materialDesign:Card Background="#16171D">
                                     <StackPanel>
