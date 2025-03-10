@@ -57,6 +57,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private double lineSpacing; //16", 
 
+        private DispatcherTimer _timer;
+        private int currentPlayCount = 0;
+
         public Dictionary<string, Action<RichTextBox>> Effects { get; set; }
 
         public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
@@ -259,24 +262,31 @@ namespace MediaControlDistributionCenter.ViewModels
                 Scrolling(result);
             }
 
-            result.Loaded += Result_Loaded;
+            result.Loaded += (sender, e) =>
+            {
+                if (sender is RichTextBox richTextBox)
+                {
+                    if (PlayMode == "翻页" && ComponentEffect != null)
+                    {
+                        Effects[ComponentEffect](richTextBox);
+                    }
+                }
+
+                InitializeTimer(result);
+            };
+            result.Unloaded += (sender, e) =>
+            {
+                if (_timer != null)
+                {
+                    _timer.Stop();
+                }
+            };
 
             Canvas.SetLeft(canvas, Left * Ratio);
             Canvas.SetTop(canvas, Top * Ratio);
             Canvas.SetZIndex(canvas, ZIndex);
 
             return canvas;
-        }
-
-        private void Result_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is RichTextBox richTextBox)
-            {
-                if (PlayMode == "翻页" && ComponentEffect != null)
-                {
-                    Effects[ComponentEffect](richTextBox);
-                }
-            }
         }
 
         private void Scrolling(RichTextBox target)
@@ -342,5 +352,33 @@ namespace MediaControlDistributionCenter.ViewModels
             // 开始Storyboard
             storyboard.Begin();
         }
+        private void InitializeTimer(RichTextBox target)
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+            }
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(Timeline);
+            _timer.Tick += (s, e) => Timer_Tick(target);
+            _timer.Start();
+            currentPlayCount++;
+        }
+
+        private void Timer_Tick(RichTextBox target)
+        {
+            var canvas = FindCanvasParent(target);
+            var mainCanvas = FindCanvasParent(canvas);
+            mainCanvas.Children.Remove(canvas);
+            if (currentPlayCount < PlayCount)
+            {
+                DrawingRunningContent();
+            }
+            else
+            {
+                _timer.Stop();
+            }
+        }
+
     }
 }

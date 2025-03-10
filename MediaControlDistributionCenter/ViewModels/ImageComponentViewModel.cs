@@ -16,18 +16,22 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
     public partial class ImageComponentViewModel : BaseComponentViewModel
     {
-        public override string Type => "Image";
-
         [ObservableProperty]
         private int effectDuration;  //特效时长    -毫秒
 
         [ObservableProperty]
-        public string componentEffect; //"上下展开",
+        private string componentEffect; //"上下展开",
+
+        private DispatcherTimer _timer;
+        private int currentPlayCount = 0;
+
+        public override string Type => "Image";
 
         public Dictionary<string, Action<Image>> Effects { get; set; }
 
@@ -141,6 +145,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     Effects[ComponentEffect](image);
                 }
+
+                InitializeTimer(result);
             };
             result.Unloaded += (sender, e) =>
             {
@@ -182,6 +188,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 bitmap.DecodePixelHeight = 0;
                 bitmap.DecodePixelWidth = 0;
                 target.Source = null;
+            }
+
+            if (_timer != null)
+            {
+                _timer.Stop();
             }
         }
 
@@ -250,6 +261,33 @@ namespace MediaControlDistributionCenter.ViewModels
 
             // 开始Storyboard
             storyboard.Begin();
+        }
+
+        private void InitializeTimer(Image target)
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+            }
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(Timeline);
+            _timer.Tick += (s, e) => Timer_Tick(target);
+            _timer.Start();
+            currentPlayCount++;
+        }
+
+        private void Timer_Tick(Image target)
+        {
+            var canvas = FindCanvasParent(target);
+            canvas.Children.Remove(target);
+            if (currentPlayCount < PlayCount)
+            {
+                DrawingRunningContent();
+            }
+            else
+            {
+                _timer.Stop();
+            }
         }
     }
 }

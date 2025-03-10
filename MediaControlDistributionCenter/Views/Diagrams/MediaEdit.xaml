@@ -356,20 +356,20 @@
                                                     <Expander Visibility="{Binding IsFile, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" Margin="0,10" HorizontalAlignment="Stretch" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.HorizontalHeaderPadding="5" materialDesign:ExpanderAssist.HeaderBackground="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                         <Expander.Header>
                                                             <DockPanel>
-                                                                <LocalCore:CustomIcon Type="{Binding Type}" />
+                                                                <LocalCore:CustomIcon Type="{Binding Type}" IsSelected="{Binding IsSelected}" />
                                                                 <TextBlock Text="{Binding Name}" Margin="5,0,0,0" VerticalAlignment="Center" Foreground="White" Cursor="Hand" />
                                                                 <materialDesign:PackIcon Kind="ClearOutline" MouseDown="ClearContent_MouseDown" Cursor="Hand" Foreground="LightGray"  Width="22" Height="22" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,0,5,0"/>
                                                             </DockPanel>
                                                         </Expander.Header>
                                                         <Border BorderThickness="0,0,0,0" BorderBrush="#404870">
                                                             <DockPanel Margin="10,10,0,0" Height="54" MouseDown="SelectComponent_MouseDown" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
-                                                                <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0" VerticalAlignment="Center" />
+                                                                <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0" VerticalAlignment="Center" IsSelected="{Binding IsSelected}" />
                                                                 <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding FileName}"/>
                                                             </DockPanel>
                                                         </Border>
                                                     </Expander>
                                                     <DockPanel Visibility="{Binding IsFile, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}" Margin="0,10, 0, 0" Height="54" MouseDown="SelectComponent_MouseDown" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
-                                                        <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0"/>
+                                                        <LocalCore:CustomIcon Type="{Binding Type}" Margin="30,0,0,0" IsSelected="{Binding IsSelected}" />
                                                         <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
                                                         <materialDesign:PackIcon Kind="ClearOutline" Cursor="Hand" MouseDown="ClearContent_MouseDown" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="LightGray"  Width="22" Height="22"/>
                                                     </DockPanel>

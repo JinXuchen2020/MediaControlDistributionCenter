@@ -39,7 +39,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             MainCanvas.Height = Height;
             _ratio = MainCanvas.Width / 768;
             this.SizeChanged += MediaPreview_SizeChanged;
-            this.Loaded += MediaPreview_Loaded;
+            //this.Loaded += MediaPreview_Loaded;
             this.Unloaded += MediaPreview_Unloaded;
         }
 
@@ -76,7 +76,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 _timer.Stop();
             }
             _timer = new DispatcherTimer();
-            var pageTimeline = viewModel.SelectedPage.Components.Count == 0 ? 5 : viewModel.SelectedPage.Components.Select(c => c.Timeline).Max() + 1;
+            var pageTimeline = viewModel.SelectedPage.Components.Count == 0 ? 5 : viewModel.SelectedPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
             _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
             _timer.Tick += Timer_Tick; ;
             _timer.Start();
@@ -95,16 +95,14 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             {
                 currentPlayCount = 0;
                 var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > viewModel.SelectedPage.Order);
-                if (nextPage != null)
+                if (nextPage == null)
                 {
-                    viewModel.SelectedPage = nextPage;
-                    LoadCanvasComponents(viewModel);
-                    InitializeTimer(viewModel);
+                    nextPage = viewModel.MediaConfig.Pages.First();
                 }
-                else
-                {
-                    _timer.Stop();
-                }
+
+                viewModel.SelectedPage = nextPage;
+                LoadCanvasComponents(viewModel);
+                InitializeTimer(viewModel);
             }
         }
 
@@ -142,6 +140,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void DisposeCanvasComponents()
         {
             MainCanvas.Children.Clear();
+            _timer.Stop();
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
