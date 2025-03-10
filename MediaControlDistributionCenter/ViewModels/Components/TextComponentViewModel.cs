@@ -57,7 +57,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private double lineSpacing; //16", 
 
-        private DispatcherTimer _timer;
+        private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
         public Dictionary<string, Action<RichTextBox>> Effects { get; set; }
@@ -270,15 +270,17 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         Effects[ComponentEffect](richTextBox);
                     }
-                }
 
-                InitializeTimer(result);
+                    InitializeTimer(richTextBox);
+                }                
             };
             result.Unloaded += (sender, e) =>
             {
+                currentPlayCount = 0;
                 if (_timer != null)
                 {
                     _timer.Stop();
+                    _timer = null;
                 }
             };
 
@@ -367,18 +369,22 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private void Timer_Tick(RichTextBox target)
         {
-            var canvas = FindCanvasParent(target);
-            var mainCanvas = FindCanvasParent(canvas);
-            mainCanvas.Children.Remove(canvas);
             if (currentPlayCount < PlayCount)
             {
-                DrawingRunningContent();
+                if (PlayMode == "翻页" && ComponentEffect != null)
+                {
+                    Effects[ComponentEffect](target);
+                }
+
+                currentPlayCount++;
             }
             else
             {
-                _timer.Stop();
+                var canvas = FindCanvasParent(target);
+                canvas.Children.Remove(target);
+                var mainCanvas = FindCanvasParent(canvas);
+                mainCanvas.Children.Remove(canvas);
             }
         }
-
     }
 }

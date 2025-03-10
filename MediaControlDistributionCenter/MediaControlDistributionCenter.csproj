@@ -54,6 +54,7 @@
     <None Remove="Assets\pwd.png" />
     <None Remove="Assets\ReadMe.txt" />
     <None Remove="Assets\screens-01.png" />
+    <None Remove="Assets\svg-clean.png" />
     <None Remove="Assets\svg-colortext.png" />
     <None Remove="Assets\svg-doc.png" />
     <None Remove="Assets\svg-hdmi.png" />
@@ -136,6 +137,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\screens-01.png" />
+    <Resource Include="Assets\svg-clean.png" />
     <Resource Include="Assets\svg-mixed.png" />
     <Resource Include="Assets\svg-video.png" />
     <Resource Include="Assets\svg-colortext.png" />

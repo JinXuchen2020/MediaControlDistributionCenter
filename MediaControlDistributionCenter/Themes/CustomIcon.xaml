@@ -5,7 +5,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type customControls:CustomIcon}">
-                    <Image Source="{TemplateBinding Source}" Width="30" Height="30"/>
+                    <Image Source="{TemplateBinding Source}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -108,7 +108,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             ftpServer.FtpServerStart();
         }
 
-        public bool UploadFileToFtpServer(string filePath)
+        public async Task<bool> UploadFileToFtpServer(string filePath)
         {
             var loginCmd = $"USER {ftpServer._userName}\n";
             var verifyCmd = $"PASS {ftpServer._userPwd}\n";
@@ -182,7 +182,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 stream.Write(endSignal, 0, endSignal.Length);
 
                 buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
+                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
 
                 connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 if (connectRsp.Contains("226"))

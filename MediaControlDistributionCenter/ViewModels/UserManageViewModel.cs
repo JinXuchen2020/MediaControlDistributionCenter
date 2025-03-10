@@ -45,14 +45,9 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task CloseDialog(bool isUserDialog)
+        private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
-            if (isUserDialog)
-            {
-                var dialogBox = new UserSaveResultDialog(CurrentUser);
-                await MaterialDesignThemes.Wpf.DialogHost.Show(dialogBox, DialogHostId);
-            }
         }
     }
 }

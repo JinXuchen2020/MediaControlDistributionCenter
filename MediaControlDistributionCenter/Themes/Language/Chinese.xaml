@@ -30,6 +30,9 @@
     <sys:String x:Key="LanguageKey_Code_LoginBtn">登录</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 73764@qq·com</sys:String>
 
+    <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Confirm">确定</sys:String>
+
 
 
 

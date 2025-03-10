@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Views;
 using MediaControlDistributionCenter.Views.UserManagement;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,22 +66,12 @@ namespace MediaControlDistributionCenter.ViewModels
             password = model.Password;
         }
 
-        //[RelayCommand]
-        //private void Save()
-        //{
-        //    var userModel = new UserItem
-        //    {
-        //        Id = Id,
-        //        Name = Name,
-        //        Company = Company,
-        //        Region = Region,
-        //        Group = Group,
-        //        Role = Role,
-        //        Password = Password
-        //    };
-
-        //    CurrentUser = userModel;
-        //}
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+        }
 
         [RelayCommand]
         private void Reset()

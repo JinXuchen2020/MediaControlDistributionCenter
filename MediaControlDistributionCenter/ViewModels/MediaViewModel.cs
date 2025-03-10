@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Views;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -112,6 +114,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private void Submit()
         {
             ValidateAllProperties();
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

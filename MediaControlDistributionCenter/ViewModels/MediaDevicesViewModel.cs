@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,14 +22,18 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private MediaViewModel currentMedia;
 
+        [ObservableProperty]
+        private ObservableCollection<DeviceViewModel> publishDevices;
+
         public MediaDevicesViewModel(MediaViewModel currentMedia, IEnumerable<DeviceViewModel> devices) 
         {
             this.currentMedia = currentMedia;
             this.devices = new ObservableCollection<DeviceViewModel>(devices);
+            this.publishDevices = new ObservableCollection<DeviceViewModel>();
         }
 
         [RelayCommand]
-        private void Publish()
+        private async Task Publish()
         {
             foreach (var item in Devices)
             {
@@ -41,7 +46,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
                         string filePath = $"{CurrentMedia.Name}.zip";
                         item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
-                        item.SyncFileSyncCommand.Execute(filePath);
+                        await item.SyncFileSyncCommand.ExecuteAsync(filePath);
+
+                        if (!string.IsNullOrEmpty(item.SendResult))
+                        {
+                            this.PublishDevices.Add(item);
+                        }
                     }
                 }
                 else
@@ -49,6 +59,13 @@ namespace MediaControlDistributionCenter.ViewModels
                     SQLite.DeleTeable(model);
                 }                
             }
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string componentEffect; //"上下展开",
 
-        private DispatcherTimer _timer;
+        private DispatcherTimer? _timer;        
         private int currentPlayCount = 0;
 
         public override string Type => "Image";
@@ -141,16 +141,24 @@ namespace MediaControlDistributionCenter.ViewModels
 
             result.Loaded += (sender, e) =>
             {
-                if (sender is Image image && ComponentEffect != null)
+                if (sender is Image image)
                 {
-                    Effects[ComponentEffect](image);
-                }
+                    if (ComponentEffect != null)
+                    {
+                        Effects[ComponentEffect](image);
+                    }
 
-                InitializeTimer(result);
+                    InitializeTimer(image);
+                }
             };
             result.Unloaded += (sender, e) =>
             {
-                DisposeImage(result);
+                if (sender is Image image)
+                {
+                    DisposeImage(image);
+                    currentPlayCount = 0;
+                    _timer = null;
+                }
             };
 
             Canvas.SetLeft(result, Left * Ratio);
@@ -278,15 +286,25 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private void Timer_Tick(Image target)
         {
-            var canvas = FindCanvasParent(target);
-            canvas.Children.Remove(target);
             if (currentPlayCount < PlayCount)
             {
-                DrawingRunningContent();
+                if (ComponentEffect != null)
+                {
+                    Effects[ComponentEffect](target);
+                }
+                currentPlayCount++;
             }
             else
             {
-                _timer.Stop();
+                var canvas = FindCanvasParent(target);
+                if (canvas != null) 
+                {
+                    var existControl = canvas.Children.Cast<FrameworkElement>().FirstOrDefault(c => c is Image image && image.Source == target.Source);
+                    if (existControl != null) 
+                    {
+                        canvas.Children.Remove(existControl);
+                    }
+                }
             }
         }
     }

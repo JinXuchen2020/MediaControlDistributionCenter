@@ -62,7 +62,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             var userViewModel = ((sender as Button).DataContext as UserViewModel)!;
-            userViewModel.Group = userViewModel.Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.Name ?? string.Empty;
+            userViewModel.Group = userViewModel.Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.Name ?? "未分组";
             //userViewModel.SaveCommand.Execute(null);
 
             var manageViewModel = (DataContext as UserManageViewModel)!;
@@ -73,15 +73,15 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 //manageViewModel.Users.Remove(existUser);
                 //manageViewModel.Users.Add(userViewModel);
                 SQLite.UpdateTable<User>(userViewModel.ToModel());
-
+                manageViewModel.CloseDialogCommand.Execute(null);
             }
             else
             {
                 userViewModel.Id = SQLite.InserTable<User>(userViewModel.ToModel());
                 manageViewModel.Users.Add(userViewModel);
+                manageViewModel.CloseDialogCommand.Execute(null);
+                userViewModel.ShowConfirmDialogCommand.Execute(null);
             }
-            
-            manageViewModel.CloseDialogCommand.Execute(true);
         }
 
         private void btnRegister_MouseDown(object sender, MouseButtonEventArgs e)

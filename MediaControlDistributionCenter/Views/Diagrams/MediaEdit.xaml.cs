@@ -263,6 +263,8 @@ namespace MediaControlDistributionCenter.Views
             var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, configModel.Name);
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
+
+            viewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
@@ -305,24 +307,32 @@ namespace MediaControlDistributionCenter.Views
             var manageViewModel = (DataContext as MediaEditViewModel)!;
 
             var viewModel = ((sender as Button).DataContext as MediaDevicesViewModel)!;
-            viewModel.PublishCommand.Execute(null);
-
-            var screenCount = viewModel.Devices.Select(c => c.IsSelected).Count();
-            manageViewModel.CurrentMedia.ScreensCount = screenCount;
-            SQLite.UpdateTable(manageViewModel.CurrentMedia.ToModel());
-
-            DialogHost.CloseDialogCommand.Execute(null, null);
-
-            if (manageViewModel.ShowNavigation)
+            this.Dispatcher.Invoke(async () =>
             {
-                var content = new MediaManage(manageViewModel.CurrentUser, true);
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
-            }
-            else
-            {
-                var userControllers = new UserControllers(manageViewModel.CurrentUser!);
-                (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
-            }
+                await viewModel.PublishCommand.ExecuteAsync(null);
+
+                var screenCount = viewModel.Devices.Select(c => c.IsSelected).Count();
+                manageViewModel.CurrentMedia.ScreensCount = screenCount;
+                SQLite.UpdateTable(manageViewModel.CurrentMedia.ToModel());
+
+                if (viewModel.PublishDevices.Count > 0)
+                {
+                    manageViewModel.CloseDialogCommand.Execute(null);
+
+                    viewModel.ShowConfirmDialogCommand.Execute(null);
+
+                    //if (manageViewModel.ShowNavigation)
+                    //{
+                    //    var content = new MediaManage(manageViewModel.CurrentUser, true);
+                    //    (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                    //}
+                    //else
+                    //{
+                    //    var userControllers = new UserControllers(manageViewModel.CurrentUser!);
+                    //    (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
+                    //}
+                }
+            });
         }
 
         private void SelectDay_Click(object sender, RoutedEventArgs e)
@@ -670,7 +680,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void ClearContent_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(sender is PackIcon packIcon)
+            if(sender is CustomIcon packIcon)
             {
                 var manageViewModel = (DataContext as MediaEditViewModel)!;
                 var viewModel = (BaseComponentViewModel)packIcon.DataContext;

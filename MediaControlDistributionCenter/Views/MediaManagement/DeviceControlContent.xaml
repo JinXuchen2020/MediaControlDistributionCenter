@@ -73,6 +73,7 @@
                                             <ComboBoxItem Content="每天一次"/>
                                             <ComboBoxItem Content="每周一次"/>
                                             <ComboBoxItem Content="每月一次"/>
+                                            <ComboBoxItem Content="每季一次"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </StackPanel>

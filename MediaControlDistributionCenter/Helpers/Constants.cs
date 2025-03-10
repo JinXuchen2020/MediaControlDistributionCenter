@@ -13,5 +13,7 @@ namespace MediaControlDistributionCenter.Helpers
         public const string FtpPath = "NetWorkData";
 
         public const string ConfigFileName = "MediaConfig.json";
+
+        public const string DialogHostId = "RootDialogHostId";
     }
 }

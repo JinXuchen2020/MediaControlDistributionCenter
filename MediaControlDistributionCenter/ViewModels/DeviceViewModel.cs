@@ -85,6 +85,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string enableBtnContent;
 
+        [ObservableProperty]
+        private string? sendResult;
+
+        [ObservableProperty]
+        private string? uploadResult;
+
         private Communication client;
 
         public DeviceViewModel()
@@ -250,18 +256,16 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private void UploadFile(string filePath)
+        private async Task UploadFile(string filePath)
         {
-            var result = client.UploadFileToFtpServer(filePath);
+            var result = await client.UploadFileToFtpServer(filePath);
             if (result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("上传文件成功!");
+                UploadResult = "上传成功";
             }
             else
             {
-                MessageBox.Show("上传文件失败!");
-                //SendState.Text += "命令无法被处理\r\n";
+                UploadResult = "上传失败";
             }
         }
 
@@ -280,17 +284,16 @@ namespace MediaControlDistributionCenter.ViewModels
             };
             string fielSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
             string path = CommunicationCmd.CmdSyncFile + fielSyncString;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result) 
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
+                SendResult = "发布成功";
             }
             else
             {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                SendResult = "发布失败";
             }
+            
         }
     }
 }
