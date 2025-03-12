@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class UserControllerViewModel : ObservableObject
+    public partial class UserControllerViewModel : PageViewModel
     {
         public UserViewModel CurrentUser { get; set; }
 

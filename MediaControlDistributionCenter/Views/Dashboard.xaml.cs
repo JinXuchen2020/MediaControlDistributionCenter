@@ -41,7 +41,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 //userViewModel = manageViewModel.CurrentUser;
                 var content = serviceProvider.GetRequiredService<DeviceControlContent>();// new DeviceControlContent(userViewModel, tx.Tag.ToString(), true);
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 3);
+                (App.Current.MainWindow as MainWindow).GoContent(content, 3);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace MediaControlDistributionCenter.Views
                     //viewModel.CurrentTabName = tx.Tag.ToString();
                     //viewModel.CurrentPageName = (string)FindResource("LanguageKey_Code_Control_Device");
                     
-                    (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                    (App.Current.MainWindow as MainWindow).GoContent(content, 2);
                 }
             }
         }
@@ -67,14 +67,14 @@ namespace MediaControlDistributionCenter.Views
             {
                 userViewModel = manageViewModel.CurrentUser;
                 var content = serviceProvider.GetRequiredService<MediaManage>(); //new MediaManage(userViewModel, true);
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
             }
             else
             {
                 if (userViewModel != null)
                 {
                     var content = serviceProvider.GetRequiredService<UserControllers>();
-                    (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                    (App.Current.MainWindow as MainWindow).GoContent(content, 2);
                 }
             }            
         }
@@ -87,14 +87,14 @@ namespace MediaControlDistributionCenter.Views
             {
                 userViewModel = manageViewModel.CurrentUser;
                 var content = serviceProvider.GetRequiredService<MediaManage>();
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
             }
             else
             {
                 if (userViewModel != null)
                 {
                     var content = serviceProvider.GetRequiredService<UserControllers>();
-                    (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                    (App.Current.MainWindow as MainWindow).GoContent(content, 2);
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace MediaControlDistributionCenter.Views
         private void btnToUserManage_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var content = serviceProvider.GetRequiredService<UserManage>();// new UserManage(manageViewModel.CurrentUser);
-            (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+            (App.Current.MainWindow as MainWindow).GoContent(content, 2);
         }
 
         private void dgUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -111,7 +111,7 @@ namespace MediaControlDistributionCenter.Views
             if (userViewModel != null && userViewModel.Role == "user")
             {
                 var content = serviceProvider.GetRequiredService<UserControllers>();
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
             }
         }
 
@@ -119,14 +119,14 @@ namespace MediaControlDistributionCenter.Views
         {
             var userViewModel = manageViewModel.CurrentUser;
             var content = serviceProvider.GetRequiredService<DeviceManage>(); //new DeviceManage(userViewModel, true);
-            (App.Current.MainWindow as MainWindow).GoCotent(content, 3);
+            (App.Current.MainWindow as MainWindow).GoContent(content, 3);
         }
 
         private void btnToMediaEdit_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var viewModel = ((sender as StackPanel).DataContext as MediaViewModel)!;
             var content = serviceProvider.GetRequiredService<MediaEdit>();
-            (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+            (App.Current.MainWindow as MainWindow).GoContent(content, 2);
         }
 
         private void selectDevice_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -134,7 +134,7 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = ((sender as StackPanel).DataContext as DeviceViewModel)!;
             var userViewModel = manageViewModel.CurrentUser;
             var content = serviceProvider.GetRequiredService<DeviceManage>(); //new DeviceManage(userViewModel, true);
-            (App.Current.MainWindow as MainWindow).GoCotent(content, 3);
+            (App.Current.MainWindow as MainWindow).GoContent(content, 3);
         }
     }
 }

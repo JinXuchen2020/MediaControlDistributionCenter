@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaDevicesViewModel : ObservableObject
+    public partial class MediaDevicesViewModel : PageViewModel
     {
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> devices;
@@ -25,11 +27,25 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;
 
-        public MediaDevicesViewModel(MediaViewModel currentMedia, IEnumerable<DeviceViewModel> devices) 
+        private readonly IMonitorService monitorService;
+
+        public MediaDevicesViewModel(IMonitorService monitorService) 
         {
-            this.currentMedia = currentMedia;
-            this.devices = new ObservableCollection<DeviceViewModel>(devices);
+            this.monitorService = monitorService;
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
+        }
+
+        public void SetValues(MediaViewModel mediaViewModel)
+        {
+            CurrentMedia = mediaViewModel;
+
+            var devices = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c => 
+            {
+                var result = new DeviceViewModel();
+                result.Binding(c);
+                return result;
+            }));
         }
 
         [RelayCommand]

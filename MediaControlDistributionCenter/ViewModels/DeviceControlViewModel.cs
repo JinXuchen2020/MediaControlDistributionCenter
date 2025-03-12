@@ -11,10 +11,13 @@ using System.Text.RegularExpressions;
 using MediaControlDistributionCenter.Views.UserManagement;
 using MediaControlDistributionCenter.Services;
 using System.Windows;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
+using MediaControlDistributionCenter.Services.ApiImps;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class DeviceControlViewModel : ObservableObject
+    public partial class DeviceControlViewModel : PageViewModel
     {
         private const string DialogHostId = "RootDialogHostId";
         public UserViewModel CurrentUser { get; set; }
@@ -24,42 +27,58 @@ namespace MediaControlDistributionCenter.ViewModels
         public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
 
         [ObservableProperty]
-        public ObservableCollection<DeviceViewModel> devices;
+        private ObservableCollection<DeviceViewModel> devices;
 
         [ObservableProperty]
-        public DeviceViewModel? currentDevice;
+        private DeviceViewModel? currentDevice;
 
         [ObservableProperty]
-        public ObservableCollection<DeviceTimeControlViewModel> deviceTimeControls;
+        private ObservableCollection<DeviceTimeControlViewModel> deviceTimeControls;
 
         [ObservableProperty]
-        public ObservableCollection<TimeZoneInfo> timeZoneInfos;
+        private ObservableCollection<TimeZoneInfo> timeZoneInfos;
 
         [ObservableProperty]
-        public string commandType;
+        private string commandType;
 
         [ObservableProperty]
-        public string commandTypeName;
+        private string commandTypeName;
 
         [ObservableProperty]
-        public string commandTypeHint;
+        private string commandTypeHint;
 
         [ObservableProperty]
-        public string commandTypeDesciption;
+        private string commandTypeDesciption;
 
         [ObservableProperty]
-        public string commandTypeColumnName;
+        private string commandTypeColumnName;
 
         [ObservableProperty]
-        public string? commandRTValue;
+        private string? commandRTValue;
 
-        public DeviceControlViewModel(UserViewModel currentUser, IEnumerable<DeviceViewModel> devices) 
+        private readonly IMonitorService monitorService;
+        private readonly IDeviceControlService deviceControlService;
+
+        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IDeviceControlService deviceControlService) 
         {
-            CurrentUser = currentUser;
-            this.devices = new ObservableCollection<DeviceViewModel>(devices);
-            commandType = "Brightness";
+            CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
 
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                ShowNavigation = true;
+            }
+
+            this.monitorService = monitorService;
+            this.deviceControlService = deviceControlService;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
+
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
+            {
+                var viewModel = new DeviceViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
         }
 
         [RelayCommand]
@@ -75,18 +94,40 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task GetDeviceTimeControls(IDeviceService service)
+        private async Task GetDeviceTimeControls()
         {
             if (CurrentDevice == null)
             {
                 return;
             }
-            var results = await service.GetDeviceTimeControls(CurrentDevice.Id, CommandType);
-            DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results);
-            foreach (var item in DeviceTimeControls)
+            var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
+            DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c=>
             {
-                item.SetGridColumnName();
-                
+                var viewModel = new DeviceTimeControlViewModel();
+                viewModel.Binding(c);
+                viewModel.SetGridColumnName();
+                return viewModel;
+            }));
+        }
+
+        [RelayCommand]
+        private async Task DeleteBatch()
+        {
+            var selectedIds = DeviceTimeControls.Where(c => c.IsSelected).Select(c => c.Id).ToList();
+            var response = await deviceControlService.DeleteBatch(selectedIds);
+            if (response.Code == 200)
+            {
+            }
+        }
+
+        [RelayCommand]
+        private async Task SaveTimeControl(DeviceTimeControlViewModel viewModel)
+        {
+            var response = await deviceControlService.Save(viewModel.ToModel());
+            if (response.Code == 200)
+            {
+                await GetDeviceTimeControls();
+                CloseDialog();
             }
         }
     }

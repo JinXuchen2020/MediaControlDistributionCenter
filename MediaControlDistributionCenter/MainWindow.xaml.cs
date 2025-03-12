@@ -174,30 +174,30 @@ namespace MediaControlDistributionCenter
             switch (eleName)
             {
                 case "Dashboard":
-                    GoCotent(serviceProvider.GetRequiredService<Dashboard>(), 1);
+                    GoContent(serviceProvider.GetRequiredService<Dashboard>(), 1);
                     break;
                 case "UserManagement":
-                    GoCotent(serviceProvider.GetRequiredService<UserManage>(), 2);
+                    GoContent(serviceProvider.GetRequiredService<UserManage>(), 2);
                     break;
                 case "MediaManagement":
-                    GoCotent(serviceProvider.GetRequiredService<MediaManage>(), 2);
+                    GoContent(serviceProvider.GetRequiredService<MediaManage>(), 2);
                     break;
                 case "DeviceManagement":
-                    GoCotent(serviceProvider.GetRequiredService<DeviceManage>(), 3);
+                    GoContent(serviceProvider.GetRequiredService<DeviceManage>(), 3);
                     break;
                 case "MediaStore":
-                    GoCotent(serviceProvider.GetRequiredService<MediaContent>(), 3);
+                    GoContent(serviceProvider.GetRequiredService<MediaContent>(), 3);
                     break;
                 case "DeviceControl":
-                    GoCotent(serviceProvider.GetRequiredService<DeviceControlContent>(), 4);
+                    GoContent(serviceProvider.GetRequiredService<DeviceControlContent>(), 4);
                     break;
                 case "Settings":
-                    GoCotent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
+                    GoContent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
                     break;
             }
         }
 
-        public void GoCotent(UserControl contet,int menuIndex)
+        public void GoContent(UserControl contet,int menuIndex)
         {
             MainContentControl.Content = contet;
             var userRole = mainViewModel.CurrentUser.Role;

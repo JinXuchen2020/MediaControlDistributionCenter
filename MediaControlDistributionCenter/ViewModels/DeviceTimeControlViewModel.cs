@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,16 +14,16 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class DeviceTimeControlViewModel : ObservableObject
     {
         [ObservableProperty]
-        public int id;
+        public long id;
 
         [ObservableProperty]
-        public int deviceId;
+        public string deviceId;
 
         [ObservableProperty]
         public string type;
 
         [ObservableProperty]
-        public string value;
+        public double? value;
 
         [ObservableProperty]
         public string executeTime;
@@ -31,13 +32,19 @@ namespace MediaControlDistributionCenter.ViewModels
         public string executeMethod;
 
         [ObservableProperty]
-        public DateTime? startDate;
+        public DateTime startDate;
 
         [ObservableProperty]
-        public DateTime? endDate;
+        public DateTime endDate;
 
         [ObservableProperty]
         public string validPeriod;
+
+        [ObservableProperty]
+        public string repeatMode;
+
+        [ObservableProperty]
+        public string userAccount;
 
         [ObservableProperty]
         public int status;
@@ -54,41 +61,40 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public bool isShow;
 
-
-        public DeviceTimeControlViewModel(DeviceControl deviceControl)
+        public DeviceControlDto ToModel()
         {
-            deviceId = deviceControl.DeviceId;
-            id = deviceControl.Id;
-            type = deviceControl.Type;
-            value = deviceControl.Value;
-            executeTime = deviceControl.ExecuteTime;
-            executeMethod = deviceControl.ExecuteMethod;
-            status = deviceControl.Status;
-            startDate = deviceControl.StartDate;
-            endDate = deviceControl.EndDate;
-            validPeriod = $"{startDate?.ToString("yyyy/MM/dd")}-{endDate?.ToString("yyyy/MM/dd")}";
-            statusText = GetStatus();
-            isSelected = false;
-        }
-
-        public DeviceTimeControlViewModel()
-        {
-        }
-
-        public DeviceControl ToModel()
-        {
-            return new DeviceControl
+            return new DeviceControlDto
             {
                 Id = Id,
                 DeviceId = DeviceId,
-                Type = Type,
+                ControlType = Type,
                 Value = Value,
-                ExecuteTime = ExecuteTime,
-                ExecuteMethod = ExecuteMethod,
-                StartDate = StartDate!.Value,
-                EndDate = EndDate!.Value,
-                Status = Status,
+                Execution = ExecuteTime,
+                ExecutionType = ExecuteMethod,
+                ValidDateStart = StartDate.ToShortDateString(),
+                ValidDateEnd = EndDate.ToShortDateString(),
+                IsEnabled = Status,
+                RepeatMode = RepeatMode,
+                UserAccount = UserAccount,
             };
+        }
+
+        public void Binding(DeviceControlDto model)
+        {
+            DeviceId = model.DeviceId;
+            Id = model.Id;
+            Type = model.ControlType;
+            Value = model.Value;
+            ExecuteTime = model.Execution;
+            ExecuteMethod = model.ExecutionType;
+            Status = model.IsEnabled;
+            StartDate = DateTime.Parse(model.ValidDateStart);
+            EndDate = DateTime.Parse(model.ValidDateEnd);
+            ValidPeriod = $"{model.ValidDateStart}-{model.ValidDateEnd}";
+            StatusText = GetStatus();
+            IsSelected = false;
+            RepeatMode = model.RepeatMode;
+            UserAccount = model.UserAccount;
         }
 
         public string GetStatus()

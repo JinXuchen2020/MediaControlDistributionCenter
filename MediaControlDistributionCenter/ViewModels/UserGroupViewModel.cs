@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -15,10 +18,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private string name;
 
         [ObservableProperty]
-        private int id;
+        private long id;
 
         [ObservableProperty]
-        private int agentId;
+        private string agentId;
 
         [ObservableProperty]
         private bool isSelected;
@@ -28,32 +31,27 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public bool IsUpdated { get; set; }
 
-        public UserGroupViewModel()
+        public UserGroupDto ToModel()
         {
+            return new UserGroupDto
+            {
+                Id = Id,
+                Name = Name,
+                AgentAccount = AgentId,
+            };
         }
-
-        public UserGroupViewModel(UserGroup model, bool selected = false)
+        public void Binding(UserGroupDto model, bool isSelected = false)
         {
-            name = model.Name;
-            id = model.Id;
-            agentId = model.AgentId;
-            isSelected = selected;
+            Name = model.Name;
+            Id = model.Id;
+            AgentId = model.AgentAccount;
+            IsSelected = isSelected;
         }
 
         [RelayCommand]
         private void Reset()
         {
             Name = string.Empty;
-        }
-
-        public UserGroup ToModel()
-        {
-            return new UserGroup
-            {
-                Id = Id,
-                Name = Name,
-                AgentId = AgentId,
-            };
         }
     }
 }

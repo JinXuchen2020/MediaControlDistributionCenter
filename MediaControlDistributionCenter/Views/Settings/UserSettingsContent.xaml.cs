@@ -19,33 +19,22 @@ namespace MediaControlDistributionCenter.Views
     /// </summary>
     public partial class UserSettingsContent : UserControl
     {
-        public UserSettingsContent(UserViewModel userViewModel)
+        private readonly UserSettingViewModel manageViewModel;
+
+        public UserSettingsContent(UserSettingViewModel userSettingViewModel)
         {
             InitializeComponent();
-            var viewModel = new UserSettingViewModel(userViewModel, (App.Current.MainWindow.DataContext as UserViewModel)!);
-            DataContext = viewModel;
+            manageViewModel = userSettingViewModel;
+            DataContext = userSettingViewModel;
         }
 
         private void btnSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as UserSettingViewModel)!;
-
-            var userDetailViewModel = manageViewModel.UserDetail;
-            if(userDetailViewModel.Id == 0)
-            {
-                userDetailViewModel.Id = SQLite.InserTable(manageViewModel.UserDetail.ToModel());
-            }
-            else
-            {
-                SQLite.UpdateTable(manageViewModel.UserDetail.ToModel());
-            }
+            manageViewModel.SaveUserCommand.Execute(null);
         }
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as UserSettingViewModel)!;
-
-            var userDetailViewModel = manageViewModel.UserDetail;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
 
@@ -56,9 +45,9 @@ namespace MediaControlDistributionCenter.Views
 
                 // 显示缩略图
                 BitmapImage bitmap = new BitmapImage(new Uri(filePath));
-                userDetailViewModel.LogoThumbnail = bitmap;
-                userDetailViewModel.Logo = filePath;
-                userDetailViewModel.IsUpload = true;
+                manageViewModel.CurrentUser.LogoThumbnail = bitmap;
+                manageViewModel.CurrentUser.Logo = filePath;
+                manageViewModel.CurrentUser.IsUpload = true;
             }
         }
     }

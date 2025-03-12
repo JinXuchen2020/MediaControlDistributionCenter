@@ -1,14 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Newtonsoft.Json;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -97,7 +103,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Height = model.Resolution.Split("*")[1];
             Size = model.Size;
             ScreensCount = model.MonitorCount;
-            LastUpdatedTime = model.LastUpdatedTime.ToString("yyyy-MM-hh HH:mm");
+            LastUpdatedTime = model.LastUpdatedTime;
             CreatedSource = model.CreatedSource;
             Status = model.Status;
             GroupId = model.GroupId;
@@ -106,13 +112,12 @@ namespace MediaControlDistributionCenter.ViewModels
             Group = model.ProgramGroupName ?? "未分组";
             RackingBtnContent = model.Status == 1 ? "下架" : "上架";
         }
-
         [RelayCommand]
-        private void Submit()
+        private void Submit(MediaViewModel viewModel)
         {
-            ValidateAllProperties();
+            ValidateAllProperties
         }
-
+        
         [RelayCommand]
         private async Task ShowConfirmDialog()
         {

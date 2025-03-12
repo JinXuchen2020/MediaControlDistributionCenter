@@ -12,11 +12,13 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -48,6 +50,24 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private string password;
+
+        [ObservableProperty]
+        public string? timeZone;
+
+        [ObservableProperty]
+        public string? logo;
+
+        [ObservableProperty]
+        public BitmapImage? logoThumbnail;
+
+        [ObservableProperty]
+        public string? companyName;
+
+        [ObservableProperty]
+        public string? tagLine;
+
+        [ObservableProperty]
+        public bool isUpload;
 
         [ObservableProperty]
         private bool isSelected;        
@@ -116,7 +136,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 Password = Password,
                 UserGroupId = GroupId,
                 AgentAccount = AgentId,
-                Role = Role
+                Role = Role,
+                LogoSrc = Logo,
+                TimeZone = TimeZone,
             };
         }
 
@@ -131,6 +153,18 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = model.Company;
             Region = model.Region;
             Password = model.Password;
+            Logo = model.LogoSrc;
+            TimeZone = model.TimeZone;
+            LogoThumbnail = GetThumbnail();
+        }
+        public BitmapImage? GetThumbnail()
+        {
+            if (!string.IsNullOrEmpty(Logo) && File.Exists(Logo))
+            {
+                return new BitmapImage(new Uri(Logo));
+            }
+
+            return null;
         }
     }
 }

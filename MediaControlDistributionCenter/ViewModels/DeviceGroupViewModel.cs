@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,27 +19,15 @@ namespace MediaControlDistributionCenter.ViewModels
         public string name;
 
         [ObservableProperty]
-        public int id;
+        public long id;
 
         [ObservableProperty]
-        public int userId;
+        public string userId;
 
         [ObservableProperty]
         public bool isSelected;
 
         public bool IsUpdated { get; set; }
-
-        public DeviceGroupViewModel()
-        {
-        }
-
-        public DeviceGroupViewModel(DeviceGroup model, bool selected = false)
-        {
-            name = model.Name;
-            id = model.Id;
-            userId = model.UserId;
-            isSelected = selected;
-        }
 
         [RelayCommand]
         private void Reset()
@@ -46,14 +35,22 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = string.Empty;
         }
 
-        public DeviceGroup ToModel()
+        public MonitorGroupDto ToModel()
         {
-            return new DeviceGroup
+            return new MonitorGroupDto
             {
                 Id = Id,
                 Name = Name,
-                UserId = UserId,
+                UserAccount = UserId,
             };
+        }
+
+        public void Binding(MonitorGroupDto model, bool selected = false)
+        {
+            Name = model.Name;
+            Id = model.Id;
+            UserId = model.UserAccount;
+            IsSelected = selected;
         }
     }
 }

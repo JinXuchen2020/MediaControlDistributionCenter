@@ -12,9 +12,9 @@ namespace MediaControlDistributionCenter.Data.Entity
     public class DeviceMedia
     {
         [SugarColumn(IsPrimaryKey = true)]
-        public int DeviceId { get; set; }
+        public long DeviceId { get; set; }
 
         [SugarColumn(IsPrimaryKey = true)]
-        public int MediaId { get; set; }
+        public long MediaId { get; set; }
     }
 }

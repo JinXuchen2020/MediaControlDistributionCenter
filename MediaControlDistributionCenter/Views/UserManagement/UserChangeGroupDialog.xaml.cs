@@ -34,19 +34,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             var selectedGroup = (UserGroupViewModel)cbGroups.SelectedValue;
             var manageViewModel = (DataContext as UserManageViewModel)!;
-            var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected);
 
-            foreach (var user in selectedUsers)
-            {
-                user.GroupId = selectedGroup?.Id;
-                user.AgentId = selectedGroup?.AgentId ?? user.AgentId;
-                user.Group = manageViewModel.Groups.FirstOrDefault(c => c.Id == selectedGroup?.Id)?.Name ?? "未分组";
-               
-                user.IsSelected = false;
-                SQLite.UpdateTable<User>(user.ToModel());
-            }
-
-            DialogHost.CloseDialogCommand.Execute(null, null);
+            manageViewModel.ChangeGroupCommand.Execute(selectedGroup);
         }
     }
 }

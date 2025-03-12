@@ -57,7 +57,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// logo地址
         /// </summary>
         [JsonProperty("logoSrc", NullValueHandling = NullValueHandling.Ignore)]
-        public string LogoSrc { get; set; }
+        public string? LogoSrc { get; set; }
 
         /// <summary>
         /// 密码
@@ -70,6 +70,12 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Ignore)]
         public string Region { get; set; }
+
+        /// <summary>
+        /// 地区
+        /// </summary>
+        [JsonProperty("timeZone", NullValueHandling = NullValueHandling.Ignore)]
+        public string? TimeZone { get; set; }        
 
         /// <summary>
         /// 权限

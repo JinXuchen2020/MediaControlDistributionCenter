@@ -1,44 +1,48 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class UserSettingViewModel : ObservableObject
+    public partial class UserSettingViewModel : PageViewModel
     {
         public UserViewModel CurrentUser { get; set; }
 
         public UserViewModel LoginUser { get; set; }
 
         [ObservableProperty]
-        public ObservableCollection<TimeZoneInfo> timeZoneInfos;
+        private ObservableCollection<TimeZoneInfo> timeZoneInfos;
 
-        [ObservableProperty]
-        public UserDetailViewModel userDetail;
+        private readonly IUserService userService;
 
-        public UserSettingViewModel(UserViewModel userViewModel, UserViewModel loginUser)
+        public UserSettingViewModel(LoginViewModel loginViewModel, IUserService userService)
         {
-            CurrentUser = userViewModel;
+            this.userService = userService;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-            LoginUser = loginUser;
+            LoginUser = loginViewModel.CurrentUser;
+        }
 
-            var userDetailModel = SQLite.QueryTable<UserDetail>().Where(c => c.UserId == CurrentUser.Id).First();
-            if(userDetailModel == null)
+        public void SetValues(UserViewModel viewModel)
+        {
+            this.CurrentUser = viewModel;
+        }
+
+        [RelayCommand]
+        private async Task SaveUser()
+        {
+            var response = await userService.Save(CurrentUser.ToModel());
+            if (response.Code == 200)
             {
-                userDetail = new UserDetailViewModel()
-                {
-                    UserId = CurrentUser.Id,
-                };
-            }
-            else
-            {
-                userDetail = new UserDetailViewModel(userDetailModel);
+                CurrentUser.ShowConfirmDialogCommand.Execute(null);
             }
         }
     }
