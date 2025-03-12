@@ -2,9 +2,12 @@
 using System.Windows;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
+using MediaControlDistributionCenter.Services;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
+using SqlSugar;
 
 namespace MediaControlDistributionCenter
 {
@@ -13,14 +16,25 @@ namespace MediaControlDistributionCenter
     /// </summary>
     public partial class App : Application
     {
+        public IServiceProvider ServicesProvider { get; private set; }        
+
         //public static MainWindow MainWindow;
         protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
             // 1. 创建并加载配置文件
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())  // 设置配置文件的基础路径
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // 加载 appsettings.json 配置文件
                 .Build();
+
+            var services = new ServiceCollection();
+
+            services.AddSingleton<IConfiguration>(configuration);
+
+            services.AddLocalServices();
+
+            ServicesProvider = services.BuildServiceProvider();
 
             // 2. 配置 Serilog
             Log.Logger = new LoggerConfiguration()
@@ -36,6 +50,7 @@ namespace MediaControlDistributionCenter
             LanguageTool.Instance.InitLanguageResourceCache(GetLanguageResourceCache());
 
             SQLite.InitServer();
+            SQLite.InitTables();
 
             FtpServer server = new FtpServer();
             server.FtpServerStart();

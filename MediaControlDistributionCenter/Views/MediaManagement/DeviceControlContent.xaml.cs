@@ -142,7 +142,7 @@ namespace MediaControlDistributionCenter.Views
         #endregion
 
         private IDeviceService deviceService;
-        public DeviceControlContent(UserViewModel userViewModel, bool showNavigation = false)
+        public DeviceControlContent(DeviceControlViewModel deviceControlViewModel)
         {
             InitializeComponent();
             deviceService = new DeviceService();
@@ -154,7 +154,7 @@ namespace MediaControlDistributionCenter.Views
             ChangePage("Brightness");
 
         }
-        public DeviceControlContent(UserViewModel userViewModel, string fun, bool showNavigation = false)
+        public DeviceControlContent(DashboardViewModel dashboardViewModel, string fun, bool showNavigation = false)
         {
             InitializeComponent();
             deviceService = new DeviceService();

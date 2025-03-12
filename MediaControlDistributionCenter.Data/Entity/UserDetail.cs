@@ -8,12 +8,9 @@ using System.Threading.Tasks;
 namespace MediaControlDistributionCenter.Data.Entity
 {
     [SugarTable("UserDetails")]
-    public class UserDetail
+    public class UserDetail : BaseModel
     {
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
-        public int UserId { get; set; }
+        public string UserAccount { get; set; }
 
         public string? TimeZone { get; set; }
 

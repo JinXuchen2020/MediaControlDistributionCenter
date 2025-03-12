@@ -8,15 +8,15 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaControlDistributionCenter.Services
+namespace MediaControlDistributionCenter.Services.LocalImps
 {
-    public class FileServiceLocal :IFileService
+    public class FileServiceLocal : IFileService
     {
         public FileServiceLocal() { }
 
         public void CreateResourcePath(string resPath)
         {
-            if(!Directory.Exists(resPath))
+            if (!Directory.Exists(resPath))
             {
                 Directory.CreateDirectory(resPath);
             }
@@ -24,7 +24,7 @@ namespace MediaControlDistributionCenter.Services
 
         public string SaveFileContent(string fileDicPath, string fileName, string fileContent)
         {
-            this.CreateResourcePath(fileDicPath);
+            CreateResourcePath(fileDicPath);
             var configFilePath = Path.Combine(fileDicPath, fileName);
             File.WriteAllText(configFilePath, fileContent);
             return configFilePath;
@@ -32,7 +32,7 @@ namespace MediaControlDistributionCenter.Services
 
         public string SaveFileContent(string fileDicPath, string fileName, Stream fileContent)
         {
-            this.CreateResourcePath(fileDicPath);
+            CreateResourcePath(fileDicPath);
             var configFilePath = Path.Combine(fileDicPath, fileName);
             using (FileStream stream = new FileStream(configFilePath, FileMode.Create, FileAccess.Write))
             {
@@ -47,7 +47,7 @@ namespace MediaControlDistributionCenter.Services
             var configFilePath = Path.Combine(fileDicPath, fileName);
             if (!File.Exists(configFilePath))
             {
-                return default(T);
+                return default;
             }
             var fileContent = File.ReadAllText(configFilePath);
             return JsonConvert.DeserializeObject<T>(fileContent, converters);

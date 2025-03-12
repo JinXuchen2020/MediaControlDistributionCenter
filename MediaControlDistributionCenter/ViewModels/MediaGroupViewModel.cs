@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -19,27 +24,15 @@ namespace MediaControlDistributionCenter.ViewModels
         public string name;
 
         [ObservableProperty]
-        public int id;
+        public long id;
 
         [ObservableProperty]
-        public int userId;
+        public string userId;
 
         [ObservableProperty]
         public bool isSelected;
 
         public bool IsUpdated { get; set; }
-
-        public MediaGroupViewModel()
-        {
-        }
-
-        public MediaGroupViewModel(MediaGroup mediaGroup, bool selected = false)
-        {
-            name = mediaGroup.Name;
-            id = mediaGroup.Id;
-            userId = mediaGroup.UserId;
-            isSelected = selected;
-        }
 
         [RelayCommand]
         private void Reset()
@@ -47,14 +40,22 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = string.Empty;
         }
 
-        public MediaGroup ToModel()
+        public ProgramGroupDto ToModel()
         {
-            return new MediaGroup
+            return new ProgramGroupDto
             {
                 Id = Id,
                 Name = Name,
-                UserId = UserId,
+                UserAccount = UserId,
             };
+        }
+
+        public void Binding(ProgramGroupDto model, bool selected = false)
+        {
+            Name = model.Name;
+            Id = model.Id;
+            UserId = model.UserAccount;
+            IsSelected = selected;
         }
     }
 }

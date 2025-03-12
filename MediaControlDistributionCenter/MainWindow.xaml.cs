@@ -9,6 +9,7 @@ using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace MediaControlDistributionCenter
@@ -18,15 +19,20 @@ namespace MediaControlDistributionCenter
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(UserViewModel userViewModel)
+        private readonly MainViewModel mainViewModel;
+
+        private readonly IServiceProvider serviceProvider;
+
+        public MainWindow(MainViewModel mainViewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            this.mainViewModel = mainViewModel;
             Log.Information("MainWindow initialized.");
             //userManage.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
-            DataContext = userViewModel;
+            DataContext = mainViewModel;
 
-            MainContentControl.Content = new MediaControlDistributionCenter.Views.Dashboard(userViewModel);
+            MainContentControl.Content = serviceProvider.GetRequiredService<Dashboard>();
             //menus = new List<MenuItem>()
             //{
             //    new MenuItem
@@ -41,7 +47,7 @@ namespace MediaControlDistributionCenter
         {
             //切换语音示例:后续变成 下拉列表切换  如示例：
 
-            var language = typeof(MediaControlDistributionCenter.Language).ToOptionList();
+            var language = typeof(Language).ToOptionList();
 
             var str = TipCodeFindRes.GetTipString(503);
 
@@ -165,30 +171,28 @@ namespace MediaControlDistributionCenter
             TextBlock text = sender as TextBlock;
             var eleName = text.Name;
 
-            var userViewModel = (DataContext as UserViewModel)!;
-
             switch (eleName)
             {
                 case "Dashboard":
-                    GoCotent(new Dashboard(userViewModel), 1);
+                    GoCotent(serviceProvider.GetRequiredService<Dashboard>(), 1);
                     break;
                 case "UserManagement":
-                    GoCotent(new UserManage(userViewModel), 2);
+                    GoCotent(serviceProvider.GetRequiredService<UserManage>(), 2);
                     break;
                 case "MediaManagement":
-                    GoCotent(new MediaManage(userViewModel, true), 2);
+                    GoCotent(serviceProvider.GetRequiredService<MediaManage>(), 2);
                     break;
                 case "DeviceManagement":
-                    GoCotent(new DeviceManage(userViewModel, true), 3);
+                    GoCotent(serviceProvider.GetRequiredService<DeviceManage>(), 3);
                     break;
                 case "MediaStore":
-                    GoCotent(new MediaContent(), 3);
+                    GoCotent(serviceProvider.GetRequiredService<MediaContent>(), 3);
                     break;
                 case "DeviceControl":
-                    GoCotent(new DeviceControlContent(userViewModel, true), 4);
+                    GoCotent(serviceProvider.GetRequiredService<DeviceControlContent>(), 4);
                     break;
                 case "Settings":
-                    GoCotent(new UserSettingsContent(userViewModel), 5);
+                    GoCotent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
                     break;
             }
         }
@@ -196,7 +200,7 @@ namespace MediaControlDistributionCenter
         public void GoCotent(UserControl contet,int menuIndex)
         {
             MainContentControl.Content = contet;
-            var userRole = (DataContext as UserViewModel)!.Role;
+            var userRole = mainViewModel.CurrentUser.Role;
             if(userRole == "user")
             {
                 switch (menuIndex)

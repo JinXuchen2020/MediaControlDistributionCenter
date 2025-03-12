@@ -1,9 +1,14 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Serilog;
 using SqlSugar;
 
@@ -14,84 +19,14 @@ namespace MediaControlDistributionCenter
     /// </summary>
     public partial class Login : Window
     {
-        IUserService userService;
-        public Login()
+        private LoginViewModel viewModel;
+
+        private readonly IServiceProvider serviceProvider;
+        public Login(LoginViewModel viewModel, IServiceProvider serviceProvider)
         {
-            userService = new UserService();
+            this.viewModel = viewModel;
+            this.serviceProvider = serviceProvider;
             InitializeComponent();
-
-            if (!SQLite.CheckTableExists("Users"))
-            {
-                SQLite.CreateTable<User>();
-                SQLite.InserTable<User>(new User() { Account = "admin", Password = "123456", Name = "管理员", Role = "admin" });
-                SQLite.InserTable<User>(new User() { Account = "agent", Password = "123456", Name = "代理商", Role = "agent" });
-                SQLite.InserTable<User>(new User() { Account = "agent1", Password = "123456", Name = "代理商1", Role = "agent" });
-
-                SQLite.CreateTable<UserGroup>();
-                SQLite.InserTable<UserGroup>(new UserGroup() { Name = "A组", AgentId = 2 });
-                SQLite.InserTable<UserGroup>(new UserGroup() { Name = "B组", AgentId = 2 });
-                SQLite.InserTable<UserGroup>(new UserGroup() { Name = "C组", AgentId = 3 });
-                SQLite.InserTable<UserGroup>(new UserGroup() { Name = "D组", AgentId = 3 });
-
-                SQLite.InserTable<User>(new User() { Account = "user1", Password = "123456", Name = "用户1", Role = "user", AgentId = 2 });
-                SQLite.InserTable<User>(new User() { Account = "user2", Password = "123456", Name = "用户2", Role = "user", AgentId = 2 });
-
-                SQLite.InserTable<User>(new User() { Account = "user3", Password = "123456", Name = "用户3", Role = "user", AgentId = 3 });
-                SQLite.InserTable<User>(new User() { Account = "user4", Password = "123456", Name = "用户4", Role = "user", AgentId = 3 });
-            }
-
-            if (!SQLite.CheckTableExists("MediaGroups"))
-            {
-                SQLite.CreateTable<MediaGroup>();
-            }
-
-            if (!SQLite.CheckTableExists("Medias"))
-            {
-                SQLite.CreateTable<Media>();
-                SQLite.InserTable<Media>(new Media() 
-                { 
-                    Name = "节目1", 
-                    Status = 1, 
-                    Type="常规节目",
-                    Resolution= "1920*1080",
-                    GroupId = 3,
-                    UserId = 4 ,
-                    Size ="3MB",
-                    ScreensCount=1,
-                    LastUpdatedTime = DateTime.Now,
-                    CreatedSource="管理员",
-                });
-            }
-
-            if (!SQLite.CheckTableExists("DeviceMedias"))
-            {
-                SQLite.CreateTable<DeviceMedia>();
-                SQLite.InserTable<DeviceMedia>(new DeviceMedia()
-                {
-                    DeviceId = 1,
-                    MediaId = 1,
-                });
-            }
-
-            if (!SQLite.CheckTableExists("Devices"))
-            {
-                SQLite.CreateTable<Device>();
-            }
-
-            if (!SQLite.CheckTableExists("DeviceGroups"))
-            {
-                SQLite.CreateTable<DeviceGroup>();
-            }
-
-            if (!SQLite.CheckTableExists("DeviceControls"))
-            {
-                SQLite.CreateTable<DeviceControl>();
-            }
-
-            if (!SQLite.CheckTableExists("UserDetails"))
-            {
-                SQLite.CreateTable<UserDetail>();
-            }
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -107,21 +42,42 @@ namespace MediaControlDistributionCenter
                 return;
             }
 
-            var loginUser = userService.GetUser(loginId, password).GetAwaiter().GetResult();
-            if (loginUser != null)
+            viewModel.LoginCommand.ExecuteAsync(new AccountDto { Account = loginId, Password = password }).GetAwaiter().OnCompleted(() =>
             {
-                Log.Information($"User {loginId} logged in successfully.");
-                //MessageBox.Show("Login successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (viewModel.IsLogin)
+                {
+                    Log.Information($"User {loginId} logged in successfully.");
 
-                App.Current.MainWindow = new MainWindow(loginUser);
-                App.Current.MainWindow.Show();
-                this.Hide();
-            }
-            else
-            {
-                Log.Warning($"Failed login attempt for user {loginId}.");
-                MessageBox.Show("Invalid login ID or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                    App.Current.MainWindow = serviceProvider.GetRequiredService<MainWindow>();
+                    App.Current.MainWindow.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    Log.Warning($"Failed login attempt for user {loginId}.");
+                    MessageBox.Show("Invalid login ID or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            });            
+
+            //var resultResponse = authService.Login(new AccountDto { Account = loginId, Password = password}).GetAwaiter().GetResult();
+            //if (resultResponse.Code == 200)
+            //{
+            //    Log.Information($"User {loginId} logged in successfully.");
+            //    //MessageBox.Show("Login successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            //    var loginUser = (UserDto)JsonConvert.DeserializeObject(resultResponse.Data!)!;
+
+            //    var userViewModel = new UserViewModel(loginUser);
+
+            //    App.Current.MainWindow = new MainWindow(userViewModel);
+            //    App.Current.MainWindow.Show();
+            //    this.Hide();
+            //}
+            //else
+            //{
+            //    Log.Warning($"Failed login attempt for user {loginId}.");
+            //    MessageBox.Show("Invalid login ID or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
 
         //private User? ValidateCredentials(string loginId, string password)

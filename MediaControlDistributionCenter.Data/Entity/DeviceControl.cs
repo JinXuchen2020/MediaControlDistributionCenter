@@ -8,28 +8,26 @@ using System.Threading.Tasks;
 namespace MediaControlDistributionCenter.Data.Entity
 {
     [SugarTable("DeviceControls")]
-    public class DeviceControl
+    public class DeviceControl : BaseModel
     {
-        /// <summary>
-        /// 唯一标识符
-        /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
+        public string DeviceId { get; set; }
 
-        public int DeviceId { get; set; }
+        public string ControlType { get; set; }
 
-        public string Type { get; set; }
+        public double? Value { get; set; }
 
-        public string Value { set; get; }
+        public string Execution { get; set; }
 
-        public string ExecuteTime { get; set; }
+        public string ExecutionType { get; set; }
 
-        public string ExecuteMethod { get; set; }
+        public string RepeatMode { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public string UserAccount { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime ValidDateStart { get; set; }
 
-        public int Status { get; set; }
+        public DateTime ValidDateEnd { get; set; }
+
+        public int IsEnabled { get; set; }
     }
 }

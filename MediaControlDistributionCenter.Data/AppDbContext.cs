@@ -1,5 +1,4 @@
-﻿using MediaControlDistributionCenter.Models;
-
+﻿using MediaControlDistributionCenter.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaControlDistributionCenter.Services
@@ -7,7 +6,6 @@ namespace MediaControlDistributionCenter.Services
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

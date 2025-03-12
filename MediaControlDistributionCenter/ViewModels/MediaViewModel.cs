@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using SqlSugar;
 using System;
@@ -17,7 +18,7 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class MediaViewModel : ObservableValidator
     {
         [ObservableProperty]
-        public int id;
+        public long id;
 
         [ObservableProperty]
         [Required(ErrorMessage = "请填写节目名称!")]
@@ -39,7 +40,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public string height;
 
         [ObservableProperty]
-        public string size;
+        public double? size;
 
         [ObservableProperty]
         public int screensCount;
@@ -54,13 +55,13 @@ namespace MediaControlDistributionCenter.ViewModels
         public int status;
 
         [ObservableProperty]
-        public int? groupId;
+        public long? groupId;
 
         [ObservableProperty]
         public string group;
 
         [ObservableProperty]
-        public int userId;
+        public string userId;
 
         [ObservableProperty]
         private bool isSelected;
@@ -68,46 +69,42 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public string rackingBtnContent;
 
-        public MediaViewModel()
+        public ProgramDto ToModel()
         {
-        }
-
-        public MediaViewModel(Media model)
-        {
-            Id = model.Id;
-            Name = model.Name;
-            Type = model.Type;
-            Resolution = model.Resolution;
-            width = model.Resolution?.Split("*")[0];
-            height = model.Resolution?.Split("*")[1];
-            Size = model.Size;
-            ScreensCount = model.ScreensCount;
-            lastUpdatedTime = model.LastUpdatedTime.ToString("yyyy-MM-hh HH:mm");
-            createdSource = model.CreatedSource;
-            status = model.Status;
-            groupId = model.Group?.Id;
-            userId = model.User.Id;
-            isSelected = false;
-            group = model.Group?.Name ?? "未分组";
-            rackingBtnContent = model.Status == 1 ? "下架" : "上架";
-        }
-
-        public Media ToModel()
-        {
-            return new Media
+            return new ProgramDto
             {
                 Id = Id,
                 Name = Name,
-                Type = Type,
+                MediaType = Type,
                 Resolution = Resolution,
                 Size = Size,
-                ScreensCount = ScreensCount,
-                LastUpdatedTime = DateTime.Parse(LastUpdatedTime),
+                MonitorCount = ScreensCount,
+                LastUpdatedTime = LastUpdatedTime,
                 CreatedSource = CreatedSource,
+                Status = Status,
                 GroupId = GroupId,
-                UserId = UserId,
-                Status = Status
+                UserAccount = UserId,                
             };
+        }
+
+        public void Binding(ProgramDto model)
+        {
+            Id = model.Id;
+            Name = model.Name;
+            Type = model.MediaType;
+            Resolution = model.Resolution;
+            Width = model.Resolution.Split("*")[0];
+            Height = model.Resolution.Split("*")[1];
+            Size = model.Size;
+            ScreensCount = model.MonitorCount;
+            LastUpdatedTime = model.LastUpdatedTime.ToString("yyyy-MM-hh HH:mm");
+            CreatedSource = model.CreatedSource;
+            Status = model.Status;
+            GroupId = model.GroupId;
+            UserId = model.UserAccount;
+            IsSelected = false;
+            Group = model.ProgramGroupName ?? "未分组";
+            RackingBtnContent = model.Status == 1 ? "下架" : "上架";
         }
 
         [RelayCommand]

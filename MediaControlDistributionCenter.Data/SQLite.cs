@@ -1,7 +1,11 @@
-﻿using SqlSugar;
+﻿using MediaControlDistributionCenter.Data.Entity;
+using Newtonsoft.Json;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -25,6 +29,29 @@ namespace MediaControlDistributionCenter.Data
                 DbType = DbType.Sqlite,
                 IsAutoCloseConnection = true,
                 InitKeyType = InitKeyType.Attribute // 使用属性方式
+            });
+        }
+
+        public static void InitTables()
+        {
+            var types = typeof(BaseModel).Assembly.DefinedTypes.Where(c => c.BaseType == typeof(BaseModel));
+
+            foreach (var type in types)
+            {
+                var createTable = typeof(SQLite).GetMethod("CreateTable")!;
+                createTable = createTable.MakeGenericMethod(type);
+                createTable.Invoke(null, null);
+            }
+
+            InserTable(new User()
+            {
+                Account = "admin",
+                Password = "123456",
+                Company = "山木时代",
+                Contact = "12345678907",
+                Email = "1214@164.com",
+                Role = "admin",
+                Status = 1
             });
         }
 
@@ -148,7 +175,7 @@ namespace MediaControlDistributionCenter.Data
         /// <typeparam name="T">表映射的实体类</typeparam>
         /// <param name="ids">要删除记录的ID列表</param>
         /// <returns>删除操作影响的行数</returns>
-        public static int DeleteByIds<T>(List<int> ids) where T : class, new()
+        public static int DeleteByIds<T>(List<object> ids) where T : class, new()
         {
             if (ids == null || ids.Count == 0)
             {

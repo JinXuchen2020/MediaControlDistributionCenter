@@ -55,7 +55,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 return;
             }
 
-            var userControllers = new UserControllers(userViewModel);
+            var userControllers = new UserControllers();
             (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
         }
 

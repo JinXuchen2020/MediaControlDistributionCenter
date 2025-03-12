@@ -5,12 +5,16 @@ using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,7 +27,7 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class DeviceViewModel : ObservableObject
     {
         [ObservableProperty]
-        private int id;
+        private long id;
 
         [ObservableProperty]
         private string name;
@@ -41,16 +45,19 @@ namespace MediaControlDistributionCenter.ViewModels
         private int status;
 
         [ObservableProperty]
+        private int enabled;
+
+        [ObservableProperty]
         private string statusText;
 
         [ObservableProperty]
-        private int? groupId;
+        private long? groupId;
 
         [ObservableProperty]
         private string group;
 
         [ObservableProperty]
-        private int userId;
+        private string userId;
 
         [ObservableProperty]
         private bool isSelected;
@@ -65,10 +72,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private string ownerName;
 
         [ObservableProperty]
-        private string width;
+        private double width;
 
         [ObservableProperty]
-        private string height;
+        private double height;
 
         [ObservableProperty]
         private string startDate;
@@ -81,6 +88,15 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private string contactNumber;
+
+        [ObservableProperty]
+        private double? brightness;
+
+        [ObservableProperty]
+        private double? volume;
+
+        [ObservableProperty]
+        private string deviceId;
 
         [ObservableProperty]
         private string enableBtnContent;
@@ -98,63 +114,56 @@ namespace MediaControlDistributionCenter.ViewModels
             client = new Communication();
         }
 
-        public DeviceViewModel(Device model)
+        public MonitorDto ToModel()
         {
-            client = new Communication();
-            Id = model.Id;
-            Name = model.Name;
-            sNumber = model.SNumber;
-            Resolution = model.Resolution;
-            lastUpdatedTime = model.LastUpdatedTime.ToString("yyyy-MM-dd HH:mm");
-            status = model.Status;
-            groupId = model.Group?.Id;
-            userId = model.User.Id;
-            ownerName = model.User.Name;
-            group = model.Group?.Name ?? "未分组";
-            isSelected = false;
-            statusText = GetStatus();
-            enableBtnContent = model.Status == -1 ? "启用" : "停用";
-            width = model.Resolution.Split("*")[0];
-            height = model.Resolution.Split("*")[1];
-            startDate = model.StartDate.ToShortDateString();
-            endDate = model.EndDate.ToShortDateString();
-            contactName = model.ContactName;
-            contactNumber = model.ContactNumber;
-            mediaNames = model.Medias == null ? string.Empty : string.Join("\n", model.Medias.Select(c => c.Name));
-            mediaIds = model.Medias == null ? new List<int>() : model.Medias.Select(c => c.Id).ToList();
-        }
-
-        public DeviceViewModel Clone()
-        {
-            var model = this.ToModel();
-            model.User = SQLite.QueryTable<User>().First(x => x.Id == UserId);
-            var result = new DeviceViewModel(model)
-            {
-                MediaNames = this.MediaNames,
-                MediaIds = this.MediaIds,
-                OwnerName = this.OwnerName,
-                Group = this.Group,
-            };
-            return result;
-        }
-
-        public Device ToModel()
-        {
-            return new Device
+            return new MonitorDto
             {
                 Id = Id,
                 Name = Name,
-                SNumber = SNumber,
-                Resolution = Resolution,
-                LastUpdatedTime = DateTime.Parse(LastUpdatedTime),
+                SnCode = SNumber,
+                Status = StatusText,
                 GroupId = GroupId,
-                UserId = UserId,
-                Status = Status,
-                StartDate = DateTime.Parse(StartDate),
-                EndDate = DateTime.Parse(EndDate),
+                UserAccount = UserId,
+                Enabled = Enabled,
+                Width = Width,
+                Height = Height,
+                ValidStart = StartDate,
+                ValidEnd = EndDate,
                 ContactName = ContactName,
-                ContactNumber = ContactNumber,
+                ContactPhone = ContactNumber,
+                Brightness = Brightness,
+                Volume = Volume,
+                DeviceId = DeviceId,                 
             };
+        }
+
+        public void Binding(MonitorDto model)
+        {
+            Id = model.Id;
+            Name = model.Name;
+            SNumber = model.SnCode;
+            Resolution = $"{model.Width}*{model.Height}";
+            LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+            Status = model.Status == "ONLINE" ? 1 : 0;
+            GroupId = model.GroupId;
+            UserId = model.UserAccount;
+            OwnerName = model.UserName;
+            Group = model.MonitorGroupName ?? "未分组";
+            IsSelected = false;
+            StatusText = model.Status;
+            Enabled = model.Enabled;
+            EnableBtnContent = model.Enabled ==  0 ? "启用" : "停用";
+            Width = model.Width;
+            Height = model.Height;
+            StartDate = model.ValidStart;
+            EndDate = model.ValidEnd;
+            ContactName = model.ContactName;
+            ContactNumber = model.ContactPhone;
+            Brightness = model.Brightness;
+            Volume = model.Volume;
+            DeviceId = model.DeviceId;
+            MediaNames = string.Empty;
+            MediaIds = new List<int>();
         }
 
         public string GetStatus()
@@ -295,5 +304,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             
         }
+
+
     }
 }

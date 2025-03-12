@@ -25,6 +25,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel CurrentUser { get; set; }
 
+        public UserViewModel? SelectedUser { get; set; }
+
         public UserManageViewModel(UserViewModel currentUser, IEnumerable<UserViewModel> users, IEnumerable<UserGroupViewModel> groups) 
         {
             this.users = new ObservableCollection<UserViewModel>(users);

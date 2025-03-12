@@ -27,6 +27,8 @@ using MediaControlDistributionCenter.Helpers;
 using Path = System.IO.Path;
 using MediaControlDistributionCenter.Converters;
 using Newtonsoft.Json;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Models;
 
 namespace MediaControlDistributionCenter.Views.MediaManagement
 {
@@ -35,37 +37,35 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
     /// </summary>
     public partial class MediaManage : UserControl
     {
-        private IDeviceService deviceService; 
-        private IFileService fileService;
-        public MediaManage(UserViewModel userViewModel, bool showNavigation = false)
-        {
-            deviceService = new DeviceService();
-            fileService = new FileServiceLocal();
+        private readonly IFileService fileService;
+        private readonly MediaManageViewModel manageViewModel;
+        private readonly UserManageViewModel userManageViewModel;
 
-            var groups = deviceService.GetMediaGroups(userViewModel.Id).GetAwaiter().GetResult().ToList();
-            groups.Insert(0, new MediaGroupViewModel(new MediaGroup
+        public MediaManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService)
+        {
+            this.fileService = fileService;
+            manageViewModel = mediaManageViewModel;
+            this.userManageViewModel = userManageViewModel;
+
+            if (dashboardViewModel.CurrentUser.Role == "user")
             {
-                Id = -1,
-                Name = "全部",
-                UserId = userViewModel.Id,
-            }, true));
-            var medias = deviceService.GetMedias(userViewModel.Id).GetAwaiter().GetResult();
-            var viewModel = new MediaManageViewModel(userViewModel, groups, medias);
-            viewModel.ShowNavigation = showNavigation;
-            DataContext = viewModel;
+                manageViewModel.ShowNavigation = true;
+            }
+
+            var selectedUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+
+            manageViewModel.SetValues(selectedUser);
+            DataContext = manageViewModel;
 
             InitializeComponent();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = (DataContext as MediaManageViewModel)!;
-
             var groupViewModel = ((sender as Button).DataContext as MediaGroupViewModel)!;
 
-            groupViewModel.Id = SQLite.InserTable(groupViewModel.ToModel());
-            viewModel.MediaGroups.Add(groupViewModel);
-            viewModel.CloseDialogCommand.Execute(null);
+            manageViewModel.CreateGroupCommand.Execute(groupViewModel);
+            manageViewModel.CloseDialogCommand.Execute(null);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -76,80 +76,57 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
             manageViewModel.MediaGroups.First(c => c.IsSelected).IsSelected = false;
             var groupViewModel = ((sender as StackPanel).DataContext as MediaGroupViewModel)!;
             groupViewModel.IsSelected = true;
 
-            if (groupViewModel.Id != -1)
-            {
-                var medias = deviceService.GetMedias(manageViewModel.CurrentUser.Id, groupViewModel.Id).GetAwaiter().GetResult();
-                manageViewModel.Medias = new ObservableCollection<MediaViewModel>(medias);
-            }
-            else
-            {
-                var medias = deviceService.GetMedias(manageViewModel.CurrentUser.Id).GetAwaiter().GetResult();
-                manageViewModel.Medias = new ObservableCollection<MediaViewModel>(medias);
-            }
+            manageViewModel.SetValues(manageViewModel.CurrentUser, groupViewModel.Id);
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
         {
             var btnObject = sender as Button;
             var viewModel = (btnObject!.DataContext as MediaViewModel)!;
-            if (viewModel.Status == 1)
-            {
-                viewModel.Status = 0;
-                viewModel.RackingBtnContent = "上架";
-            }
-            else
-            {
-                viewModel.Status = 1;
-                viewModel.RackingBtnContent = "下架";
-            }
-            SQLite.UpdateTable(viewModel.ToModel());
+
+            manageViewModel.ChangeMediaStatusCommand.Execute(viewModel);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
-            manageViewModel.Medias.Remove(viewModel);
-            SQLite.DeleteById<Media>(viewModel.Id);
+            manageViewModel.DeleteMediaCommand.Execute(viewModel);
         }
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
-            var newMedia = new MediaViewModel(new Media
+            var newMediaModel = new ProgramDto
             {
                 Name = $"新节目{DateTime.Now.ToString("yyyyMMddhhmmss")}",
+                MediaType = "PROGRAM",
+                UserAccount = manageViewModel.CurrentUser.Account,
                 Status = 1,
-                User = manageViewModel.CurrentUser.ToModel(),
-                Size = "0",
-                CreatedSource = (App.Current.MainWindow.DataContext as UserViewModel).Role == "admin" ? "管理员" : "用户",
-            });
+                CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? "管理员" : "用户",
+            };
 
-            manageViewModel.ShowDialogCommand.Execute(newMedia);
-            //(App.Current.MainWindow as MainWindow).MainContentControl.Content = new MediaEdit(newMedia, manageViewModel.CurrentUser, manageViewModel.ShowNavigation);
+            var newViewModel = new MediaViewModel();
+            newViewModel.Binding(newMediaModel);
+
+            manageViewModel.ShowDialogCommand.Execute(newViewModel);
         }
 
         private void btnChangeGroup_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
             manageViewModel.ShowDialogCommand.Execute(manageViewModel);
         }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
             var selectedMedias = manageViewModel.Medias.Where(c => c.IsSelected);
 
             foreach (var item in selectedMedias)

@@ -17,11 +17,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string currentPageName;
 
-        public UserControllerViewModel(UserViewModel currentUser)
+        public void SetValues(UserViewModel userViewModel, string tabName, string pageName)
         {
-            CurrentUser = currentUser;
-            currentTabName = "MediaManage";
-            currentPageName = "媒体管理";
+            CurrentUser = userViewModel;
+            CurrentTabName = tabName;
+            CurrentPageName = pageName;
         }
     }
 }

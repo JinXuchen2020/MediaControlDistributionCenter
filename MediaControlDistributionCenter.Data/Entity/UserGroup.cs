@@ -12,21 +12,12 @@ namespace MediaControlDistributionCenter.Data.Entity
     /// 用户
     /// </summary>
     [SugarTable("UserGroups")]
-    public class UserGroup
+    public class UserGroup : BaseModel
     {
-        /// <summary>
-        /// 唯一标识符
-        /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        [Required(ErrorMessage = "名称不能为空")]
+        [Required)]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "代理商Id")]
-        public int AgentId { get; set; }
+        [Required]
+        public string AgentAccount { get; set; }
     }
 }
