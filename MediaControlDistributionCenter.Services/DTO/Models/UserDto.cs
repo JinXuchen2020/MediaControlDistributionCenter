@@ -107,7 +107,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new User
             {
-                Id = Id,
+                Id = (int)Id,
                 Email = Email,
                 Account = Account,
                 Password = Password,

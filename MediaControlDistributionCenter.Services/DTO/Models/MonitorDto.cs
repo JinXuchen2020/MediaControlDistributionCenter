@@ -132,7 +132,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new Monitor
             {
-                Id = Id,
+                Id = (int)Id,
                 Name = Name,
                 SnCode = SnCode,
                 Enabled = Enabled,
@@ -146,6 +146,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Brightness = Brightness,
                 Volume = Volume,
                 GroupId = GroupId,
+                DeviceId = DeviceId,
             };
         }
     }

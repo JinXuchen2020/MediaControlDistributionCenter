@@ -33,11 +33,11 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private readonly IServiceProvider serviceProvider;
 
-        public UserManage(LoginViewModel loginViewModel, UserManageViewModel userManageViewModel, IServiceProvider serviceProvider)
+        public UserManage(UserManageViewModel userManageViewModel, IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
             manageViewModel = userManageViewModel;
-            manageViewModel.SetValues(loginViewModel.CurrentUser);
+            manageViewModel.LoadData();
             DataContext = manageViewModel;
             InitializeComponent();
         }
@@ -70,7 +70,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             {
                 Role = "user"
             };
-            viewModel.Groups = manageViewModel.Groups;
+            viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -96,13 +96,12 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 return;
             }
 
-            var dialogBox = new UserChangeGroupDialog(manageViewModel);
+            var dialogBox = serviceProvider.GetRequiredService<UserChangeGroupDialog>();
             manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
         }
 
         private void btnDeleteAll_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
             var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected).ToList();
             if (selectedUsers.Count == 0)
             {
@@ -111,7 +110,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             }
 
             manageViewModel.DeleteUserBatchCommand.Execute(null);
-            manageViewModel.SetValues(manageViewModel.CurrentUser);
+            manageViewModel.LoadData();
         }
 
         private void btnGroupAdd_Click(object sender, RoutedEventArgs e)
@@ -125,7 +124,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var groupViewModel = ((sender as StackPanel).DataContext as UserGroupViewModel)!;
-            manageViewModel.SetValues(manageViewModel.CurrentUser, groupViewModel.Id);
+            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
         }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)

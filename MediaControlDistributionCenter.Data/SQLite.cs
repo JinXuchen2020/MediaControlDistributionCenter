@@ -15,7 +15,7 @@ namespace MediaControlDistributionCenter.Data
     public static class SQLite
     {
         private static readonly string _connStr = "Data Source=DebugData.db;";
-        private static SqlSugarClient _db;
+        public static SqlSugarClient DbClient { get; private set; }
 
         /// <summary>
         /// 初始化启动 数据库服务
@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.Data
         public static void InitServer()
         {
             // 初始化SqlSugarClient
-            _db = new SqlSugarClient(new ConnectionConfig()
+            DbClient = new SqlSugarClient(new ConnectionConfig()
             {
                 ConnectionString = _connStr,
                 DbType = DbType.Sqlite,
@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.Data
         {
             try
             {
-                _db.Open();
+                DbClient.Open();
                 return true;
             }
             catch (Exception)
@@ -79,7 +79,7 @@ namespace MediaControlDistributionCenter.Data
         /// <returns></returns>
         public static bool CheckTableExists(string tableName)
         {
-            return _db.DbMaintenance.IsAnyTable(tableName, false);
+            return DbClient.DbMaintenance.IsAnyTable(tableName, false);
         }
 
         /// <summary>
@@ -90,13 +90,13 @@ namespace MediaControlDistributionCenter.Data
         {
             if (!CheckTableExists(typeof(T).Name + "s"))
             {
-                _db.CodeFirst.InitTables<T>();
+                DbClient.CodeFirst.InitTables<T>();
             }
-            else
-            {
-                _db.DbMaintenance.DropTable(typeof(T).Name + "s");
-                _db.CodeFirst.InitTables<T>();
-            }
+            //else
+            //{
+            //    _db.DbMaintenance.DropTable(typeof(T).Name + "s");
+            //    _db.CodeFirst.InitTables<T>();
+            //}
         }
         /// <summary>
         /// 查询表
@@ -105,7 +105,7 @@ namespace MediaControlDistributionCenter.Data
         /// <returns></returns>
         public static ISugarQueryable<T> QueryTable<T>() where T : class, new()
         {
-            return _db.Queryable<T>();
+            return DbClient.Queryable<T>();
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace MediaControlDistributionCenter.Data
         /// <returns></returns>
         public static int InserTable<T>(T data) where T : class, new()
         {
-            return _db.Insertable<T>(data).ExecuteReturnIdentity();
+            return DbClient.Insertable<T>(data).ExecuteReturnIdentity();
         }
 
 
@@ -131,7 +131,7 @@ namespace MediaControlDistributionCenter.Data
             {
                 throw new ArgumentException("数据列表不能为空");
             }
-            return _db.Insertable(list).ExecuteCommand();
+            return DbClient.Insertable(list).ExecuteCommand();
         }
 
          
@@ -143,7 +143,7 @@ namespace MediaControlDistributionCenter.Data
         /// <returns></returns>
         public static bool UpdateTable<T>(T data) where T : class, new()
         {
-            return _db.Updateable(data).ExecuteCommand() > 0;
+            return DbClient.Updateable(data).ExecuteCommand() > 0;
         }
 
 
@@ -154,7 +154,7 @@ namespace MediaControlDistributionCenter.Data
         /// <returns></returns>
         public static bool DeleTeable<T>(T data) where T : class, new()
         {
-            return _db.Deleteable<T>(data).ExecuteCommand() > 0;
+            return DbClient.Deleteable<T>(data).ExecuteCommand() > 0;
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace MediaControlDistributionCenter.Data
         public static bool DeleteById<T>(object id) where T : class, new()
         {
             // 这里假设T类型有一个属性Id，它对应数据库表的主键
-            return _db.Deleteable<T>(id).ExecuteCommand() > 0;
+            return DbClient.Deleteable<T>(id).ExecuteCommand() > 0;
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace MediaControlDistributionCenter.Data
             {
                 throw new ArgumentException("ID列表不能为空");
             }
-            return _db.Deleteable<T>(ids).ExecuteCommand();
+            return DbClient.Deleteable<T>(ids).ExecuteCommand();
         }
     }
 }

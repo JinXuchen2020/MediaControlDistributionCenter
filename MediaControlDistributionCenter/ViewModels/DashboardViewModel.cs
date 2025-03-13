@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,6 +27,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel? SelectedUser { get; set; }
 
+        public MediaViewModel? SelectedMedia { get; set; }
+
         public DashboardViewModel(LoginViewModel loginViewModel, IMonitorService monitorService, IProgramService programService, IUserService userService)
         {
             CurrentUser = loginViewModel.CurrentUser;
@@ -33,16 +36,16 @@ namespace MediaControlDistributionCenter.ViewModels
             switch (CurrentUser.Role)
             {
                 case "admin":
-                    var deviceResponse = monitorService.GetAll(null).GetAwaiter().GetResult();
-                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Data!.Select(c =>
+                    var deviceResponse = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
                         return viewModel;
                     }));
 
-                    var userResponse = userService.GetAll(null).GetAwaiter().GetResult();
-                    this.users = new ObservableCollection<UserViewModel>(userResponse.Data!.Select(c =>
+                    var userResponse = userService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    this.users = new ObservableCollection<UserViewModel>(userResponse.Select(c =>
                     {
                         var viewModel = new UserViewModel();
                         viewModel.Binding(c);
@@ -52,16 +55,16 @@ namespace MediaControlDistributionCenter.ViewModels
                     this.medias = new ObservableCollection<MediaViewModel>();
                     break;
                 case "agent":
-                    deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, null).GetAwaiter().GetResult();
-                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Data!.Select(c =>
+                    deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
                         return viewModel;
                     }));
 
-                    userResponse = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult();
-                    this.users = new ObservableCollection<UserViewModel>(userResponse.Data!.Select(c =>
+                    userResponse = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    this.users = new ObservableCollection<UserViewModel>(userResponse.Select(c =>
                     {
                         var viewModel = new UserViewModel();
                         viewModel.Binding(c);
@@ -71,8 +74,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     this.medias = new ObservableCollection<MediaViewModel>();
                     break;
                 case "user":
-                    deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult();
-                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Data!.Select(c =>
+                    deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    this.devices = new ObservableCollection<DeviceViewModel>(deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
@@ -81,8 +84,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                     this.users = new ObservableCollection<UserViewModel>();
 
-                    var mediaResponse = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult();
-                    this.medias = new ObservableCollection<MediaViewModel>(mediaResponse.Data!.Select(c =>
+                    var mediaResponse = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                    this.medias = new ObservableCollection<MediaViewModel>(mediaResponse.Select(c =>
                     {
                         var viewModel = new MediaViewModel();
                         viewModel.Binding(c);

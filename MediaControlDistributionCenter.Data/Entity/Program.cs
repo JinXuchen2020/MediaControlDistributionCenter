@@ -46,7 +46,7 @@ namespace MediaControlDistributionCenter.Data.Entity
         public string UserAccount { get; set; }
 
         [SugarColumn(IsIgnore = true)]
-        public IList<Device> Devices { get; set; }
+        public IList<Monitor> Devices { get; set; }
 
         [SugarColumn(IsIgnore = true)]
         public User User { get; set; }

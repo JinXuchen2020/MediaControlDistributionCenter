@@ -115,7 +115,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private void Submit(MediaViewModel viewModel)
         {
-            ValidateAllProperties
+            ValidateAllProperties();
         }
         
         [RelayCommand]

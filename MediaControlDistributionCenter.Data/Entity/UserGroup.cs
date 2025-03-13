@@ -14,7 +14,7 @@ namespace MediaControlDistributionCenter.Data.Entity
     [SugarTable("UserGroups")]
     public class UserGroup : BaseModel
     {
-        [Required)]
+        [Required]
         public string Name { get; set; }
 
         [Required]

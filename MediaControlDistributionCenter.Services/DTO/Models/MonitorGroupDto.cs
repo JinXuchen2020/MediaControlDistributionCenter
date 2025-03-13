@@ -29,7 +29,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new MonitorGroup
             {
-                Id = Id,
+                Id = (int)Id,
                 Name = Name,
                 UserAccount = UserAccount,
             };

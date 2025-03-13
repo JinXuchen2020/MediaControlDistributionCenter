@@ -18,10 +18,11 @@ using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Converters;
 using Newtonsoft.Json;
 using System.IO;
+using MediaControlDistributionCenter.Views;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaManageViewModel : ObservableObject
+    public partial class MediaManageViewModel : PageViewModel
     {
         private const string DialogHostId = "RootDialogHostId";
         public UserViewModel CurrentUser { get; set; }
@@ -46,23 +47,31 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IProgramService programService;
         private readonly IFileService fileService;
 
-        public MediaManageViewModel(IProgramService programService, IProgramGroupService programGroupService, IFileService fileService) 
+        public MediaManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IProgramService programService, IProgramGroupService programGroupService, IFileService fileService) 
         {
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                ShowNavigation = true;
+                CurrentUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+            }
+
             this.programService = programService;
             this.programGroupService = programGroupService;
             this.fileService = fileService;
         }
 
-        public void SetValues(UserViewModel userViewModel, long? groupId = null)
+        public void LoadData(long? groupId = null)
         {
-            CurrentUser = userViewModel;
-
-            var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = userViewModel.Account}).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
+            var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account}).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
             groups.Insert(0, new ProgramGroupDto
             {
                 Id = -1,
                 Name = "全部",
-                UserAccount = userViewModel.Account,
+                UserAccount = CurrentUser.Account,
             });
             this.MediaGroups = new ObservableCollection<MediaGroupViewModel>(groups.Select(c=>
             {
@@ -71,7 +80,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return result;
             }));
 
-            var medias = programService.GetAll(new ProgramDto { UserAccount = userViewModel.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
             {
                 var result = new MediaViewModel();
@@ -98,10 +107,8 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programGroupService.Save(groupViewModel.ToModel());
             if (response.Code == 200)
             {
-                var groupModel = await programGroupService.GetAll(new ProgramGroupDto { Name = groupViewModel.Name, UserAccount = groupViewModel.UserId });
-                groupViewModel.Id = groupModel.Data!.First().Id;
-
-                MediaGroups.Add(groupViewModel);
+                LoadData();
+                CloseDialog();
             }
         }
 
@@ -113,7 +120,6 @@ namespace MediaControlDistributionCenter.ViewModels
             foreach (var item in selectedMedias)
             {
                 item.GroupId = SelectedGroupId;
-                item.Group = MediaGroups.FirstOrDefault(c => c.Id == SelectedGroupId)?.Name ?? "未分组";
 
                 item.IsSelected = false;
                 var response = await programService.Save(item.ToModel());
@@ -121,6 +127,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                 }
             }
+
+            LoadData();
+            CloseDialog();
         }
 
         [RelayCommand]
@@ -140,16 +149,17 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
         [RelayCommand]
         private async Task DeleteMedia(MediaViewModel viewModel)
         {
-            Medias.Remove(viewModel);
             var response = await programService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
@@ -160,10 +170,9 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
-
-
 
         [RelayCommand]
         private async Task SaveMedia(MediaViewModel viewModel)
@@ -215,11 +224,8 @@ namespace MediaControlDistributionCenter.ViewModels
                             }
                         }
                     }
-                    else
-                    {
-                        Medias.Add(viewModel);
-                    }
 
+                    LoadData();
                     CloseDialog();
                 }                
             }

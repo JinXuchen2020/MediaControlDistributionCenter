@@ -21,11 +21,11 @@ namespace MediaControlDistributionCenter
     {
         private LoginViewModel viewModel;
 
-        private readonly IServiceProvider serviceProvider;
-        public Login(LoginViewModel viewModel, IServiceProvider serviceProvider)
+        //private readonly IServiceProvider serviceProvider;
+        public Login(LoginViewModel viewModel)//, IServiceProvider serviceProvider)
         {
             this.viewModel = viewModel;
-            this.serviceProvider = serviceProvider;
+            //this.serviceProvider = serviceProvider;
             InitializeComponent();
         }
 
@@ -48,7 +48,7 @@ namespace MediaControlDistributionCenter
                 {
                     Log.Information($"User {loginId} logged in successfully.");
 
-                    App.Current.MainWindow = serviceProvider.GetRequiredService<MainWindow>();
+                    App.Current.MainWindow = App.ServicesProvider.GetRequiredService<MainWindow>();
                     App.Current.MainWindow.Show();
                     this.Hide();
                 }

@@ -20,22 +20,15 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private readonly MediaManageViewModel manageViewModel;
         private readonly UserManageViewModel userManageViewModel;
 
-        public MediaManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IServiceProvider serviceProvider)
+        public MediaManage(UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
             this.fileService = fileService; 
             this.serviceProvider = serviceProvider;
-
-            manageViewModel = mediaManageViewModel;
             this.userManageViewModel = userManageViewModel;
 
-            if (dashboardViewModel.CurrentUser.Role == "user")
-            {
-                manageViewModel.ShowNavigation = true;
-            }
+            manageViewModel = mediaManageViewModel;
 
-            var selectedUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-
-            manageViewModel.SetValues(selectedUser);
+            manageViewModel.LoadData();
             DataContext = manageViewModel;
 
             InitializeComponent();
@@ -46,7 +39,6 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var groupViewModel = ((sender as Button).DataContext as MediaGroupViewModel)!;
 
             manageViewModel.CreateGroupCommand.Execute(groupViewModel);
-            manageViewModel.CloseDialogCommand.Execute(null);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -61,7 +53,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var groupViewModel = ((sender as StackPanel).DataContext as MediaGroupViewModel)!;
             groupViewModel.IsSelected = true;
 
-            manageViewModel.SetValues(manageViewModel.CurrentUser, groupViewModel.Id);
+            manageViewModel.LoadData(groupViewModel.Id);
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
@@ -117,7 +109,6 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
             manageViewModel.ChangeGroupCommand.Execute(null);
-            DialogHost.CloseDialogCommand.Execute(null, null);
         }
 
         private void btnCopy_MouseDown(object sender, MouseButtonEventArgs e)

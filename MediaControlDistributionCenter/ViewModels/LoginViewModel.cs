@@ -34,9 +34,9 @@ namespace MediaControlDistributionCenter.ViewModels
             var resultResponse = await authService.Login(request);
             if (resultResponse.Code == 200)
             {
-                var loginUser = (UserDto)JsonConvert.DeserializeObject(resultResponse.Data!)!;
-
-                CurrentUser.Binding(loginUser);
+                var userString = resultResponse.Data!;
+                var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
+                CurrentUser.Binding(loginUser!);
                 IsLogin = true;
             }
         }

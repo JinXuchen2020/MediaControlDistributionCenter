@@ -21,7 +21,7 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class MediaConfigViewModel : ObservableObject
     {
         [ObservableProperty]
-        private int id;
+        private long id;
 
         [ObservableProperty]
         private string name;

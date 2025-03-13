@@ -27,6 +27,7 @@ namespace MediaControlDistributionCenter
         {
             InitializeComponent();
             this.mainViewModel = mainViewModel;
+            this.serviceProvider = serviceProvider;
             Log.Information("MainWindow initialized.");
             //userManage.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 

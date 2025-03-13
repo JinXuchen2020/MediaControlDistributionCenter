@@ -48,11 +48,11 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("isEnabled", NullValueHandling = NullValueHandling.Ignore)]
         public int IsEnabled { get; set; }
 
-        ;/// <summary>
+        /// <summary>
         /// 重复方式，如“每天”或“每周”
         /// </summary>
         [JsonProperty("repeatMode", NullValueHandling = NullValueHandling.Ignore)]
-        public string RepeatMode { get; set }
+        public string RepeatMode { get; set; }
 
         /// <summary>
         /// 所属用户账号
@@ -87,7 +87,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new DeviceControl
             {
-                Id = Id,
+                Id = (int)Id,
                 ControlType = ControlType,
                 DeviceId = DeviceId,
                 Execution = Execution,

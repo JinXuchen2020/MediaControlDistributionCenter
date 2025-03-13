@@ -20,7 +20,7 @@ using System.IO;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class DeviceManageViewModel : ObservableObject
+    public partial class DeviceManageViewModel : PageViewModel
     {
         private const string DialogHostId = "RootDialogHostId";
 
@@ -44,18 +44,21 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IMonitorGroupService monitorGroupService) 
         {
-            CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
                 ShowNavigation = true;
+                CurrentUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
             this.monitorService = monitorService;
             this.monitorGroupService = monitorGroupService;
         }
 
-        public void SetValues(long? groupId = null)
+        public void LoadData(long? groupId = null)
         {
             var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto
@@ -67,7 +70,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.DeviceGroups = new ObservableCollection<DeviceGroupViewModel>(groups.Select(c =>
             {
                 var result = new DeviceGroupViewModel();
-                result.Binding(c, c.Id == -1 ? true : false);
+                result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
                 return result;
             }));
 
@@ -98,7 +101,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorGroupService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                SetValues();
+                LoadData();
                 CloseDialog();
             }
         }
@@ -106,19 +109,20 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DeleteDevice(DeviceViewModel viewModel)
         {
-            Devices.Remove(viewModel);
             var response = await monitorService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
         [RelayCommand]
         private async Task EnableDevice(DeviceViewModel viewModel)
         {
-            var response = await monitorService.EnableById(viewModel.Id, viewModel.Id == 1);
+            var response = await monitorService.EnableById(viewModel.Id, viewModel.Enabled == 1);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
@@ -130,13 +134,13 @@ namespace MediaControlDistributionCenter.ViewModels
             foreach (var item in selectedItems)
             {
                 item.GroupId = SelectedGroupId;
-                item.Group = DeviceGroups.FirstOrDefault(c => c.Id == SelectedGroupId)?.Name ?? "未分组";
 
                 item.IsSelected = false;
                 var response = await monitorService.Save(item.ToModel());
                 if (response.Code == 200)
                 {
                     SelectedGroupId = null;
+                    LoadData();
                     CloseDialog();
                 }
             }
@@ -151,10 +155,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                if (viewModel.Id != 0)
-                {
-                    Devices.Add(viewModel);
-                }
+                LoadData();
                 CloseDialog();
             }
         }

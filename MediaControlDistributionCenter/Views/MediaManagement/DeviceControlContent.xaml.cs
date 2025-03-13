@@ -9,6 +9,7 @@ using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Newtonsoft.Json;
+using System.Data;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -23,7 +24,7 @@ namespace MediaControlDistributionCenter.Views
     /// </summary>
     public partial class DeviceControlContent : FrameControl
     {
-        private DeviceControlViewModel manageViewModel;
+        private readonly DeviceControlViewModel manageViewModel;
 
         public DeviceControlContent(DeviceControlViewModel deviceControlViewModel)
         {
@@ -52,10 +53,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            if (manageViewModel.CommandType == "Restart")
-            {
-                await manageViewModel.CurrentDevice.RestartCommand.ExecuteAsync("1");
-            }
+            manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
         }
 
         private async void Volume_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -120,16 +118,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-
-            if (manageViewModel.CommandType == "Brightness")
-            {
-                manageViewModel.CurrentDevice.ChangeBrightnessCommand.Execute(manageViewModel.CommandRTValue);
-            }
-
-            if (manageViewModel.CommandType == "Volume")
-            {
-                manageViewModel.CurrentDevice.ChangeVolumeCommand.Execute(manageViewModel.CommandRTValue);
-            }
+            manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
 
             ////亮度
             //Communication communication = new Communication();
@@ -179,6 +168,7 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.CurrentDevice = viewModel;
             if (viewModel != null)
             {
+                viewModel.StatusText = viewModel.GetStatus();
                 manageViewModel.GetDeviceTimeControlsCommand.Execute(null);
                 dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
 
@@ -201,16 +191,28 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnAddTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var viewModel = new DeviceTimeControlViewModel();
             if(manageViewModel.CurrentDevice == null)
             {
                 MessageBox.Show("请先选择显示器！");
                 return;
             }
 
-            viewModel.DeviceId = manageViewModel.CurrentDevice.DeviceId;
-            viewModel.Type = manageViewModel.CommandType;
-            viewModel.Status = 1;
+            if (manageViewModel.CommandType == "Restart")
+            {
+                manageViewModel.CommandRTValue = "1";
+            }
+
+            var viewModel = new DeviceTimeControlViewModel()
+            {
+                DeviceId = manageViewModel.CurrentDevice.DeviceId,
+                Type = manageViewModel.CommandType,
+                ExecuteMethod = "SCHEDULED",
+                Status = 1,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now,
+                UserAccount = manageViewModel.CurrentUser.Account,
+            };
+
             viewModel.SetGridColumnName();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
@@ -229,7 +231,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnTimeControlSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var viewModel = ((sender as System.Windows.Controls.Button).DataContext as DeviceTimeControlViewModel)!;
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
 
             manageViewModel.SaveTimeControlCommand.Execute(viewModel);
         }
@@ -238,10 +240,8 @@ namespace MediaControlDistributionCenter.Views
         {
             var manageViewModel = (DataContext as DeviceControlViewModel)!;
             manageViewModel.CommandType = commandType;
-            manageViewModel.CurrentDevice = null;
             manageViewModel.CommandRTValue = null;
             manageViewModel.DeviceTimeControls = null;
-            dgDevices.SelectedItem = null;
 
             switch (commandType)
             {
@@ -274,7 +274,7 @@ namespace MediaControlDistributionCenter.Views
                     break;
             }
 
-            dgDevices.SelectedItem = manageViewModel.Devices.FirstOrDefault();
+            dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
         }
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)
@@ -295,17 +295,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            if (manageViewModel.CommandTypeColumnName == "手动")
-            {
-                var currentTime = DateTime.Now;
-                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(manageViewModel.CommandRTValue!);
-                manageViewModel.CurrentDevice.TimeSyncCommand.Execute(TimeZoneInfo.ConvertTime(currentTime, timeZone));
-            }
-
-            if (manageViewModel.CommandTypeColumnName == "GPS")
-            {
-                manageViewModel.CurrentDevice.TimeGPSSyncCommand.Execute(DateTime.Now);
-            }
+            manageViewModel.ExecuteRealTimeTimeSyncCommand.Execute(null);
         }
 
         private void ChangeTimeSyncMode_Click(object sender, RoutedEventArgs e)

@@ -10,12 +10,33 @@ namespace MediaControlDistributionCenter.Services.LocalImps
     {
         public override async Task<ResultResponse<IEnumerable<MonitorDto>>> GetAll(MonitorDto? request)
         {
-            var results = SQLite.QueryTable<Monitor>()
-                .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
-                .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
-                .Where((d, u, dg) => (request == null || request.GroupId == null || d.GroupId == request.GroupId) && d.UserAccount == request!.UserAccount)
-                .Select<MonitorDto>()
-                .ToList();
+            IEnumerable<MonitorDto> results;
+            if (request?.UserAccount != null && request?.GroupId != null)
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Where((d, u, dg) => d.UserAccount == request.UserAccount && d.GroupId == request.GroupId)
+                    .Select<MonitorDto>()
+                    .ToList();          
+            }
+            else if (request?.GroupId != null)
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Where((d, u, dg) => d.GroupId == request.GroupId)
+                    .Select<MonitorDto>()
+                    .ToList();
+            }
+            else
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Select<MonitorDto>()
+                    .ToList();
+            }
 
             return await Task.FromResult(new ResultResponse<IEnumerable<MonitorDto>>
             {
@@ -43,12 +64,34 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 
         public async Task<ResultResponse<IEnumerable<MonitorDto>>> GetAgentAll(string agentAccount, MonitorDto? request)
         {
-            var results = SQLite.QueryTable<Monitor>()
-                .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
-                .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
-                .Where((d, u, dg) => u.AgentAccount == agentAccount && (request == null || request.GroupId == null || d.GroupId == request.GroupId) && d.UserAccount == request!.UserAccount)
-                .Select<MonitorDto>()
-                .ToList();          
+            IEnumerable<MonitorDto> results;
+            if (request?.UserAccount != null && request?.GroupId != null)
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Where((d, u, dg) => d.UserAccount == request.UserAccount && u.AgentAccount == agentAccount && d.GroupId == request.GroupId)
+                    .Select<MonitorDto>()
+                    .ToList();
+            }
+            else if (request?.GroupId != null)
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Where((d, u, dg) => u.AgentAccount == agentAccount && d.GroupId == request.GroupId)
+                    .Select<MonitorDto>()
+                    .ToList();
+            }
+            else
+            {
+                results = SQLite.QueryTable<Monitor>()
+                    .InnerJoin<User>((d, u) => d.UserAccount == u.Account)
+                    .LeftJoin<MonitorGroup>((d, u, dg) => d.GroupId == dg.Id && d.UserAccount == dg.UserAccount)
+                    .Where((d, u, dg) => u.AgentAccount == agentAccount)
+                    .Select<MonitorDto>()
+                    .ToList();
+            }
 
             return await Task.FromResult(new ResultResponse<IEnumerable<MonitorDto>>
             {

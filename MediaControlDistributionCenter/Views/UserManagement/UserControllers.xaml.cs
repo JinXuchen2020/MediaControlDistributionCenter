@@ -29,18 +29,21 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private readonly UserControllerViewModel manageViewModel;
         private readonly IServiceProvider serviceProvider;
 
-        public UserControllers(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, UserControllerViewModel viewModel, IServiceProvider serviceProvider)
+        public UserControllers(UserControllerViewModel viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             this.serviceProvider = serviceProvider;
 
-            var selectedUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-
-            viewModel.SetValues(selectedUser, "MediaManage", "媒体管理");
+            viewModel.SetValues("MediaManage", "媒体管理");
             manageViewModel = viewModel;
 
             DataContext = manageViewModel;
             TabContentControl.Content = serviceProvider.GetRequiredService<MediaManage>();
+        }
+
+        public void InitPage(string tabName, string pageName)
+        {
+            manageViewModel.SetValues(tabName, pageName);
         }
 
         private void TopMenu_MouseDown(object sender, MouseButtonEventArgs e)

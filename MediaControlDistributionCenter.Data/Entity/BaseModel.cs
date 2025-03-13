@@ -13,6 +13,6 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// 唯一标识符
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public long Id { get; set; }
+        public int Id { get; set; }
     }
 }

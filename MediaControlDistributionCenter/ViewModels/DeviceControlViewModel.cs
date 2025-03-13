@@ -58,18 +58,23 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
+        private readonly ITimeSyncConfigService timeSyncConfigService;
 
-        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IDeviceControlService deviceControlService) 
+        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IDeviceControlService deviceControlService, ITimeSyncConfigService timeSyncConfigService) 
         {
-            CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
                 ShowNavigation = true;
+                CurrentUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
             this.monitorService = monitorService;
             this.deviceControlService = deviceControlService;
+            this.timeSyncConfigService = timeSyncConfigService;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
 
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
@@ -91,6 +96,79 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        [RelayCommand]
+        private async Task ExecuteRealTimeControl()
+        {
+            if (CurrentDevice != null && CommandRTValue != null)
+            {
+                switch (CommandType)
+                {
+                    case "Brightness":
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(CommandRTValue);
+                        break;
+                    case "Volume":
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(CommandRTValue);
+                        break;
+                    case "Restart":
+                        CommandRTValue = "1";
+                        await CurrentDevice.RestartCommand.ExecuteAsync(CommandRTValue);
+                        break;
+                }
+                var viewModel = new DeviceTimeControlViewModel()
+                {
+                    DeviceId = CurrentDevice.DeviceId,
+                    Type = CommandType,
+                    Value = double.Parse(CommandRTValue),
+                    ExecuteTime = "00:00;00",
+                    ExecuteMethod = "REAL_TIME",
+                    Status = 1,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
+                    RepeatMode = "",
+                    UserAccount = CurrentUser.Account,
+                };
+
+                var response = await deviceControlService.Save(viewModel.ToModel());
+                if (response.Code == 200)
+                {
+                    await GetDeviceTimeControls();
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task ExecuteRealTimeTimeSync()
+        {
+            if (CurrentDevice != null && CommandRTValue != null && !string.IsNullOrEmpty(CommandTypeColumnName))
+            {
+                var timeZoneDateTime = DateTime.Now;
+                var timeZone = TimeZoneInfo.Local;
+                switch (CommandTypeColumnName)
+                {
+                    case "手动":
+                        timeZone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue);
+                        timeZoneDateTime = TimeZoneInfo.ConvertTime(timeZoneDateTime, timeZone);
+                        CurrentDevice.TimeSyncCommand.Execute(timeZoneDateTime);
+                        break;
+                    case "GPS":
+                        CurrentDevice.TimeGPSSyncCommand.Execute(timeZoneDateTime);
+                        break;
+                }
+                var model = new TimeSyncConfigDto()
+                {
+                    DeviceId = CurrentDevice.DeviceId,
+                    Timezone = timeZone.DisplayName,
+                    SyncMode = CommandTypeColumnName,
+                    UserAccount = CurrentUser.Account
+                };
+
+                var response = await timeSyncConfigService.Save(model);
+                if (response.Code == 200)
+                {
+                }
+            }
         }
 
         [RelayCommand]
@@ -117,6 +195,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
+                await GetDeviceTimeControls();
             }
         }
 

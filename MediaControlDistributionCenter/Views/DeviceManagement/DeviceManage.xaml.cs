@@ -22,6 +22,7 @@ using MaterialDesignThemes.Wpf;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO.Models;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -37,7 +38,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         {
             this.userService = userService;
             manageViewModel = deviceManageViewModel;
-            manageViewModel.SetValues();
+            manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
 
             InitializeComponent();
@@ -59,7 +60,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var groupViewModel = ((sender as StackPanel).DataContext as DeviceGroupViewModel)!;
-            manageViewModel.SetValues(groupViewModel.Id);
+            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -72,17 +73,13 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            if(viewModel.Status != -1)
+            if(viewModel.Enabled == 0)
             {
-                viewModel.Status = -1;
-                viewModel.StatusText = "停用";
-                viewModel.EnableBtnContent = "启用";
+                viewModel.Enabled = 1;
             }
             else
             {
-                viewModel.Status = 1;
-                viewModel.StatusText = "在线";
-                viewModel.EnableBtnContent = "停用";
+                viewModel.Enabled = 0;
             }
 
             manageViewModel.EnableDeviceCommand.Execute(viewModel);
@@ -92,7 +89,8 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         {
             var viewModel = new DeviceViewModel();
             viewModel.UserId = manageViewModel.CurrentUser.Account;
-            viewModel.OwnerName = userService.GetAll(new Services.DTO.Models.UserDto { Account = manageViewModel.CurrentUser.Account}).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.OwnerName = userService.GetAll(new UserDto { Account = manageViewModel.CurrentUser.Account}).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.DeviceId = "";
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -111,25 +109,17 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void btnChangeGroupConfirm_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
-            var selectedItems = manageViewModel.Devices.Where(c => c.IsSelected);
-            if (manageViewModel.SelectedGroupId != -1)
+            if (manageViewModel.SelectedGroupId == null || manageViewModel.SelectedGroupId == -1)
             {
+                MessageBox.Show("请选择有效分组！");
                 return;
             }
-
             manageViewModel.ChangeGroupCommand.Execute(null);
         }
 
         private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            viewModel.Resolution = $"{viewModel.Width}*{viewModel.Height}";
-            viewModel.Group = manageViewModel.DeviceGroups.FirstOrDefault(c => c.Id == viewModel.GroupId)?.Name ?? "未分组";
-            viewModel.StatusText = viewModel.GetStatus();
-            viewModel.LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-            viewModel.EnableBtnContent = viewModel.Status == -1 ? "启用" : "停用";
-
             manageViewModel.SaveDeviceCommand.Execute(viewModel);
         }
 

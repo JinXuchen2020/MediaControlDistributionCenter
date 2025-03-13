@@ -44,7 +44,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new PlaybackRecord
             {
-                Id = Id,
+                Id = (int)Id,
                 MediaName = MediaName,
                 MediaType = MediaType,
                 MonitorSnCode = MonitorSnCode,

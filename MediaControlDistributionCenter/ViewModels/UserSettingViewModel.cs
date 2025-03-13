@@ -24,16 +24,21 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IUserService userService;
 
-        public UserSettingViewModel(LoginViewModel loginViewModel, IUserService userService)
+        public UserSettingViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IUserService userService)
         {
             this.userService = userService;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-            LoginUser = loginViewModel.CurrentUser;
-        }
 
-        public void SetValues(UserViewModel viewModel)
-        {
-            this.CurrentUser = viewModel;
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                CurrentUser = dashboardViewModel.CurrentUser;
+                LoginUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                LoginUser = dashboardViewModel.CurrentUser;
+                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+            }
         }
 
         [RelayCommand]

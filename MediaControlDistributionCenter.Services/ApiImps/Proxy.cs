@@ -283,7 +283,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 throw GetAPIException(response, requestUri);
             }
         }
-        protected async Task<TOutput> DeleteWithBody<TOutput, TInput>(string requestUri, TInput requestBody) where T : class
+        protected async Task<TOutput> DeleteWithBody<TOutput, TInput>(string requestUri, TInput requestBody) where TInput : class
         {
             using var client = new HttpClient
             {
@@ -305,7 +305,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             // 处理响应
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
+                return JsonConvert.DeserializeObject<TOutput>(response.Content.ReadAsStringAsync().Result);
             }
             throw GetAPIException(response, requestUri);
         }

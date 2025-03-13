@@ -50,7 +50,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new TimeSyncConfig
             {
-                Id = Id,
+                Id = (int)Id,
                 DeviceId = DeviceId,
                 SyncMode = SyncMode,
                 Timezone = Timezone,

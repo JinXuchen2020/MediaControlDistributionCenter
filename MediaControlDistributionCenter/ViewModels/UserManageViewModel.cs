@@ -35,21 +35,21 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserGroupService userGroupService;
         private readonly IUserService userService;
 
-        public UserManageViewModel(IUserGroupService userGroupService, IUserService userService) 
+        public UserManageViewModel(LoginViewModel loginViewModel, IUserGroupService userGroupService, IUserService userService) 
         {
+            this.CurrentUser = loginViewModel.CurrentUser;
             this.userService = userService;
             this.userGroupService = userGroupService;
         }
 
-        public void SetValues(UserViewModel viewModel, long? groupId = null)
+        public void LoadData(long? groupId = null)
         {
-            this.CurrentUser = viewModel;
-            var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = viewModel.Role == "agent" ? viewModel.Account : null }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
+            var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
             groups.Insert(0, new UserGroupDto
             {
                 Id = -1,
                 Name = "全部",
-                AgentAccount = viewModel.AgentId,
+                AgentAccount = CurrentUser.AgentId,
             });
 
             this.Groups = new ObservableCollection<UserGroupViewModel>(groups.Select(c =>
@@ -59,7 +59,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return viewModel;
             }));
 
-            var users = userService.GetAll(new UserDto { AgentAccount = viewModel.Role == "agent" ? viewModel.Account : null, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var users = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             this.Users = new ObservableCollection<UserViewModel>(users.Select(c =>
             {
                 var viewModel = new UserViewModel();
@@ -89,14 +89,18 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveUser(UserViewModel userViewModel)
         {
+            userViewModel.SubmitCommand.Execute(null);
+            if (userViewModel.HasErrors)
+            {
+                return;
+            }
             var response = await userService.Save(userViewModel.ToModel());
             if (response.Code == 200)
             {
-                userViewModel.Group = Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.Name ?? "未分组";
+                LoadData();
                 CloseDialog();
                 if (userViewModel.Id == 0)
                 {
-                    Users.Add(userViewModel);
                     userViewModel.ShowConfirmDialogCommand.Execute(null);
                 }
             }
@@ -104,11 +108,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [RelayCommand]
         private async Task DeleteUser(UserViewModel viewModel)
-        {
-            Users.Remove(viewModel);
+        { 
             var response = await userService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
@@ -119,6 +123,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
+                LoadData();
             }
         }
 
@@ -128,11 +133,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userGroupService.Save(viewModel.ToModel());
             if(response.Code == 200)
             {
-                if (viewModel.Id == 0)
-                {
-                    Groups.Add(viewModel);
-                }
-
+                LoadData();
                 CloseDialog();
             }
         }
@@ -146,7 +147,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 user.GroupId = viewModel.Id;
                 user.AgentId = viewModel.AgentId ?? user.AgentId;
-                user.Group = Groups.FirstOrDefault(c => c.Id == viewModel?.Id)?.Name ?? "未分组";
 
                 user.IsSelected = false;
                 var response = await userService.Save(user.ToModel());
@@ -155,6 +155,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
+            LoadData();
             CloseDialog();
         }
     }

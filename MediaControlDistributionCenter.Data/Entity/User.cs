@@ -49,7 +49,7 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// <summary>
         /// 邮箱
         /// </summary>
-        [Required]
+        [SugarColumn(IsNullable = true)]
         public string Email { get; set; }
 
         /// <summary>

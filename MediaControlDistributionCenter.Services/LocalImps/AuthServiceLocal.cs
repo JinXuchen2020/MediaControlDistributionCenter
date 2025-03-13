@@ -33,7 +33,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
                 };
             }
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

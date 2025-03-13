@@ -69,7 +69,7 @@
                                 <StackPanel Grid.Row="3" Margin="10">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                         <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="执行方式：" />
-                                        <ComboBox materialDesign:HintAssist.Hint="{Binding ExecuteMethod}" Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" SelectedValue="{Binding ExecuteMethod}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <ComboBox materialDesign:HintAssist.Hint="{Binding RepeatMode}" Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" SelectedValue="{Binding RepeatMode}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <ComboBoxItem Content="每天一次"/>
                                             <ComboBoxItem Content="每周一次"/>
                                             <ComboBoxItem Content="每月一次"/>

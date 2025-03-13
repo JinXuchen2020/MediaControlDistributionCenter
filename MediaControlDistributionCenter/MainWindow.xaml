@@ -33,27 +33,27 @@
                     <!--<TextBlock Margin="64,0,0,0" x:Name="MediaManagement" Text="媒体管理" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>-->
                     
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
                         Margin="64,0,0,0" x:Name="UserManagement" Text="{DynamicResource LanguageKey_Code_Management_Users}" Tag="2" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
 
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
                         Margin="64,0,0,0" x:Name="MediaStore" Text="{DynamicResource LanguageKey_Code_MediaStore}" Tag="3" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
 
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="MediaManagement" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Management_Media}" Text="{DynamicResource LanguageKey_Code_Management_Media}" FontSize="16" Opacity="0.7"  Foreground="White">
                     </TextBlock>
 
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="DeviceManagement" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Management_Device}" Text="{DynamicResource LanguageKey_Code_Management_Device}" FontSize="16" Opacity="0.7"  Foreground="White">
                     </TextBlock>
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="DeviceControl" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Control_Device}" Text="{DynamicResource LanguageKey_Code_Control_Device}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
                     <TextBlock 
-                        Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="Settings" MouseDown="TopMenu_MouseDown"   Cursor="Hand"  Tag="{DynamicResource LanguageKey_Code_User_Config}"  Text="{DynamicResource LanguageKey_Code_User_Config}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
                 </StackPanel>               
             </StackPanel>
@@ -79,7 +79,7 @@
                 </materialDesign:PopupBox>
 
                 <Image Margin="30,0,10,0"  Width="25" Height="25" Source="/Assets/assets-0018.png"/>
-                <TextBlock Margin="0,0,10,0" Text="{Binding Name}" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Margin="0,0,10,0" Text="{Binding CurrentUser.Name}" Foreground="White" VerticalAlignment="Center"/>
                 <Button Width="80" Height="60" HorizontalAlignment="Right"
                     Background="#141726" Foreground="WhiteSmoke"
                     BorderThickness="0"

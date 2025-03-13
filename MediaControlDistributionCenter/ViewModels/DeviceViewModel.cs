@@ -176,7 +176,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 count--;
             }
 
-            return this.Status == -1 ? "停用" : client.netClient.State == Helpers.SocketClient.SocketState.Connected ? "在线" : "离线";
+            return this.Enabled == 0 ? "停用" : client.netClient.State == Helpers.SocketClient.SocketState.Connected ? "在线" : "离线";
         }
 
         [RelayCommand]

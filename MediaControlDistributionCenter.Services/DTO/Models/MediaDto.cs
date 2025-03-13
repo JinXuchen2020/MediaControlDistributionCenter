@@ -64,7 +64,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new Media
             {
-                Id = Id,
+                Id = (int)Id,
                 Name = Name,
                 Extension = Extension,
                 Resolution = Resolution,

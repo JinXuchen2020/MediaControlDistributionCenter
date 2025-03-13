@@ -7,11 +7,13 @@ using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -22,7 +24,7 @@ using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class UserViewModel : ObservableObject
+    public partial class UserViewModel : ObservableValidator
     {
         [ObservableProperty]
         private long id;
@@ -40,15 +42,19 @@ namespace MediaControlDistributionCenter.ViewModels
         private string group;
 
         [ObservableProperty]
+        [Required]
+        [CustomValidation(typeof(UserViewModel), nameof(ValidateAccount))]
         private string account;
 
         [ObservableProperty]
+        [Required]
         private string name;
 
         [ObservableProperty]
         private string region;
 
         [ObservableProperty]
+        [Required]
         private string password;
 
         [ObservableProperty]
@@ -75,38 +81,6 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<UserGroupViewModel> groups;
 
-        //private readonly IAuthService authService;
-        //private readonly IUserService userService;
-        //private readonly IUserGroupService userGroupService;
-
-
-        //public UserViewModel(IUserService userService, IUserGroupService userGroupService)
-        //{
-        //    this.authService = authService;
-        //    this.userService = userService;
-        //    this.userGroupService = userGroupService;
-        //}
-
-        //public UserViewModel(IUserService userService, IUserGroupService userGroupService)
-        //{
-        //    this.authService = authService;
-        //    this.userService = userService;
-        //    this.userGroupService = userGroupService;
-        //}
-
-        //public UserViewModel(UserDto model)
-        //{
-        //    id = model.Id;
-        //    role = model.Role;
-        //    groupId = model.UserGroupId;
-        //    agentId = model.AgentAccount;
-        //    group = model.UserGroupName ?? "未分组";
-        //    account = model.Account;
-        //    name = model.Company;
-        //    region = model.Region;
-        //    password = model.Password;
-        //}
-
         [RelayCommand]
         private async Task ShowConfirmDialog()
         {
@@ -123,6 +97,12 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = string.Empty;
             Region = string.Empty;
             Password = string.Empty;
+        }
+
+        [RelayCommand]
+        private void Submit()
+        {
+            ValidateAllProperties();
         }
 
         public UserDto ToModel()
@@ -157,6 +137,7 @@ namespace MediaControlDistributionCenter.ViewModels
             TimeZone = model.TimeZone;
             LogoThumbnail = GetThumbnail();
         }
+
         public BitmapImage? GetThumbnail()
         {
             if (!string.IsNullOrEmpty(Logo) && File.Exists(Logo))
@@ -165,6 +146,22 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             return null;
+        }
+
+        public static ValidationResult ValidateAccount(string account, ValidationContext context)
+        {
+            UserViewModel instance = (UserViewModel)context.ObjectInstance;
+            var userService = App.ServicesProvider.GetRequiredService<IUserService>();
+            var response = userService.GetAll(new UserDto { Account = account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
+
+            if (isValid)
+            {
+                return ValidationResult.Success;
+            }
+
+            var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Totip_410");
+            return new(erroMessage);
         }
     }
 }

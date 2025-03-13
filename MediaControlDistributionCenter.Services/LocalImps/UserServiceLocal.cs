@@ -12,6 +12,10 @@ using Dm.filter;
 using SqlSugar;
 using Azure;
 using System.Drawing.Printing;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace MediaControlDistributionCenter.Services.LocalImps
 {
@@ -19,36 +23,26 @@ namespace MediaControlDistributionCenter.Services.LocalImps
     {
         public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request)
         {
-            if (request?.AgentAccount != null)
-            {
-                var results = SQLite.QueryTable<User>()
-                    .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
-                    .Where(u => u.AgentAccount == request.AgentAccount && (request.UserGroupId == null || u.UserGroupId == request.UserGroupId))
-                    .Select<UserDto>()
-                    .ToList();
+            Expression result = MakeExpression(request);
+            var memberInfo = typeof(User).GetMember("Role").FirstOrDefault();
+            var leftExpression = Expression.MakeMemberAccess(p, memberInfo!);
+            var rightExpression = Expression.Constant("admin");
+            var binaryExp = Expression.NotEqual(leftExpression, rightExpression);
+            result = Expression.AndAlso(result, binaryExp);
 
-                return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
-                {
-                    Code = 200,
-                    Message ="OK",
-                    Data = results
-                });
-            }
-            else
-            {
-                var results = SQLite.QueryTable<User>()
-                    .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
-                    .Where(u => u.Role != "admin" && (request == null || request.UserGroupId == null || u.UserGroupId == request.UserGroupId)).OrderByDescending(u => u.Role)
-                    .Select<UserDto>()
-                    .ToList();
+            var finalExp = Expression.Lambda<Func<User, bool>>(result, p);
+            var results = await SQLite.QueryTable<User>()
+                .LeftJoin<UserGroup>((c, g) => g.AgentAccount == c.AgentAccount && g.Id == c.UserGroupId)
+                .Where(finalExp).OrderByDescending(c => c.Role)
+                .Select<UserDto>()
+                .ToListAsync();
 
-                return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
-                {
-                    Code = 200,
-                    Message = "OK",
-                    Data = results
-                });
-            }
+            return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
+            {
+                Code = 200,
+                Message = "OK",
+                Data = results
+            });
         }
 
         public override async Task<ResultResponse<IEnumerable<UserDto>>> GetPageAll(int pageSize, int page, UserDto? request)

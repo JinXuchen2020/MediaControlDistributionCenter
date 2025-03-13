@@ -1,5 +1,6 @@
 ﻿using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.LocalImps;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
@@ -8,24 +9,14 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddLocalServices(this IServiceCollection services)
+        public static IServiceCollection AddPageViewModelServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthService, AuthServiceLocal>();
-            services.AddScoped<IFileService, FileServiceLocal>();
+            var types = typeof(PageViewModel).Assembly.DefinedTypes;
+            var pageViewTypes = types.Where(c => c.BaseType == typeof(PageViewModel));
 
-            var types = typeof(IService<,>).Assembly.DefinedTypes;
-            var interfaceTypes = types.Where(c => c.IsInterface && !c.IsGenericType);
-
-            foreach(var interfaceType in interfaceTypes)
+            foreach(var type in pageViewTypes)
             {
-                var implementTypes = types.Where(c => c.ImplementedInterfaces.Count() > 0 && c.ImplementedInterfaces.Contains(interfaceType));
-                foreach (var implementType in implementTypes)
-                {
-                    if (implementType != null && implementType.Name.EndsWith("Local"))
-                    {
-                        services.AddScoped(interfaceType, implementType);
-                    }
-                }
+                services.AddScoped(type);
             }
 
             return services;

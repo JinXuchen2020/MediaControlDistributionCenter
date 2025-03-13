@@ -32,7 +32,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         {
             return new UserGroup
             {
-                Id = Id,
+                Id = (int)Id,
                 Name = Name,
                 AgentAccount = AgentAccount,
             };

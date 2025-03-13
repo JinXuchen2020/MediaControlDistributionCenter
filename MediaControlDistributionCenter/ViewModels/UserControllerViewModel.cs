@@ -17,9 +17,13 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string currentPageName;
 
-        public void SetValues(UserViewModel userViewModel, string tabName, string pageName)
+        public UserControllerViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
         {
-            CurrentUser = userViewModel;
+            CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+        }
+
+        public void SetValues(string tabName, string pageName)
+        {
             CurrentTabName = tabName;
             CurrentPageName = pageName;
         }

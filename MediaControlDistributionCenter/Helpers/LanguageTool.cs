@@ -181,7 +181,7 @@ namespace MediaControlDistributionCenter
         #endregion
 
         #region 私有函数
-        private object FindResource(string resourceKey)
+        public object FindResource(string resourceKey)
         {
             if (FindResourceHandle == null) return null;
             return FindResourceHandle(resourceKey);
