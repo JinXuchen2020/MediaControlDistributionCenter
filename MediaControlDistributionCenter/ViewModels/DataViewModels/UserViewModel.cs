@@ -80,12 +80,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private void Reset()
         {
-            Role = string.Empty;
-            GroupId = null;
-            Account = string.Empty;
-            Name = string.Empty;
-            Region = string.Empty;
-            Password = string.Empty;
+            Logo = null;
+            LogoThumbnail = null;
+            TagLine = null;
+            TimeZone = null;
+            CompanyName = null;
+            IsUpload = false;
         }
 
         public override UserDto ToModel()

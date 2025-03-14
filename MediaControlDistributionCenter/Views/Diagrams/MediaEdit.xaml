@@ -25,7 +25,7 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId">
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Placement="RelativePoint">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>

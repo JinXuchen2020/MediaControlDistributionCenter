@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -11,6 +12,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [RelayCommand]
         protected void Submit()
+        {
+            ValidateAllProperties();
+        }
+
+        [RelayCommand]
+        protected void LogDrag(object element)
         {
             ValidateAllProperties();
         }

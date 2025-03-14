@@ -14,18 +14,17 @@
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D" Margin="20,8,20,0"  Placement="Center">
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D" Margin="20,8,20,0" Placement="RelativePoint">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:UserViewModel}">
-                        <Border Background="#090A0E" Padding="16">
+                        <Grid Background="Transparent" IsHitTestVisible="True">
                             <i:Interaction.Behaviors>
-                                <i:MouseDragElementBehavior ConstrainToParentBounds="True"/>
+                                <i:MouseDragElementBehavior ConstrainToParentBounds="False" />
                             </i:Interaction.Behaviors>
-
                             <DockPanel LastChildFill="False" Background="#090A0E">
-                                <Grid Width="889" Height="709" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                                <Grid Width="889" Height="500" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="2" />
@@ -95,7 +94,7 @@
                                     </StackPanel>
                                 </Grid>
                             </DockPanel>
-                        </Border>
+                        </Grid>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:UserGroupViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">

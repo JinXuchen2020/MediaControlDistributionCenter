@@ -13,7 +13,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}" AllowDrop="True" >
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}" Placement="RelativePoint" >
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
