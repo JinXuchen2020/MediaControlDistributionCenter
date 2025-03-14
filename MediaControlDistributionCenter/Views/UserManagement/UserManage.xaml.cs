@@ -96,6 +96,12 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 return;
             }
 
+            if (selectedUsers.Any(c => c.Role == "agent"))
+            {
+                MessageBox.Show("代理商无法变更组！");
+                return;
+            }
+
             var dialogBox = serviceProvider.GetRequiredService<UserChangeGroupDialog>();
             manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
         }

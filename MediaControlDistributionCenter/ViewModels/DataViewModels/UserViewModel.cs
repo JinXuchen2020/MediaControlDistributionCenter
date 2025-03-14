@@ -1,30 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Dm.filter;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
-using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Serilog;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class UserViewModel : ObservableValidator
+    public partial class UserViewModel : DataViewModel<UserDto>
     {
         [ObservableProperty]
         private long id;
@@ -99,13 +88,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Password = string.Empty;
         }
 
-        [RelayCommand]
-        private void Submit()
-        {
-            ValidateAllProperties();
-        }
-
-        public UserDto ToModel()
+        public override UserDto ToModel()
         {
             return new UserDto
             {
@@ -122,7 +105,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public void Binding(UserDto model)
+        public override void Binding(UserDto model, bool isSelected = false)
         {
             Id = model.Id;
             Role = model.Role;
@@ -136,6 +119,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Logo = model.LogoSrc;
             TimeZone = model.TimeZone;
             LogoThumbnail = GetThumbnail();
+            IsSelected = isSelected;
         }
 
         public BitmapImage? GetThumbnail()

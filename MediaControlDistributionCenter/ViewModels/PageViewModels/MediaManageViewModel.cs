@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
-using MediaControlDistributionCenter.Data.Entity;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Text.RegularExpressions;
-using MediaControlDistributionCenter.Views.UserManagement;
-using System.Windows;
-using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
-using MediaControlDistributionCenter.Services.DTO.Models;
-using MediaControlDistributionCenter.Data;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.IO;
-using MediaControlDistributionCenter.Views;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -64,7 +52,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.fileService = fileService;
         }
 
-        public void LoadData(long? groupId = null)
+        public override void LoadData(long? groupId = null)
         {
             var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account}).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
             groups.Insert(0, new ProgramGroupDto
@@ -76,7 +64,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.MediaGroups = new ObservableCollection<MediaGroupViewModel>(groups.Select(c=>
             {
                 var result = new MediaGroupViewModel();
-                result.Binding(c, c.Id == -1 ? true : false);
+                result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
                 return result;
             }));
 
@@ -104,6 +92,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task CreateGroup(MediaGroupViewModel groupViewModel)
         {
+            groupViewModel.SubmitCommand.Execute(null);
+            if (groupViewModel.HasErrors)
+            {
+                return;
+            }
+
             var response = await programGroupService.Save(groupViewModel.ToModel());
             if (response.Code == 200)
             {
@@ -226,6 +220,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     LoadData();
+                    viewModel.Id = Medias.First(c => c.Name == viewModel.Name).Id;
                     CloseDialog();
                 }                
             }

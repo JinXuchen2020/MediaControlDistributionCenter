@@ -1,27 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Converters;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
-using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
-using SqlSugar;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaViewModel : ObservableValidator
+    public partial class MediaViewModel : DataViewModel<ProgramDto>
     {
         [ObservableProperty]
         public long id;
@@ -75,7 +62,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public string rackingBtnContent;
 
-        public ProgramDto ToModel()
+        public override ProgramDto ToModel()
         {
             return new ProgramDto
             {
@@ -93,14 +80,14 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public void Binding(ProgramDto model)
+        public override void Binding(ProgramDto model, bool isSelected = false)
         {
             Id = model.Id;
             Name = model.Name;
             Type = model.MediaType;
             Resolution = model.Resolution;
-            Width = model.Resolution.Split("*")[0];
-            Height = model.Resolution.Split("*")[1];
+            Width = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[0];
+            Height = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[1];
             Size = model.Size;
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
@@ -108,14 +95,9 @@ namespace MediaControlDistributionCenter.ViewModels
             Status = model.Status;
             GroupId = model.GroupId;
             UserId = model.UserAccount;
-            IsSelected = false;
+            IsSelected = isSelected;
             Group = model.ProgramGroupName ?? "未分组";
             RackingBtnContent = model.Status == 1 ? "下架" : "上架";
-        }
-        [RelayCommand]
-        private void Submit(MediaViewModel viewModel)
-        {
-            ValidateAllProperties();
         }
         
         [RelayCommand]

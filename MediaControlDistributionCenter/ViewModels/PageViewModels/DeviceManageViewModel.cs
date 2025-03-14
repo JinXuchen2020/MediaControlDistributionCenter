@@ -1,22 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
-using MediaControlDistributionCenter.Data.Entity;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Text.RegularExpressions;
-using MediaControlDistributionCenter.Views.UserManagement;
-using System.Windows;
-using MediaControlDistributionCenter.Services.ApiImps;
-using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Services;
-using MaterialDesignThemes.Wpf;
-using MediaControlDistributionCenter.Converters;
-using Newtonsoft.Json;
-using System.IO;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -58,7 +45,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorGroupService = monitorGroupService;
         }
 
-        public void LoadData(long? groupId = null)
+        public override void LoadData(long? groupId = null)
         {
             var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto

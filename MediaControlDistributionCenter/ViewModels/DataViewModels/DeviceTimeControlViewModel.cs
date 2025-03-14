@@ -1,17 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class DeviceTimeControlViewModel : ObservableObject
+    public partial class DeviceTimeControlViewModel : DataViewModel<DeviceControlDto>
     {
         [ObservableProperty]
         public long id;
@@ -61,7 +53,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public bool isShow;
 
-        public DeviceControlDto ToModel()
+        public override DeviceControlDto ToModel()
         {
             return new DeviceControlDto
             {
@@ -79,7 +71,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public void Binding(DeviceControlDto model)
+        public override void Binding(DeviceControlDto model, bool isSelected = false)
         {
             DeviceId = model.DeviceId;
             Id = model.Id;
@@ -92,7 +84,7 @@ namespace MediaControlDistributionCenter.ViewModels
             EndDate = DateTime.Parse(model.ValidDateEnd);
             ValidPeriod = $"{model.ValidDateStart}-{model.ValidDateEnd}";
             StatusText = GetStatus();
-            IsSelected = false;
+            IsSelected = isSelected;
             RepeatMode = model.RepeatMode;
             UserAccount = model.UserAccount;
         }

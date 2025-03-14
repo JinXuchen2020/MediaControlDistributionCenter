@@ -1,41 +1,31 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
-using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SqlSugar;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class DeviceViewModel : ObservableObject
+    public partial class DeviceViewModel : DataViewModel<MonitorDto>
     {
         [ObservableProperty]
         private long id;
 
         [ObservableProperty]
+        [Required]
         private string name;
 
         [ObservableProperty]
+        [Required]
         private string sNumber;
 
         [ObservableProperty]
+        [Required]
         private string resolution;
 
         [ObservableProperty]
@@ -72,21 +62,27 @@ namespace MediaControlDistributionCenter.ViewModels
         private string ownerName;
 
         [ObservableProperty]
+        [Required]
         private double width;
 
         [ObservableProperty]
+        [Required]
         private double height;
 
         [ObservableProperty]
+        [Required]
         private string startDate;
 
         [ObservableProperty]
+        [Required]
         private string endDate;
 
         [ObservableProperty]
+        [Required]
         private string contactName;
 
         [ObservableProperty]
+        [Required]
         private string contactNumber;
 
         [ObservableProperty]
@@ -114,7 +110,7 @@ namespace MediaControlDistributionCenter.ViewModels
             client = new Communication();
         }
 
-        public MonitorDto ToModel()
+        public override MonitorDto ToModel()
         {
             return new MonitorDto
             {
@@ -137,7 +133,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public void Binding(MonitorDto model)
+        public override void Binding(MonitorDto model, bool isSelected = false)
         {
             Id = model.Id;
             Name = model.Name;
@@ -149,8 +145,8 @@ namespace MediaControlDistributionCenter.ViewModels
             UserId = model.UserAccount;
             OwnerName = model.UserName;
             Group = model.MonitorGroupName ?? "未分组";
-            IsSelected = false;
-            StatusText = model.Status;
+            IsSelected = isSelected;
+            StatusText = "未知";
             Enabled = model.Enabled;
             EnableBtnContent = model.Enabled ==  0 ? "启用" : "停用";
             Width = model.Width;
@@ -304,7 +300,5 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             
         }
-
-
     }
 }

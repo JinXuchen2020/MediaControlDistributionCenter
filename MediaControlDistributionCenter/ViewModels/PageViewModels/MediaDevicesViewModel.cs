@@ -6,13 +6,8 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -29,18 +24,17 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
 
-        public MediaDevicesViewModel(IMonitorService monitorService) 
+        public MediaDevicesViewModel(MediaEditViewModel mediaEditViewModel, MediaManageViewModel mediaManageViewModel, IMonitorService monitorService) 
         {
             this.monitorService = monitorService;
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
+            currentMedia = mediaManageViewModel.SelectedMedia ?? mediaEditViewModel.CurrentMedia;
         }
 
-        public void SetValues(MediaViewModel mediaViewModel)
+        public override void LoadData(long? groupId = null)
         {
-            CurrentMedia = mediaViewModel;
-
             var devices = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c => 
+            Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);

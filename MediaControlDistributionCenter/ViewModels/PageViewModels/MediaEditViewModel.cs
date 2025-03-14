@@ -1,23 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaEditViewModel : ObservableObject
+    public partial class MediaEditViewModel : PageViewModel
     {
         private const string DialogHostId = "RootDialogHostId";
         public UserViewModel CurrentUser { get; set; }
@@ -62,6 +53,11 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = programService;
         }
 
+        public override void LoadData(long? groupId = null)
+        {
+            return;
+        }
+
         public void SetValues(Canvas canvas)
         {
             MediaConfig? config = null;
@@ -94,6 +90,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 SelectedPage.IsSelected = true;
             }
         }
+
         [RelayCommand]
         private async Task ShowDialog(ObservableObject content)
         {

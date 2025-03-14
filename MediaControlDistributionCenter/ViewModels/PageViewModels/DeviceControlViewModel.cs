@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
-using MediaControlDistributionCenter.Data.Entity;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Text.RegularExpressions;
-using MediaControlDistributionCenter.Views.UserManagement;
 using MediaControlDistributionCenter.Services;
-using System.Windows;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
-using MediaControlDistributionCenter.Services.ApiImps;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -77,6 +67,10 @@ namespace MediaControlDistributionCenter.ViewModels
             this.timeSyncConfigService = timeSyncConfigService;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
 
+            LoadData();
+        }
+        public override void LoadData(long? groupId = null)
+        {
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {

@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 namespace MediaControlDistributionCenter.Data.Entity
 {
     [SugarTable("DeviceMedias")]
-    public class DeviceMedia
+    public class DeviceMedia : BaseModel
     {
-        [SugarColumn(IsPrimaryKey = true)]
         public long DeviceId { get; set; }
 
-        [SugarColumn(IsPrimaryKey = true)]
         public long MediaId { get; set; }
     }
 }

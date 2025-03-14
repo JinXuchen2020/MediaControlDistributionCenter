@@ -258,7 +258,7 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SaveCommand.Execute(null);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
-            viewModel.SetValues(manageViewModel.CurrentMedia);
+            viewModel.LoadData();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -577,7 +577,7 @@ namespace MediaControlDistributionCenter.Views
                             Direction = "向右滚动",
                             Timeline = 5,
                             Background ="black",
-                            TextColor = "black",
+                            TextColor = "white",
                             TextSize = 16,
                             IsLoopEnabled = true,
                             LetterSpacing = 2,

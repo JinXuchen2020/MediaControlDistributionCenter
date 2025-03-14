@@ -3,12 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -39,6 +33,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser.Binding(loginUser!);
                 IsLogin = true;
             }
+        }
+
+        public override void LoadData(long? groupId = null)
+        {
+            return;
         }
     }
 }

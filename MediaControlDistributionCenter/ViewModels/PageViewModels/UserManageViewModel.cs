@@ -1,20 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Views.CustomControls;
-using MediaControlDistributionCenter.Views.UserManagement;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Services.ApiImps;
-using MaterialDesignThemes.Wpf;
+using MediaControlDistributionCenter.Views.CustomControls;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -42,7 +32,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userGroupService = userGroupService;
         }
 
-        public void LoadData(long? groupId = null)
+        public override void LoadData(long? groupId = null)
         {
             var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
             groups.Insert(0, new UserGroupDto
@@ -55,7 +45,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.Groups = new ObservableCollection<UserGroupViewModel>(groups.Select(c =>
             {
                 var viewModel = new UserGroupViewModel();
-                viewModel.Binding(c, groupId == null ? c.Id == -1 : c.Id == groupId);
+                viewModel.Binding(c, c.Id == (groupId ?? -1) ? true : false);
                 return viewModel;
             }));
 
@@ -94,6 +84,8 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 return;
             }
+
+            userViewModel.AgentId = Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.AgentId;
             var response = await userService.Save(userViewModel.ToModel());
             if (response.Code == 200)
             {
@@ -130,6 +122,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveGroup(UserGroupViewModel viewModel)
         {
+            viewModel.SubmitCommand.Execute(null);
+            if (viewModel.HasErrors)
+            {
+                return;
+            }
             var response = await userGroupService.Save(viewModel.ToModel());
             if(response.Code == 200)
             {
@@ -145,8 +142,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
             foreach (var user in selectedUsers)
             {
-                user.GroupId = viewModel.Id;
-                user.AgentId = viewModel.AgentId ?? user.AgentId;
+                user.GroupId = viewModel.Id == -1 ? null : viewModel.Id;
+                user.AgentId = viewModel.AgentId;
 
                 user.IsSelected = false;
                 var response = await userService.Save(user.ToModel());

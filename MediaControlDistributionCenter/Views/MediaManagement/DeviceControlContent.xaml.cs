@@ -30,6 +30,7 @@ namespace MediaControlDistributionCenter.Views
         {
             InitializeComponent();
             manageViewModel = deviceControlViewModel;
+            manageViewModel.LoadData();
             DataContext = manageViewModel;
             InitPage("Brightness");
         }
@@ -166,27 +167,12 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
             manageViewModel.CurrentDevice = viewModel;
-            if (viewModel != null)
+            if(manageViewModel.CurrentDevice != null)
             {
-                viewModel.StatusText = viewModel.GetStatus();
-                manageViewModel.GetDeviceTimeControlsCommand.Execute(null);
-                dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+                manageViewModel.CurrentDevice.StatusText = manageViewModel.CurrentDevice.GetStatus();
+            }
 
-                if (!string.IsNullOrEmpty(manageViewModel.CommandTypeColumnName))
-                {
-                    var valueColumn = new DataGridTextColumn()
-                    {
-                        Binding = new Binding("Value") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
-                        Header = manageViewModel.CommandTypeColumnName
-                    };
-                    dgTimeControls.Columns.Insert(1, valueColumn);
-                }
-            }
-            else
-            {
-                var valueColumn = dgTimeControls.Columns.FirstOrDefault(c => c.Header.ToString() == manageViewModel.CommandTypeColumnName);
-                dgTimeControls.Columns.Remove(valueColumn);
-            }
+            RefreshData();
         }
 
         private void btnAddTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -236,9 +222,35 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SaveTimeControlCommand.Execute(viewModel);
         }
 
+        private void RefreshData()
+        {
+            if (manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.GetDeviceTimeControlsCommand.Execute(null);
+                dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+
+                if (!string.IsNullOrEmpty(manageViewModel.CommandTypeColumnName))
+                {
+                    var valueColumn = new DataGridTextColumn()
+                    {
+                        Binding = new Binding("Value") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
+                        Header = manageViewModel.CommandTypeColumnName
+                    };
+                    dgTimeControls.Columns.Insert(1, valueColumn);
+                }
+            }
+        }
+
         private void UpdatePageContent(string commandType)
         {
-            var manageViewModel = (DataContext as DeviceControlViewModel)!;
+            if (commandType  == manageViewModel.CommandTypeColumnName)
+            {
+                return;
+            }
+
+            var valueColumn = dgTimeControls.Columns.FirstOrDefault(c => c.Header.ToString() == manageViewModel.CommandTypeColumnName);
+            dgTimeControls.Columns.Remove(valueColumn);
+
             manageViewModel.CommandType = commandType;
             manageViewModel.CommandRTValue = null;
             manageViewModel.DeviceTimeControls = null;
@@ -275,6 +287,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
+            RefreshData();
         }
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)

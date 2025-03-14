@@ -1,15 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -39,6 +31,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 LoginUser = dashboardViewModel.CurrentUser;
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
+        }
+
+        public override void LoadData(long? groupId = null)
+        {
+            return;
         }
 
         [RelayCommand]

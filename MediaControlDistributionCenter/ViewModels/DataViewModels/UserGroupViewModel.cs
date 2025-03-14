@@ -1,18 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Controls.Primitives;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class UserGroupViewModel : ObservableObject
+    public partial class UserGroupViewModel : DataViewModel<UserGroupDto>
     {
         [ObservableProperty]
         private string name;
@@ -31,7 +23,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public bool IsUpdated { get; set; }
 
-        public UserGroupDto ToModel()
+        public override UserGroupDto ToModel()
         {
             return new UserGroupDto
             {
@@ -40,7 +32,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 AgentAccount = AgentId,
             };
         }
-        public void Binding(UserGroupDto model, bool isSelected = false)
+        public override void Binding(UserGroupDto model, bool isSelected = false)
         {
             Name = model.Name;
             Id = model.Id;

@@ -32,7 +32,12 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            var selectedGroup = (UserGroupViewModel)cbGroups.SelectedValue;
+            var selectedGroup = cbGroups.SelectedValue as UserGroupViewModel;
+            if (selectedGroup == null) 
+            {
+                MessageBox.Show("请选择组!");
+                return;
+            }
             var manageViewModel = (DataContext as UserManageViewModel)!;
 
             manageViewModel.ChangeGroupCommand.Execute(selectedGroup);

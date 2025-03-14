@@ -43,6 +43,12 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
             InitializeComponent();
         }
+        private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+            }
+        }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)
         {
@@ -91,6 +97,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             viewModel.UserId = manageViewModel.CurrentUser.Account;
             viewModel.OwnerName = userService.GetAll(new UserDto { Account = manageViewModel.CurrentUser.Account}).GetAwaiter().GetResult().Data!.First().Company;
             viewModel.DeviceId = "";
+            viewModel.Status = 1;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 

@@ -43,8 +43,9 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaManageViewModel)!;
-            manageViewModel.ShowDialogCommand.Execute(new MediaGroupViewModel());
+            var groupViewModel = new MediaGroupViewModel();
+            groupViewModel.UserId = manageViewModel.CurrentUser.Account;
+            manageViewModel.ShowDialogCommand.Execute(groupViewModel);
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -53,7 +54,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var groupViewModel = ((sender as StackPanel).DataContext as MediaGroupViewModel)!;
             groupViewModel.IsSelected = true;
 
-            manageViewModel.LoadData(groupViewModel.Id);
+            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
@@ -168,8 +169,10 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             fileService.CreatZip(sourceDic, desZipFilePath);
 
+
+            manageViewModel.SelectedMedia = selectedMedia;
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
-            viewModel.SetValues(selectedMedia);
+            viewModel.LoadData();
             selectedMedia.IsSelected = false;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
@@ -178,12 +181,12 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         {
             var viewModel = ((sender as Button).DataContext as MediaViewModel)!;  
             viewModel.Resolution = $"{viewModel.Width}*{viewModel.Height}";
-            viewModel.Group = viewModel.Group ?? "未分组";
             viewModel.LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
             manageViewModel.SaveMediaCommand.Execute(viewModel);
             if (!viewModel.HasErrors)
             {
+                manageViewModel.SelectedMedia = viewModel;
                 var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
             }
@@ -196,8 +199,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if (viewModel.Id != 0)
             {
-                var content = serviceProvider.GetRequiredService<MediaEdit>();
                 manageViewModel.SelectedMedia = viewModel;
+                var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
             }
         }
