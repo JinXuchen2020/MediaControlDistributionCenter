@@ -15,7 +15,7 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public class MediaConfig
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; }
 

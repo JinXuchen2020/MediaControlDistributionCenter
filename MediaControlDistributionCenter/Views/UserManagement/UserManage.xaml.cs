@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,21 +29,16 @@ namespace MediaControlDistributionCenter.Views.UserManagement
     /// </summary>
     public partial class UserManage : UserControl
     {
-        private IUserService userService;
-        public UserManage(UserViewModel userViewModel)
+        private readonly UserManageViewModel manageViewModel;
+
+        private readonly IServiceProvider serviceProvider;
+
+        public UserManage(UserManageViewModel userManageViewModel, IServiceProvider serviceProvider)
         {
-            userService = new UserService();
-
-            var groups = userService.GetUserGroups(userViewModel.Role == "agent" ? userViewModel.Id : null).GetAwaiter().GetResult().ToList();
-            groups.Insert(0, new UserGroupViewModel(new UserGroup
-            {
-                Id = -1,
-                Name = "全部",
-                AgentId = userViewModel.Id,
-            }, true));
-            var users = userService.GetUsers(userViewModel.Role == "agent" ? userViewModel.Id : null).GetAwaiter().GetResult();
-
-            DataContext = new UserManageViewModel(userViewModel, users, groups);
+            this.serviceProvider = serviceProvider;
+            manageViewModel = userManageViewModel;
+            manageViewModel.LoadData();
+            DataContext = manageViewModel;
             InitializeComponent();
         }
 
@@ -55,33 +51,16 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 return;
             }
 
-            var userControllers = new UserControllers(userViewModel);
-            (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
+            manageViewModel.SelectedUser = userViewModel;
+            var content = serviceProvider.GetRequiredService<UserControllers>();
+            (App.Current.MainWindow as MainWindow).GoContent(content, 2);
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             var userViewModel = ((sender as Button).DataContext as UserViewModel)!;
-            userViewModel.Group = userViewModel.Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.Name ?? "未分组";
-            //userViewModel.SaveCommand.Execute(null);
 
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-            var existUser = manageViewModel.Users.FirstOrDefault(c => c.Account == userViewModel.Account);
-            if (existUser != null) 
-            {
-                existUser = userViewModel;
-                //manageViewModel.Users.Remove(existUser);
-                //manageViewModel.Users.Add(userViewModel);
-                SQLite.UpdateTable<User>(userViewModel.ToModel());
-                manageViewModel.CloseDialogCommand.Execute(null);
-            }
-            else
-            {
-                userViewModel.Id = SQLite.InserTable<User>(userViewModel.ToModel());
-                manageViewModel.Users.Add(userViewModel);
-                manageViewModel.CloseDialogCommand.Execute(null);
-                userViewModel.ShowConfirmDialogCommand.Execute(null);
-            }
+            manageViewModel.SaveUserCommand.Execute(userViewModel);
         }
 
         private void btnRegister_MouseDown(object sender, MouseButtonEventArgs e)
@@ -91,14 +70,13 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             {
                 Role = "user"
             };
-            viewModel.Groups = manageViewModel.Groups;
+            viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as UserViewModel)!;
-            var manageViewModel = (DataContext as UserManageViewModel)!;
             viewModel.Groups = manageViewModel.Groups;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
@@ -106,35 +84,43 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as UserViewModel)!;
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-            manageViewModel.Users.Remove(viewModel);
-            SQLite.DeleteById<User>(viewModel.Id);
+            manageViewModel.DeleteUserCommand.Execute(viewModel);
         }
 
         private void btnChangeGroup_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-            var dialogBox = new UserChangeGroupDialog(manageViewModel);
+            var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected);
+            if(selectedUsers.Count() == 0)
+            {
+                MessageBox.Show("请选择用户！");
+                return;
+            }
+
+            if (selectedUsers.Any(c => c.Role == "agent"))
+            {
+                MessageBox.Show("代理商无法变更组！");
+                return;
+            }
+
+            var dialogBox = serviceProvider.GetRequiredService<UserChangeGroupDialog>();
             manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
         }
 
         private void btnDeleteAll_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
             var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected).ToList();
-            if (selectedUsers.Any()) 
+            if (selectedUsers.Count == 0)
             {
-                foreach(var user in selectedUsers)
-                {
-                    manageViewModel.Users.Remove(user);
-                    SQLite.DeleTeable<User>(user.ToModel());
-                }
+                MessageBox.Show("请选择用户！");
+                return;
             }
+
+            manageViewModel.DeleteUserBatchCommand.Execute(null);
+            manageViewModel.LoadData();
         }
 
         private void btnGroupAdd_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
             var groupViewModel = new UserGroupViewModel();
             groupViewModel.Agents = manageViewModel.CurrentUser.Role == "agent" ? new List<UserViewModel> { manageViewModel.CurrentUser }
                     : manageViewModel.Users.Where(c => c.Role == "agent").ToList();
@@ -143,33 +129,15 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-            manageViewModel.Groups.First(c => c.IsSelected).IsSelected = false;
             var groupViewModel = ((sender as StackPanel).DataContext as UserGroupViewModel)!;
-            groupViewModel.IsSelected = true;
-
-            var viewModels = userService.GetUsers(
-                    manageViewModel.CurrentUser.Role == "agent" ? manageViewModel.CurrentUser.Id : null,
-                    groupViewModel.Id != -1 ? groupViewModel.Id : null).GetAwaiter().GetResult();
-            manageViewModel.Users = new ObservableCollection<UserViewModel>(viewModels);
+            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
         }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-
             var groupViewModel = ((sender as Button).DataContext as UserGroupViewModel)!;
-            if(groupViewModel.Id == 0)
-            {
-                groupViewModel.Id = SQLite.InserTable(groupViewModel.ToModel());
-                manageViewModel.Groups.Add(groupViewModel);
-            }
-            else
-            {
-                SQLite.UpdateTable(groupViewModel.ToModel());
-            }
 
-            manageViewModel.CloseDialogCommand.Execute(false);
+            manageViewModel.SaveGroupCommand.Execute(groupViewModel);
         }
     }
 }

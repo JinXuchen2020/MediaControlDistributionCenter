@@ -1,4 +1,5 @@
-﻿using SqlSugar;
+﻿using Newtonsoft.Json;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,44 +14,79 @@ namespace MediaControlDistributionCenter.Data.Entity
     /// 用户
     /// </summary>
     [SugarTable("Users")]
-    public class User
+    public class User : BaseModel
     {
         /// <summary>
-        /// 唯一标识符
+        /// 账号
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        [Required(ErrorMessage = "用户名不能为空")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 登录账号id
-        /// </summary>
-        [Required(ErrorMessage = "登录账号")]
+        [Required]
         public string Account { get; set; }
-         
+
         /// <summary>
         /// 密码
         /// </summary>
-        [Required(ErrorMessage = "登录账号密码")]
+        [Required]
         public string Password { get; set; }
 
+        /// <summary>
+        /// 所属代理商账号
+        /// </summary>
         [SugarColumn(IsNullable = true)]
-        public string Region { get; set; } = string.Empty;
+        public string AgentAccount { get; set; }
 
+        /// <summary>
+        /// 公司
+        /// </summary>
+        [Required]
+        public string Company { get; set; }
 
-        [Required(ErrorMessage = "账号权限")]
+        /// <summary>
+        /// 联系方式
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string Contact { get; set; }
+
+        /// <summary>
+        /// 邮箱
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 功能字段
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string Feature { get; set; }
+
+        /// <summary>
+        /// logo地址
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string LogoSrc { get; set; }
+
+        /// <summary>
+        /// 地区
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string Region { get; set; }
+
+        /// <summary>
+        /// 权限
+        /// </summary>
+        [Required]
         public string Role { get; set; } = "user";
 
-        [SugarColumn(IsNullable = true)]
-        public int? GroupId { get; set; }
+        /// <summary>
+        /// 状态，1表示正常运营，0表示停止运营
+        /// </summary>
+        [Required]
+        public int Status { get; set; }
 
+        /// <summary>
+        /// 用户分组id
+        /// </summary>
         [SugarColumn(IsNullable = true)]
-        public int? AgentId { get; set; }
+        public long? UserGroupId { get; set; }
 
         [SugarColumn(IsIgnore = true)]
         public UserGroup? Group { get; set; }

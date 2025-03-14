@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.MediaManagement;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,11 +26,24 @@ namespace MediaControlDistributionCenter.Views.UserManagement
     /// </summary>
     public partial class UserControllers : UserControl
     {
-        public UserControllers(UserViewModel userViewModel)
+        private readonly UserControllerViewModel manageViewModel;
+        private readonly IServiceProvider serviceProvider;
+
+        public UserControllers(UserControllerViewModel viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            DataContext = new UserControllerViewModel(userViewModel);
-            TabContentControl.Content = new MediaManage(userViewModel);
+            this.serviceProvider = serviceProvider;
+
+            viewModel.SetValues("MediaManage", "媒体管理");
+            manageViewModel = viewModel;
+
+            DataContext = manageViewModel;
+            TabContentControl.Content = serviceProvider.GetRequiredService<MediaManage>();
+        }
+
+        public void InitPage(string tabName, string pageName)
+        {
+            manageViewModel.SetValues(tabName, pageName);
         }
 
         private void TopMenu_MouseDown(object sender, MouseButtonEventArgs e)
@@ -37,23 +51,22 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             TextBlock topMenu = sender as TextBlock;
             var menuName = topMenu!.Name;
 
-            var viewModel = (topMenu.DataContext as UserControllerViewModel)!;
-            viewModel.CurrentTabName = menuName;
-            viewModel.CurrentPageName = topMenu.Text;
+            manageViewModel.CurrentTabName = menuName;
+            manageViewModel.CurrentPageName = topMenu.Text;
 
             switch (menuName)
             {
                 case "MediaManage":
-                    GoCotent(new MediaManage(viewModel.CurrentUser), 1);
+                    GoCotent(serviceProvider.GetRequiredService<MediaManage>(), 1);
                     break;
                 case "DeviceManage":
-                    GoCotent(new DeviceManage(viewModel.CurrentUser), 2);
+                    GoCotent(serviceProvider.GetRequiredService<DeviceManage>(), 2);
                     break;
                 case "DeviceControl":
-                    GoCotent(new DeviceControlContent(viewModel.CurrentUser), 3);
+                    GoCotent(serviceProvider.GetRequiredService<DeviceControlContent>(), 3);
                     break;
                 case "Settings":
-                    GoCotent(new UserSettingsContent(viewModel.CurrentUser), 4);
+                    GoCotent(serviceProvider.GetRequiredService<UserSettingsContent>(), 4);
                     break;
             }
         }

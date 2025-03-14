@@ -58,11 +58,11 @@
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="组：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="分组：" />
                                         <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="ID：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="账号：" />
                                         <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -126,7 +126,7 @@
 
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
                                         <TextBlock Width="60" VerticalAlignment="Center" Text="代理商：" />
-                                        <ComboBox x:Name="cbGroups" ItemsSource="{Binding Agents}" DisplayMemberPath="Name" SelectedValue="{Binding AgentId}" SelectedValuePath="Id" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                        <ComboBox x:Name="cbGroups" ItemsSource="{Binding Agents}" DisplayMemberPath="Name" SelectedValue="{Binding AgentId}" SelectedValuePath="Account" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -249,10 +249,10 @@
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Header="选择" Width="60"
-                                Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
-                                ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
-                                IsReadOnly="False"
-                                CanUserSort="False"/>
+                                        Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                        ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
+                                        IsReadOnly="False"
+                                        CanUserSort="False"/>
                                     <DataGridTemplateColumn Header="功能"  Width="160" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -269,7 +269,8 @@
                                     </DataGridTemplateColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Role}" Header="权限" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="组"  />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}" Header="ID" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}" Header="账号" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding AgentId}" Header="所属代理商" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="公司名称" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Region}" Header="地区" />
                                     <DataGridTemplateColumn Header="操作"  Width="160" >

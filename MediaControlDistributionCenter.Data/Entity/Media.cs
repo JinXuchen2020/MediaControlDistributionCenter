@@ -9,51 +9,42 @@ using System.Threading.Tasks;
 namespace MediaControlDistributionCenter.Data.Entity
 {
     [SugarTable("Medias")]
-    public class Media
+    public class Media : BaseModel
     {
         /// <summary>
-        /// 唯一标识符
+        /// 媒体名称
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "名称不能为空")]
+        [Required]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "类型不能为空")]
-        public string Type { get; set; }
+        /// <summary>
+        /// 媒体文件的后缀，如 jpg, mp4 等
+        /// </summary>
+        [Required]
+        public string Extension { get; set; }
 
-        [Required(ErrorMessage = "分辨率不能为空")]
+        /// <summary>
+        /// 分辨率
+        /// </summary>
+        [Required]
         public string Resolution { get; set; }
 
-        [Required(ErrorMessage = "大小不能为空")]
-        public string Size { get; set; }
+        /// <summary>
+        /// 媒体大小（MB）
+        /// </summary>
+        [Required]
+        public double? Size { get; set; }
 
-        [Required(ErrorMessage = "大小不能为空")]
-        public int ScreensCount { get; set; }
-
-        [Required(ErrorMessage = "大小不能为空")]
-        public DateTime LastUpdatedTime { get; set; }
-
-        [Required(ErrorMessage = "大小不能为空")]
-        public string CreatedSource { get; set; }
-
-        [Required(ErrorMessage = "大小不能为空")]
-        public int Status { get; set; }
-
+        /// <summary>
+        /// 媒体下载地址
+        /// </summary>
         [SugarColumn(IsNullable = true)]
-        public int? GroupId { get; set; }
-        [Required(ErrorMessage = "用户Id")]
-        public int UserId { get; set; }
+        public string Src { get; set; }
 
-        [Navigate(typeof(DeviceMedia), nameof(DeviceMedia.MediaId), nameof(DeviceMedia.DeviceId))]
-        public IList<Device> Devices { get; set; }
-
-        [SugarColumn(IsIgnore = true)]
-        public User User { get; set; }
-
-        [SugarColumn(IsIgnore = true)]
-        public MediaGroup? Group { get; set; }
-
+        /// <summary>
+        /// 媒体类型（IMAGE: 图片, VIDEO: 视频）
+        /// </summary>
+        [Required]
+        public string Type { get; set; }
     }
 }

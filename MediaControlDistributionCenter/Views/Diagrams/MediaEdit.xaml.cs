@@ -8,6 +8,7 @@ using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.Diagrams;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using SqlSugar;
@@ -39,40 +40,18 @@ namespace MediaControlDistributionCenter.Views
     public partial class MediaEdit : UserControl
     {
         private IFileService fileService;
-        private IDeviceService deviceService;       
-
-        public MediaEdit(MediaViewModel currentMedia, UserViewModel currentUser, bool showNavigation)
+        private readonly IServiceProvider serviceProvider;
+        private readonly MediaEditViewModel manageViewModel;
+        
+        public MediaEdit(MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            deviceService = new DeviceService();
-            fileService = new FileServiceLocal();
-            MediaConfig? config = null;
-            if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, currentMedia.Name)))
-            {
-                config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, currentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
-                if (config != null)
-                {
-                    config.Width = string.IsNullOrEmpty(currentMedia.Width) ? 0 : double.Parse(currentMedia.Width);
-                    config.Height = string.IsNullOrEmpty(currentMedia.Height) ? 0 : double.Parse(currentMedia.Height);
-                    config.Name = currentMedia.Name;
-                    config.Ratio = MainCanvas.Width / double.Parse(currentMedia.Width);
-                }
-            }
+            this.fileService = fileService;
+            this.serviceProvider = serviceProvider;
 
-            config ??= new MediaConfig
-            {
-                Id = currentMedia.Id,
-                Name = currentMedia.Name,
-                Width = string.IsNullOrEmpty(currentMedia.Width) ? 0 : double.Parse(currentMedia.Width),
-                Height = string.IsNullOrEmpty(currentMedia.Height) ? 0 : double.Parse(currentMedia.Height),
-                Ratio = MainCanvas.Width / double.Parse(currentMedia.Width),
-                Pages = new List<MediaPage>()
-            };
-
-            var configViewModel = new MediaConfigViewModel(config);
-            var viewModel = new MediaEditViewModel(currentMedia, currentUser, configViewModel);
-            viewModel.ShowNavigation = showNavigation;
-            DataContext = viewModel;
+            manageViewModel = mediaEditViewModel;
+            manageViewModel.SetValues(MainCanvas);
+            DataContext = mediaEditViewModel;
 
             this.Loaded += MediaEdit_Loaded;
             this.Unloaded += MediaEdit_Unloaded;
@@ -81,14 +60,12 @@ namespace MediaControlDistributionCenter.Views
         private void MediaEdit_Unloaded(object sender, RoutedEventArgs e)
         {
             MainCanvas.Children.Clear();
-            var viewModel = (DataContext as MediaEditViewModel)!;
-            viewModel.DisposeCommand.Execute(null);
+            manageViewModel.DisposeCommand.Execute(null);
         }
 
         private void MediaEdit_Loaded(object sender, RoutedEventArgs e)
         {
-            var viewModel = (DataContext as MediaEditViewModel)!;
-            LoadCanvasComponents(viewModel);
+            LoadCanvasComponents(manageViewModel);
         }
 
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
@@ -120,17 +97,15 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnBack_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var viewModel = (DataContext as MediaEditViewModel)!;
-
-            if (viewModel.ShowNavigation)
+            if (manageViewModel.ShowNavigation)
             {
-                var content = new MediaManage(viewModel.CurrentUser, true);
-                (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
+                var content = serviceProvider.GetRequiredService<MediaManage>();
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
             }
             else
             {
-                var userControllers = new UserControllers(viewModel.CurrentUser!);
-                (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
+                var content = serviceProvider.GetRequiredService<UserControllers>();
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
             }
         }
 
@@ -178,7 +153,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void UpdateFileComponent(string filePath, double left = 0 , double top = 0)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var pageViewModel = manageViewModel.SelectedPage;
             var currentComponent = pageViewModel!.Components.FirstOrDefault(c => c!.IsSelected);
             if (currentComponent == null)
@@ -248,15 +222,13 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = (DataContext as MediaEditViewModel)!;
-
-            if (viewModel.MediaConfig.Pages.Count == 0)
+            if (manageViewModel.MediaConfig.Pages.Count == 0)
             {
                 MessageBox.Show("请先创建页面!");
                 return;
             }
 
-            var configModel = viewModel.MediaConfig.ToModel();
+            var configModel = manageViewModel.MediaConfig.ToModel();
 
             var configContent = JsonConvert.SerializeObject(configModel);
 
@@ -264,14 +236,11 @@ namespace MediaControlDistributionCenter.Views
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
-            viewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
+            manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            //发布时将当前节目的所有资源打包，发布到机顶盒
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
-
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentMedia.Name);
 
             if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
@@ -285,27 +254,16 @@ namespace MediaControlDistributionCenter.Views
 
             var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;
 
-            manageViewModel.CurrentMedia.Size = fileSize.ToString("F2") + "MB";
-            SQLite.UpdateTable(manageViewModel.CurrentMedia.ToModel());
+            manageViewModel.CurrentMedia.Size = fileSize;
+            manageViewModel.SaveCommand.Execute(null);
 
-            var devices = deviceService.GetDevices().GetAwaiter().GetResult().ToList();
-            foreach (var device in devices)
-            {
-                if (device.MediaIds.Contains(manageViewModel.CurrentMedia.Id))
-                {
-                    device.IsSelected = true;
-                }
-            }
-
-            var viewModel = new MediaDevicesViewModel(manageViewModel.CurrentMedia, devices);
-            //viewModel.PublishCommand.Execute(null);
+            var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
+            viewModel.LoadData();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnPublishSave_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
-
             var viewModel = ((sender as Button).DataContext as MediaDevicesViewModel)!;
             this.Dispatcher.Invoke(async () =>
             {
@@ -313,7 +271,7 @@ namespace MediaControlDistributionCenter.Views
 
                 var screenCount = viewModel.Devices.Select(c => c.IsSelected).Count();
                 manageViewModel.CurrentMedia.ScreensCount = screenCount;
-                SQLite.UpdateTable(manageViewModel.CurrentMedia.ToModel());
+                manageViewModel.SaveCommand.Execute(null);
 
                 if (viewModel.PublishDevices.Count > 0)
                 {
@@ -337,7 +295,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void SelectDay_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var dayViewModel = ((sender as Button).DataContext as SchedulerDayViewModel)!;
             if(dayViewModel.IsSelected)
             {
@@ -353,7 +310,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void AddScheduler_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var schedulers = manageViewModel.SelectedPage.Schedulers;
 
             var newScheduler = new SchedulerViewModel(schedulers.Count() + 1, string.Empty, string.Empty, new List<int>());
@@ -362,7 +318,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void DeleteScheduler_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var schedulers = manageViewModel.SelectedPage.Schedulers;
 
             if (schedulers.Count > 1)
@@ -374,7 +329,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
             {
                 Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
@@ -384,7 +338,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageAdd_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var viewModel = new MediaPageViewModel(new MediaPage
             {
                 Id = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() + 1 : 1,
@@ -399,7 +352,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageSave_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var viewModel = ((sender as Button).DataContext as MediaPageViewModel)!;
             if (string.IsNullOrEmpty(viewModel.Name))
             {
@@ -420,7 +372,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if(manageViewModel.MediaConfig.Pages.Count > 1)
             {
                 var currentPage = manageViewModel.SelectedPage;
@@ -433,7 +384,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageUpOrder_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if (manageViewModel.MediaConfig.Pages.Count > 1)
             {
                 var prePage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order < manageViewModel.SelectedPage.Order);
@@ -450,7 +400,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDownOrder_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if (manageViewModel.MediaConfig.Pages.Count > 1)
             {
                 var nextPage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > manageViewModel.SelectedPage.Order);
@@ -467,7 +416,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void SelectPage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var viewModel = ((sender as StackPanel).DataContext as MediaPageViewModel)!;
             manageViewModel.MediaConfig.Pages.First(c => c.IsSelected).IsSelected = false;
             manageViewModel.SelectedPage = viewModel;
@@ -478,7 +426,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void SelectComponent_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var viewModel = ((sender as DockPanel).DataContext as BaseComponentViewModel)!;
             manageViewModel.SelectedElement = null;
             SwitchComponent(viewModel);
@@ -486,7 +433,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnComponentDelete_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if(manageViewModel.SelectedComponent != null)
             {
                 var currentCom = manageViewModel.SelectedComponent;
@@ -539,7 +485,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void SwitchComponent(BaseComponentViewModel viewModel)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if(manageViewModel.SelectedComponent != null)
             {
                 manageViewModel.SelectedComponent.IsSelected = false;
@@ -552,8 +497,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void PlayModeChanged_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
-
             var radioButton = sender as RadioButton;
             if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
             {
@@ -572,7 +515,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void CreateComponent_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var createBtn = (sender as StackPanel)!;
 
             if(manageViewModel.SelectedPage == null)
@@ -635,7 +577,7 @@ namespace MediaControlDistributionCenter.Views
                             Direction = "向右滚动",
                             Timeline = 5,
                             Background ="black",
-                            TextColor = "black",
+                            TextColor = "white",
                             TextSize = 16,
                             IsLoopEnabled = true,
                             LetterSpacing = 2,
@@ -667,7 +609,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPreview_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if (manageViewModel.MediaConfig.Pages.Count == 0)
             {
                 MessageBox.Show("请先创建页面!");
@@ -682,7 +623,6 @@ namespace MediaControlDistributionCenter.Views
         {
             if(sender is CustomIcon packIcon)
             {
-                var manageViewModel = (DataContext as MediaEditViewModel)!;
                 var viewModel = (BaseComponentViewModel)packIcon.DataContext;
                 if (viewModel.IsFile)
                 {
@@ -702,7 +642,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void Level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
             {
                 Canvas.SetZIndex(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.ZIndex);
@@ -713,22 +652,18 @@ namespace MediaControlDistributionCenter.Views
         {
             if(sender is TextBox textBox)
             {
-                var viewModel = (MediaEditViewModel)textBox.DataContext;
-                ((TextComponentViewModel)viewModel.SelectedComponent).Foreground = (Color)ColorConverter.ConvertFromString(textBox.Text);
+                ((TextComponentViewModel)manageViewModel.SelectedComponent).Foreground = (Color)ColorConverter.ConvertFromString(textBox.Text);
             }
-
         }
 
         private void SelectColor_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             var viewModel = (TextComponentViewModel)manageViewModel.SelectedComponent;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnUpload_Click(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             if (openFileDialog.ShowDialog() == true)
@@ -742,7 +677,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageCapture_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as MediaEditViewModel)!;
             if(manageViewModel.SelectedPage != null)
             {
                 manageViewModel.SelectedPage.CaptureCommand.Execute(MainCanvas);

@@ -2,8 +2,11 @@
 using System.Windows;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace MediaControlDistributionCenter
@@ -13,6 +16,8 @@ namespace MediaControlDistributionCenter
     /// </summary>
     public partial class App : Application
     {
+        public static IServiceProvider ServicesProvider { get; private set; }
+
         //public static MainWindow MainWindow;
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -22,23 +27,44 @@ namespace MediaControlDistributionCenter
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // 加载 appsettings.json 配置文件
                 .Build();
 
+            var services = new ServiceCollection();
+
+            var connectionMode = new ConnectionMode();
+            configuration.Bind("ConnectionMode", connectionMode);
+            services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
+
+            if (connectionMode.Mode == "Local")
+            {
+                services.AddLocalServices();
+            }
+            else
+            {
+                services.AddRemoteServices();
+            }
+
+            services.AddPageViewServices();
+            services.AddPageViewModelServices();
+
+            ServicesProvider = services.BuildServiceProvider();
+
             // 2. 配置 Serilog
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)  // 从配置文件中读取配置
                 .CreateLogger();
-
-            // 3. 启动主窗口
-            //var mainWindow = new MainWindow();
-            //mainWindow.Show();
 
             LanguageTool.Instance.ChangeLanguageResourceHandle += ChangeLanguageResource;
             LanguageTool.Instance.FindResourceHandle += SICPFindResource;
             LanguageTool.Instance.InitLanguageResourceCache(GetLanguageResourceCache());
 
             SQLite.InitServer();
+            SQLite.InitTables();
 
             FtpServer server = new FtpServer();
             server.FtpServerStart();
+
+            // 3. 启动主窗口
+            var mainWindow = ServicesProvider.GetRequiredService<Login>();
+            mainWindow.Show();
 
             // 4. 启动时记录日志
             Log.Information("Application started.");
@@ -65,7 +91,7 @@ namespace MediaControlDistributionCenter
         private void HandleException(Exception ex)
         {
             string message = $"An error occured: {ex.Message}";
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Log.Error(message);
         }
 
@@ -103,7 +129,7 @@ namespace MediaControlDistributionCenter
         private IDictionary<string, string> GetLanguageResourceCache()
         {
             IDictionary<string, string> languageResourceCache = new Dictionary<string, string>();
-            var languageResource = base.Resources.MergedDictionaries.FirstOrDefault(rItem => rItem.Contains("LanuageKey_LanguageResourceKey"));
+            var languageResource = base.Resources.MergedDictionaries.FirstOrDefault(rItem => rItem.Contains("LanguageKey_LanguageResourceKey"));
             if (languageResource == null) return languageResourceCache;
             foreach (var key in languageResource.Keys)
             {

@@ -52,7 +52,6 @@
                 <Button HorizontalAlignment="Left" Width="122" Height="34"
                         Background="Transparent"
                         BorderBrush="Transparent"
-                        IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                         Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                         Click="ExitButton_Click"
                         ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}" Cursor="Hand">

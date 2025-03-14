@@ -32,21 +32,15 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            var selectedGroup = (UserGroupViewModel)cbGroups.SelectedValue;
-            var manageViewModel = (DataContext as UserManageViewModel)!;
-            var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected);
-
-            foreach (var user in selectedUsers)
+            var selectedGroup = cbGroups.SelectedValue as UserGroupViewModel;
+            if (selectedGroup == null) 
             {
-                user.GroupId = selectedGroup?.Id;
-                user.AgentId = selectedGroup?.AgentId ?? user.AgentId;
-                user.Group = manageViewModel.Groups.FirstOrDefault(c => c.Id == selectedGroup?.Id)?.Name ?? "未分组";
-               
-                user.IsSelected = false;
-                SQLite.UpdateTable<User>(user.ToModel());
+                MessageBox.Show("请选择组!");
+                return;
             }
+            var manageViewModel = (DataContext as UserManageViewModel)!;
 
-            DialogHost.CloseDialogCommand.Execute(null, null);
+            manageViewModel.ChangeGroupCommand.Execute(selectedGroup);
         }
     }
 }

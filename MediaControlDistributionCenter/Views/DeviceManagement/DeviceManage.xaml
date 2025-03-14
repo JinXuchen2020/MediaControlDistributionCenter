@@ -13,12 +13,12 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}">
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}" AllowDrop="True" >
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:DeviceGroupViewModel}">
-                        <DockPanel LastChildFill="False" Background="#090A0E">
+                        <DockPanel LastChildFill="False" Background="#090A0E" MouseDown="DragMove_MouseDown">
                             <Grid Width="889" Height="493" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -340,7 +340,7 @@
                             CanUserSort="False"/>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="显示器名称" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="分组" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}" Header="状态" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Enabled}" Header="状态" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding LastUpdatedTime}" Header="上次修改时间" />
                                     <DataGridTemplateColumn Width="1*" Header="当前节目">
                                         <DataGridTemplateColumn.CellTemplate>

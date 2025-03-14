@@ -21,6 +21,8 @@ using MediaControlDistributionCenter.Views.UserManagement;
 using MaterialDesignThemes.Wpf;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO.Models;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -29,152 +31,103 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     /// </summary>
     public partial class DeviceManage : UserControl
     {
-        private IDeviceService deviceService;
-        public DeviceManage(UserViewModel userViewModel, bool showNavigation = false)
-        {
-            deviceService = new DeviceService();
-            var deviceGroups = deviceService.GetDeviceGroups(userViewModel.Id).GetAwaiter().GetResult().ToList();
-            deviceGroups.Insert(0, new DeviceGroupViewModel(new DeviceGroup
-            {
-                Id = -1,
-                Name = "全部",
-                UserId = userViewModel.Id,
-            }, true));
+        private readonly DeviceManageViewModel manageViewModel;
+        private readonly IUserService userService;
 
-            var devices = deviceService.GetDevices(userViewModel.Id).GetAwaiter().GetResult();
-            var viewModel = new DeviceManageViewModel(userViewModel, deviceGroups, devices);
-            viewModel.ShowNavigation = showNavigation;
-            DataContext = viewModel;
+        public DeviceManage(DeviceManageViewModel deviceManageViewModel, IUserService userService)
+        {
+            this.userService = userService;
+            manageViewModel = deviceManageViewModel;
+            manageViewModel.LoadData();
+            DataContext = deviceManageViewModel;
 
             InitializeComponent();
+        }
+        private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+            }
         }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = (DataContext as DeviceManageViewModel)!;
-
             var groupViewModel = ((sender as Button).DataContext as DeviceGroupViewModel)!;
-            groupViewModel.Id = SQLite.InserTable(groupViewModel.ToModel());
-            viewModel.DeviceGroups.Add(groupViewModel);
-
-            viewModel.CloseDialogCommand.Execute(null);
+            manageViewModel.CreateGroupCommand.Execute(groupViewModel);
         }
 
         private void btnGroupAdd_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var groupViewModel = new DeviceGroupViewModel();
-            groupViewModel.UserId = manageViewModel.CurrentUser.Id;
+            groupViewModel.UserId = manageViewModel.CurrentUser.Account;
             manageViewModel.ShowDialogCommand.Execute(groupViewModel);
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
-            manageViewModel.DeviceGroups.First(c => c.IsSelected).IsSelected = false;
             var groupViewModel = ((sender as StackPanel).DataContext as DeviceGroupViewModel)!;
-            groupViewModel.IsSelected = true;
-
-            if (groupViewModel.Id != -1)
-            {
-                var devices = deviceService.GetDevices(manageViewModel.CurrentUser.Id, groupViewModel.Id).GetAwaiter().GetResult();
-                manageViewModel.Devices = new ObservableCollection<DeviceViewModel>(devices);
-            }
-            else
-            {
-                var devices = deviceService.GetDevices(manageViewModel.CurrentUser.Id).GetAwaiter().GetResult();
-                manageViewModel.Devices = new ObservableCollection<DeviceViewModel>(devices);
-            }
+            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            manageViewModel.ShowDialogCommand.Execute(viewModel.Clone());
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            if(viewModel.Status != -1)
+            if(viewModel.Enabled == 0)
             {
-                viewModel.Status = -1;
-                viewModel.StatusText = "停用";
-                viewModel.EnableBtnContent = "启用";
+                viewModel.Enabled = 1;
             }
             else
             {
-                viewModel.Status = 1;
-                viewModel.StatusText = "在线";
-                viewModel.EnableBtnContent = "停用";
+                viewModel.Enabled = 0;
             }
-            SQLite.UpdateTable(viewModel.ToModel());
+
+            manageViewModel.EnableDeviceCommand.Execute(viewModel);
         }
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = new DeviceViewModel();
-            viewModel.UserId = manageViewModel.CurrentUser.Id;
-            viewModel.OwnerName = SQLite.QueryTable<User>().First(x => x.Id == viewModel.UserId).Name;
+            viewModel.UserId = manageViewModel.CurrentUser.Account;
+            viewModel.OwnerName = userService.GetAll(new UserDto { Account = manageViewModel.CurrentUser.Account}).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.DeviceId = "";
+            viewModel.Status = 1;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
         private void btnChangeGroup_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
+            var selectedMedias = manageViewModel.Devices.Where(c => c.IsSelected);
+
+            if (selectedMedias.Count() == 0)
+            {
+                MessageBox.Show("请选择显示器！");
+                return;
+            }
+
             manageViewModel.ShowDialogCommand.Execute(manageViewModel);
         }
 
         private void btnChangeGroupConfirm_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
-            var selectedItems = manageViewModel.Devices.Where(c => c.IsSelected);
-
-            if(manageViewModel.SelectedGroupId != -1)
+            if (manageViewModel.SelectedGroupId == null || manageViewModel.SelectedGroupId == -1)
             {
-                foreach (var item in selectedItems)
-                {
-                    item.GroupId = manageViewModel.SelectedGroupId;
-                    item.Group = manageViewModel.DeviceGroups.FirstOrDefault(c => c.Id == manageViewModel.SelectedGroupId)?.Name ?? "未分组";
-
-                    item.IsSelected = false;
-                    SQLite.UpdateTable(item.ToModel());
-                }
+                MessageBox.Show("请选择有效分组！");
+                return;
             }
-
-            manageViewModel.SelectedGroupId = null;
-            DialogHost.CloseDialogCommand.Execute(null, null);
+            manageViewModel.ChangeGroupCommand.Execute(null);
         }
 
         private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
-
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            viewModel.Resolution = $"{viewModel.Width}*{viewModel.Height}";
-            viewModel.Group = manageViewModel.DeviceGroups.FirstOrDefault(c => c.Id == viewModel.GroupId)?.Name ?? "未分组";
-            viewModel.StatusText = viewModel.GetStatus();
-            viewModel.LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-            viewModel.EnableBtnContent = viewModel.Status == -1 ? "启用" : "停用";
-            var devices = manageViewModel.Devices.ToList();
-            var existIndex = devices.FindIndex(c => c.Id == viewModel.Id);
-            if (existIndex != -1)
-            {
-                devices.RemoveAt(existIndex);
-                devices.Insert(existIndex, viewModel);
-                manageViewModel.Devices = new ObservableCollection<DeviceViewModel>(devices);
-                SQLite.UpdateTable(viewModel.ToModel());
-            }
-            else
-            {
-                viewModel.Id = SQLite.InserTable(viewModel.ToModel());
-                manageViewModel.Devices.Add(viewModel);
-            }
-
-            manageViewModel.CloseDialogCommand.Execute(null);
+            manageViewModel.SaveDeviceCommand.Execute(viewModel);
         }
 
         private void btnDeviceCancel_Click(object sender, RoutedEventArgs e)
