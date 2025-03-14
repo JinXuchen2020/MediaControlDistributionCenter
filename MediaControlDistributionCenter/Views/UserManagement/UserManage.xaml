@@ -7,35 +7,41 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"             
              xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels"
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
-             xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.UserManagement"
+             xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.UserManagement" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              Height="1024" Width="1440">
     <UserControl.Resources>
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D"  Margin="20,8,20,0">
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D" Margin="20,8,20,0"  Placement="Center">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:UserViewModel}">
-                        <DockPanel LastChildFill="False" Background="#090A0E">
-                            <Grid Width="889" Height="709" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="2" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
+                        <Border Background="#090A0E" Padding="16">
+                            <i:Interaction.Behaviors>
+                                <i:MouseDragElementBehavior ConstrainToParentBounds="True"/>
+                            </i:Interaction.Behaviors>
 
-                                <StackPanel Margin="10">
-                                    <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Register}" />
-                                </StackPanel>
+                            <DockPanel LastChildFill="False" Background="#090A0E">
+                                <Grid Width="889" Height="709" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="2" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
 
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                    <Button Width="60" Height="38" HorizontalAlignment="Right"
+                                    <StackPanel Margin="10">
+                                        <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Register}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="10">
+                                        <Button Width="60" Height="38" HorizontalAlignment="Right"
                                         Background="#090A0E" Foreground="WhiteSmoke"
                                         BorderThickness="0"
                                         HorizontalContentAlignment="Center"
@@ -44,51 +50,52 @@
                                         materialDesign:ButtonAssist.CornerRadius="5"
                                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                         Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}" ToolTip="关闭"/>
-                                </StackPanel>
+                                    </StackPanel>
 
-                                <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
+                                    <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
-                                <StackPanel Grid.Row="2" Margin="10">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="权限：" />
-                                        <ComboBox materialDesign:HintAssist.Hint="{Binding Role}" SelectedValue="{Binding Role}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1">
-                                            <ComboBoxItem Content="admin"/>
-                                            <ComboBoxItem Content="agent"/>
-                                            <ComboBoxItem Content="user"/>
-                                        </ComboBox>
+                                    <StackPanel Grid.Row="2" Margin="10">
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="权限：" />
+                                            <ComboBox materialDesign:HintAssist.Hint="{Binding Role}" SelectedValue="{Binding Role}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1">
+                                                <ComboBoxItem Content="admin"/>
+                                                <ComboBoxItem Content="agent"/>
+                                                <ComboBoxItem Content="user"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="分组：" />
+                                            <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="账号：" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="分组：" />
-                                        <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="账号：" />
-                                        <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
-                                    </StackPanel>
-                                </StackPanel>
 
-                                <StackPanel Grid.Row="2" Grid.Column="1" Margin="10">
-                                    <StackPanel Orientation="Horizontal" Margin="10" >
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="公司名称：" />
-                                        <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="10">
+                                        <StackPanel Orientation="Horizontal" Margin="10" >
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="公司名称：" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="地址：" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Region}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="会员密码：" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="地址：" />
-                                        <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Region}" />
+                                </Grid>
+                                <Grid DockPanel.Dock="Bottom">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
+                                        <Button x:Name="btnSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Save}" Click="btnSave_Click" />
+                                        <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Reset}" Command="{Binding ResetCommand}" />
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="会员密码：" />
-                                        <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                            <Grid DockPanel.Dock="Bottom">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Save}" Click="btnSave_Click" />
-                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Reset}" Command="{Binding ResetCommand}" />
-                                </StackPanel>
-                            </Grid> 
-                        </DockPanel>
+                                </Grid>
+                            </DockPanel>
+                        </Border>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:UserGroupViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">
