@@ -309,7 +309,7 @@
                                 <StackPanel >
                                     <StackPanel Orientation="Horizontal" Margin="19,12,0,12">
                                         <Image Cursor="Hand" x:Name="btnAddTimeControl" MouseDown="btnAddTimeControl_MouseDown" Width="32" Height="32" Source="/Assets/7.png" Margin="0,0,16,0" HorizontalAlignment="Left"/>
-                                        <Image Width="32" Height="32" Source="/Assets/8.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
+                                        <Image Width="32" Height="32" Source="/Assets/8.png" MouseDown="btnPublish_MouseDown" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
                                         <Image x:Name="btnDeleteTimeControl" MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
                                     </StackPanel>
                                     <Grid Margin="19,0">
@@ -356,7 +356,7 @@
                                                 </DataGridTextColumn.CellStyle>-->
                                                 </DataGridTextColumn>
                                                 <DataGridTextColumn Width="1*" Binding="{Binding StatusText}" Header="是否启用" />
-                                                <DataGridTemplateColumn Header="操作"  Width="80" >
+                                                <!--<DataGridTemplateColumn Header="操作"  Width="80" >
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -364,7 +364,7 @@
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
+                                                </DataGridTemplateColumn>-->
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>

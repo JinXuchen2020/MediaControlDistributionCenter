@@ -34,7 +34,6 @@ namespace MediaControlDistributionCenter.Data
 
         public static void InitTables()
         {
-            DbClient.DbMaintenance.DropTable<DeviceMedia>();
             var types = typeof(BaseModel).Assembly.DefinedTypes.Where(c => c.BaseType == typeof(BaseModel));
 
             foreach (var type in types)

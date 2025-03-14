@@ -98,24 +98,12 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (CurrentDevice != null && CommandRTValue != null)
             {
-                switch (CommandType)
-                {
-                    case "Brightness":
-                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(CommandRTValue);
-                        break;
-                    case "Volume":
-                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(CommandRTValue);
-                        break;
-                    case "Restart":
-                        CommandRTValue = "1";
-                        await CurrentDevice.RestartCommand.ExecuteAsync(CommandRTValue);
-                        break;
-                }
+                var modelList = new List<DeviceControlDto>();
                 var viewModel = new DeviceTimeControlViewModel()
                 {
                     DeviceId = CurrentDevice.DeviceId,
                     Type = CommandType,
-                    Value = double.Parse(CommandRTValue),
+                    Value = CommandType == "Restart" ? 1 : double.Parse(CommandRTValue),
                     ExecuteTime = "00:00;00",
                     ExecuteMethod = "REAL_TIME",
                     Status = 1,
@@ -124,6 +112,21 @@ namespace MediaControlDistributionCenter.ViewModels
                     RepeatMode = "",
                     UserAccount = CurrentUser.Account,
                 };
+
+                modelList.Add(viewModel.ToModel());
+                var modelString = JsonConvert.SerializeObject(modelList);
+                switch (CommandType)
+                {
+                    case "Brightness":
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        break;
+                    case "Volume":
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        break;
+                    case "Restart":
+                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        break;
+                }
 
                 var response = await deviceControlService.Save(viewModel.ToModel());
                 if (response.Code == 200)
@@ -134,12 +137,14 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ExecuteScheduleControl(DeviceTimeControlViewModel viewModel)
+        private async Task ExecuteScheduleControl()
         {
-            if (CurrentDevice != null && viewModel != null)
+            var viewModels = DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            if (CurrentDevice != null && viewModels.Count > 0)
             {
-                var modelString = JsonConvert.SerializeObject(viewModel.ToModel());
-                switch (viewModel.Type)
+                var modelList = viewModels.Select(c => c.ToModel());
+                var modelString = JsonConvert.SerializeObject(modelList);
+                switch (viewModels[0].Type)
                 {
                     case "Brightness":                        
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
@@ -148,7 +153,6 @@ namespace MediaControlDistributionCenter.ViewModels
                         await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
                         break;
                     case "Restart":
-                        CommandRTValue = "1";
                         await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
                         break;
                 }
@@ -224,8 +228,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 await GetDeviceTimeControls();
                 CloseDialog();
-
-                viewModel.ShowConfirmDialogCommand.Execute(null);
             }
         }
     }

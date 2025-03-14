@@ -83,5 +83,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public readonly static string CmdSyncFile = "CMD|SyncFile|";
 
+        /// <summary>
+        /// 发送用户信息并验证，返回机顶盒上现有配置文件 
+        /// 参数：用户的账号与密码
+        /// </summary>
+        public readonly static string CmdVerifyUser = "CMD|VerifyUser|";
+
     }
 }

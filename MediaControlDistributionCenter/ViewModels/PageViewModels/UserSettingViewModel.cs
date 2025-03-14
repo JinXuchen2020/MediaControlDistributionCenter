@@ -65,23 +65,36 @@ namespace MediaControlDistributionCenter.ViewModels
             if (OldPassword != CurrentUser.Password)
             {
                 MessageBox.Show("原密码错误！");
+                return;
             }
 
             if (NewPassword == null || NewPasswordConfirm == null)
             {
                 MessageBox.Show("请填写新密码！");
+                return;
             }
 
             if (NewPassword != NewPasswordConfirm)
             {
                 MessageBox.Show("二次输入密码不一致！");
+                return;
             }
+
+            CurrentUser.Password = NewPassword;
 
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                CurrentUser.ShowConfirmDialogCommand.Execute(null);
+                MessageBox.Show("密码修改成功！");
             }
+        }
+
+        [RelayCommand]
+        private void CancelChangePassword()
+        {
+            OldPassword = null;
+            NewPassword = null;
+            NewPasswordConfirm = null;
         }
     }
 }

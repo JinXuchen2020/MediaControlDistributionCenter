@@ -50,5 +50,15 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.CurrentUser.IsUpload = true;
             }
         }
+
+        private void btnChangePassword_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            manageViewModel.ChangePasswordCommand.Execute(null);
+        }
+
+        private void btnCancelPassword_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            manageViewModel.CancelChangePasswordCommand.Execute(null);
+        }
     }
 }

@@ -176,8 +176,36 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task VerifyUser(UserViewModel user)
+        {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
+
+            var userInfo = new { Account = user.Account, Password = user.Password };
+            var userInfoString = JsonConvert.SerializeObject(userInfo);
+            string path = CommunicationCmd.CmdVerifyUser + userInfoString;
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                MessageBox.Show($"命令处理成功!当前用户配置为:{client.VerifyUserResult}");
+            }
+            else
+            {
+                MessageBox.Show("命令无法被处理!");
+                client.Disconnect();
+                //SendState.Text += "命令无法被处理\r\n";
+            }
+        }
+
+        [RelayCommand]
         private async Task ChangeBrightness(string value)
         {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -195,6 +223,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeVolume(string value)
         {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -212,6 +244,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Restart(string value)
         {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -229,6 +265,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeSync(DateTime value)
         {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
             string path = CommunicationCmd.CmdTime + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -246,6 +286,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeGPSSync(DateTime value)
         {
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+            }
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)

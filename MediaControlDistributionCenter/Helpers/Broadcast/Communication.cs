@@ -22,10 +22,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         //启动socket 链接
         System.Timers.Timer _heartbeatTimer;
+
         /// <summary>
         /// 接收到的命令列表
         /// </summary>
         List<string> ReceiveOverCmdStr = new List<string>();
+
+        public string VerifyUserResult { get; private set; }
 
 
         //本机及播控盒心跳数据
@@ -242,7 +245,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     try
                     {
                         ReceiveOverCmdStr.Add(data[1]);
-
+                        if (data[1].Contains(CommunicationCmd.CmdVerifyUser.Split("|")[1]))
+                        {
+                            VerifyUserResult = data[2];
+                        }
                     }
                     catch (Exception ex)
                     {

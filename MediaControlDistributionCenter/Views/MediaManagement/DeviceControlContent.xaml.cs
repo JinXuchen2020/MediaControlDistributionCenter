@@ -163,6 +163,7 @@ namespace MediaControlDistributionCenter.Views
             if(manageViewModel.CurrentDevice != null)
             {
                 manageViewModel.CurrentDevice.StatusText = manageViewModel.CurrentDevice.GetStatus();
+                manageViewModel.CurrentDevice.VerifyUserCommand.Execute(manageViewModel.CurrentUser);
             }
 
             RefreshData();
@@ -196,6 +197,13 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
+        private void btnTimeControlSave_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            manageViewModel.SaveTimeControlCommand.Execute(viewModel);
+            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+        }
+
         private void btnDeleteTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
@@ -208,11 +216,16 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.DeleteBatchCommand.Execute(null);
         }
 
-        private void btnTimeControlSave_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void btnPublish_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
-            manageViewModel.SaveTimeControlCommand.Execute(viewModel);
-            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+            var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            if (selectedItems.Count == 0)
+            {
+                MessageBox.Show("请先选择记录！");
+                return;
+            }
+
+            manageViewModel.ExecuteScheduleControlCommand.Execute(null);
         }
 
         private void RefreshData()
@@ -310,11 +323,6 @@ namespace MediaControlDistributionCenter.Views
             {
                 manageViewModel.CommandTypeColumnName = checkBox.Content?.ToString();
             }
-        }
-        private void btnPublish_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
-            manageViewModel.ExecuteScheduleControlCommand.Execute(viewModel);
         }
 
         #region 私有方法
