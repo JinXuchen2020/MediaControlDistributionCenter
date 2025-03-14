@@ -1,16 +1,9 @@
-﻿
-
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
-using MediaControlDistributionCenter.Helpers.Broadcast;
+﻿using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
-using MediaControlDistributionCenter.Helpers.FTP.Server;
-using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Newtonsoft.Json;
 using System.Data;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -218,8 +211,8 @@ namespace MediaControlDistributionCenter.Views
         private void btnTimeControlSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
-
             manageViewModel.SaveTimeControlCommand.Execute(viewModel);
+            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
         }
 
         private void RefreshData()
@@ -292,7 +285,6 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceControlViewModel)!;
             if (manageViewModel.CurrentDevice == null)
             {
                 MessageBox.Show("请先选择显示器！");
@@ -319,7 +311,11 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.CommandTypeColumnName = checkBox.Content?.ToString();
             }
         }
-
+        private void btnPublish_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            manageViewModel.ExecuteScheduleControlCommand.Execute(viewModel);
+        }
 
         #region 私有方法
         /// <summary>

@@ -31,12 +31,10 @@ namespace MediaControlDistributionCenter.Services
             return services;
         }
 
-        public static IServiceCollection AddRemoteServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddRemoteServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileService, FileServiceLocal>();
-
-            services.Configure<ConnectionMode>((c) => configuration.Bind("ConnectionMode", c));
 
             var types = typeof(IService<,>).Assembly.DefinedTypes;
             var interfaceTypes = types.Where(c => c.IsInterface && !c.IsGenericType);

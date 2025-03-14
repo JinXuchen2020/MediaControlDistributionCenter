@@ -12,7 +12,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 {
     public class AuthService : Proxy, IAuthService
     {
-        public AuthService(string serviceUrl) : base(serviceUrl)
+        public AuthService(ConnectionMode options) : base(options)
         {
         }
 

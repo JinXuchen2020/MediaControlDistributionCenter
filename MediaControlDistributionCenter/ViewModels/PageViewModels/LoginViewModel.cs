@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace MediaControlDistributionCenter.ViewModels
@@ -15,10 +16,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isLogin;
 
         private readonly IAuthService authService;
+        private readonly IUserService userService;
 
-        public LoginViewModel(IAuthService authService)
+        public LoginViewModel(IAuthService authService, IUserService userService)
         {
             this.authService = authService;
+            this.userService = userService;
             currentUser = new UserViewModel();
         }
 
@@ -29,9 +32,27 @@ namespace MediaControlDistributionCenter.ViewModels
             if (resultResponse.Code == 200)
             {
                 var userString = resultResponse.Data!;
-                var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
-                CurrentUser.Binding(loginUser!);
-                IsLogin = true;
+                var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+                if(connectionMode.Mode == "Local")
+                {
+                    var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
+                    CurrentUser.Binding(loginUser!);
+                    IsLogin = true;
+                }
+                else
+                {
+                    connectionMode.RemoteToken = userString.Split(" ")[1];
+                    var userResponse = await userService.GetAll(new UserDto { Account = request.Account });
+                    if (userResponse.Code == 200)
+                    {
+                        var userResult = userResponse.Data?.FirstOrDefault();
+                        if (userResult != null)
+                        {
+                            CurrentUser.Binding(userResult);
+                            IsLogin = true;
+                        }
+                    }
+                }
             }
         }
 

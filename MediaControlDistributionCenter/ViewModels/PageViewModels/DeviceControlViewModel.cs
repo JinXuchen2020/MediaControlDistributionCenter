@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -133,6 +134,28 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task ExecuteScheduleControl(DeviceTimeControlViewModel viewModel)
+        {
+            if (CurrentDevice != null && viewModel != null)
+            {
+                var modelString = JsonConvert.SerializeObject(viewModel.ToModel());
+                switch (viewModel.Type)
+                {
+                    case "Brightness":                        
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        break;
+                    case "Volume":
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        break;
+                    case "Restart":
+                        CommandRTValue = "1";
+                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        break;
+                }
+            }
+        }
+
+        [RelayCommand]
         private async Task ExecuteRealTimeTimeSync()
         {
             if (CurrentDevice != null && CommandRTValue != null && !string.IsNullOrEmpty(CommandTypeColumnName))
@@ -201,6 +224,8 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 await GetDeviceTimeControls();
                 CloseDialog();
+
+                viewModel.ShowConfirmDialogCommand.Execute(null);
             }
         }
     }

@@ -55,14 +55,25 @@
                                 <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="10, 20, 10, 10" Visibility="{Binding IsShow, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
                                         <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{Binding CommandTypeColumnName}" />
-                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" Maximum="100"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Slider VerticalAlignment="Center" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="400" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
+                                            <TextBox 
+                                                Width="35" 
+                                                Height="32" 
+                                                Margin="10,0,0,0"
+                                                Padding="5"
+                                                BorderBrush="#404870"
+                                                BorderThickness="1" 
+                                                HorizontalAlignment="Right" 
+                                                Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Background="#2A3255" Foreground="White" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="3" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="执行时间：" />
-                                        <materialDesign:TimePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" Text="{Binding ExecuteTime}"></materialDesign:TimePicker>
+                                        <materialDesign:TimePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Is24Hours="True" WithSeconds="True" Background="#2A3255" Width="250" Height="32" Text="{Binding ExecuteTime}"></materialDesign:TimePicker>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -218,7 +229,7 @@
                     </Grid>
                 </StackPanel>
 
-                <Grid x:Name="BrightnessPara" Grid.Column="2" Background="#16171D">
+                <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,10,0" Background="#16171D">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="81"></RowDefinition>
                         <RowDefinition ></RowDefinition>
@@ -304,16 +315,16 @@
                                     <Grid Margin="19,0">
                                         <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                                         <DataGrid
-                                        x:Name="dgTimeControls"
-                                        AutoGenerateColumns="false" 
-                                        CanUserAddRows="False"  
-                                        FontSize="14" 
-                                        IsReadOnly="True" 
-                                        SelectionMode="Single" 
-                                        FrozenColumnCount="1" 
-                                        Background="Transparent" 
-                                        ItemsSource="{Binding DeviceTimeControls}"
-                                    >
+                                            x:Name="dgTimeControls"
+                                            AutoGenerateColumns="false" 
+                                            CanUserAddRows="False"  
+                                            FontSize="14" 
+                                            IsReadOnly="True" 
+                                            SelectionMode="Single" 
+                                            FrozenColumnCount="1" 
+                                            Background="Transparent" 
+                                            ItemsSource="{Binding DeviceTimeControls, UpdateSourceTrigger=PropertyChanged}"
+                                        >
                                             <!--<DataGrid.Resources>
                                             <Style TargetType="DataGridCell">
                                                 <Style.Triggers>
@@ -325,9 +336,9 @@
                                         </DataGrid.Resources>-->
                                             <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Header="选择" Width="60"
-                                                Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
-                                                IsReadOnly="False"
-                                                CanUserSort="False"/>
+                                                    Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"                                                                        
+                                                    IsReadOnly="False"
+                                                    CanUserSort="False"/>
                                                 <DataGridTextColumn Width="1*" Binding="{Binding ExecuteTime}" Header="执行时间"  />
                                                 <DataGridTextColumn Width="1*" Binding="{Binding ExecuteMethod}" Header="重复方式" />
                                                 <DataGridTextColumn Width="1*" Binding="{Binding ValidPeriod}" Header="有效日期">
@@ -345,6 +356,15 @@
                                                 </DataGridTextColumn.CellStyle>-->
                                                 </DataGridTextColumn>
                                                 <DataGridTextColumn Width="1*" Binding="{Binding StatusText}" Header="是否启用" />
+                                                <DataGridTemplateColumn Header="操作"  Width="80" >
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                                <Button Content="执行" FontSize="12" Foreground="White" Click="btnPublish_Click" Height="24" Width="60" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>

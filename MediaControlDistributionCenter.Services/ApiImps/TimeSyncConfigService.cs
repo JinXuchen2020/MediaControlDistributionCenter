@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/timeSyncConfig/batch"},
         };
 
-        public TimeSyncConfigService(IOptions<ConnectionMode> options) : base(options)
+        public TimeSyncConfigService(ConnectionMode options) : base(options)
         {
         }
     }

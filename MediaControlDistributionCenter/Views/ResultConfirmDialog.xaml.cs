@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MediaControlDistributionCenter.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace MediaControlDistributionCenter.Views
 {
@@ -26,6 +29,30 @@ namespace MediaControlDistributionCenter.Views
         {
             InitializeComponent();
             DataContext = content;
+
+            var type = content.GetType();
+            switch (type)
+            {
+                case var o when o == typeof(UserViewModel):
+                    break;
+                case var o when o == typeof(MediaViewModel):
+                    break;
+                case var o when o == typeof(MediaDevicesViewModel):
+                    break;
+                case var o when o == typeof(DeviceTimeControlViewModel):
+                    btnConfirm.Visibility = Visibility.Collapsed;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void btnExecute(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            var manageViewModel = App.ServicesProvider.GetRequiredService<DeviceControlViewModel>();
+            manageViewModel.ExecuteScheduleControlCommand.Execute(viewModel);
+            manageViewModel.CloseDialogCommand.Execute(null);
         }
     }
 
@@ -43,6 +70,8 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
                 case var o when o == typeof(MediaDevicesViewModel):
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
+                case var o when o == typeof(DeviceTimeControlViewModel):                    
+                    return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
                 default:
                     return null;
             }

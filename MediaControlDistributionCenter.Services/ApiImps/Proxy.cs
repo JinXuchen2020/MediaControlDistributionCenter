@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,13 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         private JsonSerializerSettings jsonSerializerSettings;
         public Uri HttpClientBaseAddress { get; set; }
 
-        public Proxy(string serviceUrl)
+        private ConnectionMode connectionMode;
+
+        public Proxy(ConnectionMode options)
         {
+            connectionMode = options;
             var key = GetType().Namespace;
-            HttpClientBaseAddress = new Uri(serviceUrl);
+            HttpClientBaseAddress = new Uri(connectionMode.ServiceUri);
             if (HttpClientBaseAddress == null)
             {
                 throw new ArgumentNullException(key);
@@ -30,26 +34,26 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         });
 
-        protected async Task<T> GetResponse<T>(string requestUri, string token = null)
+        protected async Task<T> GetResponse<T>(string requestUri)
         {
-            return await GetResponse<T>(requestUri, 0, token);
+            return await GetResponse<T>(requestUri, 0);
         }
 
-        protected async Task<T> GetResponse<T>(string requestUri, int timeOut, string token = null)
+        protected async Task<T> GetResponse<T>(string requestUri, int timeOut)
         {
             using var client = new HttpClient();
-            var webApiRequestTimeout = 1000;
+            var webApiRequestTimeout = 5000;
             if (timeOut > 0)
             {
                 webApiRequestTimeout = timeOut;
             }
-            client.Timeout = new TimeSpan(0, 0, webApiRequestTimeout);
+            client.Timeout = TimeSpan.FromMilliseconds(webApiRequestTimeout);
             client.BaseAddress = HttpClientBaseAddress;
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
             }
 
             string encryptedUrl = GetEncryptedUrl(requestUri);
@@ -84,9 +88,9 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             client.BaseAddress = HttpClientBaseAddress;
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
             }
 
             string encryptedUrl = GetEncryptedUrl(requestUri);
@@ -105,6 +109,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             byte[] data;
             MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
             foreach (var FormFile in formFiles)
@@ -137,6 +145,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
             var response =
                 await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
@@ -158,6 +170,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(JsonSerializerSettings);
             var response =
                 await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
@@ -179,6 +195,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
             var response = await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
             if (response.IsSuccessStatusCode)
@@ -200,6 +220,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
             var response = await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
             if (response.IsSuccessStatusCode)
@@ -220,6 +244,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
             var response =
                 await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
@@ -241,6 +269,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
             var response =
                 await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
@@ -262,6 +294,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var response = await client.DeleteAsync(requestUri);
             if (response.IsSuccessStatusCode)
             {
@@ -277,6 +313,10 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             };
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
             var response = await client.DeleteAsync(requestUri);
             if (!response.IsSuccessStatusCode)
             {
@@ -289,6 +329,11 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {
                 BaseAddress = HttpClientBaseAddress
             };
+
+            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+            }
 
             // 创建自定义请求
             var content = JsonConvert.SerializeObject(requestBody, JsonSerializerSettings);

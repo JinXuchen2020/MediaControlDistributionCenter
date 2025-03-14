@@ -21,7 +21,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/playbackRecord/batch"},
         };
 
-        public PlaybackRecordService(IOptions<ConnectionMode> options) : base(options)
+        public PlaybackRecordService(ConnectionMode options) : base(options)
         {
         }
     }

@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/userGroup/batch"},
         };
 
-        public UserGroupService(IOptions<ConnectionMode> options) : base(options)
+        public UserGroupService(ConnectionMode options) : base(options)
         {
         }
     }

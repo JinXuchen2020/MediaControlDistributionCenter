@@ -29,7 +29,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         private readonly IUserService userService;
 
-        public MonitorService(IOptions<ConnectionMode> options, IUserService userService) : base(options)
+        public MonitorService(ConnectionMode options, IUserService userService) : base(options)
         {
             this.userService = userService;
         }

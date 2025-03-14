@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.ApiImps
 {
-    public class UserService : BaseService<User, UserDto>
+    public class UserService : BaseService<User, UserDto>, IUserService
     {
         public override Dictionary<string, string> ApiUrls => new Dictionary<string, string>
         {
@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/user/batch"},
         };
 
-        public UserService(IOptions<ConnectionMode> options) : base(options)
+        public UserService(ConnectionMode options) : base(options)
         {
         }
     }

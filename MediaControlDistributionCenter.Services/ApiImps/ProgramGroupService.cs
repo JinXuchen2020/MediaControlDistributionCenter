@@ -21,7 +21,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/programmeGroup/batch"},
         };
 
-        public ProgramGroupService(IOptions<ConnectionMode> options) : base(options)
+        public ProgramGroupService(ConnectionMode options) : base(options)
         {
         }
     }

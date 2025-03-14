@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/monitorGroup/batch"},
         };
 
-        public MonitorGroupService(IOptions<ConnectionMode> options) : base(options)
+        public MonitorGroupService(ConnectionMode options) : base(options)
         {
         }
     }

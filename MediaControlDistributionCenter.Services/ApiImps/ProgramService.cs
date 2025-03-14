@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/programme/batch"},
         };
 
-        public ProgramService(IOptions<ConnectionMode> options) : base(options)
+        public ProgramService(ConnectionMode options) : base(options)
         {
         }
     }

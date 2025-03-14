@@ -108,7 +108,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public override void Binding(UserDto model, bool isSelected = false)
         {
             Id = model.Id;
-            Role = model.Role;
+            Role = model.Role.ToLower();
             GroupId = model.UserGroupId;
             AgentId = model.AgentAccount;
             Group = model.UserGroupName ?? "未分组";

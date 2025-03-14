@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -130,6 +133,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 default:
                     break;
             }
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

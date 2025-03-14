@@ -14,7 +14,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
     {
         public virtual Dictionary<string, string> ApiUrls { get; set; }
 
-        public BaseService(IOptions<ConnectionMode> options) : base(options.Value.ServiceUri)
+        public BaseService(ConnectionMode options) : base(options)
         {
         }
 
@@ -24,7 +24,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var queryString = await GetQueryString(parameters);
 
             var uri = $"{ApiUrls["GetAll"]}{queryString}";
-            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
+            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
         }
 
         public async Task<ResultResponse<IEnumerable<DTO>>> GetPageAll(int pageSize, int page, DTO? request)
@@ -94,7 +94,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 foreach (var property in properties)
                 {
                     var value = property.GetValue(request);
-                    if (value != null && !value.Equals(default))
+                    if (value != null && !value.Equals(DefaultForType(property.PropertyType)))
                     {
                         parameters.Add(new(property.Name, value));
                     }
@@ -102,6 +102,11 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             }
 
             return parameters;
+        }
+
+        public object? DefaultForType(Type targetType)
+        {
+            return targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
         }
     }
 }

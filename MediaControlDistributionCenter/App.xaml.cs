@@ -29,9 +29,19 @@ namespace MediaControlDistributionCenter
 
             var services = new ServiceCollection();
 
-            services.AddSingleton<IConfiguration>(configuration);
+            var connectionMode = new ConnectionMode();
+            configuration.Bind("ConnectionMode", connectionMode);
+            services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
 
-            services.AddLocalServices();
+            if (connectionMode.Mode == "Local")
+            {
+                services.AddLocalServices();
+            }
+            else
+            {
+                services.AddRemoteServices();
+            }
+
             services.AddPageViewServices();
             services.AddPageViewModelServices();
 
