@@ -27,12 +27,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public MediaViewModel? SelectedMedia { get; set; }
 
-        public DashboardViewModel(LoginViewModel loginViewModel, IMonitorService monitorService, IProgramService programService, IUserService userService)
+        public DashboardViewModel(LoginViewModel loginViewModel)
         {
             CurrentUser = loginViewModel.CurrentUser;
-            this.monitorService = monitorService;
-            this.programService = programService;
-            this.userService = userService;
+            this.monitorService = GetService<IMonitorService>();
+            this.programService = GetService<IProgramService>();
+            this.userService = GetService<IUserService>();
             LoadData();
         }
 

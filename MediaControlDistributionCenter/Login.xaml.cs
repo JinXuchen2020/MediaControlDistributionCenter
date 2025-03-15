@@ -144,5 +144,19 @@ namespace MediaControlDistributionCenter
                 this.DragMove();
             }
         }
+
+        private void ConnectionModeChanged_Click(object sender, RoutedEventArgs e)
+        {
+            if(btnLocal.IsChecked == true)
+            {
+                viewModel.ConnectionMode.Mode = "Local";
+                viewModel.RefreshService();
+            }
+            else
+            {
+                viewModel.ConnectionMode.Mode = "Remote";
+                viewModel.RefreshService();
+            }
+        }
     }
 }

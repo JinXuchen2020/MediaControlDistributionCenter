@@ -51,7 +51,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IDeviceControlService deviceControlService;
         private readonly ITimeSyncConfigService timeSyncConfigService;
 
-        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IDeviceControlService deviceControlService, ITimeSyncConfigService timeSyncConfigService) 
+        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel) 
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
@@ -63,9 +63,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
-            this.monitorService = monitorService;
-            this.deviceControlService = deviceControlService;
-            this.timeSyncConfigService = timeSyncConfigService;
+            this.monitorService = GetService<IMonitorService>();
+            this.deviceControlService = GetService<IDeviceControlService>();
+            this.timeSyncConfigService = GetService<ITimeSyncConfigService>();
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
 
             LoadData();

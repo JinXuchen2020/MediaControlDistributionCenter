@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -15,14 +17,25 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isLogin;
 
-        private readonly IAuthService authService;
-        private readonly IUserService userService;
+        [ObservableProperty]
+        private ConnectionMode connectionMode;
 
-        public LoginViewModel(IAuthService authService, IUserService userService)
+        [ObservableProperty]
+        private ObservableCollection<string> ipAddresses;
+
+        [ObservableProperty]
+        private string selectedIpAddress;
+
+        private readonly IAuthService authService;
+        private IUserService userService;
+
+        public LoginViewModel(ConnectionMode connectionMode, IAuthService authService)
         {
             this.authService = authService;
-            this.userService = userService;
             currentUser = new UserViewModel();
+            this.connectionMode = connectionMode;
+            this.userService = GetService<IUserService>();
+            this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetLocalIPv4Address());
         }
 
         [RelayCommand]
@@ -33,8 +46,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var userString = resultResponse.Data!;
                 var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-                if(connectionMode.Mode == "Local")
+                if (connectionMode.Mode == "Local")
                 {
+
                     var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
                     CurrentUser.Binding(loginUser!);
                     IsLogin = true;
@@ -59,6 +73,11 @@ namespace MediaControlDistributionCenter.ViewModels
         public override void LoadData(long? groupId = null)
         {
             return;
+        }
+
+        public void RefreshService()
+        {
+            this.userService = GetService<IUserService>();
         }
     }
 }

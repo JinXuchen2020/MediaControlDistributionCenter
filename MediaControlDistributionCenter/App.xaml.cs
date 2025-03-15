@@ -33,14 +33,16 @@ namespace MediaControlDistributionCenter
             configuration.Bind("ConnectionMode", connectionMode);
             services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
 
-            if (connectionMode.Mode == "Local")
-            {
-                services.AddLocalServices();
-            }
-            else
-            {
-                services.AddRemoteServices();
-            }
+            services.AddLocalServices();
+            services.AddRemoteServices();
+            //if (connectionMode.Mode == "Local")
+            //{
+            //    services.AddLocalServices();
+            //}
+            //else
+            //{
+            //    services.AddRemoteServices();
+            //}
 
             services.AddPageViewServices();
             services.AddPageViewModelServices();

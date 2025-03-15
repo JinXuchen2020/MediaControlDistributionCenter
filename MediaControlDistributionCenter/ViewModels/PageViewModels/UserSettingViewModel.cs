@@ -27,9 +27,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IUserService userService;
 
-        public UserSettingViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IUserService userService)
+        public UserSettingViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
         {
-            this.userService = userService;
+            this.userService = GetService<IUserService>();
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
 
             if (dashboardViewModel.CurrentUser.Role == "user")

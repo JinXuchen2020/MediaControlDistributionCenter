@@ -29,9 +29,9 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         private readonly IUserService userService;
 
-        public MonitorService(ConnectionMode options, IUserService userService) : base(options)
+        public MonitorService(ConnectionMode options, IEnumerable<IUserService> userServices) : base(options)
         {
-            this.userService = userService;
+            this.userService = options.Mode == "Local" ? userServices.First(c => c.GetType().Name.EndsWith("Local")) : userServices.First(c => !c.GetType().Name.EndsWith("Local"));
         }
 
         public async Task<ResultResponse<bool>> EnableById(long id, bool isEnable)

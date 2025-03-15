@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -28,8 +29,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
+        private readonly IUserService userService;
 
-        public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IMonitorGroupService monitorGroupService) 
+        public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel) 
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
@@ -41,8 +43,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
-            this.monitorService = monitorService;
-            this.monitorGroupService = monitorGroupService;
+            this.monitorService = GetService<IMonitorService>();
+            this.monitorGroupService = GetService<IMonitorGroupService>();
+            this.userService = GetService<IUserService>();
         }
 
         public override void LoadData(long? groupId = null)
@@ -80,6 +83,17 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        public DeviceViewModel CreateDevice()
+        {
+            var viewModel = new DeviceViewModel();
+            viewModel.UserId = CurrentUser.Account;
+            viewModel.OwnerName = userService.GetAll(new UserDto { Account = CurrentUser.Account }).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.DeviceId = "";
+            viewModel.Status = 1;
+
+            return viewModel;
         }
 
         [RelayCommand]
