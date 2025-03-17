@@ -340,7 +340,7 @@
                             CanUserSort="False"/>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="显示器名称" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="分组" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Enabled}" Header="状态" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}" Header="状态" />
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding LastUpdatedTime}" Header="上次修改时间" />
                                     <DataGridTemplateColumn Width="1*" Header="当前节目">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -350,12 +350,13 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}" Header="分辨率"  />
-                                    <DataGridTemplateColumn Header="操作"  Width="200" >
+                                    <DataGridTemplateColumn Header="操作"  Width="230" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                                     <Button Content="升级" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
                                                     <Button Content="{Binding EnableBtnContent}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Content="连接" Foreground="White" Name="btnConnect" Click="btnConnect_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

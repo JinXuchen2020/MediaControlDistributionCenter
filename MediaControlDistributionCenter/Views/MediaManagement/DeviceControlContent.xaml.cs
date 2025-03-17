@@ -160,13 +160,11 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
             manageViewModel.CurrentDevice = viewModel;
-            if(manageViewModel.CurrentDevice != null)
+            if (manageViewModel.CurrentDevice != null)
             {
-                manageViewModel.CurrentDevice.StatusText = manageViewModel.CurrentDevice.GetStatus();
-                manageViewModel.CurrentDevice.VerifyUserCommand.Execute(manageViewModel.CurrentUser);
+                manageViewModel.ConnectDeviceCommand.Execute(null);
+                RefreshData();
             }
-
-            RefreshData();
         }
 
         private void btnAddTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

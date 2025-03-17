@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,6 +28,7 @@ namespace MediaControlDistributionCenter
             this.viewModel = viewModel;
             this.serviceProvider = serviceProvider;
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -150,13 +152,20 @@ namespace MediaControlDistributionCenter
             if(btnLocal.IsChecked == true)
             {
                 viewModel.ConnectionMode.Mode = "Local";
+                spAddress.Visibility = Visibility.Visible;
                 viewModel.RefreshService();
             }
             else
             {
                 viewModel.ConnectionMode.Mode = "Remote";
+                spAddress.Visibility = Visibility.Collapsed;
                 viewModel.RefreshService();
             }
+        }
+
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConnectCommand.Execute(null);
         }
     }
 }

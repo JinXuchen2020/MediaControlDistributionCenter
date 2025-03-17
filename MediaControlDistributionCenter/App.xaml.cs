@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using MediaControlDistributionCenter.Data;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -31,7 +32,10 @@ namespace MediaControlDistributionCenter
 
             var connectionMode = new ConnectionMode();
             configuration.Bind("ConnectionMode", connectionMode);
+            connectionMode.Mode = "Remote";
             services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
+
+            services.AddSingleton(new Communication());
 
             services.AddLocalServices();
             services.AddRemoteServices();

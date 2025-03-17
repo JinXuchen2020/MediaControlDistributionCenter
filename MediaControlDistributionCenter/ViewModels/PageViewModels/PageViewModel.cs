@@ -19,7 +19,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 case "Local":
                     return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
                 case "Remote":
-                    return App.ServicesProvider.GetServices<T>().First(c => !c.GetType().Name.EndsWith("Local"));
+                    if(string.IsNullOrEmpty(connectionMode.ServiceUri))
+                    {
+                        return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
+                    }
+                    else
+                    {
+                        return App.ServicesProvider.GetServices<T>().First(c => !c.GetType().Name.EndsWith("Local"));
+                    }
                 default:
                     throw new ArgumentException("未知的服务名称");
             }

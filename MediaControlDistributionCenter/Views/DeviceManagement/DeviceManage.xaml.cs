@@ -129,5 +129,16 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             var manageViewModel = (DataContext as DeviceManageViewModel)!;
             manageViewModel.CloseDialogCommand.Execute(null);
         }
+
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as DeviceManageViewModel)!;
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            manageViewModel.ConnectDeviceCommand.Execute(viewModel);
+            if (viewModel.StatusText == "在线")
+            {
+                viewModel.ShowConfirmDialogCommand.Execute(null);
+            }
+        }
     }
 }
