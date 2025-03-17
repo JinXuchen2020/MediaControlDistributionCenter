@@ -24,7 +24,7 @@ namespace MediaControlDistributionCenter.Views
         public UserSettingsContent(UserSettingViewModel userSettingViewModel)
         {
             InitializeComponent();
-            manageViewModel = userSettingViewModel;
+            manageViewModel = userSettingViewModel;            
             DataContext = userSettingViewModel;
         }
 

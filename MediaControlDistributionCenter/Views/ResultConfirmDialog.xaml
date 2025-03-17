@@ -79,6 +79,22 @@
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="ScheduleSendUserExecution" DataType="{x:Type viewmodels:DeviceViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="连接设备 " />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text="{Binding Name}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text =" 成功！" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="是否录入当前用户？" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" >
+                    <Button Foreground="WhiteSmoke" Content="是" Click="btnExecuteSendUser" />
+                    <Button Foreground="WhiteSmoke" Margin="50,0,0,0" Content="否" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
     </UserControl.Resources>
     <DockPanel LastChildFill="False" Background="#2A3255">
         <Grid HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">

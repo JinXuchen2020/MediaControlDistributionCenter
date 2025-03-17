@@ -22,11 +22,11 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
             connectionMode = options;
             var key = GetType().Namespace;
-            HttpClientBaseAddress = new Uri(connectionMode.ServiceUri);
-            if (HttpClientBaseAddress == null)
-            {
-                throw new ArgumentNullException(key);
-            }
+            HttpClientBaseAddress = string.IsNullOrEmpty(connectionMode.ServiceUri) ? null : new Uri(connectionMode.ServiceUri);
+            //if (HttpClientBaseAddress == null)
+            //{
+            //    throw new ArgumentNullException(key);
+            //}
         }
 
         protected JsonSerializerSettings JsonSerializerSettings => jsonSerializerSettings ?? (jsonSerializerSettings = new JsonSerializerSettings

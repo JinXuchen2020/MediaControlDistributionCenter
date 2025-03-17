@@ -32,11 +32,9 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     public partial class DeviceManage : UserControl
     {
         private readonly DeviceManageViewModel manageViewModel;
-        private readonly IUserService userService;
 
-        public DeviceManage(DeviceManageViewModel deviceManageViewModel, IUserService userService)
+        public DeviceManage(DeviceManageViewModel deviceManageViewModel)
         {
-            this.userService = userService;
             manageViewModel = deviceManageViewModel;
             manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
@@ -93,11 +91,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var viewModel = new DeviceViewModel();
-            viewModel.UserId = manageViewModel.CurrentUser.Account;
-            viewModel.OwnerName = userService.GetAll(new UserDto { Account = manageViewModel.CurrentUser.Account}).GetAwaiter().GetResult().Data!.First().Company;
-            viewModel.DeviceId = "";
-            viewModel.Status = 1;
+            var viewModel = manageViewModel.CreateDevice();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -134,6 +128,17 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         {
             var manageViewModel = (DataContext as DeviceManageViewModel)!;
             manageViewModel.CloseDialogCommand.Execute(null);
+        }
+
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as DeviceManageViewModel)!;
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            manageViewModel.ConnectDeviceCommand.Execute(viewModel);
+            if (viewModel.StatusText == "在线")
+            {
+                viewModel.ShowConfirmDialogCommand.Execute(null);
+            }
         }
     }
 }

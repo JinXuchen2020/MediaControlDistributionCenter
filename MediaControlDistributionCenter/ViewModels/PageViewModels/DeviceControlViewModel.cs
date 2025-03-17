@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Newtonsoft.Json;
@@ -50,8 +51,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
         private readonly ITimeSyncConfigService timeSyncConfigService;
+        private readonly Communication communication;
 
-        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IDeviceControlService deviceControlService, ITimeSyncConfigService timeSyncConfigService) 
+        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, Communication communication) 
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
@@ -63,10 +65,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
-            this.monitorService = monitorService;
-            this.deviceControlService = deviceControlService;
-            this.timeSyncConfigService = timeSyncConfigService;
+            this.monitorService = GetService<IMonitorService>();
+            this.deviceControlService = GetService<IDeviceControlService>();
+            this.timeSyncConfigService = GetService<ITimeSyncConfigService>();
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
+            this.communication = communication;
 
             LoadData();
         }
@@ -91,6 +94,28 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        [RelayCommand]
+        private async Task ConnectDevice()
+        {
+            if (CurrentDevice != null)
+            {
+                await CurrentDevice.ConnectCommand.ExecuteAsync(communication);
+                if (CurrentDevice.StatusText == "在线")
+                {
+                    await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void DisconnectDevice()
+        {
+            if (CurrentDevice != null)
+            {
+                CurrentDevice.DisconnectCommand.Execute(null);
+            }
         }
 
         [RelayCommand]
@@ -119,9 +144,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     case "Brightness":
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        CurrentDevice.Brightness = viewModel.Value;
                         break;
                     case "Volume":
                         await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        CurrentDevice.Volume = viewModel.Value;
                         break;
                     case "Restart":
                         await CurrentDevice.RestartCommand.ExecuteAsync(modelString);

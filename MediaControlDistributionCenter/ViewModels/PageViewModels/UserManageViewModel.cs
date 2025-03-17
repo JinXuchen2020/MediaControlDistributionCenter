@@ -25,11 +25,11 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserGroupService userGroupService;
         private readonly IUserService userService;
 
-        public UserManageViewModel(LoginViewModel loginViewModel, IUserGroupService userGroupService, IUserService userService) 
+        public UserManageViewModel(LoginViewModel loginViewModel) 
         {
             this.CurrentUser = loginViewModel.CurrentUser;
-            this.userService = userService;
-            this.userGroupService = userGroupService;
+            this.userService = GetService<IUserService>();
+            this.userGroupService = GetService<IUserGroupService>();
         }
 
         public override void LoadData(long? groupId = null)

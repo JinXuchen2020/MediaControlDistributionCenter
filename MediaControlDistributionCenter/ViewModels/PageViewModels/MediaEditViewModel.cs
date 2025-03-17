@@ -34,7 +34,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IFileService fileService;
         private readonly IProgramService programService;
 
-        public MediaEditViewModel(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IProgramService programService)
+        public MediaEditViewModel(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService)
         {
             if (dashboardViewModel.CurrentUser.Role == "User")
             {
@@ -50,7 +50,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             
             this.fileService = fileService;
-            this.programService = programService;
+            this.programService = GetService<IProgramService>();
         }
 
         public override void LoadData(long? groupId = null)

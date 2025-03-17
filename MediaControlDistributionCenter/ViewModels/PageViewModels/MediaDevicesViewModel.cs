@@ -24,9 +24,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
 
-        public MediaDevicesViewModel(MediaEditViewModel mediaEditViewModel, MediaManageViewModel mediaManageViewModel, IMonitorService monitorService) 
+        public MediaDevicesViewModel(MediaEditViewModel mediaEditViewModel, MediaManageViewModel mediaManageViewModel) 
         {
-            this.monitorService = monitorService;
+            this.monitorService = GetService<IMonitorService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
             currentMedia = mediaManageViewModel.SelectedMedia ?? mediaEditViewModel.CurrentMedia;
         }

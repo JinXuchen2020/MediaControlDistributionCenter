@@ -35,7 +35,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IProgramService programService;
         private readonly IFileService fileService;
 
-        public MediaManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IProgramService programService, IProgramGroupService programGroupService, IFileService fileService) 
+        public MediaManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IFileService fileService) 
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
@@ -47,8 +47,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
-            this.programService = programService;
-            this.programGroupService = programGroupService;
+            this.programService = GetService<IProgramService>();
+            this.programGroupService = GetService<IProgramGroupService>();
             this.fileService = fileService;
         }
 

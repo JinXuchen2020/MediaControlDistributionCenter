@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -12,6 +15,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private const string DialogHostId = "RootDialogHostId";
 
         public UserViewModel CurrentUser { get; set; }
+
+        public DeviceViewModel? SelectedDevice { get; set; }
 
         public bool ShowNavigation { get; set; }
 
@@ -28,8 +33,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
+        private readonly IUserService userService;
+        private readonly IUserGroupService userGroupService;
+        private readonly Communication communication;
 
-        public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IMonitorService monitorService, IMonitorGroupService monitorGroupService) 
+        public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, Communication communication) 
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
@@ -41,8 +49,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
 
-            this.monitorService = monitorService;
-            this.monitorGroupService = monitorGroupService;
+            this.monitorService = GetService<IMonitorService>();
+            this.monitorGroupService = GetService<IMonitorGroupService>();
+            this.userService = GetService<IUserService>();
+            this.userGroupService = GetService<IUserGroupService>();
+            this.communication = communication;
         }
 
         public override void LoadData(long? groupId = null)
@@ -80,6 +91,17 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        public DeviceViewModel CreateDevice()
+        {
+            var viewModel = new DeviceViewModel();
+            viewModel.UserId = CurrentUser.Account;
+            viewModel.OwnerName = userService.GetAll(new UserDto { Account = CurrentUser.Account }).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.DeviceId = "";
+            viewModel.Status = 1;
+
+            return viewModel;
         }
 
         [RelayCommand]
@@ -144,6 +166,59 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 LoadData();
                 CloseDialog();
+            }
+        }
+
+        [RelayCommand]
+        private async Task ConnectDevice(DeviceViewModel viewModel)
+        {
+            await viewModel.ConnectCommand.ExecuteAsync(communication);
+            if(viewModel.StatusText == "在线")
+            {
+                SelectedDevice = viewModel;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SendUserToDevice()
+        {
+            if (SelectedDevice != null)
+            {
+                MessageBox.Show("请先连接机顶盒!");
+                return;
+            }
+
+            var result = new UsersSync();
+            var users = new List<UserSync>();
+            var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+            if (adminUser != null)
+            {
+                users.Add(new UserSync(adminUser, null, null));
+            }
+
+            UserGroupDto? userGroup = null;
+            if (!string.IsNullOrEmpty(CurrentUser.AgentId))
+            {
+                var agentUser = userService.GetAll(new UserDto { Account = CurrentUser.AgentId }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (agentUser != null)
+                {
+                    users.Add(new UserSync(agentUser, null, null));
+                }
+            }
+
+
+            users.Add(new UserSync(CurrentUser.ToModel(), userGroup, new MonitorSync(SelectedDevice!.ToModel(), null)));
+            result.Users = users;
+
+            await SelectedDevice.SendUserCommand.ExecuteAsync(result);
+        }
+
+        [RelayCommand]
+        private void DisconnectDevice()
+        {
+            if (SelectedDevice != null)
+            {
+                SelectedDevice.DisconnectCommand.Execute(null);
             }
         }
     }

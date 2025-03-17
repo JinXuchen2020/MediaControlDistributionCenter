@@ -42,6 +42,9 @@ namespace MediaControlDistributionCenter.Views
                 case var o when o == typeof(DeviceTimeControlViewModel):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
+                case var o when o == typeof(DeviceViewModel):
+                    btnConfirm.Visibility = Visibility.Collapsed;
+                    break;
                 default:
                     break;
             }
@@ -52,6 +55,13 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
             var manageViewModel = App.ServicesProvider.GetRequiredService<DeviceControlViewModel>();
             manageViewModel.ExecuteScheduleControlCommand.Execute(viewModel);
+            manageViewModel.CloseDialogCommand.Execute(null);
+        }
+
+        private void btnExecuteSendUser(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = App.ServicesProvider.GetRequiredService<DeviceManageViewModel>();
+            manageViewModel.SendUserToDeviceCommand.Execute(null);
             manageViewModel.CloseDialogCommand.Execute(null);
         }
     }
@@ -72,6 +82,8 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
                 case var o when o == typeof(DeviceTimeControlViewModel):                    
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
+                case var o when o == typeof(DeviceViewModel):
+                    return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
                 default:
                     return null;
             }

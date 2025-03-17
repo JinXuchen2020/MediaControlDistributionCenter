@@ -29,5 +29,21 @@ namespace MediaControlDistributionCenter.Helpers.Tool
             }
             return addrs;
         }
+
+        public static string GetGatewayIp()
+        {
+            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (networkInterface.OperationalStatus == OperationalStatus.Up)
+                {
+                    var gatewayAddress = networkInterface.GetIPProperties().GatewayAddresses.FirstOrDefault();
+                    if (gatewayAddress != null && gatewayAddress.Address != null)
+                    {
+                        return gatewayAddress.Address.ToString();
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

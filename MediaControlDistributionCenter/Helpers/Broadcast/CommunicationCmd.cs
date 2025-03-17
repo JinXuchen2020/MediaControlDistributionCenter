@@ -89,5 +89,15 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public readonly static string CmdVerifyUser = "CMD|VerifyUser|";
 
+        /// <summary>
+        /// 返回机顶盒上现有用户信息        
+        /// </summary>
+        public readonly static string CmdSyncUser = "CMD|SyncUser|";
+
+        /// <summary>
+        /// 发送用户信息到机顶盒上
+        /// </summary>
+        public readonly static string CmdSendUser = "CMD|SendUser|";
+
     }
 }

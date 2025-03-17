@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -103,11 +105,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? uploadResult;
 
-        private Communication client;
+        private Communication? client;
 
         public DeviceViewModel()
         {
-            client = new Communication();
         }
 
         public override MonitorDto ToModel()
@@ -146,8 +147,8 @@ namespace MediaControlDistributionCenter.ViewModels
             OwnerName = model.UserName;
             Group = model.MonitorGroupName ?? "未分组";
             IsSelected = isSelected;
-            StatusText = "未知";
             Enabled = model.Enabled;
+            StatusText = GetStatus();
             EnableBtnContent = model.Enabled ==  0 ? "启用" : "停用";
             Width = model.Width;
             Height = model.Height;
@@ -164,23 +165,79 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string GetStatus()
         {
-            client.Connect("192.168.41.1", "5001");
+            return this.Enabled == 0 ? "停用" : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? "在线" : "离线";
+        }
+
+        [RelayCommand]
+        private async Task Connect(Communication client)
+        {
+            if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            {
+               client.Disconnect();
+            }
+
+            var ipAddress = NetworkTool.GetGatewayIp();
+            client.Connect(ipAddress, "5001");
             int count = 1;
-            while(client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+            while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
             {
                 Thread.Sleep(500);
                 count--;
             }
 
-            return this.Enabled == 0 ? "停用" : client.netClient.State == Helpers.SocketClient.SocketState.Connected ? "在线" : "离线";
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("无法连接机顶盒!");
+                return;
+            }
+
+            this.client = client;
+            StatusText = GetStatus();
+        }
+
+        [RelayCommand]
+        private void Disconnect()
+        {
+            if (this.client != null)
+            {
+                this.client.Disconnect();
+                this.client = null;
+            }
+
+            StatusText = GetStatus();
+        }
+
+        [RelayCommand]
+        private async Task SendUser(UsersSync users)
+        {
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
+            }
+
+            var userInfo = users;
+            var userInfoString = JsonConvert.SerializeObject(userInfo);
+            string path = CommunicationCmd.CmdSendUser + userInfoString;
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                MessageBox.Show($"命令处理成功!");
+            }
+            else
+            {
+                MessageBox.Show("命令无法被处理!");
+                //SendState.Text += "命令无法被处理\r\n";
+            }
         }
 
         [RelayCommand]
         private async Task VerifyUser(UserViewModel user)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
 
             var userInfo = new { Account = user.Account, Password = user.Password };
@@ -202,9 +259,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeBrightness(string value)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -223,9 +281,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeVolume(string value)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -244,9 +303,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Restart(string value)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -265,9 +325,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeSync(DateTime value)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
             string path = CommunicationCmd.CmdTime + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -286,9 +347,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeGPSSync(DateTime value)
         {
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 MessageBox.Show("未连接机顶盒，无法发送命令!");
+                return;
             }
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -307,6 +369,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
+            if (client == null)
+            {
+                MessageBox.Show("未连接机顶盒");
+                return;
+            }
+
             var result = await client.UploadFileToFtpServer(filePath);
             if (result)
             {
@@ -321,6 +389,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SyncFileSync(string fileName)
         {
+            if (client == null)
+            {
+                MessageBox.Show("未连接机顶盒");
+                return;
+            }
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName)).LongLength;
             var syncObj = new FileSync
             {
@@ -341,8 +414,14 @@ namespace MediaControlDistributionCenter.ViewModels
             else
             {
                 SendResult = "发布失败";
-            }
-            
+            }            
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

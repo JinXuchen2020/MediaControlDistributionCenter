@@ -26,10 +26,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private string? newPasswordConfirm;
 
         private readonly IUserService userService;
+        private readonly DeviceManageViewModel deviceManageViewModel;
 
-        public UserSettingViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IUserService userService)
+        public UserSettingViewModel(DeviceManageViewModel deviceManageViewModel, DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
         {
-            this.userService = userService;
+            this.userService = GetService<IUserService>(); 
+            this.deviceManageViewModel = deviceManageViewModel;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
 
             if (dashboardViewModel.CurrentUser.Role == "user")
@@ -55,7 +57,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                CurrentUser.ShowConfirmDialogCommand.Execute(null);
+                deviceManageViewModel.SelectedDevice?.ShowConfirmDialogCommand.Execute(null);
             }
         }
 
