@@ -135,7 +135,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public static ValidationResult ValidateAccount(string account, ValidationContext context)
         {
             UserViewModel instance = (UserViewModel)context.ObjectInstance;
-            var userService = App.ServicesProvider.GetRequiredService<IUserService>();
+            var userService = GetService<IUserService>();
             var response = userService.GetAll(new UserDto { Account = account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
 
