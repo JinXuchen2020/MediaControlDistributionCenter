@@ -182,7 +182,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SendUserToDevice()
         {
-            if (SelectedDevice != null)
+            if (SelectedDevice == null)
             {
                 MessageBox.Show("请先连接机顶盒!");
                 return;
