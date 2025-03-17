@@ -45,6 +45,8 @@ namespace MediaControlDistributionCenter.Views
                 case var o when o == typeof(DeviceViewModel):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
+                case var o when o == typeof(LoginViewModel):
+                    break;
                 default:
                     break;
             }
@@ -72,18 +74,22 @@ namespace MediaControlDistributionCenter.Views
         {
             var type = item.GetType();
             var dialogBox = FindDialog(container);
-            switch (type)
+            switch (item)
             {
-                case var o when o == typeof(UserViewModel):
+                case var o when o is UserViewModel:
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
-                case var o when o == typeof(MediaViewModel):
+                case var o when o is MediaViewModel:
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
-                case var o when o == typeof(MediaDevicesViewModel):
+                case var o when o is MediaDevicesViewModel:
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
-                case var o when o == typeof(DeviceTimeControlViewModel):                    
+                case var o when o is DeviceTimeControlViewModel:                    
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
-                case var o when o == typeof(DeviceViewModel):
+                case var o when o is DeviceViewModel:
                     return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
+                case var o when (o is LoginViewModel loginViewModel && !loginViewModel.IsSync):
+                    return (DataTemplate)dialogBox.FindResource("SyncUserResult");
+                case var o when (o is LoginViewModel loginViewModel && loginViewModel.IsSync):
+                    return (DataTemplate)dialogBox.FindResource("LoginUserResult");
                 default:
                     return null;
             }

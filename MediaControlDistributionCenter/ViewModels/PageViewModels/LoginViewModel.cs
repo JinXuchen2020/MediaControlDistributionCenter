@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
@@ -21,10 +23,19 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isLogin;
 
         [ObservableProperty]
+        private bool isSync;
+
+        [ObservableProperty]
+        private string? verifyResult;
+
+        [ObservableProperty]
         private ConnectionMode connectionMode;
 
         [ObservableProperty]
         private ObservableCollection<string> ipAddresses;
+
+        [ObservableProperty]
+        private ObservableCollection<string> syncUsers;
 
         [ObservableProperty]
         private string selectedIpAddress;
@@ -48,36 +59,54 @@ namespace MediaControlDistributionCenter.ViewModels
             this.ipAddresses = new ObservableCollection<string>(new List<string> { NetworkTool.GetGatewayIp() });
             selectedIpAddress = ipAddresses.First();
             this.communication = communication;
+            this.syncUsers = new ObservableCollection<string>();
         }
 
         [RelayCommand]
         private async Task Login(AccountDto request)
         {
-            var resultResponse = await authService.Login(request);
-            if (resultResponse.Code == 200)
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            if (connectionMode.Mode == "Local" && !this.SyncUsers.Contains(request.Account))
             {
-                var userString = resultResponse.Data!;
-                var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-                if (connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri))
+                VerifyResult = "该账号不可用！";
+            }
+            else
+            {
+                var resultResponse = await authService.Login(request);
+                if (resultResponse.Code == 200)
                 {
-                    var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
-                    CurrentUser.Binding(loginUser!);
-                    IsLogin = true;
-                }
-                else
-                {
-                    connectionMode.RemoteToken = userString.Split(" ")[1];
-                    var userResponse = await userService.GetAll(new UserDto { Account = request.Account });
-                    if (userResponse.Code == 200)
+                    var userString = resultResponse.Data!;
+                    if (connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri))
                     {
-                        var userResult = userResponse.Data?.FirstOrDefault();
-                        if (userResult != null)
+                        var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
+                        CurrentUser.Binding(loginUser!);
+                        IsLogin = true;
+                    }
+                    else
+                    {
+                        connectionMode.RemoteToken = userString.Split(" ")[1];
+                        var userResponse = await userService.GetAll(new UserDto { Account = request.Account });
+                        if (userResponse.Code == 200)
                         {
-                            CurrentUser.Binding(userResult);
-                            IsLogin = true;
+                            var userResult = userResponse.Data?.FirstOrDefault();
+                            if (userResult != null)
+                            {
+                                CurrentUser.Binding(userResult);
+                                IsLogin = true;
+                            }
                         }
                     }
                 }
+                else
+                {
+                    VerifyResult = "账号或密码错误！";
+                }
+            }
+
+            if (!IsLogin)
+            {
+                var dialog = new ResultConfirmDialog(this);
+                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
             }
         }
 
@@ -97,11 +126,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            string path = CommunicationCmd.CmdSyncUser;
+            string path = CommunicationCmd.CmdSyncUser + "Login";
             bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
             {
-                MessageBox.Show($"命令处理成功!当前用户列表为:{communication.SyncUserResult}");
+                //MessageBox.Show($"命令处理成功!当前用户列表为:{communication.SyncUserResult}");
                 var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
                 if (syncUsers != null)
                 {
@@ -121,8 +150,14 @@ namespace MediaControlDistributionCenter.ViewModels
                                 await programService.Save(program);
                             }
                         }
+
+                        this.SyncUsers.Add(item.User.Account);
                     }
                 }
+
+                var dialog = new ResultConfirmDialog(this);
+                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+                this.IsSync = true;
             }
             else
             {

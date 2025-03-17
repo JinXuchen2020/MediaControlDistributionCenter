@@ -54,11 +54,6 @@ namespace MediaControlDistributionCenter
                     App.Current.MainWindow.Show();
                     this.Hide();
                 }
-                else
-                {
-                    Log.Warning($"Failed login attempt for user {loginId}.");
-                    MessageBox.Show("Invalid login ID or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
             });            
 
             //var resultResponse = authService.Login(new AccountDto { Account = loginId, Password = password}).GetAwaiter().GetResult();

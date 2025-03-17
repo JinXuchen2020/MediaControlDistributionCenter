@@ -240,7 +240,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var userInfo = new { user.Account, user.Password };
+            var userInfo = new { user.Account, user.Password, user.Role };
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
