@@ -204,6 +204,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     users.Add(new UserSync(agentUser, null, null));
                 }
+
+                userGroup = (await userGroupService.GetById(CurrentUser.GroupId!.Value)).Data;
             }
 
 

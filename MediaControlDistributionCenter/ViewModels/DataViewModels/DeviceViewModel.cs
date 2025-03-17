@@ -240,13 +240,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var userInfo = user.ToModel();
+            var userInfo = new { user.Account, user.Password };
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
             {
-                MessageBox.Show($"命令处理成功!当前用户配置为:{client.VerifyUserResult}");
+                MessageBox.Show($"命令处理成功!");
             }
             else
             {

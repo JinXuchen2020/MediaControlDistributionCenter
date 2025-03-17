@@ -28,8 +28,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         List<string> ReceiveOverCmdStr = new List<string>();
 
-        public string VerifyUserResult { get; private set; }
-
         public string SyncUserResult { get; private set; }
 
 
@@ -247,11 +245,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     try
                     {
                         ReceiveOverCmdStr.Add(data[1]);
-                        if (data[1].Contains(CommunicationCmd.CmdVerifyUser.Split("|")[1]))
-                        {
-                            VerifyUserResult = data[2];
-                        }
-
                         if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
                         {
                             SyncUserResult = data[2];
