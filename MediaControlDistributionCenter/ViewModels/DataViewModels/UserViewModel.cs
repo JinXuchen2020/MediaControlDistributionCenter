@@ -43,6 +43,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string region;
 
         [ObservableProperty]
+        private int status;
+
+        [ObservableProperty]
         [Required]
         private string password;
 
@@ -102,6 +105,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Role = Role,
                 LogoSrc = Logo,
                 TimeZone = TimeZone,
+                Status = Status
             };
         }
 

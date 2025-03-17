@@ -68,7 +68,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var manageViewModel = (DataContext as UserManageViewModel)!;
             var viewModel = new UserViewModel()
             {
-                Role = "user"
+                Role = "user",
+                Status = 1
             };
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
             manageViewModel.ShowDialogCommand.Execute(viewModel);

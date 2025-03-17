@@ -24,11 +24,14 @@ namespace MediaControlDistributionCenter.Services.LocalImps
         public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request)
         {
             Expression result = MakeExpression(request);
-            var memberInfo = typeof(User).GetMember("Role").FirstOrDefault();
-            var leftExpression = Expression.MakeMemberAccess(p, memberInfo!);
-            var rightExpression = Expression.Constant("admin");
-            var binaryExp = Expression.NotEqual(leftExpression, rightExpression);
-            result = Expression.AndAlso(result, binaryExp);
+            if (request == null || string.IsNullOrEmpty(request.Role))
+            {
+                var memberInfo = typeof(User).GetMember("Role").FirstOrDefault();
+                var leftExpression = Expression.MakeMemberAccess(p, memberInfo!);
+                var rightExpression = Expression.Constant("admin");
+                var binaryExp = Expression.NotEqual(leftExpression, rightExpression);
+                result = Expression.AndAlso(result, binaryExp);
+            }
 
             var finalExp = Expression.Lambda<Func<User, bool>>(result, p);
             var results = await SQLite.QueryTable<User>()
