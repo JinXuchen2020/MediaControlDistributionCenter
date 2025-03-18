@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using MediaControlDistributionCenter.Views.CustomControls;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
@@ -10,13 +12,14 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public partial class UserManageViewModel : PageViewModel
     {
-        private const string DialogHostId = "RootDialogHostId";
-
         [ObservableProperty]
         private ObservableCollection<UserViewModel> users;
 
         [ObservableProperty]
         private ObservableCollection<UserGroupViewModel> groups;
+
+        [ObservableProperty]
+        private string errorMessage;
 
         public UserViewModel CurrentUser { get; set; }
 
@@ -38,7 +41,7 @@ namespace MediaControlDistributionCenter.ViewModels
             groups.Insert(0, new UserGroupDto
             {
                 Id = -1,
-                Name = "全部",
+                Name = FindResource("LanguageKey_Code_All"),
                 AgentAccount = CurrentUser.AgentId,
             });
 
@@ -61,19 +64,26 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ShowDialog(ObservableObject content)
         {
-            await MaterialDesignThemes.Wpf.DialogHost.Show(content, DialogHostId);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(content, Constants.DialogHostId);
         }
 
         [RelayCommand]
         private async Task ShowDialogContent(UserControl dialogContent)
         {
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialogContent, DialogHostId);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialogContent, Constants.DialogHostId);
         }
 
         [RelayCommand]
         private void CloseDialog()
         {
-            MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
         [RelayCommand]

@@ -29,8 +29,8 @@
                 <Image Margin="20,-135,0,0" Source="/Assets/assets-0014.png" Width="200" Height="50"  HorizontalAlignment="Left" Stretch="Uniform"/>
                 <Image Margin="20,0,0,0" Source="/Assets/assets-0013.png" Stretch="Uniform" HorizontalAlignment="Left" Width="375" Height="50"/>
                 <StackPanel Margin="20,135,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="能够有效运营/管理媒体" FontSize="18" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                    <TextBlock Text="解决方案的唯一综合管理平台" FontSize="18" Foreground="White" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_100}" FontSize="18" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_101}" FontSize="18" Foreground="White" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -59,7 +59,7 @@
                                            FontWeight="Black"
                                            Foreground="White"
                                            VerticalAlignment="Center"
-                                           Text="快捷控制"/>
+                                           Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_102}"/>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
@@ -77,8 +77,8 @@
                                         Margin="10,0,20,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
-                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="屏幕控制"/>
-                                <TextBlock  Cursor="Hand" Foreground="White" Text="点击查看"  MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Volume"/>
+                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_103}"/>
+                                <TextBlock  Cursor="Hand" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_107}"  MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Volume"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -94,8 +94,8 @@
                                         Margin="10,0,20,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
-                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black"  Foreground="White" Text="亮度调节"/>
-                                <TextBlock  Cursor="Hand" Foreground="White" Text="点击查看" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Brightness"/>
+                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black"  Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_104}"/>
+                                <TextBlock  Cursor="Hand" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_107}" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Brightness"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -111,8 +111,8 @@
                                   Margin="10,0,20,0"
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center">
-                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="对时配置"/>
-                                <TextBlock  Cursor="Hand" Foreground="White" Text="点击查看" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="TimeSync"/>
+                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_105}"/>
+                                <TextBlock  Cursor="Hand" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_107}" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="TimeSync"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -128,8 +128,8 @@
                                         Margin="10,0,20,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
-                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="设备重启"/>
-                                <TextBlock  Cursor="Hand" Foreground="White" Text="点击查看" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Restart"/>
+                                <TextBlock Margin="0,0,0,10" FontSize="15" FontWeight="Black" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_106}"/>
+                                <TextBlock  Cursor="Hand" Foreground="White" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_107}" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Tag="Restart"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -141,10 +141,10 @@
                 <Grid >
                     <StackPanel Orientation="Horizontal" Margin="15,22" >
                         <Image Width="30" Height="30" Source="/Assets/assets-0010.png" HorizontalAlignment="Left"/>
-                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="媒体控制器"/>
+                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_108}"/>
                     </StackPanel>
 
-                    <Button x:Name="btnToMediaManage" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Click="btnToMediaManage_Click" Width="100" Foreground="White" Content="点击直达"/>
+                    <Button x:Name="btnToMediaManage" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Click="btnToMediaManage_Click" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"
@@ -157,7 +157,7 @@
                     ItemsSource="{Binding Devices}"
                 >
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="显示屏名称" Width="*">
+                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_110}" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -171,7 +171,7 @@
                         <materialDesign:DataGridTextColumn
                             EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}"
                             ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
-                            Header="当前节目" Width="*">
+                            Header="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_111}" Width="*">
                             <materialDesign:DataGridTextColumn.Binding>
                                 <Binding Path="MediaNames">
                                     <Binding.ValidationRules>
@@ -203,7 +203,7 @@
                     Padding="5,3,5,3">
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#617FF4"/>
-                    <TextBlock  Foreground="#617FF4" Text="总数"/>
+                    <TextBlock  Foreground="#617FF4" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
                     <TextBlock x:Name="allDeviceCount" Foreground="#617FF4" Text="5"/>
                 </StackPanel>
             </Border>
@@ -214,7 +214,7 @@
                     Padding="5,3,5,3">
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#75D46C"/>
-                    <TextBlock  Foreground="#75D46C" Text="总数"/>
+                    <TextBlock  Foreground="#75D46C" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
                     <TextBlock x:Name="onlineCount"  Foreground="#75D46C" Text="3"/>
                 </StackPanel>
             </Border>
@@ -225,7 +225,7 @@
                     Padding="5,3,5,3">
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#9B9C9F"/>
-                    <TextBlock  Foreground="#9B9C9F" Text="总数"/>
+                    <TextBlock  Foreground="#9B9C9F" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
                     <TextBlock x:Name="offlineCount" Foreground="#9B9C9F" Text="2"/>
                 </StackPanel>
             </Border>
@@ -236,10 +236,10 @@
                 <Grid >
                     <StackPanel Orientation="Horizontal" Margin="15,22" >
                         <Image Width="30" Height="30" Source="/Assets/assets-0015.png" HorizontalAlignment="Left"/>
-                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="用户"/>
+                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_113}"/>
                     </StackPanel>
 
-                    <Button  x:Name="btnToUserManage" Click="btnToUserManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="点击直达"/>
+                    <Button  x:Name="btnToUserManage" Click="btnToUserManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"
@@ -253,34 +253,33 @@
                     ItemsSource="{Binding Users}"
                 >
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="控制" Width="120">
+                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Users_Control}" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                         <materialDesign:PackIcon Width="16" Height="16" Kind="Controller" VerticalAlignment="Center"/>
-                                        <TextBlock Text="控制" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Control}" Margin="5,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Binding="{Binding Role}" Header="权限" Width="*" />
-                        <DataGridTextColumn Binding="{Binding Group}" Header="组" Width="*" />
-                        <DataGridTextColumn Binding="{Binding Account}" Header="用户名" Width="*" />
-                        <DataGridTextColumn Binding="{Binding Name}" Header="公司名" Width="*" />
+                        <DataGridTextColumn Binding="{Binding Role}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" Width="*" />
+                        <DataGridTextColumn Binding="{Binding AgentId}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" Width="*" />
+                        <DataGridTextColumn Binding="{Binding Account}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" Width="*" />
+                        <DataGridTextColumn Binding="{Binding Name}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
         </Border>
-
         <Border Margin="14,14,14,0" Grid.RowSpan="2" Grid.Column="1" CornerRadius="5" Background="#16171D" Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}">
             <StackPanel>
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="15,22" >
                         <Image Width="30" Height="30" Source="/Assets/assets-0011.png" HorizontalAlignment="Left"/>
-                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="在线显示器"/>
+                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_114}"/>
                     </StackPanel>
 
-                    <Button x:Name="btnToDeviceManage" Click="btnToDeviceManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="点击直达"/>
+                    <Button x:Name="btnToDeviceManage" Click="btnToDeviceManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Devices}">
                     <ItemsControl.ItemTemplate>
@@ -300,10 +299,10 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="15,22" >
                         <Image Width="30" Height="30" Source="/Assets/assets-0011.png" HorizontalAlignment="Left"/>
-                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="我的媒体"/>
+                        <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_115}"/>
                     </StackPanel>
 
-                    <Button Click="btnToMediaManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="点击直达"/>
+                    <Button Click="btnToMediaManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"
@@ -327,12 +326,12 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="操作" Width="120">
+                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Operation}" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Cursor="Hand" MouseDown="btnToMediaEdit_MouseDown" >
                                         <materialDesign:PackIcon Width="16" Height="16" Kind="Upload" Foreground="#3B57BF" VerticalAlignment="Center"/>
-                                        <TextBlock Text="发布" Margin="5,0,0,0" VerticalAlignment="Center" Foreground="#3B57BF"/>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Media_Send}" Margin="5,0,0,0" VerticalAlignment="Center" Foreground="#3B57BF"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

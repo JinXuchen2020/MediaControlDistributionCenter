@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
@@ -18,17 +19,32 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private long id;
 
-        [ObservableProperty]
+        [ObservableProperty]        
         private string role;
 
-        [ObservableProperty]
         private long? groupId;
+        
+        public long? GroupId
+        {
+            get => groupId;
+            set
+            {
+                if (groupId != value)
+                {
+                    groupId = value;
+                    OnPropertyChanged(nameof(GroupId));
+                    // 当 groupId 更新时，更新 agentId
+                    AgentId = Groups?.FirstOrDefault(c=>c.Id == groupId)?.AgentId;
+                }
+
+            }
+        }
 
         [ObservableProperty]
-        private string agentId;
+        private string? agentId;
 
         [ObservableProperty]
-        private string group;
+        private string? group;
 
         [ObservableProperty]
         [Required]
@@ -56,6 +72,9 @@ namespace MediaControlDistributionCenter.ViewModels
         public string? logo;
 
         [ObservableProperty]
+        public string? logoFileName;
+
+        [ObservableProperty]
         public BitmapImage? logoThumbnail;
 
         [ObservableProperty]
@@ -72,6 +91,36 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<UserGroupViewModel> groups;
+
+        [ObservableProperty]
+        private ObservableCollection<TimeZoneInfo> timeZoneInfos;
+
+        [ObservableProperty]
+        private ObservableCollection<object> roleList;
+
+        public UserViewModel()
+        {
+            roleList = new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Admin.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_Admin")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_User")
+                }
+            });
+
+            timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
+        }
 
         [RelayCommand]
         private async Task ShowConfirmDialog()
@@ -103,9 +152,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 UserGroupId = GroupId,
                 AgentAccount = AgentId,
                 Role = Role,
-                LogoSrc = Logo,
+                LogoSrc = GetImageData(Logo),
+                LogoFileName = LogoFileName,
                 TimeZone = TimeZone,
-                Status = Status
+                Status = Status,
+                TagLine = TagLine,
             };
         }
 
@@ -121,19 +172,55 @@ namespace MediaControlDistributionCenter.ViewModels
             Region = model.Region;
             Password = model.Password;
             Logo = model.LogoSrc;
+            LogoFileName = model.LogoFileName;
             TimeZone = model.TimeZone;
             LogoThumbnail = GetThumbnail();
             IsSelected = isSelected;
+            IsUpload = Logo != null;
+            TagLine = model.TagLine;
         }
 
         public BitmapImage? GetThumbnail()
-        {
-            if (!string.IsNullOrEmpty(Logo) && File.Exists(Logo))
+        {            
+            if (!string.IsNullOrEmpty(Logo))
             {
-                return new BitmapImage(new Uri(Logo));
+                try
+                {
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.StreamSource = new MemoryStream(Convert.FromBase64String(Logo));
+                    image.EndInit();
+
+                    return image;
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             return null;
+        }
+
+        public string? GetImageData(string? content)
+        {
+            byte[]? imageData = null;
+            if (!string.IsNullOrEmpty(content))
+            {
+                try
+                {
+                    imageData = Convert.FromBase64String(content);
+                }
+                catch
+                {
+                    if (File.Exists(content))
+                    {
+                        imageData = File.ReadAllBytes(content);
+                    }
+                }
+            }
+
+            return imageData != null ? Convert.ToBase64String(imageData) : null;
         }
 
         public static ValidationResult ValidateAccount(string account, ValidationContext context)
@@ -151,5 +238,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Totip_410");
             return new(erroMessage);
         }
+    }
+
+    public class RoleModel
+    {
+        public string Role { get; set; }
+
+        public string RoleText { get; set; }
     }
 }

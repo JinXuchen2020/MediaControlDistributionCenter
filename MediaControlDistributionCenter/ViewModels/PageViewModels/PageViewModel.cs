@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,6 +7,11 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public partial class PageViewModel : ObservableObject
     {
+        protected ConnectionMode ConnectionMode => App.ServicesProvider.GetRequiredService<ConnectionMode>();
+        
+        [ObservableProperty]
+        private bool isDeviceConnected = App.ServicesProvider.GetRequiredService<Communication>().netClient.IsConnected;
+
         public virtual void LoadData(long? groupId = null)
         {
 
@@ -30,6 +36,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 default:
                     throw new ArgumentException("未知的服务名称");
             }
+        }
+
+        protected string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
         }
     }
 }

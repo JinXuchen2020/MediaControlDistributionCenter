@@ -16,7 +16,7 @@
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId">
+    <materialDesign:DialogHost Identifier="LoginDialogHostId">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -32,15 +32,9 @@
                Stretch="Fill" />
             <Grid Grid.ColumnSpan="2" Grid.Row="0" Margin="0,15,0,0" >
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Center"
-                   PlacementMode="BottomAndAlignCentres"
-                   PopupMode="Click">
+                    <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Center" PlacementMode="BottomAndAlignCentres" PopupMode="Click">
                         <materialDesign:PopupBox.ToggleContent>
-                            <Border CornerRadius="2"
-                           Padding="10"
-                           Width="100"
-                           BorderBrush="White"
-                           BorderThickness="1">
+                            <Border CornerRadius="2" Padding="10" Width="100" BorderBrush="White" BorderThickness="1">
                                 <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ZH}" Foreground="White"/>
                             </Border>
                         </materialDesign:PopupBox.ToggleContent>
@@ -65,7 +59,7 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="158,300,0,0"   HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="158,300,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top">
                 <StackPanel HorizontalAlignment="Center">
                     <Image Source="/Assets/assets-0004.png"
                            Width="160"
@@ -73,7 +67,7 @@
                            VerticalAlignment="Center"/>
                     <TextBlock Foreground="White"
                                Margin="0,31,0,0"
-                               FontSize="52" 
+                               FontSize="26" 
                                FontWeight="Black"
                                VerticalAlignment="Center"
                                Text="{DynamicResource LanguageKey_Code_LoginDescription}"/>
@@ -104,19 +98,12 @@
                            Margin="10,0,0,0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
-                        <TextBlock Foreground="#A0A3A8"  FontSize="20"
-                                   VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_SystemFeature3}"/>
-
-
+                        <TextBlock Foreground="#A0A3A8" FontSize="20" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_SystemFeature3}"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
 
-
-
-            <Label  Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="165,875,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20"  
-Content="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"
-/>
+            <TextBlock Grid.RowSpan="2" Grid.ColumnSpan="2"  TextWrapping="Wrap" Margin="165,875,10,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"/>
             <Grid Grid.Column="1" Grid.Row="1" Visibility="Visible">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -133,7 +120,6 @@ Content="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"
                     Background="#131A32"
                     CornerRadius="5" Width="551" Height="727" >
                     <Grid>
-
                         <Label  Margin="113,145,0,0" VerticalAlignment="Top" FontSize="28" HorizontalAlignment="Left" Content="{DynamicResource LanguageKey_Code_LoginTitle}" />
                         <StackPanel Margin="0,265,0,0" VerticalAlignment="Top">
                             <TextBox x:Name="txtLoginId" BorderBrush="White"
@@ -154,35 +140,29 @@ Content="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"
                                      materialDesign:TextFieldAssist.PrefixTextVisibility="WhenFocusedOrNonEmpty"
                                      materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_LoginPassword}" />
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center" Width="320" Height="40">
-                                <RadioButton x:Name="btnRemote" FontSize="14" VerticalAlignment="Center" Foreground="White" Content="远程模式" Margin="50,0,0,0" Click="ConnectionModeChanged_Click" IsChecked="true" />
-                                <RadioButton x:Name="btnLocal" FontSize="14" VerticalAlignment="Center" Margin="50,0,0,0"  HorizontalAlignment="Center" Foreground="White" Content="本地模式" Click="ConnectionModeChanged_Click" IsChecked="false" />
+                                <RadioButton x:Name="btnRemote" FontSize="14" VerticalAlignment="Center" Foreground="White" Content="{DynamicResource LanguageKey_Code_RemoteMode}" Margin="50,0,0,0" Click="ConnectionModeChanged_Click" IsChecked="true" />
+                                <RadioButton x:Name="btnLocal" FontSize="14" VerticalAlignment="Center" Margin="50,0,0,0"  HorizontalAlignment="Center" Foreground="White" Content="{DynamicResource LanguageKey_Code_LocalMode}" Click="ConnectionModeChanged_Click" IsChecked="false" />
                             </StackPanel>
 
                             <Button Content="{DynamicResource LanguageKey_Code_LoginBtn}" Margin="0,30,0,0"
-                              Width="325" Height="44"
-                              IsDefault="True" Background="#3B57BF" Foreground="White"
-                              IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                              Style="{StaticResource MaterialDesignPaperDarkButton}"
-                              materialDesign:ButtonAssist.CornerRadius="2"
-                              Click="btnLogin_Click"
-                              materialDesign:ThemeAssist.Theme="Light"/>
+                                  Width="325" Height="44"
+                                  IsDefault="True" Background="#3B57BF" Foreground="White"
+                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                  Style="{StaticResource MaterialDesignPaperDarkButton}"
+                                  materialDesign:ButtonAssist.CornerRadius="2"
+                                  Click="btnLogin_Click"
+                                  materialDesign:ThemeAssist.Theme="Light"/>
 
                             <StackPanel Visibility="Collapsed" x:Name="spAddress" Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Width="320" Height="40">
-                                <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="机顶盒地址：" />
+                                <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
                                 <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
                                 <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                     <materialDesign:PackIcon Kind="LocalAreaNetworkConnect" Foreground="LightGray"  Width="22" Height="22"/>
                                 </Button>
                             </StackPanel>
-
-
                         </StackPanel>
 
-
-                        <Label  Margin="0,642,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14"  
-Content="{DynamicResource LanguageKey_Code_LoginSubTitle}" Opacity="0.7"
-/>
-
+                        <Label  Margin="0,642,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14" Content="{DynamicResource LanguageKey_Code_LoginSubTitle}" Opacity="0.7"/>
                     </Grid>
                 </Border>
             </Grid>

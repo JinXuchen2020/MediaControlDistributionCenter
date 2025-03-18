@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:views="clr-namespace:MediaControlDistributionCenter.Views"
         xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
-        xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:UserViewModel}"
+        xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels"
         mc:Ignorable="d" 
         WindowStyle="None"
         WindowStartupLocation="Manual"
@@ -37,7 +37,7 @@
                         Margin="64,0,0,0" x:Name="UserManagement" Text="{DynamicResource LanguageKey_Code_Management_Users}" Tag="2" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
 
                     <TextBlock 
-                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}"
                         Margin="64,0,0,0" x:Name="MediaStore" Text="{DynamicResource LanguageKey_Code_MediaStore}" Tag="3" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
 
                     <TextBlock 
@@ -88,7 +88,7 @@
                     materialDesign:ColorZoneAssist.Background="#141726"
                     materialDesign:ButtonAssist.CornerRadius="5"
                     Click="ExitButton_Click"
-                    Content="{materialDesign:PackIcon Size=35,Kind=Power}" ToolTip="关闭"/>
+                    Content="{materialDesign:PackIcon Size=35,Kind=Power}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
             </StackPanel>
         </Grid>
         <Border Grid.Row="1" Width="auto" Background="#40476F"/>
@@ -107,9 +107,9 @@
                         HorizontalAlignment="Left"
                         Background="#060606">
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="28" Height="28" Margin="18,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform"/>
-                        <Image Width="28" Height="28" Margin="18,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="Collapsed"/>
-                        <TextBlock FontSize="18" VerticalAlignment="Center" Foreground="White" Text="机器连接---正常"/>
+                        <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                        <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding DeviceConnString, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Border>
                 <Border Width="259" Height="35"
@@ -134,9 +134,7 @@
                                 </ProgressBar.Resources>
                             </ProgressBar>
                         </Border>
-
-
-                        <TextBlock FontSize="18" VerticalAlignment="Center" Foreground="White" Text="70%剩余机器容量"/>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="70%剩余机器容量"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -146,9 +144,9 @@
                     HorizontalAlignment="Right"
                     Background="#060606">
                 <StackPanel Orientation="Horizontal">
-                    <Image Width="28" Height="28" Margin="18,0,10,0" Source="/Assets/assets-0019.png" Stretch="Uniform"/>
-                    <Image Width="28" Height="28" Margin="18,0,10,0" Source="/Assets/assets-0020.png" Stretch="Uniform" Visibility="Collapsed"/>
-                    <TextBlock FontSize="18" VerticalAlignment="Center" Foreground="White" Text="网络——正常"/>
+                    <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0019.png" Stretch="Uniform"/>
+                    <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0020.png" Stretch="Uniform" Visibility="Collapsed"/>
+                    <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </Border>
         </Grid>

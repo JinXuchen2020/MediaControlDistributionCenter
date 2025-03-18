@@ -13,8 +13,9 @@
     <UserControl.Resources>
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D" Margin="20,8,20,0" Placement="RelativePoint">
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#16171D" Margin="20,8,20,0" Placement="Center">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
@@ -24,10 +25,11 @@
                                 <i:MouseDragElementBehavior ConstrainToParentBounds="False" />
                             </i:Interaction.Behaviors>
                             <DockPanel LastChildFill="False" Background="#090A0E">
-                                <Grid Width="889" Height="500" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                                <Grid Width="889" Height="600" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="2" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
@@ -48,49 +50,72 @@
                                         materialDesign:ColorZoneAssist.Background="#090A0E"
                                         materialDesign:ButtonAssist.CornerRadius="5"
                                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}" ToolTip="关闭"/>
+                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
                                     </StackPanel>
 
                                     <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
                                     <StackPanel Grid.Row="2" Margin="10">
                                         <StackPanel Orientation="Horizontal" Margin="10">
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="权限：" />
-                                            <ComboBox materialDesign:HintAssist.Hint="{Binding Role}" SelectedValue="{Binding Role}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1">
-                                                <ComboBoxItem Content="admin"/>
-                                                <ComboBoxItem Content="agent"/>
-                                                <ComboBoxItem Content="user"/>
-                                            </ComboBox>
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
+                                            <ComboBox ItemsSource="{Binding RoleList}" SelectedValue="{Binding Role}" SelectedValuePath="Role" DisplayMemberPath="RoleText" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10">
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="分组：" />
-                                            <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="账号：" />
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
                                             <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10" >
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
+                                            <TextBox IsEnabled="False" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding AgentId}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10" >
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="10"  Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_111}" />
+                                            <StackPanel>
+                                                <Border Width="110" Height="110" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
+                                                    <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <Border Width="110" Height="110" Background="#0F0F10" BorderBrush="#404870" BorderThickness="1" HorizontalAlignment="Left" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                                                    <Image Source="{Binding LogoThumbnail}" Width="110" Height="110" />
+                                                </Border>
+                                                <TextBlock FontSize="12" Foreground="White" Width="300" VerticalAlignment="Bottom" Margin="0,20,0,0" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_112}" />
+                                            </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="10">
-                                        <StackPanel Orientation="Horizontal" Margin="10" >
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="公司名称：" />
-                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" />
+                                            <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10">
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="地址：" />
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
+                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_109}" />
                                             <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Region}" />
                                         </StackPanel>
+                                        <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
+                                            <TextBlock Foreground="White" VerticalAlignment="Center" Width="80" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_114}" />
+                                            <ComboBox Height="32" Width="250" Background="#2A3255" Padding="5" ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="DisplayName" SelectedValue="{Binding TimeZone}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="10">
                                         <StackPanel Orientation="Horizontal" Margin="10">
-                                            <TextBlock Width="80" VerticalAlignment="Center" Text="会员密码：" />
-                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />
+                                            <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_113}" />
+                                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="464" Height="64" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding TagLine}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>
                                 <Grid DockPanel.Dock="Bottom">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                        <Button x:Name="btnSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Save}" Click="btnSave_Click" />
-                                        <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Reset}" Command="{Binding ResetCommand}" />
+                                        <Button x:Name="btnSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Save}" Click="btnSave_Click" />
+                                        <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                                     </StackPanel>
                                 </Grid>
                             </DockPanel>
@@ -98,7 +123,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:UserGroupViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">
-                            <Grid Width="889" Height="493" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                            <Grid Width="500" Height="300" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="2" />
@@ -126,20 +151,20 @@
 
                                 <StackPanel Grid.Row="2" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
-                                        <TextBlock Width="60" VerticalAlignment="Center" Text="名称：" />
+                                        <TextBlock Width="60" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Name}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
-                                        <TextBlock Width="60" VerticalAlignment="Center" Text="代理商：" />
+                                        <TextBlock Width="60" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Agent}" />
                                         <ComboBox x:Name="cbGroups" ItemsSource="{Binding Agents}" DisplayMemberPath="Name" SelectedValue="{Binding AgentId}" SelectedValuePath="Account" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnGroupSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Save}" Click="btnGroupSave_Click" />
-                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Reset}" Command="{Binding ResetCommand}" />
+                                    <Button x:Name="btnGroupSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Save}" Click="btnGroupSave_Click" />
+                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                                 </StackPanel>
                             </Grid>
                         </DockPanel>
@@ -175,7 +200,7 @@
                     <DockPanel Margin="20,0,20,0">
                         <StackPanel DockPanel.Dock="Left"  Orientation="Horizontal">
                             <Image Width="24" Height="24"  Source="/Assets/assets-0009.png" HorizontalAlignment="Left" Margin="0,0,10,0"/>
-                            <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="用户组" Foreground="White"/>
+                            <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" Foreground="White"/>
                         </StackPanel>
                         <Button x:Name="btnGroupAdd" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
                             <Image Width="20" Height="20"  Source="/Assets/7.png" HorizontalAlignment="Left"/>
@@ -217,7 +242,7 @@
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" VerticalAlignment="Top" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="输入关键字搜索" Padding="12,0,0,0"  Foreground="White"></TextBox>
+                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Users_Tooltip_108}" Padding="12,0,0,0"  Foreground="White"></TextBox>
                                 <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
                             </StackPanel>
                             <Button Margin="16,0,0,0" Background="#2A3255" Padding="0" BorderBrush="#404870">
@@ -254,12 +279,12 @@
                                     </Style>
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="选择" Width="60"
+                                    <DataGridCheckBoxColumn Header="{DynamicResource LanguageKey_Code_Select}" Width="60"
                                         Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                                         ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
                                         IsReadOnly="False"
                                         CanUserSort="False"/>
-                                    <DataGridTemplateColumn Header="功能"  Width="160" >
+                                    <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Function}"  Width="160" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -273,18 +298,18 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Role}" Header="权限" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="组"  />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}" Header="账号" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding AgentId}" Header="所属代理商" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="公司名称" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Region}" Header="地区" />
-                                    <DataGridTemplateColumn Header="操作"  Width="160" >
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Role}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_107}"  />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding AgentId}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Region}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_109}" />
+                                    <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Operation}"  Width="180" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <Button Content="编辑" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Content="删除" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

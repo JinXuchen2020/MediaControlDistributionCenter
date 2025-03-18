@@ -15,11 +15,11 @@
         <DataTemplate x:Key="UserRegisterSuccess" DataType="{x:Type viewmodels:UserViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Width="80" Foreground="White" Text="名称：" />
+                    <TextBlock Width="80" Foreground="White" Text="{DynamicResource LanguageKey_Code_LoginAccount}" />
                     <TextBlock Width="250" Foreground="White" Text="{Binding Name}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    <TextBlock Width="80" Foreground="White" Text="密码：" />
+                    <TextBlock Width="80" Foreground="White" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
                     <TextBlock Width="250" Foreground="White" Text="{Binding Password}" />
                 </StackPanel>
             </StackPanel>
@@ -99,8 +99,8 @@
         </DataTemplate>
         <DataTemplate x:Key="SyncUserResult" DataType="{x:Type viewmodels:LoginViewModel}">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" > 
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="同步机顶盒信息成功！可选择下列用户登录：" />
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_Device_Tooltip_102}" />
                 </StackPanel>
                 <Border Grid.Row="2" Margin="10" Width="300" BorderThickness="0" Background="#16171D">
                     <Grid>
@@ -116,7 +116,7 @@
                             ItemsSource="{Binding SyncUsers}"
                         >
                             <DataGrid.Columns>
-                                <DataGridTextColumn Width="1*" Binding="{Binding}" Header="账号" />
+                                <DataGridTextColumn Width="1*" Binding="{Binding}" Header="{DynamicResource LanguageKey_Code_LoginAccount}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
@@ -126,14 +126,20 @@
         <DataTemplate x:Key="LoginUserResult" DataType="{x:Type viewmodels:LoginViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="登录失败, 原因：" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding VerifyResult}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ManageUserResult" DataType="{x:Type viewmodels:UserManageViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding ErrorMessage}" />
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
     <DockPanel LastChildFill="False" Background="#2A3255">
-        <Grid HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+        <Grid HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top"  Width="400">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="2" />

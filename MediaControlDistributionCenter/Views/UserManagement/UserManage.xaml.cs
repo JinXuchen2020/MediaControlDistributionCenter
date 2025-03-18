@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,7 +48,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var userViewModel = ((sender as Button).DataContext as UserViewModel)!;
             if(userViewModel.Role != "user")
             {
-                MessageBox.Show("无法控制代理商！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_104");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -93,13 +95,15 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected);
             if(selectedUsers.Count() == 0)
             {
-                MessageBox.Show("请选择用户！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_105");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
             if (selectedUsers.Any(c => c.Role == "agent"))
             {
-                MessageBox.Show("代理商无法变更组！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_106");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -112,7 +116,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var selectedUsers = manageViewModel.Users.Where(c => c.IsSelected).ToList();
             if (selectedUsers.Count == 0)
             {
-                MessageBox.Show("请选择用户！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_105");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -139,6 +144,26 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var groupViewModel = ((sender as Button).DataContext as UserGroupViewModel)!;
 
             manageViewModel.SaveGroupCommand.Execute(groupViewModel);
+        }
+
+        private void btnUpload_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var viewModel = ((sender as Border).DataContext as UserViewModel)!;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // 获取所选文件的路径
+                string filePath = openFileDialog.FileName;
+
+                // 显示缩略图
+                BitmapImage bitmap = new BitmapImage(new Uri(filePath));
+                viewModel.LogoThumbnail = bitmap;
+                viewModel.Logo = filePath;
+                viewModel.LogoFileName = System.IO.Path.GetFileName(filePath);
+                viewModel.IsUpload = true;
+            }
         }
     }
 }

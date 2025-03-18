@@ -46,10 +46,17 @@ namespace MediaControlDistributionCenter.Views
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
                 case var o when o == typeof(LoginViewModel):
+                    btnConfirm.Click += BtnConfirm_Click; 
                     break;
                 default:
                     break;
             }
+        }
+
+        private void BtnConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as LoginViewModel)!;
+            viewModel.VerifyResult = null;
         }
 
         private void btnExecute(object sender, RoutedEventArgs e)
@@ -86,10 +93,12 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
                 case var o when o is DeviceViewModel:
                     return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
-                case var o when (o is LoginViewModel loginViewModel && !loginViewModel.IsSync):
+                case var o when (o is LoginViewModel loginViewModel && string.IsNullOrEmpty(loginViewModel.VerifyResult) && loginViewModel.IsSync):
                     return (DataTemplate)dialogBox.FindResource("SyncUserResult");
-                case var o when (o is LoginViewModel loginViewModel && loginViewModel.IsSync):
+                case var o when (o is LoginViewModel loginViewModel && !string.IsNullOrEmpty(loginViewModel.VerifyResult)):
                     return (DataTemplate)dialogBox.FindResource("LoginUserResult");
+                case var o when (o is UserManageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage)):
+                    return (DataTemplate)dialogBox.FindResource("ManageUserResult");
                 default:
                     return null;
             }

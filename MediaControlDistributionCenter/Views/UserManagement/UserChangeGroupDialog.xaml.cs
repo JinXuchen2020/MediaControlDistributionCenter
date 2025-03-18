@@ -1,6 +1,7 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -32,13 +33,16 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
+            var manageViewModel = (DataContext as UserManageViewModel)!;
             var selectedGroup = cbGroups.SelectedValue as UserGroupViewModel;
             if (selectedGroup == null) 
             {
-                MessageBox.Show("请选择组!");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_110");
+                var dialog = new ResultConfirmDialog(manageViewModel);
+                MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+                //manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
-            var manageViewModel = (DataContext as UserManageViewModel)!;
 
             manageViewModel.ChangeGroupCommand.Execute(selectedGroup);
         }

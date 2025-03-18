@@ -11,6 +11,10 @@
     <sys:String x:Key="LanguageKey_Code_KO">韩国节点</sys:String>
     <sys:String x:Key="LanguageKey_Code_JP">日本节点</sys:String>
 
+    <sys:String x:Key="LanguageKey_Code_Role_Admin">管理员</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_Agent">代理商</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_User">会员</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_SystemTitle">统一媒体管理平台</sys:String>
     
     
@@ -30,20 +34,40 @@
     <sys:String x:Key="LanguageKey_Code_LoginBtn">登录</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 73764@qq·com</sys:String>
 
+    <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
+    <sys:String x:Key="LanguageKey_Code_RemoteMode">远程模式</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Confirm">确定</sys:String>
-
-
-
-
-
-
-    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好世界</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
-    <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
-    <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_101">该账号不可用！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_100">无法连接机顶盒!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_101">命令无法被处理!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_102">同步机顶盒信息成功！可选择下列用户登录：</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_103">网络—本地网络</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_101">解决方案的唯一综合管理平台</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_102">快捷控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_103">屏幕控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_104">亮度调节</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_105">对时配置</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_106">设备重启</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_107">点击查看</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_108">媒体控制器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_109">点击直达</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_110">显示屏名称</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_111">当前节目</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_112">总数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_113">用户</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">在线显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_Management">用户管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Users">会员管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Users_Register">会员登记</sys:String>
@@ -55,9 +79,22 @@
     <sys:String x:Key="LanguageKey_Code_Users_GroupDialogTitle">用户分组</sys:String>
     <sys:String x:Key="LanguageKey_Code_Users_Delete">删除</sys:String>
     <sys:String x:Key="LanguageKey_Code_Users_Control">控制</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Management_Groups">管理组</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Management_Controls">控制</sys:String>
-    <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_100">权限</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_101">所属代理商</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_102">账号</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_103">公司名</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_104">无法控制代理商！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_105">未选择会员！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_106">代理商无法变更组！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_107">用户组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_108">输入关键字搜索</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_109">地区</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_110">未选择组！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_111">LOGO</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_112">添加LOGO尺寸描述和图片格式,JPG,PNG.</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_113">宣传语</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Users_Tooltip_114">时区</sys:String>
+    
 
     <sys:String x:Key="LanguageKey_Code_Management_Media">媒体管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_GroupDialogTitle">媒体分组</sys:String>
@@ -65,11 +102,33 @@
     <sys:String x:Key="LanguageKey_Code_Media_Create">新增节目</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_Copy">复制</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_SelectDeviceDialogTitle">选择显示屏</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_100">节目名称</sys:String>
+
+
+    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好世界</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_Management_Groups">管理组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Controls">控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
     <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
     <sys:String x:Key="LanguageKey_Code_ChangGroup">变更分组</sys:String>
     <sys:String x:Key="LanguageKey_Code_Save">保存</sys:String>
     <sys:String x:Key="LanguageKey_Code_Cancel">取消</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Operation">操作</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Select">选择</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Function">功能</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Edit">编辑</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Delete">删除</sys:String>
+    <sys:String x:Key="LanguageKey_Code_All">全部</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Name">名称：</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Agent">代理商：</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Confirm">确定</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_Management_Device">设备管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Create">新增显示器</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_GroupDialogTitle">设备分组</sys:String>

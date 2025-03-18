@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Dm.filter;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
@@ -66,9 +67,17 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Login(AccountDto request)
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            if (connectionMode.Mode == "Local" && !this.SyncUsers.Contains(request.Account))
+            if (string.IsNullOrEmpty(request.Account) || string.IsNullOrEmpty(request.Password))
             {
-                VerifyResult = "该账号不可用！";
+                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_103");
+            }
+            else if (connectionMode.Mode == "Local" && !IsSync)
+            {
+                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
+            }
+            else if (connectionMode.Mode == "Local" && !this.SyncUsers.Contains(request.Account))
+            {
+                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
             }
             else
             {
@@ -99,14 +108,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    VerifyResult = "账号或密码错误！";
+                    VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
                 }
             }
 
             if (!IsLogin)
             {
                 var dialog = new ResultConfirmDialog(this);
-                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
             }
         }
 
@@ -122,47 +131,48 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("无法连接机顶盒!");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdSyncUser + "Login";
-            bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
-            {
-                //MessageBox.Show($"命令处理成功!当前用户列表为:{communication.SyncUserResult}");
-                var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
-                if (syncUsers != null)
-                {
-                    foreach (var item in syncUsers.Users) 
-                    {
-                        await userService.Save(item.User);
-                        if (item.UserGroup != null)
-                        {
-                            await userGroupService.Save(item.UserGroup);
-                        }
-
-                        if (item.Monitor != null)
-                        {
-                            await monitorService.Save(item.Monitor.Monitor);
-                            foreach (var program in item.Monitor.Programs)
-                            {
-                                await programService.Save(program);
-                            }
-                        }
-
-                        this.SyncUsers.Add(item.User.Account);
-                    }
-                }
-
-                var dialog = new ResultConfirmDialog(this);
-                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
-                this.IsSync = true;
+                VerifyResult = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
             }
             else
             {
-                MessageBox.Show("命令无法被处理!");
+                string path = CommunicationCmd.CmdSyncUser + "Login";
+                bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+                if (result)
+                {
+                    var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
+                    if (syncUsers != null)
+                    {
+                        foreach (var item in syncUsers.Users)
+                        {
+                            await userService.Save(item.User);
+                            if (item.UserGroup != null)
+                            {
+                                await userGroupService.Save(item.UserGroup);
+                            }
+
+                            if (item.Monitor != null)
+                            {
+                                await monitorService.Save(item.Monitor.Monitor);
+                                foreach (var program in item.Monitor.Programs)
+                                {
+                                    await programService.Save(program);
+                                }
+                            }
+
+                            this.SyncUsers.Add(item.User.Account);
+                        }
+                    }
+
+                    this.IsSync = true;
+                }
+                else
+                {
+                    VerifyResult = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
+                }
             }
+
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
         }
 
         public override void LoadData(long? groupId = null)

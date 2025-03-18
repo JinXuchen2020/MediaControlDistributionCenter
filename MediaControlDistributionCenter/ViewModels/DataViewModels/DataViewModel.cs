@@ -33,6 +33,11 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        protected static string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
+        }
+
         [RelayCommand]
         protected void Submit()
         {

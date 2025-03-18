@@ -38,12 +38,6 @@ namespace MediaControlDistributionCenter
 
             Log.Debug($"Login attempt with ID: {loginId}");
 
-            if (string.IsNullOrEmpty(loginId) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Login ID and password cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
             viewModel.LoginCommand.ExecuteAsync(new AccountDto { Account = loginId, Password = password }).GetAwaiter().OnCompleted(() =>
             {
                 if (viewModel.IsLogin)
