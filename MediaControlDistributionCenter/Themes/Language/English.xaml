@@ -36,11 +36,40 @@
     <sys:String x:Key="LanguageKey_Code_InputPassword">Please enter your password</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">Dashboard</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_101">解决方案的唯一综合管理平台</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_102">快捷控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_103">屏幕控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_104">亮度调节</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_105">对时配置</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_106">设备重启</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_107">点击查看</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_108">媒体控制器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_109">点击直达</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_110">Monitor Name</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_111">Current Program</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_112">Total</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_113">User</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">Online Monitor</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">My Programs</sys:String>
+    
     <sys:String x:Key="LanguageKey_Code_Management">Management</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Users">User Manage</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Groups">Group Manage</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Controls">Control Manage</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore">Media Store</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_Create">Create</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Change">Change</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ChangGroup">Chang Group</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Save">Save</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Cancel">Cancel</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Operation">Operation</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Select">Select</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Function">Function</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Edit">Edit</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Delete">Delete</sys:String>
+    <sys:String x:Key="LanguageKey_Code_All">All</sys:String>
 
 
 

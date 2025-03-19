@@ -157,7 +157,8 @@ namespace MediaControlDistributionCenter.Views
             var currentComponent = pageViewModel!.Components.FirstOrDefault(c => c!.IsSelected);
             if (currentComponent == null)
             {
-                MessageBox.Show("请先选择组件！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_147");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -168,7 +169,8 @@ namespace MediaControlDistributionCenter.Views
             {
                 if (currentComponent.Type != MediaType.Image.ToString())
                 {
-                    MessageBox.Show("图片组件只能包含图片格式文件！");
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_148");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
                     return;
                 }
 
@@ -195,7 +197,8 @@ namespace MediaControlDistributionCenter.Views
             {
                 if (currentComponent.Type != MediaType.Video.ToString())
                 {
-                    MessageBox.Show("视频组件只能包含视频格式文件！");
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_149");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
                     return;
                 }
 
@@ -224,7 +227,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.MediaConfig.Pages.Count == 0)
             {
-                MessageBox.Show("请先创建页面!");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_150");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -245,7 +249,8 @@ namespace MediaControlDistributionCenter.Views
 
             if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
             {
-                MessageBox.Show("请先保存节目!");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_151");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -355,7 +360,9 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = ((sender as Button).DataContext as MediaPageViewModel)!;
             if (string.IsNullOrEmpty(viewModel.Name))
             {
-                MessageBox.Show("请输入页面名称！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_152");
+                var dialog = new ResultConfirmDialog(manageViewModel);
+                DialogHost.Show(dialog, Helpers.Constants.LoginDialogHostId);
                 return;
             }
 
@@ -519,7 +526,8 @@ namespace MediaControlDistributionCenter.Views
 
             if(manageViewModel.SelectedPage == null)
             {
-                MessageBox.Show("请先创建一个页面");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_150");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -540,7 +548,7 @@ namespace MediaControlDistributionCenter.Views
                         manageViewModel.SelectedComponent = new VideoComponentViewModel(new VideoComponent
                         {
                             Id = maxId + 1,
-                            Name = $"视频{maxId + 1}",
+                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
                             PlayCount = 1,
@@ -551,13 +559,13 @@ namespace MediaControlDistributionCenter.Views
                         manageViewModel.SelectedComponent = new ImageComponentViewModel(new ImageComponent
                         {
                             Id = maxId + 1,
-                            Name = $"图片{maxId + 1}",
+                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
                             PlayCount = 1,
                             PlayDuration = "00:00:05",
-                            Timeline = 5,
-                            ComponentEffect = "淡入",
+                            Timeline = 5, 
+                            ComponentEffect = "FadeIn",
                             EffectDuration = 1000
                         });
                         break;
@@ -565,16 +573,16 @@ namespace MediaControlDistributionCenter.Views
                         manageViewModel.SelectedComponent = new TextComponentViewModel(new TextComponent
                         {
                             Id = maxId + 1,
-                            Name = $"文本{maxId + 1}",
+                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{maxId + 1}",
                             ZIndex = 1,
                             Type = (MediaType)type,
-                            Source = "空文本",
+                            Source = " ",
                             PlayCount = 1,
                             PlayDuration = "00:00:05",
-                            PlayMode = "翻页",
-                            ComponentEffect = "淡入",
+                            PlayMode = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127"),
+                            ComponentEffect = "FadeIn",
                             EffectDuration = 1000,
-                            Direction = "向右滚动",
+                            Direction = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_138"),
                             Timeline = 5,
                             Background ="black",
                             TextColor = "white",
@@ -611,7 +619,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.MediaConfig.Pages.Count == 0)
             {
-                MessageBox.Show("请先创建页面!");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_150");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -687,8 +696,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if(sender is TabControl tab)
             {
-                var tabItem = (TabItem)tab.SelectedItem;
-                if (tabItem.Header.Equals("页面"))
+                var tabItem = tab.SelectedIndex;
+                if (tabItem == 1)
                 {
                     var manageViewModel = (DataContext as MediaEditViewModel)!;
                     if (manageViewModel.SelectedPage != null)

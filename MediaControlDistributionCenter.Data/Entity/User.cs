@@ -65,10 +65,28 @@ namespace MediaControlDistributionCenter.Data.Entity
         public string LogoSrc { get; set; }
 
         /// <summary>
+        /// logo地址
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string LogoFileName { get; set; }
+
+        /// <summary>
         /// 地区
         /// </summary>
         [SugarColumn(IsNullable = true)]
         public string Region { get; set; }
+
+        /// <summary>
+        /// 地区
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string TimeZone { get; set; }
+
+        /// <summary>
+        /// 地区
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string TagLine { get; set; }
 
         /// <summary>
         /// 权限

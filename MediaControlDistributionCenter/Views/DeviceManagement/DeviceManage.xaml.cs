@@ -101,7 +101,8 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
             if (selectedMedias.Count() == 0)
             {
-                MessageBox.Show("请选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -112,7 +113,9 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         {
             if (manageViewModel.SelectedGroupId == null || manageViewModel.SelectedGroupId == -1)
             {
-                MessageBox.Show("请选择有效分组！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_115");
+                var dialog = new ResultConfirmDialog(manageViewModel);
+                DialogHost.Show(dialog, Helpers.Constants.LoginDialogHostId);
                 return;
             }
             manageViewModel.ChangeGroupCommand.Execute(null);
@@ -135,10 +138,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
             manageViewModel.ConnectDeviceCommand.Execute(viewModel);
-            if (viewModel.StatusText == "在线")
-            {
-                viewModel.ShowConfirmDialogCommand.Execute(null);
-            }
         }
     }
 }

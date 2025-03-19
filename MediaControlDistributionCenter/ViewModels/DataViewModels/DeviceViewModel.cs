@@ -6,6 +6,7 @@ using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -130,7 +131,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ContactPhone = ContactNumber,
                 Brightness = Brightness,
                 Volume = Volume,
-                DeviceId = DeviceId,                 
+                DeviceId = SNumber,                 
             };
         }
 
@@ -145,11 +146,11 @@ namespace MediaControlDistributionCenter.ViewModels
             GroupId = model.GroupId;
             UserId = model.UserAccount;
             OwnerName = model.UserName;
-            Group = model.MonitorGroupName ?? "未分组";
+            Group = model.MonitorGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             IsSelected = isSelected;
             Enabled = model.Enabled;
             StatusText = GetStatus();
-            EnableBtnContent = model.Enabled ==  0 ? "启用" : "停用";
+            EnableBtnContent = model.Enabled ==  0 ? FindResource("LanguageKey_Code_Enable") : FindResource("LanguageKey_Code_Disable");
             Width = model.Width;
             Height = model.Height;
             StartDate = model.ValidStart;
@@ -165,7 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string GetStatus()
         {
-            return this.Enabled == 0 ? "停用" : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? "在线" : "离线";
+            return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
         [RelayCommand]
@@ -187,7 +188,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("无法连接机顶盒!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
                 return;
             }
 
@@ -212,7 +213,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
@@ -236,7 +237,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
@@ -261,7 +262,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             string path = CommunicationCmd.CmdBrightness + value;
@@ -283,7 +284,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             string path = CommunicationCmd.CmdVolume + value;
@@ -305,7 +306,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             string path = CommunicationCmd.CmdReStart + value;
@@ -327,7 +328,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             string path = CommunicationCmd.CmdTime + value.ToString();
@@ -349,7 +350,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                MessageBox.Show("未连接机顶盒，无法发送命令!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
@@ -371,18 +372,42 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
-                MessageBox.Show("未连接机顶盒");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             var result = await client.UploadFileToFtpServer(filePath);
             if (result)
             {
-                UploadResult = "上传成功";
+                UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_118");
             }
             else
             {
-                UploadResult = "上传失败";
+                UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_119");
+            }
+        }
+
+        [RelayCommand]
+        private async Task SendProgram(MediaViewModel program)
+        {
+            if (client == null)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+            var model = program.ToModel();
+            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string path = CommunicationCmd.CmdSendProgram + syncString;
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                //SendState.Text += "命令处理成功\r\n";
+                MessageBox.Show("命令处理成功!");
+            }
+            else
+            {
+                MessageBox.Show("命令无法被处理!");
+                //SendState.Text += "命令无法被处理\r\n";
             }
         }
 
@@ -391,7 +416,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
-                MessageBox.Show("未连接机顶盒");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName)).LongLength;
@@ -409,12 +434,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result) 
             {
-                SendResult = "发布成功";
+                SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_120");
             }
             else
             {
-                SendResult = "发布失败";
-            }            
+                SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_121");
+            }
         }
 
         [RelayCommand]

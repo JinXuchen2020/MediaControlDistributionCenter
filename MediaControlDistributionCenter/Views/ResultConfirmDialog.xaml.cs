@@ -31,25 +31,26 @@ namespace MediaControlDistributionCenter.Views
             DataContext = content;
 
             var type = content.GetType();
-            switch (type)
-            {
-                case var o when o == typeof(UserViewModel):
-                    break;
-                case var o when o == typeof(MediaViewModel):
-                    break;
-                case var o when o == typeof(MediaDevicesViewModel):
-                    break;
-                case var o when o == typeof(DeviceTimeControlViewModel):
+            switch (content)
+            {                
+                case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
-                case var o when o == typeof(DeviceViewModel):
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.StatusText == (string)FindResource("LanguageKey_Code_Online"):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
-                case var o when o == typeof(LoginViewModel):
+                case var o when o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage):
+                    btnConfirm.Click += BtnConfirm_Click; 
                     break;
                 default:
                     break;
             }
+        }
+
+        private void BtnConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as PageViewModel)!;
+            viewModel.ErrorMessage = null;
         }
 
         private void btnExecute(object sender, RoutedEventArgs e)
@@ -76,20 +77,20 @@ namespace MediaControlDistributionCenter.Views
             var dialogBox = FindDialog(container);
             switch (item)
             {
-                case var o when o is UserViewModel:
+                case var o when o is UserViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
-                case var o when o is MediaViewModel:
+                case var o when o is MediaViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
-                case var o when o is MediaDevicesViewModel:
+                case var o when o is MediaDevicesViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
-                case var o when o is DeviceTimeControlViewModel:                    
+                case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):                    
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
-                case var o when o is DeviceViewModel:
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.StatusText == FindResource("LanguageKey_Code_Online"):
                     return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
-                case var o when (o is LoginViewModel loginViewModel && !loginViewModel.IsSync):
+                case var o when (o is LoginViewModel loginViewModel && string.IsNullOrEmpty(loginViewModel.ErrorMessage) && loginViewModel.IsSync):
                     return (DataTemplate)dialogBox.FindResource("SyncUserResult");
-                case var o when (o is LoginViewModel loginViewModel && loginViewModel.IsSync):
-                    return (DataTemplate)dialogBox.FindResource("LoginUserResult");
+                case var o when (o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage)):
+                    return (DataTemplate)dialogBox.FindResource("ManageErrorResult");
                 default:
                     return null;
             }
@@ -110,6 +111,11 @@ namespace MediaControlDistributionCenter.Views
             }
 
             return null; // 如果没有找到Canvas，则返回null
+        }
+
+        private string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
         }
     }
 }

@@ -12,6 +12,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public abstract void Binding(DTO model, bool isSelected = false);
 
+        [ObservableProperty]
+        private string? errorMessage;
+
         protected static T GetService<T>() where T : class
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
@@ -31,6 +34,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 default:
                     throw new ArgumentException("未知的服务名称");
             }
+        }
+
+        protected static string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
         }
 
         [RelayCommand]

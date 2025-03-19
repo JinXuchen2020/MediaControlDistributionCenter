@@ -13,13 +13,13 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}" Placement="RelativePoint" >
+    <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:DeviceGroupViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E" MouseDown="DragMove_MouseDown">
-                            <Grid Width="889" Height="493" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                            <Grid Width="500" Height="300" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="2" />
@@ -40,22 +40,22 @@
                                         materialDesign:ColorZoneAssist.Background="#090A0E"
                                         materialDesign:ButtonAssist.CornerRadius="5"
                                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}" ToolTip="关闭"/>
+                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
                                 </StackPanel>
 
                                 <Border Grid.Row="1" Width="auto" Background="#40476F"/>
 
                                 <StackPanel Grid.Row="2" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
-                                        <TextBlock Width="40" VerticalAlignment="Center" Text="名称：" />
+                                        <TextBlock Width="40" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Name}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Name}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnGroupSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Save}" Click="btnGroupSave_Click" />
-                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Reset}" Command="{Binding ResetCommand}" />
+                                    <Button x:Name="btnGroupSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Save}" Click="btnGroupSave_Click" />
+                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                                 </StackPanel>
                             </Grid>
                         </DockPanel>
@@ -103,21 +103,21 @@
 
                                 <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Center" FontSize="16" Text="当前用户" />
+                                        <TextBlock VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_106}" />
                                         <TextBlock VerticalAlignment="Center" FontSize="16" Margin="5,0" Text="{Binding OwnerName}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="3" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Center" Width="80" Text="显示器名称：" />
+                                        <TextBlock VerticalAlignment="Center" Width="80" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
                                         <TextBox  VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Name}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="3" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Center" Width="80" Text="设备SN号：" />
+                                        <TextBlock VerticalAlignment="Center" Width="80" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_104}" />
                                         <TextBox IsEnabled="{Binding Id, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=0}"  VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding SNumber}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -125,37 +125,37 @@
                                 <Border Grid.Row="4" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
                                 <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Margin="10">
-                                    <TextBlock VerticalAlignment="Center" FontSize="16" Text="有效分辨率" />
+                                    <TextBlock VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="6" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="宽：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Width}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Width}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="6" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="高：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Height}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Height}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Margin="10">
-                                    <TextBlock VerticalAlignment="Center" FontSize="16" Text="设备有效期" />
+                                    <TextBlock VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_107}" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="8" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="开始：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Start}" />
                                         <DatePicker Width="250" VerticalAlignment="Center" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding StartDate}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="8" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="结束：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_End}" />
                                         <DatePicker Width="250" VerticalAlignment="Center" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding EndDate}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -163,19 +163,19 @@
                                 <Border Grid.Row="9" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
                                 <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Margin="10">
-                                    <TextBlock VerticalAlignment="Center"  FontSize="16" Text="联系方式" />
+                                    <TextBlock VerticalAlignment="Center"  FontSize="16" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_108}" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="11" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="联系人：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_109}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding ContactName}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="11" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="电话：" />
+                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_110}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding ContactNumber}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -191,7 +191,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:DeviceManageViewModel}">
                         <DockPanel LastChildFill="False"  Background="#090A0E">
-                            <Grid Width="889" Height="493" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                            <Grid Width="500" Height="300" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="2" />
@@ -218,14 +218,15 @@
 
                                 <StackPanel Grid.Row="2" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
-                                        <TextBlock Width="40" VerticalAlignment="Center" Text="组：" />
+                                        <TextBlock Width="60" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
                                         <ComboBox ItemsSource="{Binding DeviceGroups}" SelectedValue="{Binding SelectedGroupId}" DisplayMemberPath="Name" SelectedValuePath="Id" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnChangeGroupConfirm" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Confirm}" Click="btnChangeGroupConfirm_Click" />
+                                    <Button x:Name="btnChangeGroupConfirm" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Confirm}" Click="btnChangeGroupConfirm_Click" />
+                                    <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                                 </StackPanel>
                             </Grid>
                         </DockPanel>
@@ -261,9 +262,9 @@
                     <DockPanel Margin="20,0,20,0">
                         <StackPanel DockPanel.Dock="Left"  Orientation="Horizontal">
                             <Image Width="24" Height="24"  Source="/Assets/assets-0009.png" HorizontalAlignment="Left" Margin="0,0,10,0"/>
-                            <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="设备组" Foreground="White"/>
+                            <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" Foreground="White"/>
                         </StackPanel>
-                        <Button x:Name="btnGroupAdd" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
+                        <Button x:Name="btnGroupAdd" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
                             <Image Width="20" Height="20"  Source="/Assets/7.png" HorizontalAlignment="Left"/>
                         </Button>
                     </DockPanel>
@@ -286,8 +287,8 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid Margin="20,0,0,0">
-                        <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
-                            <Border Background="#40A9FF" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                        <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
+                            <Border Background="#40A9FF" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnCreate" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnCreate_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Create}" />
                                 </StackPanel>
@@ -301,7 +302,7 @@
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="200" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="请输入显示屏名称/SN号" Padding="12,0,0,0"  Foreground="White"></TextBox>
+                                <TextBox Height="32" Width="200" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Monitor_Tooltip_111}" Padding="12,0,0,0"  Foreground="White"/>
                                 <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
                             </StackPanel>
                         </StackPanel>
@@ -333,30 +334,55 @@
                                     </Style>
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="选择" Width="60"
-                            Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
-                            ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
-                            IsReadOnly="False"
-                            CanUserSort="False"/>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="显示器名称" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="分组" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}" Header="状态" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding LastUpdatedTime}" Header="上次修改时间" />
-                                    <DataGridTemplateColumn Width="1*" Header="当前节目">
+                                    <DataGridCheckBoxColumn Width="60"
+                                        Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                        ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
+                                        IsReadOnly="False"
+                                        CanUserSort="False">
+                                        <DataGridCheckBoxColumn.Header>
+                                            <CheckBox />
+                                        </DataGridCheckBoxColumn.Header>
+                                    </DataGridCheckBoxColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" >
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Width="1*">
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
+                                        </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding MediaNames}" TextWrapping="Wrap"></TextBlock>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}" Header="分辨率"  />
-                                    <DataGridTemplateColumn Header="操作"  Width="230" >
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Width="230" >
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                        </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                    <Button Content="升级" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Upgrade}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
                                                     <Button Content="{Binding EnableBtnContent}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
-                                                    <Button Content="连接" Foreground="White" Name="btnConnect" Click="btnConnect_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Connect}" Foreground="White" Name="btnConnect" Click="btnConnect_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

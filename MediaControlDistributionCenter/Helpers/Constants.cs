@@ -15,5 +15,7 @@ namespace MediaControlDistributionCenter.Helpers
         public const string ConfigFileName = "MediaConfig.json";
 
         public const string DialogHostId = "RootDialogHostId";
+
+        public const string LoginDialogHostId = "LoginDialogHostId";
     }
 }

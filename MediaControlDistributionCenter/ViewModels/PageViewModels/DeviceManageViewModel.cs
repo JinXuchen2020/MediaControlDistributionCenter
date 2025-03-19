@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -20,6 +22,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public bool ShowNavigation { get; set; }
 
+        public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
+
         [ObservableProperty]
         private ObservableCollection<DeviceGroupViewModel> deviceGroups;
 
@@ -28,8 +32,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private long? selectedGroupId;
-
-        public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
@@ -62,7 +64,7 @@ namespace MediaControlDistributionCenter.ViewModels
             groups.Insert(0, new MonitorGroupDto
             {
                 Id = -1,
-                Name = "全部",
+                Name = FindResource("LanguageKey_Code_All"),
                 UserAccount = CurrentUser.Account,
             });
             this.DeviceGroups = new ObservableCollection<DeviceGroupViewModel>(groups.Select(c =>
@@ -91,6 +93,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
         public DeviceViewModel CreateDevice()
@@ -173,9 +182,18 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ConnectDevice(DeviceViewModel viewModel)
         {
             await viewModel.ConnectCommand.ExecuteAsync(communication);
-            if(viewModel.StatusText == "在线")
+            if (!string.IsNullOrEmpty(viewModel?.ErrorMessage))
             {
-                SelectedDevice = viewModel;
+                ErrorMessage = viewModel.ErrorMessage;
+                await ShowConfirmDialog();
+            }
+            else
+            {
+                viewModel?.ShowConfirmDialogCommand.Execute(null);
+                if (viewModel.StatusText == FindResource("LanguageKey_Code_Online"))
+                {
+                    SelectedDevice = viewModel;
+                }
             }
         }
 
@@ -184,7 +202,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (SelectedDevice == null)
             {
-                MessageBox.Show("请先连接机顶盒!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                await ShowConfirmDialog();
                 return;
             }
 
@@ -213,6 +232,7 @@ namespace MediaControlDistributionCenter.ViewModels
             result.Users = users;
 
             await SelectedDevice.SendUserCommand.ExecuteAsync(result);
+
         }
 
         [RelayCommand]

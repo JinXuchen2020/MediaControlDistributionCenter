@@ -36,6 +36,8 @@ namespace MediaControlDistributionCenter.Views
             services.AddTransient<Dashboard>();
 
             services.AddTransient<ResultConfirmDialog>();
+
+            services.AddTransient<MediaContent>();
             return services;
         }
     }

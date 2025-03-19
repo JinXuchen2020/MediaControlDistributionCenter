@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Views;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -107,6 +109,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private void Dispose()
         {
             MediaConfig.DisposeCommand.Execute(null);
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
         [RelayCommand]

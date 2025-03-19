@@ -40,7 +40,7 @@
 
                                 <StackPanel Margin="10" Orientation="Horizontal">
                                     <TextBlock VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Create}" />
-                                    <TextBlock VerticalAlignment="Center" FontSize="20" Foreground="White" Text="页面" />
+                                    <TextBlock VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Page}" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="10">
@@ -59,7 +59,7 @@
 
                                 <StackPanel Grid.Row="2" Margin="10, 20, 10, 10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center">
-                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="60" Text="名称" />
+                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="60" Text="{DynamicResource LanguageKey_Code_Name}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" FontSize="16" Text="{Binding Name}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -95,7 +95,7 @@
                                         materialDesign:ColorZoneAssist.Background="#090A0E"
                                         materialDesign:ButtonAssist.CornerRadius="5"
                                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                        Content="{materialDesign:PackIcon Size=20,Kind=Close}" ToolTip="关闭"/>
+                                        Content="{materialDesign:PackIcon Size=20,Kind=Close}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
                                 </StackPanel>
 
                                 <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
@@ -114,17 +114,45 @@
                                             ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
                                         >
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn Header="选择" Width="60"
+                                                <DataGridCheckBoxColumn Width="60"
                                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                                                     ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
                                                     IsReadOnly="False"
-                                                    CanUserSort="False"/>
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="显示器名称" />
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}" Header="状态" />
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}" Header="分辨率"  />
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding MediaNames}" Header="当前节目" />
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding SNumber}" Header="SN码" />
-                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="分组" />
+                                                    CanUserSort="False">
+                                                    <DataGridCheckBoxColumn.Header>
+                                                        <CheckBox />
+                                                    </DataGridCheckBoxColumn.Header>
+                                                </DataGridCheckBoxColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding MediaNames}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding SNumber}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_104}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
@@ -133,8 +161,8 @@
                                 <Border Grid.Row="3" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
                                 <Grid Grid.Row="4">
                                     <StackPanel VerticalAlignment="Center" Margin="20,12,0,12" Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <TextBlock  FontSize="16" Text="节目名称：" />
-                                        <TextBlock  FontSize="16" Text="{Binding CurrentMedia.Name}" />
+                                        <TextBlock  FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
+                                        <TextBlock  FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />
@@ -164,14 +192,14 @@
                                         Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="背景色" Width="80"/>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80"/>
                                     <StackPanel Width="700">
                                         <materialDesign:ColorPicker x:Name="bgColorPicker" Color="{Binding Background}" Height="250" />
                                         <TextBlock Text="{Binding Background}" Width="700" Foreground="White" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="字体色" Width="80"/>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80"/>
                                     <StackPanel Width="700">
                                         <materialDesign:ColorPicker x:Name="textColorPicker" Color="{Binding Foreground}" Height="250" />
                                         <TextBlock Text="{Binding Foreground}" Foreground="White" VerticalAlignment="Center"/>
@@ -213,61 +241,61 @@
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Mixed" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-mixed.png" Width="30" Height="30"/>
-                            <TextBlock Text="混合媒体"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_102}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Video" Cursor="Hand" MouseDown="CreateComponent_MouseDown" >
                             <Image Source="/Assets/svg-video.png" Width="30" Height="30"/>
-                            <TextBlock Text="视频"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_103}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Image" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-image.png" Width="30" Height="30"/>
-                            <TextBlock Text="图片"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_104}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Text" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-text.png" Width="30" Height="30"/>
-                            <TextBlock Text="文本"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_105}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Web" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-web.png" Width="30" Height="30"/>
-                            <TextBlock Text="网页"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_106}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Word" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-doc.png" Width="30" Height="30"/>
-                            <TextBlock Text="文档"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_107}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Rss" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-rss.png" Width="30" Height="30"/>
-                            <TextBlock Text="RSS"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_108}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Stream" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-stream.png" Width="30" Height="30"/>
-                            <TextBlock Text="流媒体"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_109}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="ColorText" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-colortext.png" Width="30" Height="30"/>
-                            <TextBlock Text="炫彩字"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_110}"/>
                         </StackPanel>
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Hdmi" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-hdmi.png" Width="30" Height="30"/>
-                            <TextBlock Text="HDMI IN"/>
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_111}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -299,7 +327,7 @@
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center"  Foreground="White"/>
-                                <TextBlock Margin="2" Text="保存" Foreground="White"/>
+                                <TextBlock Margin="2" Text="{DynamicResource LanguageKey_Code_Save}" Foreground="White"/>
                             </StackPanel>
                         </Button.Content>
                     </Button>
@@ -313,7 +341,7 @@
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Send" VerticalAlignment="Center"  Foreground="White"/>
-                                <TextBlock Margin="2" Text="发布" Foreground="White"/>
+                                <TextBlock Margin="2" Text="{DynamicResource LanguageKey_Code_Media_Send}" Foreground="White"/>
                             </StackPanel>
                         </Button.Content>
                     </Button>
@@ -329,7 +357,7 @@
                         materialDesign:ColorZoneAssist.Foreground="White"
                         SelectionChanged="LeftTab_SelectionChanged"
                         materialDesign:ColorZoneAssist.Mode="Custom">
-                        <TabItem Header="媒体">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Media}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -380,7 +408,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="页面">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Page}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -406,9 +434,9 @@
                                                 <StackPanel Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                                     <TextBlock Margin="20,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Id}"/>
                                                     <Image Margin="10,0,0,0" Width="180" Height="100" Source="{Binding Thumbnail}"/>
-                                                    <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="播放"/>
+                                                    <TextBlock Margin="10,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Play}"/>
                                                     <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding PlayCount}"/>
-                                                    <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="次"/>
+                                                    <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Count}"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -586,11 +614,11 @@
                     materialDesign:ColorZoneAssist.Background="#16171D"
                     materialDesign:ColorZoneAssist.Foreground="White"
                     materialDesign:ColorZoneAssist.Mode="Custom">
-                        <TabItem Header="组件属性" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=true}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_MediaProperty}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=true}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <materialDesign:Card Background="#16171D" Cursor="">
                                     <StackPanel>
-                                        <Expander HorizontalAlignment="Stretch" Header="区域（px）" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start"  Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_113}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start"  Background="#16171D">
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,10,0,0" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal">
@@ -608,16 +636,16 @@
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <Expander Header="选择文件" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
+                                        <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_114}" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
                                                     <TabControl Width="auto" Height="auto" Cursor="Hand" materialDesign:ColorZoneAssist.Background="#16171D" materialDesign:ColorZoneAssist.Foreground="White">
-                                                        <TabItem Header="本地文件">
+                                                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_115}">
                                                             <Border Width="250" Height="110" Margin="10,20,0,0" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_Click" materialDesign:ButtonAssist.CornerRadius="5">
                                                                 <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                             </Border>
                                                         </TabItem>
-                                                        <TabItem Header="媒体库" Cursor="">
+                                                        <TabItem Header="{DynamicResource LanguageKey_Code_MediaStore}" Cursor="">
                                                             <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
                                                             </ScrollViewer>
                                                         </TabItem>
@@ -626,15 +654,15 @@
                                             </Border>
                                         </Expander>
                                         <StackPanel>
-                                            <Expander Header="基础属性"  Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                            <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}"  Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="名称" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
                                                             <TextBox Text="{Binding SelectedComponent.Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="层级" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding SelectedComponent.ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
@@ -651,10 +679,10 @@
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </StackPanel.Style>
-                                                            <TextBlock Text="显示方式" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_118}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Content="铺满窗口" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=铺满窗口}" />
-                                                                <RadioButton VerticalAlignment="Center" Content="原始比例" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=原始比例}" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_119}" Click="PlayModeChanged_Click" IsChecked="True" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_120}" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
                                                             </StackPanel>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
@@ -672,11 +700,11 @@
                                                                 </Style>
                                                             </StackPanel.Style>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="内容" Width="80" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
                                                                 <TextBox Text="{Binding SelectedComponent.Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="文字颜色" Width="80" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_122}" Width="80" VerticalAlignment="Center"/>
                                                                 <Button Width="25" Height="25"
                                                                     Padding="0"
                                                                     materialDesign:ButtonAssist.CornerRadius="2"
@@ -687,22 +715,22 @@
                                                                 </Button>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="字体大小" Width="80" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_123}" Width="80" VerticalAlignment="Center"/>
                                                                 <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="字体间距" Width="80" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_124}" Width="80" VerticalAlignment="Center"/>
                                                                 <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="字体行间距" Width="80" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_125}" Width="80" VerticalAlignment="Center"/>
                                                                 <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LineSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                                             </StackPanel>
-                                                            <TextBlock Text="显示方式" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_126}" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Content="翻页" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=翻页}" />
-                                                                <RadioButton VerticalAlignment="Center" Content="滚动" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=滚动}" />
-                                                                <RadioButton VerticalAlignment="Center" Content="静止" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=静止}" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="True" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_129}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </StackPanel>
@@ -710,15 +738,15 @@
                                             </Expander>
                                         </StackPanel>
 
-                                        <Expander Header="播放属性" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
+                                        <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <TextBlock Text="播放次数" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding SelectedComponent.PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <TextBlock Text="播放时长（s）" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
                                                         <LocalCore:TimeTextBox IsDisabled="{Binding SelectedComponent.Type, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=Video}"  Timeline="{Binding SelectedComponent.Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding SelectedComponent.PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </StackPanel>
                                                     <StackPanel>
@@ -735,7 +763,7 @@
                                                                     <MultiDataTrigger>
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="翻页" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
                                                                     </MultiDataTrigger>
@@ -743,11 +771,11 @@
                                                             </Style>
                                                         </StackPanel.Style>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="特效" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
                                                             <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="特效时长(ms)" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
                                                     </StackPanel>
@@ -762,7 +790,7 @@
                                                                     <MultiDataTrigger>
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="滚动" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
                                                                     </MultiDataTrigger>
@@ -770,21 +798,21 @@
                                                             </Style>
                                                         </StackPanel.Style>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="方向" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
                                                             <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Content" >
-                                                                <ComboBoxItem Content="向左滚动" />
-                                                                <ComboBoxItem Content="向上滚动" />
-                                                                <ComboBoxItem Content="向右滚动" />
-                                                                <ComboBoxItem Content="向下滚动" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" />
                                                             </ComboBox>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="滚动速度" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_140}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                                                             <CheckBox IsChecked="{Binding SelectedComponent.IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
-                                                            <TextBlock Margin="5,0,0,0" Text="首尾相连" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_141}" Width="80" VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                     </StackPanel>                                                    
                                                 </StackPanel>
@@ -794,44 +822,44 @@
                                 </materialDesign:Card>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="页面属性" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=false}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_PageProperty}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=false}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <materialDesign:Card Background="#16171D">
                                     <StackPanel>
-                                        <Expander HorizontalAlignment="Stretch" Header="基础属性" Foreground="White" ExpandDirection="Down" IsExpanded="True"  materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True"  materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <TextBlock Text="页面名称" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
                                                         <TextBox Text="{Binding SelectedPage.Name}" BorderBrush="#404870" BorderThickness="1" Width="150" Padding="5" Height="28" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Height="40">
                                                         <CheckBox IsChecked="{Binding SelectedPage.IsHasValidity}" VerticalAlignment="Center"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="有效期" Width="80" Padding="5" VerticalAlignment="Center"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_142}" Width="80" Padding="5" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Height="40" Visibility="{Binding SelectedPage.IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
-                                                        <TextBlock Text="开始日期" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_143}" Width="80" VerticalAlignment="Center"/>
                                                         <DatePicker Width="150" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding SelectedPage.ValidStartDate}" />
                                                     </StackPanel>
 
                                                     <StackPanel Orientation="Horizontal" Height="40" Visibility="{Binding SelectedPage.IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
-                                                        <TextBlock Text="结束日期" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_144}" Width="80" VerticalAlignment="Center"/>
                                                         <DatePicker Width="150" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding SelectedPage.ValidEndDate}"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <Expander HorizontalAlignment="Stretch" Header="播放属性" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal" Height="40">
-                                                        <TextBlock Text="播放次数" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayCount, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <Expander HorizontalAlignment="Stretch" Header="时间计划表" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_145}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                             <Border Margin="10,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <ItemsControl ItemsSource="{Binding SelectedPage.Schedulers}">
                                                     <ItemsControl.ItemTemplate>
@@ -845,7 +873,7 @@
                                                                     <materialDesign:PackIcon Kind="AddCircle" MouseDown="AddScheduler_MouseDown" Margin="5,0,0,0" Foreground="LightGray" Cursor="Hand" VerticalAlignment="Center"  Width="22" Height="22"/>
                                                                     <materialDesign:PackIcon Kind="DeleteCircle" MouseDown="DeleteScheduler_MouseDown" Margin="2,0,0,0" Foreground="LightGray" Cursor="Hand" VerticalAlignment="Center"  Width="22" Height="22"/>
                                                                 </StackPanel>
-                                                                <TextBlock Text="每周" Margin="0,5"></TextBlock>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_146}" Margin="0,5"></TextBlock>
                                                                 <StackPanel Orientation="Horizontal" Height="40">
                                                                     <ItemsControl ItemsSource="{Binding AllDays}">
                                                                         <ItemsControl.ItemsPanel>

@@ -96,8 +96,8 @@ namespace MediaControlDistributionCenter.ViewModels
             GroupId = model.GroupId;
             UserId = model.UserAccount;
             IsSelected = isSelected;
-            Group = model.ProgramGroupName ?? "未分组";
-            RackingBtnContent = model.Status == 1 ? "下架" : "上架";
+            Group = model.ProgramGroupName ?? FindResource("LanguageKey_Code_NoGroup");
+            RackingBtnContent = model.Status == 1 ? FindResource("LanguageKey_Code_OffShelf") : FindResource("LanguageKey_Code_OnShelf");
         }
         
         [RelayCommand]

@@ -27,7 +27,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 所属代理商账号
         /// </summary>
         [JsonProperty("agentAccount", NullValueHandling = NullValueHandling.Ignore)]
-        public string AgentAccount { get; set; }
+        public string? AgentAccount { get; set; }
 
         /// <summary>
         /// 公司
@@ -56,6 +56,12 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// <summary>
         /// logo地址
         /// </summary>
+        [JsonProperty("logoFileName", NullValueHandling = NullValueHandling.Ignore)]
+        public string? LogoFileName { get; set; }
+
+        /// <summary>
+        /// logo地址
+        /// </summary>
         [JsonProperty("logoSrc", NullValueHandling = NullValueHandling.Ignore)]
         public string? LogoSrc { get; set; }
 
@@ -70,6 +76,12 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Ignore)]
         public string Region { get; set; }
+
+        /// <summary>
+        /// 地区
+        /// </summary>
+        [JsonProperty("tagLine", NullValueHandling = NullValueHandling.Ignore)]
+        public string? TagLine { get; set; }
 
         /// <summary>
         /// 地区
@@ -120,6 +132,9 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 AgentAccount = AgentAccount,
                 Feature = Feature,
                 LogoSrc = LogoSrc,
+                LogoFileName = LogoFileName,
+                TimeZone= TimeZone,
+                TagLine = TagLine
             };
         }
     }

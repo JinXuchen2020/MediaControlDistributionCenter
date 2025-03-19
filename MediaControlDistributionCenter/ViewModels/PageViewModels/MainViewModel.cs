@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -7,9 +8,17 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private UserViewModel currentUser;
 
-        public MainViewModel(LoginViewModel loginViewModel)
+        [ObservableProperty]
+        private string connectionString;
+
+        [ObservableProperty]
+        private string deviceConnString;
+
+        public MainViewModel(LoginViewModel loginViewModel, Communication communication)
         {
             currentUser = loginViewModel.CurrentUser;
+            connectionString = ConnectionMode.Mode == "Local" ? FindResource("LanguageKey_Code_Device_Tooltip_103") : FindResource("LanguageKey_Code_Device_Tooltip_104");
+            deviceConnString = communication.netClient.IsConnected ? FindResource("LanguageKey_Code_Device_Tooltip_105") : FindResource("LanguageKey_Code_Device_Tooltip_106");
         }
 
         public override void LoadData(long? groupId = null)

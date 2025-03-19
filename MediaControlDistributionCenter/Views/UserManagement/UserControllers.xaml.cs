@@ -34,7 +34,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             InitializeComponent();
             this.serviceProvider = serviceProvider;
 
-            viewModel.SetValues("MediaManage", "媒体管理");
+            viewModel.SetValues("MediaManage", (string)FindResource("LanguageKey_Code_Management_Media"));
             manageViewModel = viewModel;
 
             DataContext = manageViewModel;

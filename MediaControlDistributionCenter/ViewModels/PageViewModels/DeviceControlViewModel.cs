@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -96,15 +98,36 @@ namespace MediaControlDistributionCenter.ViewModels
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
         }
 
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+        }
+
         [RelayCommand]
         private async Task ConnectDevice()
         {
             if (CurrentDevice != null)
             {
                 await CurrentDevice.ConnectCommand.ExecuteAsync(communication);
-                if (CurrentDevice.StatusText == "在线")
+                if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
-                    await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
+                    ErrorMessage = CurrentDevice.ErrorMessage;
+                    await ShowConfirmDialog();
+                }
+                else
+                {
+                    if (CurrentDevice.StatusText == FindResource("LanguageKey_Code_Online"))
+                    {
+                        await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                        }
+                    }
                 }
             }
         }
@@ -144,14 +167,32 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     case "Brightness":
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         CurrentDevice.Brightness = viewModel.Value;
                         break;
                     case "Volume":
                         await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         CurrentDevice.Volume = viewModel.Value;
                         break;
                     case "Restart":
                         await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
                 }
 
@@ -175,12 +216,30 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     case "Brightness":                        
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
                     case "Volume":
                         await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
                     case "Restart":
                         await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
                 }
             }
@@ -195,13 +254,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 var timeZone = TimeZoneInfo.Local;
                 switch (CommandTypeColumnName)
                 {
-                    case "手动":
+                    case var o when o == FindResource("LanguageKey_Code_Control_Tooltip_107"):
                         timeZone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue);
                         timeZoneDateTime = TimeZoneInfo.ConvertTime(timeZoneDateTime, timeZone);
                         CurrentDevice.TimeSyncCommand.Execute(timeZoneDateTime);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
-                    case "GPS":
+                    case var o when o == FindResource("LanguageKey_Code_Control_Tooltip_110"):
                         CurrentDevice.TimeGPSSyncCommand.Execute(timeZoneDateTime);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialog();
+                            return;
+                        }
                         break;
                 }
                 var model = new TimeSyncConfigDto()

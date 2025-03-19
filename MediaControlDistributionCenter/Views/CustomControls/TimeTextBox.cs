@@ -20,7 +20,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(TimeTextBox), new PropertyMetadata("00:00:00",  (d, e) =>
             {
-                if(d is TimeTextBox textBox)
+                if(d is TimeTextBox textBox && e.NewValue != null)
                 {
                     var newValue = e.NewValue.ToString()!;
                     var regex = new Regex(@"(?<hour>[0-9]{1,2})[:](?<minute>[0-9]{1,2})[:](?<second>[0-9]{1,2})");

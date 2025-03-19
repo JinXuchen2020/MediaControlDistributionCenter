@@ -7,21 +7,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.UserManagement">
-    <!--<UserControl.Resources>
-        <Style TargetType="TabItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2" Background="{TemplateBinding Background}">
-                            <materialDesign:Card Padding="12,8" Margin="2,2,2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <ContentPresenter ContentSource="Header"/>
-                            </materialDesign:Card>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>-->
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
@@ -66,9 +51,9 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
-                    <TextBlock Height="32" Text="当前正在控制" FontSize="15" Padding="12,0,0,0"  Foreground="White"></TextBlock>
+                    <TextBlock Height="32" Text="{DynamicResource LanguageKey_Code_Controller_Tooltip_100}" FontSize="15" Padding="12,0,0,0"  Foreground="White"></TextBlock>
                     <TextBlock Height="32" Text="{Binding CurrentUser.Name}" Padding="5,0,5,0" FontSize="15" Foreground="White"></TextBlock>
-                    <TextBlock Height="32" Text="的设备" FontSize="15" Foreground="White"></TextBlock>
+                    <TextBlock Height="32" Text="{DynamicResource LanguageKey_Code_Controller_Tooltip_101}" FontSize="15" Foreground="White"></TextBlock>
                 </StackPanel>
             </Grid>
             <Grid Height="2">

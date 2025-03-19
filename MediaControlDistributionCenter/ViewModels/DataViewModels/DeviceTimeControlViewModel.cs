@@ -94,18 +94,18 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string GetStatus()
         {
-            var result = string.Empty;
-            if(DateTime.Now > EndDate)
+            string? result;
+            if (DateTime.Now > EndDate)
             {
-                result = "过期";
+                result = FindResource("LanguageKey_Code_Expired");
             }
             else if(Status == 1)
             {
-                result = "可用";
+                result = FindResource("LanguageKey_Code_Enable");
             }
             else
             {
-                result = "禁用";
+                result = FindResource("LanguageKey_Code_Disable");
             }
             return result;
         }
@@ -115,11 +115,11 @@ namespace MediaControlDistributionCenter.ViewModels
             switch (Type)
             {
                 case "Brightness":
-                    CommandTypeColumnName = "亮度值(%)";
+                    CommandTypeColumnName = FindResource("LanguageKey_Code_Control_Tooltip_119");
                     IsShow = true;
                     break;
                 case "Volume":
-                    CommandTypeColumnName = "音量值 (%)";
+                    CommandTypeColumnName = FindResource("LanguageKey_Code_Control_Tooltip_120");
                     IsShow = true;
                     break;
                 case "TimeSync":
