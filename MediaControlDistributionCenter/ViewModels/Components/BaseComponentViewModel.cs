@@ -76,9 +76,235 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
+        public List<ComponentEffect> Effects { get; set; }
+
         public BaseComponentViewModel()
         {
-
+            Effects = new List<ComponentEffect>
+            {
+                new ComponentEffect()
+                {
+                    Key = "ExtendRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_154"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendLeft",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_155"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_156"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_157"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendOut",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_158"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendLeftRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_159"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExtendUpDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_160"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "MoveRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_161"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "MoveLeft",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_162"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "MoveUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_163"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "MoveDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_164"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_165"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipLeft",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_166"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_167"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_168"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipUpDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_169"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ZipLeftRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_170"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ScrollUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_171"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ScrollDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_172"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "BlindH",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_173"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "BlindV",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_174"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "FullScreen",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_175"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "Wheel",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_176"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "Engage",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_177"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "FadeIn",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_153"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "StackRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_178"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "StackLeft",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_179"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "StackUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_180"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "StackDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_181"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "LaserRight",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_182"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "LaserLeft",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_183"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "LaserUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_184"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "LaserDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_185"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExpandDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_186"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExpandUp",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_187"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "ExpandUpDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_188"),
+                    Action = FadeIn
+                },
+                new ComponentEffect()
+                {
+                    Key = "MergeUpDown",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_189"),
+                    Action = FadeIn
+                },
+            };
         }
 
         public BaseComponentViewModel(BaseComponent component, double ratio)
@@ -162,6 +388,11 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         protected virtual void DisposeContent()
+        {
+            return;
+        }
+
+        protected virtual void FadeIn(FrameworkElement element)
         {
             return;
         }
@@ -265,6 +496,11 @@ namespace MediaControlDistributionCenter.ViewModels
             return null; // 如果没有找到Canvas，则返回null
         }
 
+        protected static string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
+        }
+
         protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null)
         {
             var binding = new Binding(path)
@@ -290,5 +526,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
         }
+    }
+
+    public class ComponentEffect
+    {
+        public string Key { get; set; }
+
+        public string Name { get; set; }
+
+        public Action<FrameworkElement> Action { get; set; }
     }
 }

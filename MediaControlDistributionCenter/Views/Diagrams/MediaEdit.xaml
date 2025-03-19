@@ -835,31 +835,31 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Height="40">
                                                         <CheckBox IsChecked="{Binding SelectedPage.IsHasValidity}" VerticalAlignment="Center"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="有效期" Width="80" Padding="5" VerticalAlignment="Center"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_142}" Width="80" Padding="5" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Height="40" Visibility="{Binding SelectedPage.IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
-                                                        <TextBlock Text="开始日期" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_143}" Width="80" VerticalAlignment="Center"/>
                                                         <DatePicker Width="150" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding SelectedPage.ValidStartDate}" />
                                                     </StackPanel>
 
                                                     <StackPanel Orientation="Horizontal" Height="40" Visibility="{Binding SelectedPage.IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
-                                                        <TextBlock Text="结束日期" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_144}" Width="80" VerticalAlignment="Center"/>
                                                         <DatePicker Width="150" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding SelectedPage.ValidEndDate}"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <Expander HorizontalAlignment="Stretch" Header="播放属性" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                             <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal" Height="40">
-                                                        <TextBlock Text="播放次数" Width="80" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
                                                         <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayCount, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
-                                        <Expander HorizontalAlignment="Stretch" Header="时间计划表" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                        <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_145}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                             <Border Margin="10,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                 <ItemsControl ItemsSource="{Binding SelectedPage.Schedulers}">
                                                     <ItemsControl.ItemTemplate>
@@ -873,7 +873,7 @@
                                                                     <materialDesign:PackIcon Kind="AddCircle" MouseDown="AddScheduler_MouseDown" Margin="5,0,0,0" Foreground="LightGray" Cursor="Hand" VerticalAlignment="Center"  Width="22" Height="22"/>
                                                                     <materialDesign:PackIcon Kind="DeleteCircle" MouseDown="DeleteScheduler_MouseDown" Margin="2,0,0,0" Foreground="LightGray" Cursor="Hand" VerticalAlignment="Center"  Width="22" Height="22"/>
                                                                 </StackPanel>
-                                                                <TextBlock Text="每周" Margin="0,5"></TextBlock>
+                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_146}" Margin="0,5"></TextBlock>
                                                                 <StackPanel Orientation="Horizontal" Height="40">
                                                                     <ItemsControl ItemsSource="{Binding AllDays}">
                                                                         <ItemsControl.ItemsPanel>

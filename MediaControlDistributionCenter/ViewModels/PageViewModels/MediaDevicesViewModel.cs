@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using System.Collections.ObjectModel;
@@ -23,10 +24,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
+        private readonly IPlaybackRecordService playbackRecordService;
 
         public MediaDevicesViewModel(MediaEditViewModel mediaEditViewModel, MediaManageViewModel mediaManageViewModel) 
         {
             this.monitorService = GetService<IMonitorService>();
+            this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
             currentMedia = mediaManageViewModel.SelectedMedia ?? mediaEditViewModel.CurrentMedia;
         }
@@ -47,39 +50,42 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             foreach (var item in Devices)
             {
-                var model = new DeviceMedia { DeviceId = item.Id, MediaId = CurrentMedia.Id };
+                var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    if (SQLite.QueryTable<DeviceMedia>().Where(c => c.DeviceId == item.Id && c.MediaId == CurrentMedia.Id).First() == null) 
+                    var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
+                    if (existRecord == null) 
                     {
-                        SQLite.InserTable(model);
+                        var response = await playbackRecordService.Save(model);
+                        if (response.Code == 200)
+                        {
+                            string filePath = $"{CurrentMedia.Name}.zip";
+                            item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
+                            if (!string.IsNullOrEmpty(item.ErrorMessage))
+                            {
+                                ErrorMessage = item.ErrorMessage;
+                                await ShowConfirmDialog();
+                                continue;
+                            }
+                            await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                            if (!string.IsNullOrEmpty(item.ErrorMessage))
+                            {
+                                ErrorMessage = item.ErrorMessage;
+                                await ShowConfirmDialog();
+                                continue;
+                            }
+                            await item.SyncFileSyncCommand.ExecuteAsync(filePath);
+                            if (!string.IsNullOrEmpty(item.ErrorMessage))
+                            {
+                                ErrorMessage = item.ErrorMessage;
+                                await ShowConfirmDialog();
+                                continue;
+                            }
 
-                        string filePath = $"{CurrentMedia.Name}.zip";
-                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialog();
-                            continue;
-                        }
-                        await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialog();
-                            continue;
-                        }
-                        await item.SyncFileSyncCommand.ExecuteAsync(filePath);
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialog();
-                            continue;
-                        }
-
-                        if (!string.IsNullOrEmpty(item.SendResult))
-                        {
-                            this.PublishDevices.Add(item);
+                            if (!string.IsNullOrEmpty(item.SendResult))
+                            {
+                                this.PublishDevices.Add(item);
+                            }
                         }
                     }
                 }

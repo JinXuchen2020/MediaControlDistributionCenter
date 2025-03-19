@@ -233,49 +233,49 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     Id = 1,
                     SchedulerId = id,
-                    DisplayName = "一",
+                    DisplayName = FindResource("LanguageKey_Code_One"),
                     IsSelected = this.scheduleDays.Contains(1),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 2,
                     SchedulerId = id,
-                    DisplayName = "二",
+                    DisplayName = FindResource("LanguageKey_Code_Two"),
                     IsSelected = this.scheduleDays.Contains(2),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 3,
                     SchedulerId = id,
-                    DisplayName = "三",
+                    DisplayName = FindResource("LanguageKey_Code_Three"),
                     IsSelected = this.scheduleDays.Contains(3),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 4,
                     SchedulerId = id,
-                    DisplayName = "四",
+                    DisplayName = FindResource("LanguageKey_Code_Four"),
                     IsSelected = this.scheduleDays.Contains(4),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 5,
                     SchedulerId = id,
-                    DisplayName = "五",
+                    DisplayName = FindResource("LanguageKey_Code_Five"),
                     IsSelected = this.scheduleDays.Contains(5),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 6,
                     SchedulerId = id,
-                    DisplayName = "六",
+                    DisplayName = FindResource("LanguageKey_Code_Six"),
                     IsSelected = this.scheduleDays.Contains(6),
                 },
                 new SchedulerDayViewModel
                 {
                     Id = 7,
                     SchedulerId = id,
-                    DisplayName = "日",
+                    DisplayName = FindResource("LanguageKey_Code_Sun"),
                     IsSelected = this.scheduleDays.Contains(7),
                 }
             };
@@ -290,6 +290,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 EndTime = EndTime.ToString("HH:mm:ss"),
                 ScheduleDays = ScheduleDays.ToList()
             };
+        }
+
+        protected static string FindResource(string key)
+        {
+            return (string)LanguageTool.Instance.FindResource(key);
         }
     }
 

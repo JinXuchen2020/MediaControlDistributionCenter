@@ -28,57 +28,19 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string componentEffect; //"上下展开",
 
+        [ObservableProperty]
+        private string componentEffectKey;
+
         private DispatcherTimer? _timer;        
         private int currentPlayCount = 0;
 
         public override string Type => "Image";
 
-        public Dictionary<string, Action<Image>> Effects { get; set; }
-
         public ImageComponentViewModel(ImageComponent component, double ratio = 1) : base(component, ratio)
         {
             effectDuration = component.EffectDuration;
-            componentEffect = component.ComponentEffect;
-            Effects = new Dictionary<string, Action<Image>>
-            {
-                { "向右扩展", FadeIn},
-                { "向下扩展", FadeIn},
-                { "向左扩展", FadeIn},
-                { "向上扩展", FadeIn},
-                { "中间向外扩展", FadeIn},
-                { "左右扩展", FadeIn},
-                { "上下扩展", FadeIn},
-                { "向右平移", FadeIn},
-                { "向下平移", FadeIn},
-                { "向左平移", FadeIn},
-                { "向上平移", FadeIn},
-                { "向右压缩", FadeIn},
-                { "向下压缩", FadeIn},
-                { "向左压缩", FadeIn},
-                { "向上压缩", FadeIn},
-                { "上下压缩", FadeIn},
-                { "左右压缩", FadeIn},
-                { "向下展开卷轴", FadeIn},
-                { "向上展开卷轴", FadeIn},
-                { "水平百叶窗", Blinds},
-                { "垂直百叶窗", FadeIn},
-                { "变焦全屏", FadeIn},
-                { "轮子", FadeIn},
-                { "上下齿合", FadeIn},
-                { "淡入", FadeIn},
-                { "向右堆积", FadeIn},
-                { "向下堆积", FadeIn},
-                { "向左堆积", FadeIn},
-                { "向上堆积", FadeIn},
-                { "左镭射", FadeIn},
-                { "上镭射", FadeIn},
-                { "右镭射", FadeIn},
-                { "下镭射", FadeIn},
-                { "向下展开", FadeIn},
-                { "向上展开", FadeIn},
-                { "上下展开", FadeIn},
-                { "上下合并", FadeIn},
-            };
+            componentEffectKey = component.ComponentEffect;
+            componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
         }
 
         public override ImageComponent ToModel(double ratio)
@@ -97,7 +59,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = Timeline,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
-                ComponentEffect = ComponentEffect,
+                ComponentEffect = ComponentEffectKey,
                 EffectDuration = EffectDuration,
             };
         }
@@ -143,9 +105,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 if (sender is Image image)
                 {
-                    if (ComponentEffect != null)
+                    if (ComponentEffectKey != null)
                     {
-                        Effects[ComponentEffect](image);
+                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(image);
                     }
 
                     InitializeTimer(image);
@@ -204,25 +166,29 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        private void FadeIn(Image image)
+        protected override void FadeIn(FrameworkElement element)
         {
-            Storyboard storyboard = new Storyboard();
-            DoubleAnimation doubleAnimation = new DoubleAnimation
+            if (element is Image image)
             {
-                From = 0.0, // 初始不透明度为0（完全透明）
-                To = 1.0,   // 最终不透明度为1（完全不透明）
-                Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
-            };
+                Storyboard storyboard = new Storyboard();
+                DoubleAnimation doubleAnimation = new DoubleAnimation
+                {
+                    From = 0.0, // 初始不透明度为0（完全透明）
+                    To = 1.0,   // 最终不透明度为1（完全不透明）
+                    Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
+                };
 
-            // 将动画应用到Image的Opacity属性
-            Storyboard.SetTarget(doubleAnimation, image);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(Image.OpacityProperty));
+                // 将动画应用到Image的Opacity属性
+                Storyboard.SetTarget(doubleAnimation, image);
+                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(Image.OpacityProperty));
 
-            // 将动画添加到Storyboard中
-            storyboard.Children.Add(doubleAnimation);
+                // 将动画添加到Storyboard中
+                storyboard.Children.Add(doubleAnimation);
 
-            // 开始Storyboard
-            storyboard.Begin();
+                // 开始Storyboard
+                storyboard.Begin();
+            }
+            
         }
 
         private void Blinds(Image image)
@@ -290,7 +256,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 if (ComponentEffect != null)
                 {
-                    Effects[ComponentEffect](target);
+                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
                 }
                 currentPlayCount++;
             }

@@ -43,7 +43,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private int effectDuration; //特效时长    -毫秒   文本翻页时才用到
 
         [ObservableProperty]
-        private string componentEffect; //入场特效               文本翻页时才用到     
+        private string componentEffect; //入场特效               文本翻页时才用到
+
+        [ObservableProperty]
+        private string componentEffectKey;
 
         [ObservableProperty]
         private int rollingSpeed;  //滚动速度档位        一共1-10个档位
@@ -60,8 +63,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
-        public Dictionary<string, Action<RichTextBox>> Effects { get; set; }
-
         public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
         {
             background = (Color)ColorConverter.ConvertFromString(component.Background);
@@ -69,52 +70,13 @@ namespace MediaControlDistributionCenter.ViewModels
             playMode = component.PlayMode;
             direction = component.Direction;
             effectDuration = component.EffectDuration;
-            componentEffect = component.ComponentEffect;
+            componentEffectKey = component.ComponentEffect;
+            componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
             rollingSpeed = component.RollingSpeed;
             textSize = component.TextSize;
             letterSpacing = component.LetterSpacing;
             lineSpacing = component.LineSpacing;
             isLoopEnabled = component.IsLoopEnabled;
-            Effects = new Dictionary<string, Action<RichTextBox>>
-            {
-                { "向右扩展", FadeIn},
-                { "向下扩展", FadeIn},
-                { "向左扩展", FadeIn},
-                { "向上扩展", FadeIn},
-                { "中间向外扩展", FadeIn},
-                { "左右扩展", FadeIn},
-                { "上下扩展", FadeIn},
-                { "向右平移", FadeIn},
-                { "向下平移", FadeIn},
-                { "向左平移", FadeIn},
-                { "向上平移", FadeIn},
-                { "向右压缩", FadeIn},
-                { "向下压缩", FadeIn},
-                { "向左压缩", FadeIn},
-                { "向上压缩", FadeIn},
-                { "上下压缩", FadeIn},
-                { "左右压缩", FadeIn},
-                { "向下展开卷轴", FadeIn},
-                { "向上展开卷轴", FadeIn},
-                { "水平百叶窗", FadeIn},
-                { "垂直百叶窗", FadeIn},
-                { "变焦全屏", FadeIn},
-                { "轮子", FadeIn},
-                { "上下齿合", FadeIn},
-                { "淡入", FadeIn},
-                { "向右堆积", FadeIn},
-                { "向下堆积", FadeIn},
-                { "向左堆积", FadeIn},
-                { "向上堆积", FadeIn},
-                { "左镭射", FadeIn},
-                { "上镭射", FadeIn},
-                { "右镭射", FadeIn},
-                { "下镭射", FadeIn},
-                { "向下展开", FadeIn},
-                { "向上展开", FadeIn},
-                { "上下展开", FadeIn},
-                { "上下合并", FadeIn},
-            };
         }
 
         public override TextComponent ToModel(double ratio)
@@ -138,7 +100,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
                 EffectDuration = EffectDuration,
-                ComponentEffect = ComponentEffect,
+                ComponentEffect = ComponentEffectKey,
                 RollingSpeed = RollingSpeed == 0 ? 1 : RollingSpeed,
                 TextSize = TextSize,
                 LetterSpacing = LetterSpacing,
@@ -257,7 +219,7 @@ namespace MediaControlDistributionCenter.ViewModels
             // 将RichTextBox添加到Canvas中
             canvas.Children.Add(result);
 
-            if (PlayMode == "滚动")
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
             {
                 Scrolling(result);
             }
@@ -266,9 +228,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 if (sender is RichTextBox richTextBox)
                 {
-                    if (PlayMode == "翻页" && ComponentEffect != null)
+                    if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
                     {
-                        Effects[ComponentEffect](richTextBox);
+                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(richTextBox);
                     }
 
                     InitializeTimer(richTextBox);
@@ -371,9 +333,9 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (currentPlayCount < PlayCount)
             {
-                if (PlayMode == "翻页" && ComponentEffect != null)
+                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
                 {
-                    Effects[ComponentEffect](target);
+                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
                 }
 
                 currentPlayCount++;

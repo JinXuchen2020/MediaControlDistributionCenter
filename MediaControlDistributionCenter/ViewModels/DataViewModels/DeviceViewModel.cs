@@ -131,7 +131,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ContactPhone = ContactNumber,
                 Brightness = Brightness,
                 Volume = Volume,
-                DeviceId = DeviceId,                 
+                DeviceId = SNumber,                 
             };
         }
 

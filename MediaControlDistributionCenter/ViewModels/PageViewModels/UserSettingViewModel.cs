@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -76,19 +79,22 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (OldPassword != CurrentUser.Password)
             {
-                MessageBox.Show("原密码错误！");
+                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_100");
+                await ShowConfirmDialog();
                 return;
             }
 
             if (NewPassword == null || NewPasswordConfirm == null)
             {
-                MessageBox.Show("请填写新密码！");
+                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_101");
+                await ShowConfirmDialog();
                 return;
             }
 
             if (NewPassword != NewPasswordConfirm)
             {
-                MessageBox.Show("二次输入密码不一致！");
+                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_102");
+                await ShowConfirmDialog();
                 return;
             }
 
@@ -97,7 +103,8 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                MessageBox.Show("密码修改成功！");
+                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_103");
+                await ShowConfirmDialog();
             }
         }
 
@@ -107,6 +114,13 @@ namespace MediaControlDistributionCenter.ViewModels
             OldPassword = null;
             NewPassword = null;
             NewPasswordConfirm = null;
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }
