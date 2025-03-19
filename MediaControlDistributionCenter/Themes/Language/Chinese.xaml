@@ -238,7 +238,17 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_129">静止</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_130">播放属性</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_131">播放次数</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_132">播放时长（s）</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_132">播放时长(s)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_133">特效</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_134">特效时长(ms)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_135">方向</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_136">向左滚动</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_137">向上滚动</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_138">向右滚动</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_139">向下滚动</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_140">滚动速度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_141">首尾相连</sys:String>
+    
 
     
 
