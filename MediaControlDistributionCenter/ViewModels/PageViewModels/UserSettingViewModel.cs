@@ -62,6 +62,16 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task ResetUser()
+        {
+            var response = await userService.GetById(CurrentUser.Id);
+            if (response.Code == 200)
+            {
+                CurrentUser.Binding(response.Data!);
+            }
+        }
+
+        [RelayCommand]
         private async Task ChangePassword()
         {
             if (OldPassword != CurrentUser.Password)

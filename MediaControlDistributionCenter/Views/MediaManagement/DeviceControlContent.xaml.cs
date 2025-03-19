@@ -43,7 +43,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -54,7 +55,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -103,12 +105,14 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
             if (manageViewModel.CommandRTValue == null)
             {
-                MessageBox.Show("请先选择值！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_117");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -171,7 +175,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if(manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -207,7 +212,8 @@ namespace MediaControlDistributionCenter.Views
             var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
             if (selectedItems.Count == 0)
             {
-                MessageBox.Show("请先选择记录！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_118");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -219,7 +225,8 @@ namespace MediaControlDistributionCenter.Views
             var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
             if (selectedItems.Count == 0)
             {
-                MessageBox.Show("请先选择记录！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_118");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -262,28 +269,28 @@ namespace MediaControlDistributionCenter.Views
             switch (commandType)
             {
                 case "Brightness":
-                    manageViewModel.CommandTypeName = "亮度：";
+                    manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_119");
                     manageViewModel.CommandTypeHint = "请输入亮度";
-                    manageViewModel.CommandTypeDesciption = "[实时控制] 命令会覆盖当前正在执行的 [定时控制] 命令，直至下个时间点的 [定时控制]，命令生效";
-                    manageViewModel.CommandTypeColumnName = "亮度值(%)";
+                    manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
+                    manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_119");
                     break;
                 case "Volume":
-                    manageViewModel.CommandTypeName = "音量：";
+                    manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
                     manageViewModel.CommandTypeHint = "请输入音量";
-                    manageViewModel.CommandTypeDesciption = "[实时控制] 命令会覆盖当前正在执行的 [定时控制] 命令，直至下个时间点的 [定时控制]，命令生效";
-                    manageViewModel.CommandTypeColumnName = "音量值 (%)";
+                    manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
+                    manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
 
                     break;
                 case "TimeSync":
-                    manageViewModel.CommandTypeName = "时区：";
+                    manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_121");
                     manageViewModel.CommandTypeHint = "";
-                    manageViewModel.CommandTypeDesciption = "手动是根据当前所选时区的时间对时，NTP是根据所选服务器和时区对时，射频是根据对时基准设备对时，GPS是根据GPS卫星进行对时。";
-                    manageViewModel.CommandTypeColumnName = "手动";
+                    manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_124");
+                    manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_107");
                     break;
                 case "Restart":
-                    manageViewModel.CommandTypeName = "重启：";
-                    manageViewModel.CommandTypeHint = "立即重启后,播放器将在20s左右完成重启,在此期间,播放器会处于离线状态.请在播放器重新上线后,再进行其他操作。";
-                    manageViewModel.CommandTypeDesciption = "[实时控制] 命令会覆盖当前正在执行的 [定时控制] 命令，直至下个时间点的 [定时控制]，命令生效";
+                    manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_122");
+                    manageViewModel.CommandTypeHint = (string)FindResource("LanguageKey_Code_Control_Tooltip_125");
+                    manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
                     manageViewModel.CommandTypeColumnName = "";
                     break;
                 default:
@@ -298,7 +305,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
         }
@@ -307,7 +315,8 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice == null)
             {
-                MessageBox.Show("请先选择显示器！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -316,7 +325,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void ChangeTimeSyncMode_Click(object sender, RoutedEventArgs e)
         {
-            var checkBox = sender as CheckBox;
+            var checkBox = sender as RadioButton;
             if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
             {
                 manageViewModel.CommandTypeColumnName = checkBox.Content?.ToString();

@@ -123,14 +123,7 @@
                 </Border>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="LoginUserResult" DataType="{x:Type viewmodels:LoginViewModel}">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding VerifyResult}" />
-                </StackPanel>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="ManageUserResult" DataType="{x:Type viewmodels:UserManageViewModel}">
+        <DataTemplate x:Key="ManageErrorResult" DataType="{x:Type viewmodels:PageViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding ErrorMessage}" />

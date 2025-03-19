@@ -12,6 +12,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public abstract void Binding(DTO model, bool isSelected = false);
 
+        [ObservableProperty]
+        private string? errorMessage;
+
         protected static T GetService<T>() where T : class
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();

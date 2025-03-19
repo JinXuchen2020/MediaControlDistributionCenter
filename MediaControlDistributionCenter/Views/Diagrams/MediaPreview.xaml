@@ -18,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Margin="10">
-                <TextBlock VerticalAlignment="Center" FontSize="20"  Height="38" Foreground="White" Text="节目预览" />
+                <TextBlock VerticalAlignment="Center" FontSize="20"  Height="38" Foreground="White" Text="{DynamicResource LanguageKey_Code_Preview_Title}" />
             </StackPanel>
 
             <Button Width="80" Height="60" HorizontalAlignment="Right"
@@ -46,7 +46,7 @@
         <!-- 加载页面 -->
         <Grid x:Name="LoadingOverlay" Visibility="Collapsed">
             <Border Background="Black" Opacity="0.5" />
-            <TextBlock Text="加载中..." VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="24"/>
+            <TextBlock Text="{DynamicResource LanguageKey_Code_Loading}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="24"/>
         </Grid>
     </Grid>
     

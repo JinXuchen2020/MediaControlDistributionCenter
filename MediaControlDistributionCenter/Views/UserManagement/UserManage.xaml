@@ -202,7 +202,7 @@
                             <Image Width="24" Height="24"  Source="/Assets/assets-0009.png" HorizontalAlignment="Left" Margin="0,0,10,0"/>
                             <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" Foreground="White"/>
                         </StackPanel>
-                        <Button x:Name="btnGroupAdd" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
+                        <Button Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" x:Name="btnGroupAdd" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
                             <Image Width="20" Height="20"  Source="/Assets/7.png" HorizontalAlignment="Left"/>
                         </Button>
                     </DockPanel>
@@ -222,27 +222,27 @@
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid VerticalAlignment="Top" Margin="0,20,0,0" >
                         <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnRegister" Cursor="Hand" VerticalAlignment="Center" Margin="15,4,15,4" MouseDown="btnRegister_MouseDown" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Register}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="btnChangeGroup" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnChangeGroup_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_ChangGroup}" />
+                                    <TextBlock x:Name="btnChangeGroup" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnChangeGroup_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ChangGroup}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Delete}" />
+                                    <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" VerticalAlignment="Top" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Users_Tooltip_108}" Padding="12,0,0,0"  Foreground="White"></TextBox>
+                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White"></TextBox>
                                 <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
                             </StackPanel>
                             <Button Margin="16,0,0,0" Background="#2A3255" Padding="0" BorderBrush="#404870">
@@ -258,13 +258,13 @@
                         <Grid>
                             <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                             <DataGrid 
-                                x:Name="dgUsers"
+                                Name="dgUsers"
                                 AutoGenerateColumns="False" 
                                 CanUserAddRows="False"  
                                 FontSize="14" 
                                 IsReadOnly="True" 
                                 SelectionMode="Single"
-                                FrozenColumnCount="1" 
+                                FrozenColumnCount="1"
                                 Background="Transparent" 
                                 ItemsSource="{Binding Users}"
                             >
@@ -277,14 +277,22 @@
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                     </Style>
+                                    <CustomControls:BindingProxy x:Key="proxy" Data="{Binding ConnectionMode}" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="{DynamicResource LanguageKey_Code_Select}" Width="60"
+                                    <DataGridCheckBoxColumn Width="60"
                                         Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                                         ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
                                         IsReadOnly="False"
-                                        CanUserSort="False"/>
-                                    <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Function}"  Width="160" >
+                                        CanUserSort="False">
+                                        <DataGridCheckBoxColumn.Header>
+                                            <CheckBox />
+                                        </DataGridCheckBoxColumn.Header>
+                                    </DataGridCheckBoxColumn>
+                                    <DataGridTemplateColumn Width="160" >
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Function}" />
+                                        </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -298,13 +306,40 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Role}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_107}"  />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding AgentId}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Region}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_109}" />
-                                    <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Operation}"  Width="180" >
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Account}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Role}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding AgentId}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Region}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_109}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Visibility="{Binding Data.Mode, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Width="180" >
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                        </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">

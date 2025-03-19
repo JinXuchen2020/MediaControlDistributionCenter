@@ -18,9 +18,6 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<UserGroupViewModel> groups;
 
-        [ObservableProperty]
-        private string errorMessage;
-
         public UserViewModel CurrentUser { get; set; }
 
         public UserViewModel? SelectedUser { get; set; }

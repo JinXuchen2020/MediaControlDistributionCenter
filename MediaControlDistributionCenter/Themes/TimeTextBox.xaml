@@ -7,7 +7,7 @@
                 <ControlTemplate TargetType="{x:Type customControls:TimeTextBox}">
                     <TextBox x:Name="TimeTextBox"                        
                          Text="{Binding Text, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                         VerticalAlignment="Center" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1"/>
+                         VerticalAlignment="Center" Padding="5" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" BorderBrush="#404870" BorderThickness="1"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

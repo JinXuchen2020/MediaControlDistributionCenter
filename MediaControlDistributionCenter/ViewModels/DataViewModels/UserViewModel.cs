@@ -166,7 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Role = model.Role.ToLower();
             GroupId = model.UserGroupId;
             AgentId = model.AgentAccount;
-            Group = model.UserGroupName ?? "未分组";
+            Group = model.UserGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             Account = model.Account;
             Name = model.Company;
             Region = model.Region;

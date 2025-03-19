@@ -7,10 +7,14 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public partial class PageViewModel : ObservableObject
     {
-        protected ConnectionMode ConnectionMode => App.ServicesProvider.GetRequiredService<ConnectionMode>();
+        [ObservableProperty]
+        private ConnectionMode connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
         
         [ObservableProperty]
         private bool isDeviceConnected = App.ServicesProvider.GetRequiredService<Communication>().netClient.IsConnected;
+
+        [ObservableProperty]
+        private string? errorMessage;
 
         public virtual void LoadData(long? groupId = null)
         {

@@ -56,7 +56,26 @@ namespace MediaControlDistributionCenter.ViewModels
 
                         string filePath = $"{CurrentMedia.Name}.zip";
                         item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialog();
+                            continue;
+                        }
+                        await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialog();
+                            continue;
+                        }
                         await item.SyncFileSyncCommand.ExecuteAsync(filePath);
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialog();
+                            continue;
+                        }
 
                         if (!string.IsNullOrEmpty(item.SendResult))
                         {

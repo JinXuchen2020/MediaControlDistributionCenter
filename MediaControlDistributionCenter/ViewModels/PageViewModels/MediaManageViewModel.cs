@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -58,7 +60,7 @@ namespace MediaControlDistributionCenter.ViewModels
             groups.Insert(0, new ProgramGroupDto
             {
                 Id = -1,
-                Name = "全部",
+                Name = FindResource("LanguageKey_Code_All"),
                 UserAccount = CurrentUser.Account,
             });
             this.MediaGroups = new ObservableCollection<MediaGroupViewModel>(groups.Select(c=>
@@ -88,6 +90,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
         }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+        }
+
 
         [RelayCommand]
         private async Task CreateGroup(MediaGroupViewModel groupViewModel)
@@ -132,12 +142,10 @@ namespace MediaControlDistributionCenter.ViewModels
             if (viewModel.Status == 1)
             {
                 viewModel.Status = 0;
-                viewModel.RackingBtnContent = "上架";
             }
             else
             {
                 viewModel.Status = 1;
-                viewModel.RackingBtnContent = "下架";
             }
 
             var response = await programService.Save(viewModel.ToModel());

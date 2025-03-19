@@ -27,9 +27,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSync;
 
         [ObservableProperty]
-        private string? verifyResult;
-
-        [ObservableProperty]
         private ConnectionMode connectionMode;
 
         [ObservableProperty]
@@ -69,15 +66,15 @@ namespace MediaControlDistributionCenter.ViewModels
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
             if (string.IsNullOrEmpty(request.Account) || string.IsNullOrEmpty(request.Password))
             {
-                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_103");
+                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");
             }
             else if (connectionMode.Mode == "Local" && !IsSync)
             {
-                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
+                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
             }
             else if (connectionMode.Mode == "Local" && !this.SyncUsers.Contains(request.Account))
             {
-                VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
+                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
             }
             else
             {
@@ -108,7 +105,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    VerifyResult = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
+                    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
                 }
             }
 
@@ -131,7 +128,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                VerifyResult = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
             }
             else
             {
@@ -167,7 +164,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    VerifyResult = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
+                    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
                 }
             }
 

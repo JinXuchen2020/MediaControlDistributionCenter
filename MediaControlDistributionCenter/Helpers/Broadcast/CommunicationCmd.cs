@@ -99,5 +99,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public readonly static string CmdSendUser = "CMD|SendUser|";
 
+        /// <summary>
+        /// 发送节目基础信息到机顶盒上
+        /// </summary>
+        public readonly static string CmdSendProgram = "CMD|SendProgram|";
+
     }
 }

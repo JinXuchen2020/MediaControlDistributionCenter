@@ -253,7 +253,10 @@
                     ItemsSource="{Binding Users}"
                 >
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Users_Control}" Width="120">
+                        <DataGridTemplateColumn Width="120">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Function}" />
+                            </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
@@ -263,10 +266,26 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Binding="{Binding Role}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" Width="*" />
-                        <DataGridTextColumn Binding="{Binding AgentId}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" Width="*" />
-                        <DataGridTextColumn Binding="{Binding Account}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" Width="*" />
-                        <DataGridTextColumn Binding="{Binding Name}" Header="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" Width="*" />
+                        <DataGridTextColumn Binding="{Binding Role}" Width="*">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding AgentId}" Width="*">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding Account}" Width="*">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding Name}" Width="*">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -315,7 +334,10 @@
                     ItemsSource="{Binding Medias}"
                 >
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="节目名称" Width="*">
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
+                            </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -326,7 +348,10 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Operation}" Width="120">
+                        <DataGridTemplateColumn Width="120">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                            </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Cursor="Hand" MouseDown="btnToMediaEdit_MouseDown" >

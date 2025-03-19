@@ -81,11 +81,11 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         {
             var newMediaModel = new ProgramDto
             {
-                Name = $"新节目{DateTime.Now.ToString("yyyyMMddhhmmss")}",
+                Name =  $"{FindResource("LanguageKey_Code_Program_Tooltip_100")}{DateTime.Now.ToString("yyyyMMddhhmmss")}",
                 MediaType = "PROGRAM",
                 UserAccount = manageViewModel.CurrentUser.Account,
                 Status = 1,
-                CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? "管理员" : "用户",
+                CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User"),
             };
 
             var newViewModel = new MediaViewModel();
@@ -100,7 +100,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if (selectedMedias.Count() == 0)
             {
-                MessageBox.Show("请选择一条节目单！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_108");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -116,9 +117,17 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         {
             var selectedMedias = manageViewModel.Medias.Where(c => c.IsSelected);
 
+            if (selectedMedias.Count() == 0)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_108");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             if (selectedMedias.Count() != 1)
             {
-                MessageBox.Show("请选择一条节目单进行复制！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_109");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -127,9 +136,9 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             var newMedia = new MediaViewModel();
             newMedia.Binding(selectedModel);
-            newMedia.Name += "_Copy";
+            newMedia.Name += $"_{FindResource("LanguageKey_Code_Media_Copy")}";
             newMedia.Id = 0;
-            newMedia.CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? "管理员" : "用户";
+            newMedia.CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User");
             manageViewModel.ShowDialogCommand.Execute(newMedia);
         }
 
@@ -138,7 +147,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var selectedMedias = manageViewModel.Medias.Where(c => c.IsSelected).ToList();
             if (selectedMedias.Count() == 0)
             {
-                MessageBox.Show("请选择一条节目单！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_108");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
@@ -156,9 +166,17 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         {
             var selectedMedias = manageViewModel.Medias.Where(c => c.IsSelected);
 
+            if (selectedMedias.Count() == 0)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_108");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             if (selectedMedias.Count() != 1)
             {
-                MessageBox.Show("请选择一条节目单进行发布！");
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_109");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 
