@@ -4,7 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"     
       xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
       xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
       xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"  
       Height="1024" Width="1440"
@@ -294,11 +295,11 @@
                                         <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Padding="12,0,0,0" Height="32" Width="464" Background="#2A3255"  ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="Id" SelectedValue="{Binding CommandRTValue}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
                                         <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                                             <TextBlock Grid.Row="2" Margin="0,0,19,0" FontSize="16" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_106}" />
-                                            <StackPanel Height="32"  VerticalAlignment="Center" Orientation="Horizontal">                                                
-                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="True" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_107}" Foreground="White" Margin="0,0,8,0" />
-                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="False" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_108}" Foreground="White" Margin="8" />
-                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="False" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_109}" Foreground="White" Margin="8" />
-                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="False" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_110}" Foreground="White" Margin="8" />
+                                            <StackPanel Height="32"  VerticalAlignment="Center" Orientation="Horizontal">
+                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="{Binding CommandTypeColumnName, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=manual}" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_107}" Tag="manual" Foreground="White" Margin="0,0,8,0" />
+                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="{Binding CommandTypeColumnName, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=ntp}" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_108}" Tag="ntp" Foreground="White" Margin="8" />
+                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="{Binding CommandTypeColumnName, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=ping}" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_109}"  Tag="ping" Foreground="White" Margin="8" />
+                                                <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="{Binding CommandTypeColumnName, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=gps}" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_110}" Tag="gps" Foreground="White" Margin="8" />
                                             </StackPanel>
                                         </StackPanel>
                                         <StackPanel>
@@ -318,7 +319,8 @@
                                 <StackPanel >
                                     <StackPanel Orientation="Horizontal" Margin="19,12,0,12">
                                         <Image Cursor="Hand" x:Name="btnAddTimeControl" MouseDown="btnAddTimeControl_MouseDown" Width="32" Height="32" Source="/Assets/7.png" Margin="0,0,16,0" HorizontalAlignment="Left"/>
-                                        <Image Width="32" Height="32" Source="/Assets/8.png" MouseDown="btnPublish_MouseDown" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
+                                        <Image Width="32" Height="32" Source="/Assets/8.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
+                                        <Image Width="32" Height="32" Source="/Assets/13.png" MouseDown="btnPublish_MouseDown" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
                                         <Image x:Name="btnDeleteTimeControl" MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
                                     </StackPanel>
                                     <Grid Margin="19,0">
@@ -334,6 +336,9 @@
                                             Background="Transparent" 
                                             ItemsSource="{Binding DeviceTimeControls, UpdateSourceTrigger=PropertyChanged}"
                                         >
+                                            <DataGrid.Resources>
+                                                <CustomControls:BindingProxy x:Key="proxy" Data="{Binding CommandType}" />
+                                            </DataGrid.Resources>
                                             <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Width="60"
                                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"                                                                        
@@ -343,6 +348,15 @@
                                                         <CheckBox />
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
+                                                <DataGridTextColumn Width="1*" Binding="{Binding Value}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
+                                                    <DataGridTextColumn.Header>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_119}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness}" />
+
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_120}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Volume}" />
+                                                        </StackPanel>
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
                                                 <DataGridTextColumn Width="1*" Binding="{Binding ExecuteTime}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />

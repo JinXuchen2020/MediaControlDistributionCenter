@@ -157,7 +157,10 @@
                     ItemsSource="{Binding Devices}"
                 >
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_110}" Width="*">
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_110}" />
+                            </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -171,7 +174,10 @@
                         <materialDesign:DataGridTextColumn
                             EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}"
                             ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
-                            Header="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_111}" Width="*">
+                            Width="*">
+                            <materialDesign:DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_111}" />
+                            </materialDesign:DataGridTextColumn.Header>
                             <materialDesign:DataGridTextColumn.Binding>
                                 <Binding Path="MediaNames">
                                     <Binding.ValidationRules>

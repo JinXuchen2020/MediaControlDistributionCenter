@@ -30,6 +30,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.CurrentUser = loginViewModel.CurrentUser;
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData(long? groupId = null)
@@ -74,13 +75,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
-        }
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
         [RelayCommand]

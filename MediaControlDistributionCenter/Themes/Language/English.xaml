@@ -11,7 +11,11 @@
     <sys:String x:Key="LanguageKey_Code_KO">Korean</sys:String>
     <sys:String x:Key="LanguageKey_Code_JP">Japanese</sys:String>
 
+    <sys:String x:Key="LanguageKey_Code_Role_Admin">Admin</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_Agent">Agent</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_User">User</sys:String>
 
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_119">Brightness(%)</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_SystemTitle">Unified Media Management Platform</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginDescription">Login Standard Media Manager System</sys:String>
@@ -20,13 +24,25 @@
     <sys:String x:Key="LanguageKey_Code_SystemFeature3">Multi-language</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemExitTip">Close and exit the software</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_LoginSlogan">Here is the company slogan: Strive for self-improvement, hold virtues to carry the world</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">Company slogan: </sys:String>
+    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">Strive for self-improvement, hold virtues to carry the world</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LoginTitle">Log in to your Sign Plex account</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginAccount">Account</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginPassword">Password</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginBtn">Login</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginSubTitle">For account inquiries, please contact the supplier: 73764@qq.com</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">Result</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">Not Sync Device information！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_101">该账号不可用！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>   
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_100">无法连接机顶盒!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_101">命令无法被处理!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_102">同步机顶盒信息成功！可选择下列用户登录：</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_103">网络—本地网络</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_HelloWorld">Hello World</sys:String>

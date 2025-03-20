@@ -96,7 +96,7 @@ namespace MediaControlDistributionCenter
 
         private void HandleException(Exception ex)
         {
-            string message = $"An error occured: {ex.Message}";
+             string message = $"An error occured: {ex.Message}";
             //MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Log.Error(message);
         }
@@ -129,6 +129,7 @@ namespace MediaControlDistributionCenter
                     base.Resources.MergedDictionaries.Remove(old);
             }
             base.Resources.MergedDictionaries.Add(langRd);
+            UpdateLanguageResourceCache(langRd);
 
         }
 
@@ -146,6 +147,20 @@ namespace MediaControlDistributionCenter
                     languageResourceCache.Add(languageValue, languageKey);
             }
             return languageResourceCache;
+        }
+
+        private void UpdateLanguageResourceCache(ResourceDictionary? langRd)
+        {
+            IDictionary<string, string> languageResourceCache = LanguageTool.Instance.LanguageResourceCache;
+            var languageResource = langRd;
+            if (languageResource == null) return;
+            foreach (var key in languageResource.Keys)
+            {
+                var languageKey = key.ToString();
+                var languageValue = languageResource[key].ToString();
+                if (!languageResourceCache.ContainsKey(languageValue) && languageKey.Contains("LanguageKey_Code_"))
+                    languageResourceCache.Add(languageValue, languageKey);
+            }
         }
 
         #endregion

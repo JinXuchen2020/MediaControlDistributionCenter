@@ -15,7 +15,8 @@
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
-    <Grid x:Name="mainContainner">
+    <materialDesign:DialogHost Identifier="ErrorMessageBox">
+        <Grid x:Name="mainContainner">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2" />
@@ -151,4 +152,5 @@
             </Border>
         </Grid>
     </Grid>
+    </materialDesign:DialogHost>
 </Window>

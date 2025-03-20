@@ -52,6 +52,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = GetService<IProgramService>();
             this.programGroupService = GetService<IProgramGroupService>();
             this.fileService = fileService;
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData(long? groupId = null)
@@ -89,13 +90,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
-        }
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
 

@@ -296,25 +296,29 @@ namespace MediaControlDistributionCenter.ViewModels
             return formattedText.WidthIncludingTrailingWhitespace;
         }
 
-        private void FadeIn(RichTextBox target)
+        protected override void FadeIn(FrameworkElement element)
         {
-            Storyboard storyboard = new Storyboard();
-            DoubleAnimation doubleAnimation = new DoubleAnimation
+            if(element is RichTextBox target)
             {
-                From = 0.0, // 初始不透明度为0（完全透明）
-                To = 1.0,   // 最终不透明度为1（完全不透明）
-                Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
-            };
+                Storyboard storyboard = new Storyboard();
+                DoubleAnimation doubleAnimation = new DoubleAnimation
+                {
+                    From = 0.0, // 初始不透明度为0（完全透明）
+                    To = 1.0,   // 最终不透明度为1（完全不透明）
+                    Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
+                };
 
-            // 将动画应用到Image的Opacity属性
-            Storyboard.SetTarget(doubleAnimation, target);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(RichTextBox.OpacityProperty));
+                // 将动画应用到Image的Opacity属性
+                Storyboard.SetTarget(doubleAnimation, target);
+                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(RichTextBox.OpacityProperty));
 
-            // 将动画添加到Storyboard中
-            storyboard.Children.Add(doubleAnimation);
+                // 将动画添加到Storyboard中
+                storyboard.Children.Add(doubleAnimation);
 
-            // 开始Storyboard
-            storyboard.Begin();
+                // 开始Storyboard
+                storyboard.Begin();
+            }
+            
         }
         private void InitializeTimer(RichTextBox target)
         {

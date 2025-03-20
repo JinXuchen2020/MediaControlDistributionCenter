@@ -56,6 +56,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
             this.communication = communication;
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData(long? groupId = null)
@@ -93,13 +94,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private void CloseDialog()
         {
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
-        }
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
         public DeviceViewModel CreateDevice()
@@ -185,7 +179,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (!string.IsNullOrEmpty(viewModel?.ErrorMessage))
             {
                 ErrorMessage = viewModel.ErrorMessage;
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
             }
             else
             {
@@ -203,7 +197,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (SelectedDevice == null)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 return;
             }
 

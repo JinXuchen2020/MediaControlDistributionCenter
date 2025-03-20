@@ -358,23 +358,19 @@ namespace MediaControlDistributionCenter.Views
         private void btnPageSave_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as MediaPageViewModel)!;
-            if (string.IsNullOrEmpty(viewModel.Name))
+            viewModel.SubmitCommand.Execute(null);
+            if (!viewModel.HasErrors)
             {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_152");
-                var dialog = new ResultConfirmDialog(manageViewModel);
-                DialogHost.Show(dialog, Helpers.Constants.LoginDialogHostId);
-                return;
+                if (manageViewModel.SelectedPage != null)
+                {
+                    manageViewModel.SelectedPage.IsSelected = false;
+                }
+                manageViewModel.SelectedPage = viewModel;
+                viewModel.IsSelected = true;
+                manageViewModel.MediaConfig.Pages.Add(viewModel);
+                manageViewModel.CloseDialogCommand.Execute(null);
+                LoadCanvasComponents(manageViewModel);
             }
-
-            if (manageViewModel.SelectedPage != null)
-            {
-                manageViewModel.SelectedPage.IsSelected = false;
-            } 
-            manageViewModel.SelectedPage = viewModel;
-            viewModel.IsSelected = true;
-            manageViewModel.MediaConfig.Pages.Add(viewModel);
-            manageViewModel.CloseDialogCommand.Execute(null);
-            LoadCanvasComponents(manageViewModel);
         }
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
@@ -510,10 +506,10 @@ namespace MediaControlDistributionCenter.Views
                 switch(manageViewModel.SelectedComponent.Type)
                 {
                     case "Video":
-                        (manageViewModel.SelectedComponent as VideoComponentViewModel).PlayMode = radioButton.Content?.ToString();
+                        (manageViewModel.SelectedComponent as VideoComponentViewModel).PlayMode = radioButton.Tag?.ToString();
                         break;
                     case "Text":
-                        (manageViewModel.SelectedComponent as TextComponentViewModel).PlayMode = radioButton.Content?.ToString();
+                        (manageViewModel.SelectedComponent as TextComponentViewModel).PlayMode = radioButton.Tag?.ToString();
                         break;
 
                 }
@@ -550,6 +546,7 @@ namespace MediaControlDistributionCenter.Views
                             Id = maxId + 1,
                             Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{maxId + 1}",
                             ZIndex = 1,
+                            PlayMode = "fullscreen",
                             Type = (MediaType)type,
                             PlayCount = 1,
                             PlayDuration = "",
@@ -579,10 +576,10 @@ namespace MediaControlDistributionCenter.Views
                             Source = " ",
                             PlayCount = 1,
                             PlayDuration = "00:00:05",
-                            PlayMode = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127"),
+                            PlayMode = "pageTurning",
                             ComponentEffect = "FadeIn",
                             EffectDuration = 1000,
-                            Direction = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_138"),
+                            Direction = "rollingLeft",
                             Timeline = 5,
                             Background ="black",
                             TextColor = "white",

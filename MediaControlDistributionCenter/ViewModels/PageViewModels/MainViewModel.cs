@@ -19,6 +19,8 @@ namespace MediaControlDistributionCenter.ViewModels
             currentUser = loginViewModel.CurrentUser;
             connectionString = ConnectionMode.Mode == "Local" ? FindResource("LanguageKey_Code_Device_Tooltip_103") : FindResource("LanguageKey_Code_Device_Tooltip_104");
             deviceConnString = communication.netClient.IsConnected ? FindResource("LanguageKey_Code_Device_Tooltip_105") : FindResource("LanguageKey_Code_Device_Tooltip_106");
+            RegisterLanguageProperty(this.GetType(), nameof(ConnectionString));
+            RegisterLanguageProperty(this.GetType(), nameof(DeviceConnString));
         }
 
         public override void LoadData(long? groupId = null)

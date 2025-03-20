@@ -240,27 +240,27 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.GetDeviceTimeControlsCommand.Execute(null);
                 dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
 
-                if (!string.IsNullOrEmpty(manageViewModel.CommandTypeColumnName))
-                {
-                    var valueColumn = new DataGridTextColumn()
-                    {
-                        Binding = new Binding("Value") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
-                        Header = manageViewModel.CommandTypeColumnName
-                    };
-                    dgTimeControls.Columns.Insert(1, valueColumn);
-                }
+                //if (!string.IsNullOrEmpty(manageViewModel.CommandTypeColumnName))
+                //{
+                //    var valueColumn = new DataGridTextColumn()
+                //    {
+                //        Binding = new Binding("Value") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
+                //        Header = manageViewModel.CommandTypeColumnName
+                //    };
+                //    dgTimeControls.Columns.Insert(1, valueColumn);
+                //}
             }
         }
 
         private void UpdatePageContent(string commandType)
         {
-            if (commandType  == manageViewModel.CommandTypeColumnName)
+            if (commandType == manageViewModel.CommandTypeColumnName)
             {
                 return;
             }
 
-            var valueColumn = dgTimeControls.Columns.FirstOrDefault(c => c.Header.ToString() == manageViewModel.CommandTypeColumnName);
-            dgTimeControls.Columns.Remove(valueColumn);
+            //var valueColumn = dgTimeControls.Columns.FirstOrDefault(c => c.Header.ToString() == manageViewModel.CommandTypeColumnName);
+            //dgTimeControls.Columns.Remove(valueColumn);
 
             manageViewModel.CommandType = commandType;
             manageViewModel.CommandRTValue = null;
@@ -285,7 +285,7 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_121");
                     manageViewModel.CommandTypeHint = "";
                     manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_124");
-                    manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_107");
+                    manageViewModel.CommandTypeColumnName = "manual";
                     break;
                 case "Restart":
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_122");
@@ -328,7 +328,7 @@ namespace MediaControlDistributionCenter.Views
             var checkBox = sender as RadioButton;
             if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
             {
-                manageViewModel.CommandTypeColumnName = checkBox.Content?.ToString();
+                manageViewModel.CommandTypeColumnName = checkBox.Tag?.ToString();
             }
         }
 

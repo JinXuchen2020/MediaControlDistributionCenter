@@ -112,13 +112,6 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
-        }
-
-        [RelayCommand]
         private async Task Save()
         {
             var response = await programService.Save(CurrentMedia.ToModel());

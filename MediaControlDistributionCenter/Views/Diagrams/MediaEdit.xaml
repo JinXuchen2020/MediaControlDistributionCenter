@@ -25,13 +25,13 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <materialDesign:DialogHost Identifier="RootDialogHostId" Placement="RelativePoint">
+    <materialDesign:DialogHost Identifier="RootDialogHostId">
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:MediaPageViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">
-                            <Grid Width="889" Height="400" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                            <Grid Width="500" Height="300" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="2" />
@@ -681,8 +681,8 @@
                                                             </StackPanel.Style>
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_118}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_119}" Click="PlayModeChanged_Click" IsChecked="True" />
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_120}" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_119}" Tag="fullscreen" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=fullscreen}" />
+                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_120}" Tag="origin" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=origin}" />
                                                             </StackPanel>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
@@ -728,9 +728,9 @@
                                                             </StackPanel>
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_126}" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="True" />
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_129}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="False" />
+                                                                <RadioButton VerticalAlignment="Center" Tag="pageTurning" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=pageTurning}" />
+                                                                <RadioButton VerticalAlignment="Center" Tag="rolling" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=rolling}" />
+                                                                <RadioButton VerticalAlignment="Center" Tag="stop" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_129}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=stop}" />
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </StackPanel>
@@ -747,7 +747,7 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
-                                                        <LocalCore:TimeTextBox IsDisabled="{Binding SelectedComponent.Type, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=Video}"  Timeline="{Binding SelectedComponent.Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding SelectedComponent.PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                        <LocalCore:TimeTextBox IsDisabled="{Binding SelectedComponent.Type, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=Video}" Width="150" Timeline="{Binding SelectedComponent.Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding SelectedComponent.PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </StackPanel>
                                                     <StackPanel>
                                                         <StackPanel.Style>
@@ -763,7 +763,7 @@
                                                                     <MultiDataTrigger>
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="pageTurning" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
                                                                     </MultiDataTrigger>
@@ -772,7 +772,7 @@
                                                         </StackPanel.Style>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
-                                                            <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Key" SelectedValue="{Binding SelectedComponent.ComponentEffect}" SelectedValuePath="Key" />
+                                                            <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding SelectedComponent.ComponentEffectKey}" SelectedValuePath="Key" />
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
@@ -790,7 +790,7 @@
                                                                     <MultiDataTrigger>
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" />
+                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="rolling" />
                                                                         </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Visibility" Value="Visible" />
                                                                     </MultiDataTrigger>
@@ -799,11 +799,11 @@
                                                         </StackPanel.Style>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
-                                                            <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Content" >
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" />
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" />
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" />
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" />
+                                                            <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Tag" >
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" Tag="rollingLeft" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" Tag="rollingUp"/>
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" Tag="rollingRight" />
+                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" Tag="rollingDown"/>
                                                             </ComboBox>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">

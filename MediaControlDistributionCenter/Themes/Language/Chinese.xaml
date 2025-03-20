@@ -22,7 +22,8 @@
     <sys:String x:Key="LanguageKey_Code_SystemFeature3">多语言</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemExitTip">关闭并退出软件</sys:String>    
     
-    <sys:String x:Key="LanguageKey_Code_LoginSlogan">此处是公司宣传语：自强不息 厚德载物</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">公司宣传语:</sys:String>
+    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">自强不息 厚德载物</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LoginTitle">登录你的Sign Plex账号</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginAccount">账号</sys:String>
@@ -72,6 +73,9 @@
     <sys:String x:Key="LanguageKey_Code_Five">五</sys:String>
     <sys:String x:Key="LanguageKey_Code_Six">六</sys:String>
     <sys:String x:Key="LanguageKey_Code_Sun">日</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program">常规节目</sys:String>
+    <sys:String x:Key="LanguageKey_Code_AD">广告</sys:String>
+    <sys:String x:Key="LanguageKey_Code_DeleteConfirm">是否确认删除？</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
@@ -171,6 +175,10 @@
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_119">上传失败</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_120">发布成功</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_121">发布失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_122">上传状态</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_123">发送状态</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_124">连接成功！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_125">是否录入当前用户？</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Control_Device">设备控制</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_DialogTitle">定时控制</sys:String>
@@ -216,6 +224,8 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Count">次</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_MediaProperty">组件属性</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_PageProperty">页面属性</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_ContentUpdated">内容已更新！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_PublishSuccess">发布结果：</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_100">背景色</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_101">字体颜色</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_102">混合媒体</sys:String>
@@ -229,7 +239,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_110">炫彩字</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_111">HDMI IN</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_112">字体轮廓颜色</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_113">区域（px）</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_113">区域(px)</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_114">选择文件</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_115">本地文件</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_116">基础属性</sys:String>

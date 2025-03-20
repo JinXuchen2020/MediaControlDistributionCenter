@@ -17,5 +17,7 @@ namespace MediaControlDistributionCenter.Helpers
         public const string DialogHostId = "RootDialogHostId";
 
         public const string LoginDialogHostId = "LoginDialogHostId";
+
+        public const string ErrorMessageboxId = "ErrorMessageBox";
     }
 }

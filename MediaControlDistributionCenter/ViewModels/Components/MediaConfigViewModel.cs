@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,12 +82,13 @@ namespace MediaControlDistributionCenter.ViewModels
         }
     }
 
-    public partial class MediaPageViewModel : ObservableObject
+    public partial class MediaPageViewModel : ObservableValidator
     {
         [ObservableProperty]
         private int id;
 
         [ObservableProperty]
+        [Required]
         private string name;
 
         [ObservableProperty]
@@ -165,6 +167,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 Schedulers = Schedulers.Select(c => c.ToModel()).ToList(),
                 Components = Components.Select(c => c!.ToModel(ratio)).ToList()
             };
+        }
+
+        [RelayCommand]
+        protected void Submit()
+        {
+            ValidateAllProperties();
         }
 
         [RelayCommand]

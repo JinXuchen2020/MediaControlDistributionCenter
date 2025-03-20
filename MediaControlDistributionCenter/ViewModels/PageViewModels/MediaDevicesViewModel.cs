@@ -56,33 +56,33 @@ namespace MediaControlDistributionCenter.ViewModels
                     var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
                     if (existRecord == null) 
                     {
-                        var response = await playbackRecordService.Save(model);
-                        if (response.Code == 200)
+                        string filePath = $"{CurrentMedia.Name}.zip";
+                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
                         {
-                            string filePath = $"{CurrentMedia.Name}.zip";
-                            item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
-                            if (!string.IsNullOrEmpty(item.ErrorMessage))
-                            {
-                                ErrorMessage = item.ErrorMessage;
-                                await ShowConfirmDialog();
-                                continue;
-                            }
-                            await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
-                            if (!string.IsNullOrEmpty(item.ErrorMessage))
-                            {
-                                ErrorMessage = item.ErrorMessage;
-                                await ShowConfirmDialog();
-                                continue;
-                            }
-                            await item.SyncFileSyncCommand.ExecuteAsync(filePath);
-                            if (!string.IsNullOrEmpty(item.ErrorMessage))
-                            {
-                                ErrorMessage = item.ErrorMessage;
-                                await ShowConfirmDialog();
-                                continue;
-                            }
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            continue;
+                        }
+                        await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            continue;
+                        }
+                        await item.SyncFileSyncCommand.ExecuteAsync(filePath);
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            continue;
+                        }
 
-                            if (!string.IsNullOrEmpty(item.SendResult))
+                        if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
+                        {
+                            var response = await playbackRecordService.Save(model);
+                            if (response.Code == 200)
                             {
                                 this.PublishDevices.Add(item);
                             }
@@ -91,16 +91,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    SQLite.DeleTeable(model);
+                    var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
+                    if (existRecord != null)
+                    {
+                        await playbackRecordService.DeleteById(existRecord.Id);
+                    }
                 }                
             }
-        }
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

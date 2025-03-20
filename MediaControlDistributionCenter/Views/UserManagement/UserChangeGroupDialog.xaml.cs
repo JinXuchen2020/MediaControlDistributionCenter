@@ -38,9 +38,9 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             if (selectedGroup == null) 
             {
                 manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_110");
-                var dialog = new ResultConfirmDialog(manageViewModel);
-                MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
-                //manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                //var dialog = new ResultConfirmDialog(manageViewModel);
+                //MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
 

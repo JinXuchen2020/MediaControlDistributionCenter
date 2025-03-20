@@ -48,7 +48,7 @@ namespace MediaControlDistributionCenter
                     App.Current.MainWindow.Show();
                     this.Hide();
                 }
-            });            
+            });
 
             //var resultResponse = authService.Login(new AccountDto { Account = loginId, Password = password}).GetAwaiter().GetResult();
             //if (resultResponse.Code == 200)
@@ -120,6 +120,8 @@ namespace MediaControlDistributionCenter
                         Log.Debug("ko_KR");
                         break;
                 }
+
+                viewModel.TranslateLanguageProperties();
             }
         }
 

@@ -71,7 +71,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             var viewModel = new UserViewModel()
             {
                 Role = "user",
-                Status = 1
+                Status = 1,
+                TimeZone = TimeZoneInfo.Local.DisplayName,
             };
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
             manageViewModel.ShowDialogCommand.Execute(viewModel);
@@ -86,8 +87,18 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as UserViewModel)!;
-            manageViewModel.DeleteUserCommand.Execute(viewModel);
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    var viewModel = ((sender as Button).DataContext as UserViewModel)!;
+                    await manageViewModel.DeleteUserCommand.ExecuteAsync(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });                      
         }
 
         private void btnChangeGroup_MouseDown(object sender, MouseButtonEventArgs e)
@@ -121,8 +132,19 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 return;
             }
 
-            manageViewModel.DeleteUserBatchCommand.Execute(null);
-            manageViewModel.LoadData();
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    await manageViewModel.DeleteUserBatchCommand.ExecuteAsync(null);
+                    manageViewModel.LoadData();
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
 
         private void btnGroupAdd_Click(object sender, RoutedEventArgs e)

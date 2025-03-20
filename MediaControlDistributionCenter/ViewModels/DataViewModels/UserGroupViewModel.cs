@@ -1,18 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
     public partial class UserGroupViewModel : DataViewModel<UserGroupDto>
     {
         [ObservableProperty]
+        [Required]
         private string name;
 
         [ObservableProperty]
         private long id;
 
         [ObservableProperty]
+        [Required]
         private string agentId;
 
         [ObservableProperty]

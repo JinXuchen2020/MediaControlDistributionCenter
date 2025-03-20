@@ -29,6 +29,39 @@ namespace MediaControlDistributionCenter
             this.mainViewModel = mainViewModel;
             this.serviceProvider = serviceProvider;
             Log.Information("MainWindow initialized.");
+
+            switch (LanguageTool.Instance.Language)
+            {
+                case MediaControlDistributionCenter.Language.Chinese:
+                    //ChangeLanguage("zh-CN");
+                    //LanguageTool.Instance.Language = MediaControlDistributionCenter.Language.Chinese;
+                    //LanguageTool.Instance.ChangeLanguageResource();
+                    SysLanguage.Text = FindResource("LanguageKey_Code_ZH").ToString();
+                    Log.Debug("zh_CN");
+                    break;
+                case MediaControlDistributionCenter.Language.English:
+                    //ChangeLanguage("en-US");
+                    //LanguageTool.Instance.Language = MediaControlDistributionCenter.Language.English;
+                    //LanguageTool.Instance.ChangeLanguageResource();
+                    SysLanguage.Text = FindResource("LanguageKey_Code_EN").ToString();
+                    Log.Debug("en_US");
+                    break;
+                case MediaControlDistributionCenter.Language.Japanese:
+                    //ChangeLanguage("ja-JP");
+                    //LanguageTool.Instance.Language = MediaControlDistributionCenter.Language.Japanese;
+                    //LanguageTool.Instance.ChangeLanguageResource();
+                    SysLanguage.Text = FindResource("LanguageKey_Code_JP").ToString();
+                    Log.Debug("ja_JP");
+                    break;
+                case MediaControlDistributionCenter.Language.Korean:
+                    //ChangeLanguage("ko-KR");
+                    //LanguageTool.Instance.Language = MediaControlDistributionCenter.Language.Korean;
+                    //LanguageTool.Instance.ChangeLanguageResource();
+                    SysLanguage.Text = FindResource("LanguageKey_Code_KO").ToString();
+                    Log.Debug("ko_KR");
+                    break;
+            }
+
             //userManage.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
             DataContext = mainViewModel;
@@ -98,6 +131,8 @@ namespace MediaControlDistributionCenter
                         Log.Debug("ko_KR");
                         break;
                 }
+
+                mainViewModel.TranslateLanguageProperties();
             }
         }
 

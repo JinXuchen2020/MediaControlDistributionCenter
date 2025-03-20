@@ -73,6 +73,11 @@ namespace MediaControlDistributionCenter.ViewModels
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
             this.communication = communication;
 
+            RegisterLanguageProperty(this.GetType(), nameof(CommandTypeName));
+            RegisterLanguageProperty(this.GetType(), nameof(CommandTypeHint));
+            RegisterLanguageProperty(this.GetType(), nameof(CommandTypeDesciption));
+            RegisterLanguageProperty(this.GetType(), nameof(CommandTypeColumnName));
+
             LoadData();
         }
         public override void LoadData(long? groupId = null)
@@ -98,14 +103,6 @@ namespace MediaControlDistributionCenter.ViewModels
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
         }
 
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
-        }
-
         [RelayCommand]
         private async Task ConnectDevice()
         {
@@ -115,7 +112,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
                     ErrorMessage = CurrentDevice.ErrorMessage;
-                    await ShowConfirmDialog();
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
                 }
                 else
                 {
@@ -125,7 +122,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                         }
                     }
                 }
@@ -170,7 +167,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         CurrentDevice.Brightness = viewModel.Value;
@@ -180,7 +177,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         CurrentDevice.Volume = viewModel.Value;
@@ -190,7 +187,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;
@@ -219,7 +216,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;
@@ -228,7 +225,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;
@@ -237,7 +234,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;
@@ -261,7 +258,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;
@@ -270,7 +267,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialog();
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
                         break;

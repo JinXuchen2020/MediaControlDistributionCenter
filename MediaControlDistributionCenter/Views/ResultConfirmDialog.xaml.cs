@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -42,6 +43,9 @@ namespace MediaControlDistributionCenter.Views
                 case var o when o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage):
                     btnConfirm.Click += BtnConfirm_Click; 
                     break;
+                case var o when o is PageViewModel viewModel && viewModel.CanDelete.HasValue:
+                    btnConfirm.Visibility = Visibility.Collapsed;
+                    break;
                 default:
                     break;
             }
@@ -67,6 +71,13 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SendUserToDeviceCommand.Execute(null);
             manageViewModel.CloseDialogCommand.Execute(null);
         }
+
+        private void btnExecuteDelete(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as PageViewModel)!;
+            viewModel.CanDelete = true;
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
+        }
     }
 
     public class ConfirmDialogDataTemplateSelector : DataTemplateSelector
@@ -81,6 +92,8 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
                 case var o when o is MediaViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
+                case var o when (o is PageViewModel viewModel && viewModel.CanDelete.HasValue):
+                    return (DataTemplate)dialogBox.FindResource("DeleteExecution");
                 case var o when o is MediaDevicesViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
                 case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):                    

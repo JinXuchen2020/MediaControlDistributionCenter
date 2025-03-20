@@ -1,7 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Views;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -16,9 +21,21 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? errorMessage;
 
+        [ObservableProperty]
+        private bool? canDelete;
+
+        private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
+
         public virtual void LoadData(long? groupId = null)
         {
 
+        }
+
+        [RelayCommand]
+        private async Task ShowConfirmDialog()
+        {
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
         }
 
         protected T GetService<T>() where T : class
@@ -45,6 +62,53 @@ namespace MediaControlDistributionCenter.ViewModels
         protected string FindResource(string key)
         {
             return (string)LanguageTool.Instance.FindResource(key);
+        }
+
+        protected void RegisterLanguageProperty(Type parentType, string propertyName)
+        {
+            if (!languagePropertyCache.ContainsKey(parentType))
+            {
+                languagePropertyCache.Add(parentType, new List<string> { propertyName });
+            }
+            else if (!languagePropertyCache[parentType].Contains(propertyName))
+            {
+                languagePropertyCache[parentType].Add(propertyName);
+            }
+        }
+
+        public void TranslateLanguageProperties()
+        {
+            foreach (var item in languagePropertyCache)
+            {
+                foreach(var proName in item.Value)
+                {
+                    var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
+                    var property = item.Key.GetProperty(proName);
+                    if (property != null)
+                    {
+                        var propertyValue = (string)property.GetValue(typeObj)!;
+                        property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                    }
+                    else
+                    {
+                        var method = item.Key.GetMethod(proName);
+                        var parameters = method?.GetParameters();
+                        if (parameters != null)
+                        {
+                            var parameterValues = new List<object?>();
+                            foreach (var parameter in parameters)
+                            {
+                                parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
+                            }
+                            method?.Invoke(typeObj, [.. parameterValues]);
+                        }
+                        else
+                        {
+                            method?.Invoke(typeObj, null);  
+                        }
+                    }
+                }                
+            }
         }
     }
 }

@@ -80,21 +80,21 @@ namespace MediaControlDistributionCenter.ViewModels
             if (OldPassword != CurrentUser.Password)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_100");
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 return;
             }
 
             if (NewPassword == null || NewPasswordConfirm == null)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_101");
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 return;
             }
 
             if (NewPassword != NewPasswordConfirm)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_102");
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (response.Code == 200)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_103");
-                await ShowConfirmDialog();
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
             }
         }
 
@@ -114,13 +114,6 @@ namespace MediaControlDistributionCenter.ViewModels
             OldPassword = null;
             NewPassword = null;
             NewPasswordConfirm = null;
-        }
-
-        [RelayCommand]
-        private async Task ShowConfirmDialog()
-        {
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
     }
 }

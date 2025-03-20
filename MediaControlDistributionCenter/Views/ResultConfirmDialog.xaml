@@ -27,18 +27,18 @@
         <DataTemplate x:Key="MediaContentSave" DataType="{x:Type viewmodels:MediaViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="节目：" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text="{Binding Name}" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text =" 内容已更新！" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Margin="5,0,5,0" FontSize ="14" Text="{Binding Name}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_ProgramEdit_ContentUpdated}" />
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="MediaContentPublish" DataType="{x:Type viewmodels:MediaDevicesViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="节目：" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text="{Binding CurrentMedia.Name}" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" Text =" 发布结果：" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Margin="10,0,10,0" FontSize ="14" Text="{Binding CurrentMedia.Name}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_ProgramEdit_PublishSuccess}" />
                 </StackPanel>
                 <Border Grid.Row="2" Margin="10" Width="500" BorderThickness="0" Background="#16171D">
                     <Grid>
@@ -54,46 +54,50 @@
                             ItemsSource="{Binding PublishDevices}"
                         >
                             <DataGrid.Columns>
-                                <DataGridTextColumn Width="1*" Binding="{Binding Name}" Header="名称" />
-                                <DataGridTextColumn Width="1*" Binding="{Binding SNumber}" Header="SN码" />
-                                <DataGridTextColumn Width="1*" Binding="{Binding Resolution}" Header="分辨率"  />
-                                <DataGridTextColumn Width="1*" Binding="{Binding UploadResult}" Header="上传状态"  />
-                                <DataGridTextColumn Width="1*" Binding="{Binding SendResult}" Header="发送状态"  />
+                                <DataGridTextColumn Width="1*" Binding="{Binding Name}">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" />
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Width="1*" Binding="{Binding SNumber}">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_104}" />
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Width="1*" Binding="{Binding Resolution}">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Width="1*" Binding="{Binding UploadResult}">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_122}" />
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Width="1*" Binding="{Binding SendResult}">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_123}" />
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
                 </Border>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="ScheduleControlExecution" DataType="{x:Type viewmodels:DeviceTimeControlViewModel}">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="创建 " />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text="{Binding Type}" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text =" 定时控制成功！" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="是否立即执行？" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" >
-                    <Button Foreground="WhiteSmoke" Content="是" Click="btnExecute" />
-                    <Button Foreground="WhiteSmoke" Margin="50,0,0,0" Content="否" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
-                </StackPanel>
-            </StackPanel>
-        </DataTemplate>
         <DataTemplate x:Key="ScheduleSendUserExecution" DataType="{x:Type viewmodels:DeviceViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="连接设备 " />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text="{Binding Name}" />
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text =" 成功！" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Device_DialogTitle}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Margin="10,0,10,0" Text="{Binding Name}" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_124}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
-                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="是否录入当前用户？" />
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_125}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" >
-                    <Button Foreground="WhiteSmoke" Content="是" Click="btnExecuteSendUser" />
-                    <Button Foreground="WhiteSmoke" Margin="50,0,0,0" Content="否" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                    <Button Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Confirm}" Click="btnExecuteSendUser" />
+                    <Button Foreground="WhiteSmoke" Margin="50,0,0,0" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -127,6 +131,17 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding ErrorMessage}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="DeleteExecution" DataType="{x:Type viewmodels:PageViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_DeleteConfirm}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" >
+                    <Button Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Confirm}" Click="btnExecuteDelete" />
+                    <Button Foreground="WhiteSmoke" Margin="50,0,0,0" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                 </StackPanel>
             </StackPanel>
         </DataTemplate>

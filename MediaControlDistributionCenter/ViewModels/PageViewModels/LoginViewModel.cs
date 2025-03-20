@@ -10,8 +10,12 @@ using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Serilog;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -38,6 +42,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string selectedIpAddress;
 
+        [ObservableProperty]
+        public BitmapImage logoThumbnail;
+
+        [ObservableProperty]
+        public string? slogan;
+
         private IAuthService authService;
         private IUserService userService;
         private IUserGroupService userGroupService;
@@ -58,6 +68,7 @@ namespace MediaControlDistributionCenter.ViewModels
             selectedIpAddress = ipAddresses.First();
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
+            RefreshLogo();
         }
 
         [RelayCommand]
@@ -161,6 +172,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     this.IsSync = true;
+                    RefreshLogo();
                 }
                 else
                 {
@@ -184,6 +196,48 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userGroupService = GetService<IUserGroupService>();
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
+        }
+
+        private void RefreshLogo()
+        {
+            BitmapImage? result = null;
+            if (ConnectionMode.Mode == "Local" && this.SyncUsers.Count > 0)
+            {
+                var user = userService.GetAll(new UserDto { Account = this.SyncUsers.Last() }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (user != null) 
+                {
+                    if (!string.IsNullOrEmpty(user.LogoSrc))
+                    {
+                        try
+                        {
+                            result = new BitmapImage();
+                            result.BeginInit();
+                            result.StreamSource = new MemoryStream(Convert.FromBase64String(user.LogoSrc));
+                            result.EndInit();
+                        }
+                        catch
+                        {
+                            result = null;
+                        }
+                    }
+
+                    Slogan = user.TagLine;
+                }
+            }
+
+            if (result == null)
+            {
+                var uri = new Uri($"pack://application:,,,/MediaControlDistributionCenter;component/Assets/assets-0004.png", UriKind.Absolute);
+                var resourceStream = Application.GetResourceStream(uri);
+                result = new BitmapImage();
+                result.BeginInit();
+                result.StreamSource = resourceStream.Stream;
+                result.EndInit();
+            }
+
+            LogoThumbnail = result;
+            Slogan ??= FindResource("LanguageKey_Code_DefaultSlogan");
+            RegisterLanguageProperty(this.GetType(), nameof(Slogan));            
         }
     }
 }

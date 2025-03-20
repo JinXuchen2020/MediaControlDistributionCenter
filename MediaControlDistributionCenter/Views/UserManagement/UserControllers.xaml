@@ -13,7 +13,7 @@
     <Grid Background="#16171D"  Margin="20,8,20,0">
         <StackPanel Background="#16171D">
             <!--界面导航-->
-            <StackPanel Orientation="Horizontal" Margin="0,16,0,16">
+            <StackPanel Orientation="Horizontal" Margin="5,16,0,16">
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_Management}" />
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
                 <TextBlock Foreground="White" FontSize="13" Opacity="0.7" Text="{DynamicResource LanguageKey_Code_Management_Controls}" />
@@ -25,7 +25,7 @@
             <Grid Margin="0,10,0,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  HorizontalAlignment="Left">
                     <StackPanel Margin="0,0,0,0">
-                        <TextBlock x:Name="MediaManage" Text="{DynamicResource LanguageKey_Code_Management_Media}" Tag="1" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
+                        <TextBlock x:Name="MediaManage" Text="{DynamicResource LanguageKey_Code_Management_Media}" Tag="1" Margin="5,0,0,0" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
                         <Grid Height="2" Margin="0,10,0,0" Visibility="{Binding CurrentTabName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=MediaManage}">
                             <Border Width="auto" Background="Blue"/>
                         </Grid>

@@ -76,11 +76,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
-        public List<ComponentEffect> Effects { get; set; }
-
-        public BaseComponentViewModel()
-        {
-            Effects = new List<ComponentEffect>
+        public List<ComponentEffect> Effects => new List<ComponentEffect>
             {
                 new ComponentEffect()
                 {
@@ -305,6 +301,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     Action = FadeIn
                 },
             };
+
+        public BaseComponentViewModel()
+        {
         }
 
         public BaseComponentViewModel(BaseComponent component, double ratio)

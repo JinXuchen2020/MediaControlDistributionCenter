@@ -73,8 +73,19 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
-            manageViewModel.DeleteMediaCommand.Execute(viewModel);
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+                    manageViewModel.DeleteMediaCommand.ExecuteAsync(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
@@ -152,7 +163,19 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 return;
             }
 
-            manageViewModel.DeleteMediasCommand.Execute(null);
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                   await manageViewModel.DeleteMediasCommand.ExecuteAsync(null);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
+            
         }
 
         private void btnPublishSave_Click(object sender, RoutedEventArgs e)
