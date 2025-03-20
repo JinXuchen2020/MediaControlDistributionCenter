@@ -40,6 +40,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public int Order { get; set; }
 
+        public string ThumbnailFilePath { get; set; }
+
         public bool IsHasValidity { get; set; }
 
         public DateTime? ValidStartDate { get; set; }

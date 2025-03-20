@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -80,6 +82,57 @@ namespace MediaControlDistributionCenter.ViewModels
                 page.DisposeCommand.Execute(null);
             }
         }
+
+
+
+        [RelayCommand]
+        private void Capture(Canvas canvas)
+        {
+            foreach (var page in Pages) 
+            {
+                page.Thumbnail = canvas.Dispatcher.Invoke<BitmapImage>(() =>
+                {
+                    // 创建一个RenderTargetBitmap
+                    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+                        (int)canvas.ActualWidth,
+                        (int)canvas.ActualHeight,
+                        96, 96,
+                        PixelFormats.Pbgra32);
+                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
+                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+                    // 将MediaElement绘制到RenderTargetBitmap
+                    renderTargetBitmap.Render(canvas);
+                    PngBitmapEncoder png = new PngBitmapEncoder();
+                    png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                    using var memoryStream = new MemoryStream();
+                    png.Save(memoryStream);
+                    var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
+                    var filePath = Path.Combine(Constants.OutPath, Name, page.Name);
+                    var fileName = "thumbnail.png";
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
+
+                    return GetBitmap(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath))!;
+                });
+            }            
+        }
+
+        private BitmapImage? GetBitmap(string? source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bitmap.UriSource = new Uri(source);
+            bitmap.EndInit();
+
+            return bitmap;
+        }
     }
 
     public partial class MediaPageViewModel : ObservableValidator
@@ -113,7 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSelected;
 
         [ObservableProperty]
-        private BitmapSource thumbnail;
+        private BitmapImage? thumbnail;
 
         [ObservableProperty]
         private ObservableCollection<SchedulerViewModel> schedulers;
@@ -130,7 +183,7 @@ namespace MediaControlDistributionCenter.ViewModels
             validStartDate = mediaPage.ValidStartDate;
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
-            thumbnail = new BitmapImage(new Uri($"pack://application:,,,/MediaControlDistributionCenter;component/Assets/windows-fill.png"));
+            thumbnail = GetBitmap(string.IsNullOrEmpty(mediaPage.ThumbnailFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, mediaPage.ThumbnailFilePath));
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
             components = new ObservableCollection<BaseComponentViewModel>(mediaPage.Components.Select(c =>
             {
@@ -160,6 +213,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Id = Id,
                 Name = Name,
                 Order = Order,
+                ThumbnailFilePath = Thumbnail == null ? string.Empty : Thumbnail.UriSource.AbsolutePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
                 IsHasValidity = IsHasValidity,
                 ValidStartDate = ValidStartDate,
                 ValidEndDate = ValidEndDate,
@@ -184,32 +238,20 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void Capture(Canvas canvas)
+        private BitmapImage? GetBitmap(string? source)
         {
-            Thumbnail = canvas.Dispatcher.Invoke<BitmapSource>(() =>
+            if (string.IsNullOrEmpty(source))
             {
-                // 创建一个RenderTargetBitmap
-                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                    (int)canvas.ActualWidth,
-                    (int)canvas.ActualHeight,
-                    96, 96,
-                    PixelFormats.Pbgra32);
-                //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
-                //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+                return null;
+            }
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bitmap.UriSource = new Uri(source);
+            bitmap.EndInit();
 
-                // 将MediaElement绘制到RenderTargetBitmap
-                renderTargetBitmap.Render(canvas);
-                return renderTargetBitmap;
-
-                //// 保存位图为PNG文件
-                //PngBitmapEncoder png = new PngBitmapEncoder();
-                //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-                //using (Stream stream = File.Create("screenshot.png"))
-                //{
-                //    png.Save(stream);
-                //}
-            });
+            return bitmap;
         }
     }
 

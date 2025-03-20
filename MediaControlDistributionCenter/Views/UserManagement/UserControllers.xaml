@@ -16,7 +16,7 @@
             <StackPanel Orientation="Horizontal" Margin="5,16,0,16">
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_Management}" />
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
-                <TextBlock Foreground="White" FontSize="13" Opacity="0.7" Text="{DynamicResource LanguageKey_Code_Management_Controls}" />
+                <TextBlock Foreground="White" FontSize="13" Opacity="0.7" Text="{DynamicResource LanguageKey_Code_Users_Control}" />
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
                 <TextBlock Foreground="White" FontSize="13" Opacity="1" Text="{Binding CurrentPageName}" />
             </StackPanel>

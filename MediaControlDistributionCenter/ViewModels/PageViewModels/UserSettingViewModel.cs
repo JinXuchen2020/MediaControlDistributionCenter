@@ -40,12 +40,14 @@ namespace MediaControlDistributionCenter.ViewModels
             if (dashboardViewModel.CurrentUser.Role == "user")
             {
                 CurrentUser = dashboardViewModel.CurrentUser;
+                CurrentUser.Groups = userManageViewModel.Groups;
                 LoginUser = dashboardViewModel.CurrentUser;
             }
             else
             {
                 LoginUser = dashboardViewModel.CurrentUser;
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+                CurrentUser.Groups = userManageViewModel.Groups;
             }
         }
 

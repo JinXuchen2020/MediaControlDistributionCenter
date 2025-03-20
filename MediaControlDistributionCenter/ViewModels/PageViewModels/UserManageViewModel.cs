@@ -30,6 +30,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.CurrentUser = loginViewModel.CurrentUser;
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
+            this.LoadData();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 

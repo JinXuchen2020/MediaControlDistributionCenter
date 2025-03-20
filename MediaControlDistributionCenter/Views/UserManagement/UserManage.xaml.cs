@@ -38,7 +38,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             this.serviceProvider = serviceProvider;
             manageViewModel = userManageViewModel;
-            manageViewModel.LoadData();
             DataContext = manageViewModel;
             InitializeComponent();
         }

@@ -683,10 +683,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageCapture_Click(object sender, RoutedEventArgs e)
         {
-            if(manageViewModel.SelectedPage != null)
-            {
-                manageViewModel.SelectedPage.CaptureCommand.Execute(MainCanvas);
-            }
+            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
         }
 
         private void LeftTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -696,11 +693,7 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    var manageViewModel = (DataContext as MediaEditViewModel)!;
-                    if (manageViewModel.SelectedPage != null)
-                    {
-                        manageViewModel.SelectedPage.CaptureCommand.Execute(MainCanvas);
-                    }
+                    manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
                 }
             }
         }

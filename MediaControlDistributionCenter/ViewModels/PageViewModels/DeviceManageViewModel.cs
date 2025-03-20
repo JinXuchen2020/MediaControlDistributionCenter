@@ -110,6 +110,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task CreateGroup(DeviceGroupViewModel viewModel)
         {
+            viewModel.SubmitCommand.Execute(null);
+            if (viewModel.HasErrors)
+            {
+                return;
+            }
             var response = await monitorGroupService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
@@ -161,9 +166,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveDevice(DeviceViewModel viewModel)
         {
-            //viewModel.SubmitCommand.Execute(null);
-            //if (!viewModel.HasErrors)
-            //{
+            viewModel.SubmitCommand.Execute(null);
+            if (viewModel.HasErrors)
+            {
+                return;
+            }
             var response = await monitorService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
