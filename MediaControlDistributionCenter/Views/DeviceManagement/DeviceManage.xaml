@@ -288,7 +288,7 @@
                     </Grid.RowDefinitions>
                     <Grid Margin="20,0,0,0">
                         <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
-                            <Border Background="#40A9FF" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
+                            <Border Background="#40A9FF" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnCreate" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnCreate_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Create}" />
                                 </StackPanel>
@@ -302,8 +302,14 @@
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="200" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Monitor_Tooltip_111}" Padding="12,0,0,0"  Foreground="White"/>
-                                <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                <TextBox Height="32" Width="200" BorderBrush="#404870" BorderThickness="1" Text="{Binding SearchString}" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Monitor_Tooltip_111}" Padding="12,0,0,0"  Foreground="White"/>
+                                <Button Background="#2A3255"                                
+                                    Width="32" Height="32"
+                                    Padding="0"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    ToolTip="MaterialDesignIconButton" Command="{Binding SearchCommand}">
+                                    <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -332,6 +338,7 @@
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                     </Style>
+                                    <customControls:BindingProxy x:Key="proxy" Data="{Binding LoginUser}" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Width="60"
@@ -380,8 +387,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Upgrade}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Content="{Binding EnableBtnContent}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}" Content="{DynamicResource LanguageKey_Code_Upgrade}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}" Content="{Binding EnableBtnContent}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                     <Button Content="{DynamicResource LanguageKey_Code_Connect}" Foreground="White" Name="btnConnect" Click="btnConnect_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>

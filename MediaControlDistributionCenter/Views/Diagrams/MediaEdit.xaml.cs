@@ -232,6 +232,8 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
+            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+
             var configModel = manageViewModel.MediaConfig.ToModel();
 
             var configContent = JsonConvert.SerializeObject(configModel);

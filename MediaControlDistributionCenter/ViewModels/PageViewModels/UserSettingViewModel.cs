@@ -79,34 +79,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangePassword()
         {
-            if (OldPassword != CurrentUser.Password)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_100");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
-
-            if (NewPassword == null || NewPasswordConfirm == null)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_101");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
-
-            if (NewPassword != NewPasswordConfirm)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_102");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
-
             CurrentUser.Password = NewPassword;
 
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_103");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                App.Current.Shutdown();
             }
         }
 

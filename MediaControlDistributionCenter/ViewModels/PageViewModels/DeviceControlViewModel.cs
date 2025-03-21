@@ -251,10 +251,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 var timeZone = TimeZoneInfo.Local;
                 switch (CommandTypeColumnName)
                 {
-                    case var o when o == FindResource("LanguageKey_Code_Control_Tooltip_107"):
+                    case "manual":
                         timeZone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue);
                         timeZoneDateTime = TimeZoneInfo.ConvertTime(timeZoneDateTime, timeZone);
-                        CurrentDevice.TimeSyncCommand.Execute(timeZoneDateTime);
+                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(timeZoneDateTime);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -262,8 +262,8 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
-                    case var o when o == FindResource("LanguageKey_Code_Control_Tooltip_110"):
-                        CurrentDevice.TimeGPSSyncCommand.Execute(timeZoneDateTime);
+                    case "gps":
+                        await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(timeZoneDateTime);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -324,6 +324,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 await GetDeviceTimeControls();
                 CloseDialog();
             }
+        }
+
+        protected override async Task SearchContent()
+        {
+            if (string.IsNullOrEmpty(SearchString)) SearchString = null;
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
+            {
+                var viewModel = new DeviceViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
+
+            await Task.CompletedTask;
         }
     }
 }

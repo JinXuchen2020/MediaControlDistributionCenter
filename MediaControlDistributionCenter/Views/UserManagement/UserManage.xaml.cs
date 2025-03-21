@@ -80,7 +80,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as UserViewModel)!;
-            viewModel.Groups = manageViewModel.Groups;
+            viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 

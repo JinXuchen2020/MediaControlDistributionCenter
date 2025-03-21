@@ -75,7 +75,7 @@
     <sys:String x:Key="LanguageKey_Code_Sun">日</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program">常规节目</sys:String>
     <sys:String x:Key="LanguageKey_Code_AD">广告</sys:String>
-    <sys:String x:Key="LanguageKey_Code_DeleteConfirm">是否确认删除？</sys:String>
+    <sys:String x:Key="LanguageKey_Code_DeleteConfirm">是否确认？</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
@@ -319,7 +319,11 @@
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 
-    <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>  
+    <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_100">媒体名称</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_101">媒体类型</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_102">媒体大小</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_103">媒体地址</sys:String>
     
     <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
     <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>

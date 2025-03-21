@@ -97,13 +97,13 @@
                                 <StackPanel Grid.Row="2" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
                                         <TextBlock Width="40" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_101}" />
-                                        <ComboBox ItemsSource="{Binding MediaGroups}" SelectedValue="{Binding SelectedGroupId}" DisplayMemberPath="Name" SelectedValuePath="Id" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" />
+                                        <ComboBox ItemsSource="{Binding MediaGroups}" Margin="10,0,0,0" SelectedValue="{Binding SelectedGroupId}" DisplayMemberPath="Name" SelectedValuePath="Id" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnConfirm" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Users_Confirm}" Click="btnConfirm_Click" />
+                                    <Button x:Name="btnConfirm" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Confirm}" Click="btnConfirm_Click" />
                                     <Button DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                                 </StackPanel>
                             </Grid>
@@ -372,8 +372,10 @@
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White"></TextBox>
-                                <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" Text="{Binding SearchString}" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White"></TextBox>
+                                <Button Background="#2A3255" Width="32" Height="32" Padding="0" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="MaterialDesignIconButton" Command="{Binding SearchCommand}">
+                                    <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

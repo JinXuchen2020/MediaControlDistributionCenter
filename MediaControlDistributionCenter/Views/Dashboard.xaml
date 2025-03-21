@@ -307,6 +307,11 @@
                     <Button x:Name="btnToDeviceManage" Click="btnToDeviceManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Devices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="250" ItemHeight="140" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Width="245" Height="118" Margin="10" Cursor="Hand" MouseDown="selectDevice_MouseDown" Orientation="Horizontal" HorizontalAlignment="Left" Background="#282931">

@@ -309,6 +309,8 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
+
+            manageViewModel.CommandRTValue = null;
         }
 
         private void btnTimeSyncConfirm_Click(object sender, RoutedEventArgs e)
@@ -316,6 +318,13 @@ namespace MediaControlDistributionCenter.Views
             if (manageViewModel.CurrentDevice == null)
             {
                 manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
+            if (manageViewModel.CommandRTValue == null)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_117");
                 manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }

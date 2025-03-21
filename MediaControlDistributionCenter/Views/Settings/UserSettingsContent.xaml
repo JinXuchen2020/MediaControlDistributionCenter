@@ -21,16 +21,16 @@
                     <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Foreground="White"  Background="#2A3255"/>
                 </StackPanel>-->
                     <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Width="71" Text="{DynamicResource LanguageKey_Code_Setting_OldPassword}" ></TextBlock>
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
+                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_OldPassword}" ></TextBlock>
+                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding OldPassword}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
                     </StackPanel>
                     <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Setting_NewPassword}" />
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
+                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_NewPassword}" />
+                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding NewPassword}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
                     </StackPanel>
                     <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Setting_NewPasswordConfirm}" />
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
+                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_NewPasswordConfirm}" />
+                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding NewPasswordConfirm}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
                     </StackPanel>
                     <StackPanel Margin="0,88,0,0"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Button Background="#30479C" Foreground="White" Click="btnChangePassword_Click" Content="{DynamicResource LanguageKey_Code_Confirm}" />
@@ -57,7 +57,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
-                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
+                                <TextBox IsEnabled="False" Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10" >
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />

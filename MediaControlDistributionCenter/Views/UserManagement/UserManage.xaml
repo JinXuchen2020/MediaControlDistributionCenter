@@ -62,7 +62,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
-                                            <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
+                                            <TextBox Width="250"  IsEnabled="{Binding Id, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=0}" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10" >
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
@@ -175,7 +175,7 @@
         </materialDesign:DialogHost.DialogContentTemplate>
         <StackPanel>
             <!--界面导航-->
-            <StackPanel Orientation="Horizontal" Margin="0,16,0,16">
+            <StackPanel Orientation="Horizontal" Margin="10,16,0,16">
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_Management}" />
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14">/</TextBlock>
                 <TextBlock Foreground="White" FontSize="13" Text="{DynamicResource LanguageKey_Code_Management_Users}" />
@@ -221,19 +221,19 @@
                 </Grid>
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid VerticalAlignment="Top" Margin="0,20,0,0" >
-                        <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
-                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
+                        <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
+                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnRegister" Cursor="Hand" VerticalAlignment="Center" Margin="15,4,15,4" MouseDown="btnRegister_MouseDown" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Register}" />
                                 </StackPanel>
                             </Border>
-                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnChangeGroup" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnChangeGroup_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ChangGroup}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}" Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>
@@ -242,15 +242,17 @@
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" VerticalAlignment="Top" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
-                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White"></TextBox>
-                                <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" Text="{Binding SearchString}" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White" />
+                                <Button Background="#2A3255" Width="32" Height="32" Padding="0" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="MaterialDesignIconButton" Command="{Binding SearchCommand}">
+                                    <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                </Button>
                             </StackPanel>
-                            <Button Margin="16,0,0,0" Background="#2A3255" Padding="0" BorderBrush="#404870">
+                            <!--<Button Margin="16,0,0,0" Background="#2A3255" Padding="0" BorderBrush="#404870">
                                 <Image Width="14" Height="14" Source="/Assets/12.png" Margin="12,6" HorizontalAlignment="Left"/>
                             </Button>
                             <Button Margin="16,0,0,0" Background="#2A3255" Padding="0" BorderBrush="#404870">
                                 <Image Width="14" Height="14" Source="/Assets/13.png" Margin="12,6" HorizontalAlignment="Left"/>
-                            </Button>
+                            </Button>-->
                         </StackPanel>
                     </Grid>
                     
@@ -278,6 +280,7 @@
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                     </Style>
                                     <CustomControls:BindingProxy x:Key="proxy" Data="{Binding ConnectionMode}" />
+                                    <CustomControls:BindingProxy x:Key="user" Data="{Binding CurrentUser}" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Width="60"
@@ -342,9 +345,9 @@
                                         </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                                     <Button Content="{DynamicResource LanguageKey_Code_Edit}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Visibility="{Binding Data.Role, Source={StaticResource user}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -62,7 +63,18 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var btnObject = sender as Button;
             var viewModel = (btnObject!.DataContext as MediaViewModel)!;
 
-            manageViewModel.ChangeMediaStatusCommand.Execute(viewModel);
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    manageViewModel.ChangeMediaStatusCommand.Execute(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -121,6 +133,12 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
+            if (manageViewModel.SelectedGroupId == null || manageViewModel.SelectedGroupId == -1)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_115");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
             manageViewModel.ChangeGroupCommand.Execute(null);
         }
 
@@ -181,8 +199,16 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void btnPublishSave_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as MediaDevicesViewModel)!;
-            viewModel.PublishCommand.Execute(null);
-            DialogHost.CloseDialogCommand.Execute(null, null);
+            this.Dispatcher.Invoke(async () =>
+            {
+                await viewModel.PublishCommand.ExecuteAsync(null);
+
+                if (viewModel.PublishDevices.Count > 0)
+                {
+                    manageViewModel.CloseDialogCommand.Execute(null);
+                    viewModel.ShowConfirmDialogCommand.Execute(null);
+                }
+            });
         }
 
         private void btnPublish_MouseDown(object sender, MouseButtonEventArgs e)
@@ -209,7 +235,6 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, selectedMedia.Name + ".zip");
 
             fileService.CreatZip(sourceDic, desZipFilePath);
-
 
             manageViewModel.SelectedMedia = selectedMedia;
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();

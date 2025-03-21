@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
@@ -26,7 +27,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<MediaViewModel> medias;
 
         [ObservableProperty]
-        private int selectedGroupId;
+        private long? selectedGroupId;
 
         [ObservableProperty]
         private MediaViewModel selectedMedia;
@@ -226,6 +227,20 @@ namespace MediaControlDistributionCenter.ViewModels
                     CloseDialog();
                 }                
             }
+        }
+
+        protected override async Task SearchContent()
+        {
+            if (string.IsNullOrEmpty(SearchString)) SearchString = null;
+            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            this.Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            {
+                var viewModel = new MediaViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
+
+            await Task.CompletedTask;
         }
     }
 }

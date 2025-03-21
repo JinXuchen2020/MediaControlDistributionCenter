@@ -22,6 +22,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string? errorMessage;
 
         [ObservableProperty]
+        private string? searchString;
+
+        [ObservableProperty]
         private bool? canDelete;
 
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
@@ -36,6 +39,12 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
+        }
+
+        [RelayCommand]
+        private async Task Search()
+        {
+            await SearchContent();
         }
 
         protected T GetService<T>() where T : class
@@ -62,6 +71,11 @@ namespace MediaControlDistributionCenter.ViewModels
         protected string FindResource(string key)
         {
             return (string)LanguageTool.Instance.FindResource(key);
+        }
+
+        protected virtual async Task SearchContent()
+        {
+            await Task.CompletedTask;
         }
 
         protected void RegisterLanguageProperty(Type parentType, string propertyName)

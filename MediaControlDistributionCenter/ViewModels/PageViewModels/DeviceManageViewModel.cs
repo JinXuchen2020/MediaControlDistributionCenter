@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel CurrentUser { get; set; }
 
+        public UserViewModel LoginUser { get; set; }
+
         public DeviceViewModel? SelectedDevice { get; set; }
 
         public bool ShowNavigation { get; set; }
@@ -45,10 +47,12 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 ShowNavigation = true;
                 CurrentUser = dashboardViewModel.CurrentUser;
+                LoginUser = dashboardViewModel.CurrentUser;
             }
             else
             {
                 CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+                LoginUser = dashboardViewModel.CurrentUser;
             }
 
             this.monitorService = GetService<IMonitorService>();
@@ -243,6 +247,23 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 SelectedDevice.DisconnectCommand.Execute(null);
             }
+        }
+
+        protected override async Task SearchContent()
+        {
+            if (string.IsNullOrEmpty(SearchString)) SearchString = null;
+            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var snDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+
+            nameDevices.AddRange(snDevices);
+            this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>
+            {
+                var viewModel = new DeviceViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
+
+            await Task.CompletedTask;
         }
     }
 }

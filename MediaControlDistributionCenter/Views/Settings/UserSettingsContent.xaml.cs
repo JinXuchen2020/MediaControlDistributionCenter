@@ -54,7 +54,39 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnChangePassword_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            manageViewModel.ChangePasswordCommand.Execute(null);
+            if (manageViewModel.OldPassword != manageViewModel.CurrentUser.Password)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Setting_Tooltip_100");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
+            if (manageViewModel.NewPassword == null || manageViewModel.NewPasswordConfirm == null)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Setting_Tooltip_101");
+                 manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
+            if (manageViewModel.NewPassword != manageViewModel.NewPasswordConfirm)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Setting_Tooltip_102");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    await manageViewModel.ChangePasswordCommand.ExecuteAsync(null);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
 
         private void btnCancelPassword_Click(object sender, System.Windows.RoutedEventArgs e)

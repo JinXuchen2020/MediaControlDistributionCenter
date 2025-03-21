@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -52,7 +53,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var users = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
-            this.Users = new ObservableCollection<UserViewModel>(users.Select(c =>
+            this.Users = new ObservableCollection<UserViewModel>(users.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new UserViewModel();
                 viewModel.Binding(c);
@@ -156,6 +157,20 @@ namespace MediaControlDistributionCenter.ViewModels
 
             LoadData();
             CloseDialog();
+        }
+
+        protected override async Task SearchContent()
+        {
+            if (string.IsNullOrEmpty(SearchString)) SearchString = null;
+            var results = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, Account = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            this.Users = new ObservableCollection<UserViewModel>(results.OrderByDescending(c => c.Id).Select(c =>
+            {
+                var viewModel = new UserViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
+
+            await Task.CompletedTask;
         }
     }
 }

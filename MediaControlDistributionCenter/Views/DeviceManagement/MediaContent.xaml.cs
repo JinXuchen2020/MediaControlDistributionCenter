@@ -1,6 +1,9 @@
 ﻿
 
+using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.ViewModels.PageViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
+using System.Windows.Controls;
 
 namespace MediaControlDistributionCenter.Views
 {
@@ -9,9 +12,29 @@ namespace MediaControlDistributionCenter.Views
     /// </summary>
     public partial class MediaContent : FrameControl
     {
-        public MediaContent()
+        private readonly MediaContentViewModel manageViewModel;
+        public MediaContent(MediaContentViewModel mediaContentViewModel)
         {
-            InitializeComponent(); 
-        } 
+            InitializeComponent();
+            manageViewModel = mediaContentViewModel;
+            manageViewModel.LoadData();
+            DataContext = mediaContentViewModel;
+        }
+
+        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if(sender is TabControl tabControl)
+            {
+                var tabItem = tabControl.SelectedItem as TabItem;
+                if (tabItem.Tag.ToString() == "All")
+                {
+                    manageViewModel.LoadData();
+                }
+                else
+                {
+                    manageViewModel.GetData(tabItem.Tag.ToString());
+                }
+            }
+        }
     }
 }

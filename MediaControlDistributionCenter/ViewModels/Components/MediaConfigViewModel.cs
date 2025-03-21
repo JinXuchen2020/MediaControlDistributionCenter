@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             foreach (var page in Pages) 
             {
-                page.Thumbnail = canvas.Dispatcher.Invoke<BitmapImage>(() =>
+                page.ThumbnailFilePath = canvas.Dispatcher.Invoke<string>(() =>
                 {
                     // 创建一个RenderTargetBitmap
                     RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
@@ -113,8 +113,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
 
-                    return GetBitmap(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath))!;
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
                 });
+
+                page.Thumbnail = GetBitmap(page.ThumbnailFilePath);
             }            
         }
 
@@ -146,6 +148,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private int order;
+
+        [ObservableProperty]
+        private string thumbnailFilePath;
 
         [ObservableProperty]
         private bool isHasValidity;
@@ -183,6 +188,7 @@ namespace MediaControlDistributionCenter.ViewModels
             validStartDate = mediaPage.ValidStartDate;
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
+            thumbnailFilePath = mediaPage.ThumbnailFilePath;
             thumbnail = GetBitmap(string.IsNullOrEmpty(mediaPage.ThumbnailFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, mediaPage.ThumbnailFilePath));
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
             components = new ObservableCollection<BaseComponentViewModel>(mediaPage.Components.Select(c =>
@@ -213,7 +219,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Id = Id,
                 Name = Name,
                 Order = Order,
-                ThumbnailFilePath = Thumbnail == null ? string.Empty : Thumbnail.UriSource.AbsolutePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                ThumbnailFilePath = ThumbnailFilePath == null ? string.Empty : ThumbnailFilePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
                 IsHasValidity = IsHasValidity,
                 ValidStartDate = ValidStartDate,
                 ValidEndDate = ValidEndDate,
