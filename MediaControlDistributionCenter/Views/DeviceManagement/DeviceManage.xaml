@@ -131,14 +131,14 @@
                                 <StackPanel Grid.Row="6" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
                                         <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Width}" />
-                                        <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Width}" />
+                                        <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Width}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:TextFieldAssist.SuffixText="px" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="6" Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
                                         <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Height}" />
-                                        <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Height}" />
+                                        <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Height}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:TextFieldAssist.SuffixText="px" />
                                     </StackPanel>
                                 </StackPanel>
 
