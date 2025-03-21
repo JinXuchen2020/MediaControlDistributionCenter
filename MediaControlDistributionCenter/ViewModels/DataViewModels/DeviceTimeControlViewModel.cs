@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using System.ComponentModel.DataAnnotations;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -18,25 +19,34 @@ namespace MediaControlDistributionCenter.ViewModels
         public string type;
 
         [ObservableProperty]
+        [Required]
         public double? value;
 
         [ObservableProperty]
+        [Required]
         public string executeTime;
 
         [ObservableProperty]
+
         public string executeMethod;
 
         [ObservableProperty]
+        [Required]
         public DateTime startDate;
 
         [ObservableProperty]
+        [Required]
         public DateTime endDate;
 
         [ObservableProperty]
         public string validPeriod;
 
         [ObservableProperty]
+        [Required]
         public string repeatMode;
+
+        [ObservableProperty]
+        public string repeatString = string.Empty;
 
         [ObservableProperty]
         public string userAccount;
@@ -56,6 +66,24 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public bool isShow;
 
+        [ObservableProperty]
+        public int quarterMonthStart = 1;
+
+        [ObservableProperty]
+        public int quarterMonthDayStart = 1;
+
+        [ObservableProperty]
+        public int quarterMonthEnd = 1;
+
+        [ObservableProperty]
+        public int quarterMonthDayEnd = 1;
+
+        public List<int> MonthDays => new List<int>
+        {
+            1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+        };
+
+
         public override DeviceControlDto ToModel()
         {
             return new DeviceControlDto
@@ -64,7 +92,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 DeviceId = DeviceId,
                 ControlType = Type,
                 Value = Value,
-                Execution = ExecuteTime,
+                Execution = GetExecuteTime(),
                 ExecutionType = ExecuteMethod,
                 ValidDateStart = StartDate.ToShortDateString(),
                 ValidDateEnd = EndDate.ToShortDateString(),
@@ -80,7 +108,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Id = model.Id;
             Type = model.ControlType;
             Value = model.Value;
-            ExecuteTime = model.Execution;
+            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|")[1];
             ExecuteMethod = model.ExecutionType;
             Status = model.IsEnabled;
             StartDate = DateTime.Parse(model.ValidDateStart);
@@ -108,6 +136,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 result = FindResource("LanguageKey_Code_Disable");
             }
             return result;
+        }
+
+        public string GetExecuteTime()
+        {
+            switch (RepeatMode)
+            {
+                case "week":
+                case "month":
+                    return $"{RepeatString}|{ExecuteTime}";
+                case "quarter":
+                    return $"M{QuarterMonthStart!}D{QuarterMonthDayStart}~M{QuarterMonthEnd}D{QuarterMonthDayEnd}|{ExecuteTime}";
+                default:
+                    return ExecuteTime;
+            }
         }
 
         public void SetGridColumnName()

@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
+        <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
     </UserControl.Resources>
     <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}">
         <materialDesign:DialogHost.DialogContentTemplate>
@@ -20,26 +21,19 @@
                 <DataTemplate.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:DeviceTimeControlViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">
-                            <Grid Width="889" Height="400" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                            <Grid Width="800" Height="400" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="2" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                </Grid.ColumnDefinitions>
 
                                 <StackPanel Margin="10" Orientation="Horizontal">
                                     <TextBlock VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Create}" />
                                     <TextBlock VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_DialogTitle}" />
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="10">
+                                <StackPanel HorizontalAlignment="Right" Margin="10">
                                     <Button Width="60" Height="38" HorizontalAlignment="Right"
                                         Background="#090A0E" Foreground="WhiteSmoke"
                                         BorderThickness="0"
@@ -53,15 +47,15 @@
 
                                 <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
-                                <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="10, 20, 10, 10" Visibility="{Binding IsShow, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
+                                <StackPanel Grid.Row="2" HorizontalAlignment="Center">
+                                    <StackPanel Margin="10" Orientation="Horizontal"  HorizontalAlignment="Left" Visibility="{Binding IsShow, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
                                         <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{Binding CommandTypeColumnName}" />
                                         <StackPanel Orientation="Horizontal">
-                                            <Slider VerticalAlignment="Center" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="400" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
+                                            <Slider VerticalAlignment="Center" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="500" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
                                             <TextBox 
                                                 Width="35" 
                                                 Height="32" 
-                                                Margin="10,0,0,0"
+                                                Margin="5,0,0,0"
                                                 Padding="5"
                                                 BorderBrush="#404870"
                                                 BorderThickness="1" 
@@ -69,39 +63,90 @@
                                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Background="#2A3255" Foreground="White" />
                                         </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="3" Grid.Column="1" Margin="10">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
-                                        <LocalCore:TimeTextBox Text="{Binding ExecuteTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="250" Height="32" />
+                                    <StackPanel Margin="10">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_114}" />
+                                                <ComboBox materialDesign:HintAssist.Hint="{Binding RepeatMode}" SelectionChanged="RepeatMode_Changed" Padding="5" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="500" Height="32" SelectedValue="{Binding RepeatMode}" SelectedValuePath="Tag" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Everyday}" Tag="day" />
+                                                    <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Everyweek}" Tag="week" />
+                                                    <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Everymonth}" Tag="month" />
+                                                    <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Everyquarter}" Tag="quarter" />
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="100,10,0,0" Orientation="Horizontal"  Visibility="{Binding RepeatMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=week}">
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Sunday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Sunday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Monday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Monday}"  materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Tuesday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Tuesday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Wednesday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Wednesday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Thursday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Thursday}"  materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Friday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Friday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Saturday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Saturday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />                                                
+                                            </StackPanel>
+                                            <StackPanel Margin="100,10,0,0" Orientation="Horizontal" Visibility="{Binding RepeatMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=month}">
+                                                <ItemsControl ItemsSource="{Binding MonthDays}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal"  Width="500"  />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="32" Height="32" Background="#1D1E23" Padding="0" Margin="0,10,10,0" Click="SelectMonthDay_Click" Content="{Binding}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" Tag="{Binding}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel Margin="100,10,0,0" Orientation="Horizontal" Visibility="{Binding RepeatMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=quarter}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock FontSize="14" VerticalAlignment="Center" Text="月份"/>
+                                                        <ComboBox Margin="10,0" Foreground="White" Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="40" Height="26"  SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center" SelectedValue="{Binding QuarterMonthStart}" >
+                                                            <ComboBoxItem Content="1" />
+                                                            <ComboBoxItem Content="2" />
+                                                            <ComboBoxItem Content="3" />
+                                                        </ComboBox>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock  FontSize="14" VerticalAlignment="Center" Text="天数"/>
+                                                        <ComboBox Margin="10,0" Padding="5" SelectedValue="{Binding QuarterMonthDayStart}" ItemsSource="{Binding MonthDays}" Foreground="White" BorderBrush="#404870" BorderThickness="1" Width="50" Height="26" Background="#2A3255" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <TextBlock Text="~" Margin="20,0" VerticalAlignment="Center" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock FontSize="14" VerticalAlignment="Center" Text="月份"/>
+                                                        <ComboBox Margin="10,0" Foreground="White" Padding="5" BorderBrush="#404870" SelectedValue="{Binding QuarterMonthEnd}" BorderThickness="1" Background="#2A3255" Width="40" Height="26"  SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                            <ComboBoxItem Content="1" />
+                                                            <ComboBoxItem Content="2" />
+                                                            <ComboBoxItem Content="3" />
+                                                        </ComboBox>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock  FontSize="14" VerticalAlignment="Center" Text="天数"/>
+                                                        <ComboBox  Margin="10,0" Padding="5" ItemsSource="{Binding MonthDays}" SelectedValue="{Binding QuarterMonthDayEnd}" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="50" Height="26" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="3" Margin="10">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_114}" />
-                                        <ComboBox materialDesign:HintAssist.Hint="{Binding RepeatMode}" Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" SelectedValue="{Binding RepeatMode}" SelectedValuePath="Content" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <ComboBoxItem Content="每天一次"/>
-                                            <ComboBoxItem Content="每周一次"/>
-                                            <ComboBoxItem Content="每月一次"/>
-                                            <ComboBoxItem Content="每季一次"/>
-                                        </ComboBox>
+                                    <StackPanel Margin="10">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
+                                            <LocalCore:TimeTextBox Text="{Binding ExecuteTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="32" />
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="5" Margin="10">
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="100" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_115}" />
-                                        <TextBlock Width="40" FontSize="16" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Start}" />
-                                        <DatePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="210" Height="32" SelectedDate="{Binding StartDate}"></DatePicker>
-                                    </StackPanel>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="5" Grid.Column="1" Margin="10">
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="100" FontSize="16" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_End}" />
-                                        <DatePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="250" Height="32" SelectedDate="{Binding EndDate}"></DatePicker>
+                                    <StackPanel Grid.Row="5" Margin="10">
+                                        <StackPanel Orientation="Horizontal">
+                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
+                                                <TextBlock Width="100" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_115}" />
+                                                <DatePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="240" Height="32" SelectedDate="{Binding StartDate}"></DatePicker>
+                                            </StackPanel>
+                                            <TextBlock Text="~" Margin="5,0" VerticalAlignment="Center" />
+                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
+                                                <DatePicker Padding="5" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Width="240" Height="32" SelectedDate="{Binding EndDate}"></DatePicker>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -351,7 +396,7 @@
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
                                                     <DataGridCheckBoxColumn.Header>
-                                                        <CheckBox />
+                                                        <CheckBox HorizontalAlignment="Center" />
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
                                                 <DataGridTextColumn Width="1*" Binding="{Binding Value}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">

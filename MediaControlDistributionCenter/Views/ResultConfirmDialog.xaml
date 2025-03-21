@@ -16,7 +16,7 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Width="80" Foreground="White" Text="{DynamicResource LanguageKey_Code_LoginAccount}" />
-                    <TextBlock Width="250" Foreground="White" Text="{Binding Name}" />
+                    <TextBlock Width="250" Foreground="White" Text="{Binding Account}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Width="80" Foreground="White" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />

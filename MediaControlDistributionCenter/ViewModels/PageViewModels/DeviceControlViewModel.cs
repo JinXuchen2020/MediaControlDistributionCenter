@@ -318,6 +318,32 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveTimeControl(DeviceTimeControlViewModel viewModel)
         {
+            viewModel.SubmitCommand.Execute(null);
+            if (viewModel.HasErrors)
+            {
+                return;
+            }
+
+            if (viewModel.RepeatMode == "quarter")
+            {
+                if (viewModel.QuarterMonthStart >= viewModel.QuarterMonthEnd)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_126");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    return;
+                }
+            }
+
+            if (viewModel.RepeatMode == "week" || viewModel.RepeatMode == "month")
+            {
+                if (string.IsNullOrEmpty(viewModel.RepeatString))
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_127");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    return;
+                }
+            }
+
             var response = await deviceControlService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {

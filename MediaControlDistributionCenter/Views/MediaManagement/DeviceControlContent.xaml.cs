@@ -189,6 +189,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 DeviceId = manageViewModel.CurrentDevice.DeviceId,
                 Type = manageViewModel.CommandType,
+                RepeatMode = "day",
                 ExecuteMethod = "SCHEDULED",
                 Status = 1,
                 StartDate = DateTime.Now,
@@ -459,5 +460,93 @@ namespace MediaControlDistributionCenter.Views
 
         #endregion
 
+        private void SelectWeekDay_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var tagString = button.Tag.ToString()!;
+            var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
+            if (viewModel.RepeatString.Contains(tagString))
+            {
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
+            }
+            else
+            {
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
+            }
+        }
+
+        private void SelectMonthDay_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var tagString = button.Tag.ToString()!;
+            var viewModel = FindParentDataContext(button);
+            if (viewModel.RepeatString.Contains(tagString))
+            {
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
+            }
+            else
+            {
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
+            }
+        }
+
+        private void SelectQuarter_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
+            if (viewModel.RepeatMode == "quarter")
+            {
+                switch (button.Tag.ToString())
+                {
+                    case "quarter1":
+                        viewModel.RepeatString = "Q1";
+                        break;
+                    case "quarter2":
+                        viewModel.RepeatString = "Q2";
+                        break;
+                    case "quarter3":
+                        viewModel.RepeatString = "Q3";
+                        break;
+                    case "quarter4":
+                        viewModel.RepeatString = "Q4";
+                        break;
+                }
+            }
+        }
+
+        protected DeviceTimeControlViewModel FindParentDataContext(Visual child)
+        {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            while (parentObject != null)
+            {
+                if (parentObject is FrameworkElement parent && parent.DataContext is DeviceTimeControlViewModel)
+                {
+                    return (parent.DataContext as DeviceTimeControlViewModel);
+                }
+
+                parentObject = VisualTreeHelper.GetParent(parentObject);
+            }
+
+            return null;
+        }
+
+        private void RepeatMode_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = ((sender as ComboBox).DataContext as DeviceTimeControlViewModel)!;
+            viewModel.RepeatString = string.Empty;
+        }
+
+        private void SelectQuarterMonth_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            var button = sender as ComboBox;
+            var month = button.SelectedValue;
+            var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
+            viewModel.RepeatString += $"";
+        }
     }
 }
