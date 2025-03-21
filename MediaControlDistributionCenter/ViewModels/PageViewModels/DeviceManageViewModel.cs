@@ -22,6 +22,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public DeviceViewModel? SelectedDevice { get; set; }
 
+        public DeviceGroupViewModel? SelectedGroup { get; set; }
+
         public bool ShowNavigation { get; set; }
 
         public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
@@ -41,20 +43,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserGroupService userGroupService;
         private readonly Communication communication;
 
-        public DeviceManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, Communication communication) 
+        public DeviceManageViewModel(Communication communication) 
         {
-            if (dashboardViewModel.CurrentUser.Role == "user")
-            {
-                ShowNavigation = true;
-                CurrentUser = dashboardViewModel.CurrentUser;
-                LoginUser = dashboardViewModel.CurrentUser;
-            }
-            else
-            {
-                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-                LoginUser = dashboardViewModel.CurrentUser;
-            }
-
             this.monitorService = GetService<IMonitorService>();
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
@@ -63,8 +53,9 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto
             {
@@ -80,7 +71,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);
@@ -107,6 +98,7 @@ namespace MediaControlDistributionCenter.ViewModels
             viewModel.OwnerName = userService.GetAll(new UserDto { Account = CurrentUser.Account }).GetAwaiter().GetResult().Data!.First().Company;
             viewModel.DeviceId = "";
             viewModel.Status = 1;
+            viewModel.Enabled = 1;
 
             return viewModel;
         }
@@ -252,8 +244,9 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            var snDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
+            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var snDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
 
             nameDevices.AddRange(snDevices);
             this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>

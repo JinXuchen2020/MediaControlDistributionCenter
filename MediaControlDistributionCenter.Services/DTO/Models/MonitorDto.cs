@@ -35,7 +35,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 显示器启用状态（0: 禁用, 1: 启用）
         /// </summary>
         [JsonProperty("enabled", NullValueHandling = NullValueHandling.Ignore)]
-        public int Enabled { get; set; } = 1;
+        public int Enabled { get; set; }
 
         /// <summary>
         /// 所属用户账号

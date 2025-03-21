@@ -23,6 +23,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel? SelectedUser { get; set; }
 
+        public UserGroupViewModel? SelectedGroup { get; set; }
+
         private readonly IUserGroupService userGroupService;
         private readonly IUserService userService;
 
@@ -31,12 +33,12 @@ namespace MediaControlDistributionCenter.ViewModels
             this.CurrentUser = loginViewModel.CurrentUser;
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
-            this.LoadData();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
             groups.Insert(0, new UserGroupDto
             {
@@ -162,7 +164,8 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var results = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, Account = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
+            var results = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, Account = SearchString, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             this.Users = new ObservableCollection<UserViewModel>(results.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new UserViewModel();

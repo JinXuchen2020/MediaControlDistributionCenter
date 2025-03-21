@@ -28,7 +28,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private string sNumber;
 
         [ObservableProperty]
-        [Required]
         private string resolution;
 
         [ObservableProperty]

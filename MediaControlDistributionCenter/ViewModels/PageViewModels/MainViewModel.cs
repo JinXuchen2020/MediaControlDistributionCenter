@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(DeviceConnString));
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             return;
         }

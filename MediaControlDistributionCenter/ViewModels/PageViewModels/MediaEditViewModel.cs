@@ -36,26 +36,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IFileService fileService;
         private readonly IProgramService programService;
 
-        public MediaEditViewModel(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService)
-        {
-            if (dashboardViewModel.CurrentUser.Role == "User")
-            {
-                CurrentMedia = dashboardViewModel.SelectedMedia ?? mediaManageViewModel.SelectedMedia!;
-                CurrentUser = dashboardViewModel.CurrentUser;
-                ShowNavigation = true;
-            }
-            else
-            {
-                CurrentMedia = mediaManageViewModel.SelectedMedia;
-                CurrentUser = mediaManageViewModel.CurrentUser;
-                ShowNavigation = mediaManageViewModel.ShowNavigation;
-            }
-            
+        public MediaEditViewModel(IFileService fileService)
+        {            
             this.fileService = fileService;
             this.programService = GetService<IProgramService>();
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             return;
         }

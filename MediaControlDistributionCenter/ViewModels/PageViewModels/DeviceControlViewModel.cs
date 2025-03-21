@@ -55,18 +55,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly ITimeSyncConfigService timeSyncConfigService;
         private readonly Communication communication;
 
-        public DeviceControlViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, Communication communication) 
+        public DeviceControlViewModel(Communication communication) 
         {
-            if (dashboardViewModel.CurrentUser.Role == "user")
-            {
-                ShowNavigation = true;
-                CurrentUser = dashboardViewModel.CurrentUser;
-            }
-            else
-            {
-                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-            }
-
             this.monitorService = GetService<IMonitorService>();
             this.deviceControlService = GetService<IDeviceControlService>();
             this.timeSyncConfigService = GetService<ITimeSyncConfigService>();
@@ -77,10 +67,8 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeHint));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeDesciption));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeColumnName));
-
-            LoadData();
         }
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>

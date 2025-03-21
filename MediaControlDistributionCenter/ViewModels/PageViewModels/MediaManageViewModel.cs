@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private const string DialogHostId = "RootDialogHostId";
         public UserViewModel CurrentUser { get; set; }
 
+        public MediaGroupViewModel SelectedGroup { get; set; }
+
         public bool ShowNavigation { get; set; }
 
         [ObservableProperty]
@@ -38,26 +40,17 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IProgramService programService;
         private readonly IFileService fileService;
 
-        public MediaManageViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, IFileService fileService) 
+        public MediaManageViewModel(IFileService fileService) 
         {
-            if (dashboardViewModel.CurrentUser.Role == "user")
-            {
-                ShowNavigation = true;
-                CurrentUser = dashboardViewModel.CurrentUser;
-            }
-            else
-            {
-                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-            }
-
             this.programService = GetService<IProgramService>();
             this.programGroupService = GetService<IProgramGroupService>();
             this.fileService = fileService;
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account}).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
             groups.Insert(0, new ProgramGroupDto
             {
@@ -71,9 +64,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
                 return result;
             }));
-
             var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new MediaViewModel();
                 result.Binding(c);
@@ -232,7 +224,8 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
+            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
             {
                 var viewModel = new MediaViewModel();

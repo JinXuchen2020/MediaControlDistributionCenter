@@ -12,9 +12,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string currentPageName;
 
-        public UserControllerViewModel(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
+        public UserControllerViewModel()
         {
-            CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
         }
 
         public void SetValues(string tabName, string pageName)
@@ -23,7 +22,7 @@ namespace MediaControlDistributionCenter.ViewModels
             CurrentPageName = pageName;
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             return;
         }

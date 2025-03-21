@@ -21,11 +21,21 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private readonly MediaManageViewModel manageViewModel;
         private readonly UserManageViewModel userManageViewModel;
 
-        public MediaManage(UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IServiceProvider serviceProvider)
+        public MediaManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
             this.fileService = fileService; 
             this.serviceProvider = serviceProvider;
             this.userManageViewModel = userManageViewModel;
+
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                mediaManageViewModel.ShowNavigation = true;
+                mediaManageViewModel.CurrentUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                mediaManageViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+            }
 
             manageViewModel = mediaManageViewModel;
 
@@ -54,8 +64,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             manageViewModel.MediaGroups.First(c => c.IsSelected).IsSelected = false;
             var groupViewModel = ((sender as StackPanel).DataContext as MediaGroupViewModel)!;
             groupViewModel.IsSelected = true;
-
-            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
+            manageViewModel.SelectedGroup = groupViewModel;
+            manageViewModel.LoadData();
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
@@ -236,8 +246,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             fileService.CreatZip(sourceDic, desZipFilePath);
 
-            manageViewModel.SelectedMedia = selectedMedia;
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
+            viewModel.CurrentMedia = selectedMedia;
             viewModel.LoadData();
             selectedMedia.IsSelected = false;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
@@ -268,6 +278,25 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 manageViewModel.SelectedMedia = viewModel;
                 var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+            }
+        }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in manageViewModel.Medias)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in manageViewModel.Medias)
+                {
+                    item.IsSelected = false;
+                }
             }
         }
     }

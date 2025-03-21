@@ -18,6 +18,7 @@ namespace MediaControlDistributionCenter.Views
         public Dashboard(DashboardViewModel dashboardViewModel, IServiceProvider serviceProvider)
         {
             manageViewModel = dashboardViewModel;
+            manageViewModel.LoadData();
             this.serviceProvider = serviceProvider;
             InitializeComponent();
 

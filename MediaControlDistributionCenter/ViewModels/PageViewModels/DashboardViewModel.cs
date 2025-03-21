@@ -33,10 +33,9 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
             this.userService = GetService<IUserService>();
-            LoadData();
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             switch (CurrentUser.Role)
             {

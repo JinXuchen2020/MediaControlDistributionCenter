@@ -31,27 +31,14 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserService userService;
         private readonly DeviceManageViewModel deviceManageViewModel;
 
-        public UserSettingViewModel(DeviceManageViewModel deviceManageViewModel, DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
+        public UserSettingViewModel(DeviceManageViewModel deviceManageViewModel)
         {
             this.userService = GetService<IUserService>(); 
             this.deviceManageViewModel = deviceManageViewModel;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-
-            if (dashboardViewModel.CurrentUser.Role == "user")
-            {
-                CurrentUser = dashboardViewModel.CurrentUser;
-                CurrentUser.Groups = userManageViewModel.Groups;
-                LoginUser = dashboardViewModel.CurrentUser;
-            }
-            else
-            {
-                LoginUser = dashboardViewModel.CurrentUser;
-                CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
-                CurrentUser.Groups = userManageViewModel.Groups;
-            }
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             return;
         }

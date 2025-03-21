@@ -411,7 +411,7 @@
                                         IsReadOnly="False"
                                         CanUserSort="False">
                                         <DataGridCheckBoxColumn.Header>
-                                            <CheckBox />
+                                            <CheckBox Unchecked="SelectAll_Click" Checked="SelectAll_Click" />
                                         </DataGridCheckBoxColumn.Header>
                                     </DataGridCheckBoxColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
@@ -436,17 +436,17 @@
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Size}">
                                         <DataGridTextColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_104}" />
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_104}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ScreensCount}">
                                         <DataGridTextColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_105}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding LastUpdatedTime}">
                                         <DataGridTextColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_106}" />
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_106}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding CreatedSource}">

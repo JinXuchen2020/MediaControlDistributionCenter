@@ -26,15 +26,14 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IPlaybackRecordService playbackRecordService;
 
-        public MediaDevicesViewModel(MediaEditViewModel mediaEditViewModel, MediaManageViewModel mediaManageViewModel) 
+        public MediaDevicesViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
-            currentMedia = mediaManageViewModel.SelectedMedia ?? mediaEditViewModel.CurrentMedia;
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             var devices = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>

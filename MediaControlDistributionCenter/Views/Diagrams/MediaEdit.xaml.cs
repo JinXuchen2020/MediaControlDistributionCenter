@@ -43,11 +43,24 @@ namespace MediaControlDistributionCenter.Views
         private readonly IServiceProvider serviceProvider;
         private readonly MediaEditViewModel manageViewModel;
         
-        public MediaEdit(MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
+        public MediaEdit(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             this.fileService = fileService;
             this.serviceProvider = serviceProvider;
+
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                mediaEditViewModel.CurrentMedia = dashboardViewModel.SelectedMedia ?? mediaManageViewModel.SelectedMedia!;
+                mediaEditViewModel.CurrentUser = dashboardViewModel.CurrentUser;
+                mediaEditViewModel.ShowNavigation = true;
+            }
+            else
+            {
+                mediaEditViewModel.CurrentMedia = mediaManageViewModel.SelectedMedia;
+                mediaEditViewModel.CurrentUser = mediaManageViewModel.CurrentUser;
+                mediaEditViewModel.ShowNavigation = mediaManageViewModel.ShowNavigation;
+            }
 
             manageViewModel = mediaEditViewModel;
             manageViewModel.SetValues(MainCanvas);
@@ -265,6 +278,7 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SaveCommand.Execute(null);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
+            viewModel.CurrentMedia = manageViewModel.CurrentMedia;
             viewModel.LoadData();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }

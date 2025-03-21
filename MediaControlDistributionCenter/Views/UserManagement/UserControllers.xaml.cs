@@ -29,11 +29,13 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private readonly UserControllerViewModel manageViewModel;
         private readonly IServiceProvider serviceProvider;
 
-        public UserControllers(UserControllerViewModel viewModel, IServiceProvider serviceProvider)
+        public UserControllers(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, UserControllerViewModel viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             this.serviceProvider = serviceProvider;
 
+
+            viewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             viewModel.SetValues("MediaManage", (string)FindResource("LanguageKey_Code_Management_Media"));
             manageViewModel = viewModel;
 

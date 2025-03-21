@@ -347,7 +347,7 @@
                                         IsReadOnly="False"
                                         CanUserSort="False">
                                         <DataGridCheckBoxColumn.Header>
-                                            <CheckBox />
+                                            <CheckBox Unchecked="SelectAll_Click" Checked="SelectAll_Click"/>
                                         </DataGridCheckBoxColumn.Header>
                                     </DataGridCheckBoxColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}" >

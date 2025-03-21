@@ -29,7 +29,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
 
-        public virtual void LoadData(long? groupId = null)
+        public virtual void LoadData()
         {
 
         }

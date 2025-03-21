@@ -184,7 +184,7 @@ namespace MediaControlDistributionCenter.ViewModels
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             return;
         }

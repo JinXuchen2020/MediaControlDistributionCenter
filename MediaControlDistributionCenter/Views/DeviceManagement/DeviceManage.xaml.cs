@@ -33,8 +33,20 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     {
         private readonly DeviceManageViewModel manageViewModel;
 
-        public DeviceManage(DeviceManageViewModel deviceManageViewModel)
+        public DeviceManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, DeviceManageViewModel deviceManageViewModel)
         {
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                deviceManageViewModel.ShowNavigation = true;
+                deviceManageViewModel.CurrentUser = dashboardViewModel.CurrentUser;
+                deviceManageViewModel.LoginUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                deviceManageViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+                deviceManageViewModel.LoginUser = dashboardViewModel.CurrentUser;
+            }
+
             manageViewModel = deviceManageViewModel;
             manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
@@ -64,7 +76,8 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var groupViewModel = ((sender as StackPanel).DataContext as DeviceGroupViewModel)!;
-            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
+            manageViewModel.SelectedGroup = groupViewModel;
+            manageViewModel.LoadData();
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -138,6 +151,25 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
             manageViewModel.ConnectDeviceCommand.Execute(viewModel);
+        }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in manageViewModel.Devices)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in manageViewModel.Devices)
+                {
+                    item.IsSelected = false;
+                }
+            }
         }
     }
 }

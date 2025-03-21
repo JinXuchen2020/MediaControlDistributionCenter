@@ -38,6 +38,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             this.serviceProvider = serviceProvider;
             manageViewModel = userManageViewModel;
+            manageViewModel.LoadData();
             DataContext = manageViewModel;
             InitializeComponent();
         }
@@ -157,7 +158,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var groupViewModel = ((sender as StackPanel).DataContext as UserGroupViewModel)!;
-            manageViewModel.LoadData(groupViewModel.Id == -1 ? null : groupViewModel.Id);
+            manageViewModel.SelectedGroup = groupViewModel;
+            manageViewModel.LoadData();
         }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)
@@ -184,6 +186,25 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 viewModel.Logo = filePath;
                 viewModel.LogoFileName = System.IO.Path.GetFileName(filePath);
                 viewModel.IsUpload = true;
+            }
+        }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in manageViewModel.Users)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in manageViewModel.Users)
+                {
+                    item.IsSelected = false;
+                }
             }
         }
     }

@@ -19,9 +19,18 @@ namespace MediaControlDistributionCenter.Views
     {
         private readonly DeviceControlViewModel manageViewModel;
 
-        public DeviceControlContent(DeviceControlViewModel deviceControlViewModel)
+        public DeviceControlContent(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, DeviceControlViewModel deviceControlViewModel)
         {
             InitializeComponent();
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                deviceControlViewModel.ShowNavigation = true;
+                deviceControlViewModel.CurrentUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                deviceControlViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+            }
             manageViewModel = deviceControlViewModel;
             manageViewModel.LoadData();
             DataContext = manageViewModel;
@@ -48,6 +57,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
+            manageViewModel.CommandRTValue = "1";
             manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
         }
 

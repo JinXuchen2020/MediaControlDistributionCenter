@@ -22,9 +22,22 @@ namespace MediaControlDistributionCenter.Views
     {
         private readonly UserSettingViewModel manageViewModel;
 
-        public UserSettingsContent(UserSettingViewModel userSettingViewModel)
+        public UserSettingsContent(UserSettingViewModel userSettingViewModel, DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel)
         {
             InitializeComponent();
+
+            if (dashboardViewModel.CurrentUser.Role == "user")
+            {
+                userSettingViewModel.CurrentUser = dashboardViewModel.CurrentUser;
+                userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
+                userSettingViewModel.LoginUser = dashboardViewModel.CurrentUser;
+            }
+            else
+            {
+                userSettingViewModel.LoginUser = dashboardViewModel.CurrentUser;
+                userSettingViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
+                userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
+            }
             manageViewModel = userSettingViewModel;            
             DataContext = userSettingViewModel;
         }

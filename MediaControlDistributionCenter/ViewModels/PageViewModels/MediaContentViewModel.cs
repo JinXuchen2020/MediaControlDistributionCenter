@@ -30,7 +30,7 @@ namespace MediaControlDistributionCenter.ViewModels.PageViewModels
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData(long? groupId = null)
+        public override void LoadData()
         {
             var medias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaDto>(medias);
