@@ -554,77 +554,19 @@ namespace MediaControlDistributionCenter.Views
 
                 manageViewModel.SelectedElement = null;
 
-                switch (type)
-                {
-                    case MediaType.Video:
-                        manageViewModel.SelectedComponent = new VideoComponentViewModel(new VideoComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{maxId + 1}",
-                            ZIndex = 1,
-                            PlayMode = "fullscreen",
-                            Type = (MediaType)type,
-                            PlayCount = 1,
-                            PlayDuration = "",
-                        });
-                        break;
-                    case MediaType.Image:
-                        manageViewModel.SelectedComponent = new ImageComponentViewModel(new ImageComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{maxId + 1}",
-                            ZIndex = 1,
-                            Type = (MediaType)type,
-                            PlayCount = 1,
-                            PlayDuration = "00:00:05",
-                            Timeline = 5, 
-                            ComponentEffect = "FadeIn",
-                            EffectDuration = 1000
-                        });
-                        break;
-                    case MediaType.Text:
-                        manageViewModel.SelectedComponent = new TextComponentViewModel(new TextComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{maxId + 1}",
-                            ZIndex = 1,
-                            Type = (MediaType)type,
-                            Source = " ",
-                            PlayCount = 1,
-                            PlayDuration = "00:00:05",
-                            PlayMode = "pageTurning",
-                            ComponentEffect = "FadeIn",
-                            EffectDuration = 1000,
-                            Direction = "rollingLeft",
-                            Timeline = 5,
-                            Background ="black",
-                            TextColor = "white",
-                            TextSize = 16,
-                            IsLoopEnabled = true,
-                            LetterSpacing = 2,
-                            LineSpacing = 2,
-                            RollingSpeed = 2,
-                        });
-                        break;
-                }
+                manageViewModel.SelectedComponent = manageViewModel.CreateComponent((MediaType)type, maxId + 1);
 
-                manageViewModel.SelectedComponent.IsSelected = true;
-
-                if (!manageViewModel.SelectedComponent.IsFile)
+                if (manageViewModel.SelectedComponent != null)
                 {
-                    switch (manageViewModel.SelectedComponent.Type)
+                    manageViewModel.SelectedComponent.IsSelected = true;
+                    if (!manageViewModel.SelectedComponent.IsFile)
                     {
-                        case "Text":
-                            var textComponent = (manageViewModel.SelectedComponent as TextComponentViewModel)!;
-                            textComponent.Width = 300;
-                            textComponent.Height = 200;
-                            textComponent.DrawContentCommand.Execute(MainCanvas);
-                            manageViewModel.SelectedElement = textComponent.FrameworkElement;
-                            break;
+                        manageViewModel.DrawingComponent(MainCanvas, manageViewModel.SelectedComponent);
+                        manageViewModel.SelectedElement = manageViewModel.SelectedComponent.FrameworkElement;
                     }
-                }
 
-                manageViewModel.SelectedPage.Components.Add(manageViewModel.SelectedComponent);
+                    manageViewModel.SelectedPage.Components.Add(manageViewModel.SelectedComponent);
+                }
             }
         }
 

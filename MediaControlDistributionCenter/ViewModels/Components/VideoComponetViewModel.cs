@@ -39,6 +39,20 @@ namespace MediaControlDistributionCenter.ViewModels
             playMode = component.PlayMode;
         }
 
+        public static VideoComponentViewModel CreateInstance(int id)
+        {
+            return new VideoComponentViewModel(new VideoComponent
+            {
+                Id = id,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{id}",
+                ZIndex = 1,
+                PlayMode = "fullscreen",
+                Type = MediaType.Video,
+                PlayCount = 1,
+                PlayDuration = "",
+            });
+        }
+
         public override VideoComponent ToModel(double ratio)
         {
             return new VideoComponent
@@ -180,8 +194,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     Timeline = video.NaturalDuration.TimeSpan.TotalSeconds;
                     PlayDuration = video.NaturalDuration.TimeSpan.ToString();
                 }
-            }
-            
+            }            
         }
 
         private BitmapSource CaptureMediaElement(MediaElement mediaElement)

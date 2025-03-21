@@ -10,6 +10,12 @@ namespace MediaControlDistributionCenter.Models
     {
         Video,
         Image,
-        Text
+        Text,
+        Web,
+        Word,
+        Rss,
+        Stream,
+        ColorText,
+        Hdmi
     }
 }

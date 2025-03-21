@@ -64,6 +64,22 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
+        public static ImageComponentViewModel CreateInstance(int id)
+        {
+            return new ImageComponentViewModel(new ImageComponent
+            {
+                Id = id,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{id}",
+                ZIndex = 1,
+                Type = MediaType.Image,
+                PlayCount = 1,
+                PlayDuration = "00:00:05",
+                Timeline = 5,
+                ComponentEffect = "FadeIn",
+                EffectDuration = 1000
+            });
+        }
+
         protected override FrameworkElement DrawingContent()
         {
             Image result = new()

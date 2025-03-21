@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Views;
 using System.IO;
@@ -77,6 +78,34 @@ namespace MediaControlDistributionCenter.ViewModels
             if (SelectedPage != null)
             {
                 SelectedPage.IsSelected = true;
+            }
+        }
+
+        public BaseComponentViewModel? CreateComponent(MediaType type, int id)
+        {
+            switch (type)
+            {
+                case MediaType.Video:
+                    return VideoComponentViewModel.CreateInstance(id);
+                case MediaType.Image:
+                    return ImageComponentViewModel.CreateInstance(id);
+                case MediaType.Text:
+                    return TextComponentViewModel.CreateInstance(id);
+                default:
+                    return null;
+            }
+        }
+
+        public void DrawingComponent(Canvas canvas, BaseComponentViewModel component)
+        {
+            switch (component.Type)
+            {
+                case "Text":
+                    var textComponent = (component as TextComponentViewModel)!;
+                    textComponent.Width = 300;
+                    textComponent.Height = 200;
+                    textComponent.DrawContentCommand.Execute(canvas);
+                    break;
             }
         }
 

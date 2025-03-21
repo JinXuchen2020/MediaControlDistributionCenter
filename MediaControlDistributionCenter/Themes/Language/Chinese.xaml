@@ -341,7 +341,8 @@
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_101">媒体类型</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_102">媒体大小</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_103">媒体地址</sys:String>
-    
+
+    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好，世界</sys:String>
     <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
     <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
     <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>

@@ -109,6 +109,32 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
+        public static TextComponentViewModel CreateInstance(int id)
+        {
+            return new TextComponentViewModel(new TextComponent
+            {
+                Id = id,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{id}",
+                ZIndex = 1,
+                Type = MediaType.Text,
+                Source = $"{FindResource("LanguageKey_Code_HelloWorld")}",
+                PlayCount = 1,
+                PlayDuration = "00:00:05",
+                PlayMode = "pageTurning",
+                ComponentEffect = "FadeIn",
+                EffectDuration = 1000,
+                Direction = "rollingLeft",
+                Timeline = 5,
+                Background = "black",
+                TextColor = "white",
+                TextSize = 16,
+                IsLoopEnabled = true,
+                LetterSpacing = 2,
+                LineSpacing = 2,
+                RollingSpeed = 2,
+            });
+        }
+
         protected override FrameworkElement DrawingContent()
         {
             RichTextBox result = new()
