@@ -228,6 +228,8 @@ namespace MediaControlDistributionCenter
                     GoContent(serviceProvider.GetRequiredService<DeviceControlContent>(), 4);
                     break;
                 case "Settings":
+                    var viewModel = serviceProvider.GetRequiredService<UserSettingViewModel>();
+                    viewModel.IsShelf = true;
                     GoContent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
                     break;
             }

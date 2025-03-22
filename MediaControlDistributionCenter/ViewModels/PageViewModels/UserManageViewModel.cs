@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -109,6 +110,11 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                if (viewModel.Role == RoleType.Agent.ToString().ToLower())
+                {
+                    var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = viewModel.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
+                    await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                }
                 LoadData();
             }
         }
@@ -120,6 +126,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
+                foreach (var item in Users.Where(c => c.IsSelected && c.Role == "agent"))
+                {
+                    var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = item.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
+                    await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                }
+
                 LoadData();
             }
         }

@@ -35,7 +35,7 @@
                     <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Center" PlacementMode="BottomAndAlignCentres" PopupMode="Click">
                         <materialDesign:PopupBox.ToggleContent>
                             <Border CornerRadius="2" Padding="10" Width="100" BorderBrush="White" BorderThickness="1">
-                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ZH}" Foreground="White"/>
+                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_KO}" Foreground="White"/>
                             </Border>
                         </materialDesign:PopupBox.ToggleContent>
                         <ListView Width="100">
@@ -103,7 +103,7 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Orientation="Horizontal" Margin="165,875,10,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
+            <StackPanel x:Name="spSlogan" Visibility="Collapsed" Orientation="Horizontal" Margin="165,875,10,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
                 <TextBlock Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"/>
                 <TextBlock TextWrapping="Wrap" Margin="10, 0,0,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{Binding Slogan}" Opacity="0.7"/>
             </StackPanel>

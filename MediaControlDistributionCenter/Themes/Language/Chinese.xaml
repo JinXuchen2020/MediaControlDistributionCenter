@@ -29,10 +29,10 @@
     <sys:String x:Key="LanguageKey_Code_LoginAccount">账号</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginPassword">密码</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginBtn">登录</sys:String>
-    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 73764@qq·com</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 neox@neoxcorp.co.kr</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
-    <sys:String x:Key="LanguageKey_Code_RemoteMode">远程模式</sys:String>
+    <sys:String x:Key="LanguageKey_Code_RemoteMode">联网模式</sys:String>
     <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>  
     <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
     <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
@@ -76,7 +76,7 @@
     <sys:String x:Key="LanguageKey_Code_Everyday">每天</sys:String>
     <sys:String x:Key="LanguageKey_Code_Everyweek">每周</sys:String>
     <sys:String x:Key="LanguageKey_Code_Everymonth">每月</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Everyquarter">每季度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Everyyear">每年</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monday">星期一</sys:String>
     <sys:String x:Key="LanguageKey_Code_Tuesday">星期二</sys:String>
     <sys:String x:Key="LanguageKey_Code_Wednesday">星期三</sys:String>
@@ -84,6 +84,18 @@
     <sys:String x:Key="LanguageKey_Code_Friday">星期五</sys:String>
     <sys:String x:Key="LanguageKey_Code_Saturday">星期六</sys:String>
     <sys:String x:Key="LanguageKey_Code_Sunday">星期日</sys:String>
+    <sys:String x:Key="LanguageKey_Code_January">一月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_February">二月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_March">三月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_April">四月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_May">五月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_June">六月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_July">七月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_August">八月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_September">九月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_October">十月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_November">十一月</sys:String>
+    <sys:String x:Key="LanguageKey_Code_December">十二月</sys:String>
     <sys:String x:Key="LanguageKey_Code_Quarter1">第一季度</sys:String>
     <sys:String x:Key="LanguageKey_Code_Quarter2">第二季度</sys:String>
     <sys:String x:Key="LanguageKey_Code_Quarter3">第三季度</sys:String>
@@ -291,8 +303,8 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_145">时间计划表</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_146">每周</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_147">未选择组件！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_148">图片组件只能包含图片格式文件！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_149">视频组件只能包含视频格式文件！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_148">图片格式文件只能上传到图片组件！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_149">视频格式文件只能上传到视频组件！</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_150">请先创建页面!</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_151">请先保存节目!</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_152">请输入页面名称！</sys:String>

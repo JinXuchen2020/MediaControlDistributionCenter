@@ -1,4 +1,5 @@
-﻿using MediaControlDistributionCenter.ViewModels;
+﻿using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.MediaManagement;
@@ -34,7 +35,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             InitializeComponent();
             this.serviceProvider = serviceProvider;
 
-
             viewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             viewModel.SetValues("MediaManage", (string)FindResource("LanguageKey_Code_Management_Media"));
             manageViewModel = viewModel;
@@ -68,6 +68,8 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     GoCotent(serviceProvider.GetRequiredService<DeviceControlContent>(), 3);
                     break;
                 case "Settings":
+                    var viewModel = serviceProvider.GetRequiredService<UserSettingViewModel>();
+                    viewModel.IsShelf = false;
                     GoCotent(serviceProvider.GetRequiredService<UserSettingsContent>(), 4);
                     break;
             }

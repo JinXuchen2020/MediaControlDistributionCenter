@@ -100,25 +100,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel()
         {
-            roleList = new ObservableCollection<object>(new List<RoleModel>
-            {
-                new RoleModel
-                {
-                    Role = RoleType.Admin.ToString().ToLower(),
-                    RoleText = FindResource("LanguageKey_Code_Role_Admin")
-                },
-                new RoleModel
-                {
-                    Role = RoleType.Agent.ToString().ToLower(),
-                    RoleText = FindResource("LanguageKey_Code_Role_Agent")
-                },
-                new RoleModel
-                {
-                    Role = RoleType.User.ToString().ToLower(),
-                    RoleText = FindResource("LanguageKey_Code_Role_User")
-                }
-            });
-
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
         }
 

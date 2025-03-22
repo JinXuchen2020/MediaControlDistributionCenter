@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Views;
 using System.Collections.ObjectModel;
@@ -15,8 +16,13 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel LoginUser { get; set; }
 
+        public bool IsShelf { get; set; } = true;
+
         [ObservableProperty]
         private ObservableCollection<TimeZoneInfo> timeZoneInfos;
+
+        [ObservableProperty]
+        private ObservableCollection<object> roleList;
 
         [ObservableProperty]
         private string? oldPassword;
@@ -36,6 +42,24 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userService = GetService<IUserService>(); 
             this.deviceManageViewModel = deviceManageViewModel;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
+            roleList = new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Admin.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_Admin")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = FindResource("LanguageKey_Code_Role_User")
+                }
+            });
         }
 
         public override void LoadData()

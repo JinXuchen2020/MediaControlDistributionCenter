@@ -477,12 +477,12 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
             if (viewModel.RepeatString.Contains(tagString))
             {
-                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
-                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
@@ -494,12 +494,12 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = FindParentDataContext(button);
             if (viewModel.RepeatString.Contains(tagString))
             {
-                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
-                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
@@ -557,6 +557,23 @@ namespace MediaControlDistributionCenter.Views
             var month = button.SelectedValue;
             var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
             viewModel.RepeatString += $"";
+        }
+
+        private void SelectYearMonth_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var tagString = button.Tag.ToString()!;
+            var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
+            if (viewModel.RepeatString.Contains(tagString))
+            {
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
+            }
+            else
+            {
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
+            }
         }
     }
 }

@@ -159,7 +159,7 @@ namespace MediaControlDistributionCenter.Views
 
         private bool IsVideoFile(string filePath)
         {
-            string[] imageExtensions = { ".mp4", ".avi", ".wmv", ".mkv" };
+            string[] imageExtensions = { ".mp4", ".mp3", ".avi", ".wmv", ".mkv" };
             string ext = System.IO.Path.GetExtension(filePath);
             return imageExtensions.Contains(ext);
         }

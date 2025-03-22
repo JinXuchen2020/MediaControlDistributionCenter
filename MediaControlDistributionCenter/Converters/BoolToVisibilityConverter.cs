@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Converters
             else if (parameter != null)
             {
                 var expectedValues = parameter.ToString()!.Split(";").ToList();
-                if (expectedValues.Contains(value)) 
+                if (expectedValues.Contains(value.ToString())) 
                 {
                     return Visibility.Visible;
                 }

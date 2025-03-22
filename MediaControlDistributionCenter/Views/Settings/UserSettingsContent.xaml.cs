@@ -2,6 +2,7 @@
 
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
@@ -26,18 +27,19 @@ namespace MediaControlDistributionCenter.Views
         {
             InitializeComponent();
 
-            if (dashboardViewModel.CurrentUser.Role == "user")
+            if(userSettingViewModel.IsShelf)
             {
                 userSettingViewModel.CurrentUser = dashboardViewModel.CurrentUser;
                 userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
-                userSettingViewModel.LoginUser = dashboardViewModel.CurrentUser;
+                userSettingViewModel.IsShelf = dashboardViewModel.CurrentUser.Role == RoleType.User.ToString().ToLower();
             }
             else
             {
-                userSettingViewModel.LoginUser = dashboardViewModel.CurrentUser;
                 userSettingViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
                 userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
+                userSettingViewModel.IsShelf = userSettingViewModel.IsShelf || dashboardViewModel.CurrentUser.Role == RoleType.Agent.ToString().ToLower();
             }
+
             manageViewModel = userSettingViewModel;            
             DataContext = userSettingViewModel;
         }
@@ -114,6 +116,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnUpload_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (manageViewModel.IsShelf)
+            {
+                return;
+            }
             var viewModel = ((sender as Border).DataContext as UserViewModel)!;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
