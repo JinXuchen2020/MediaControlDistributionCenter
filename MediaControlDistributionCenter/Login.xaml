@@ -150,7 +150,6 @@
                             <Button Content="{DynamicResource LanguageKey_Code_LoginBtn}" Margin="0,30,0,0"
                                   Width="325" Height="44"
                                   IsDefault="True" Background="#3B57BF" Foreground="White"
-                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignPaperDarkButton}"
                                   materialDesign:ButtonAssist.CornerRadius="2"
                                   Click="btnLogin_Click"

@@ -656,4 +656,40 @@ namespace MediaControlDistributionCenter.Views
             }
         }
     }
+
+    public class ComponentDataTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var dialogBox = FindDialog(container);
+            switch (item)
+            {
+                case var o when o is VideoComponentViewModel viewModel:
+                    return (DataTemplate)dialogBox.FindResource("VideoComponent");
+                case var o when o is ImageComponentViewModel viewModel:
+                    return (DataTemplate)dialogBox.FindResource("ImageComponent");
+                case var o when o is TextComponentViewModel viewModel:
+                    return (DataTemplate)dialogBox.FindResource("TextComponent");
+                default:
+                    return null;
+            }
+        }
+
+        private MediaEdit FindDialog(DependencyObject child)
+        {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            while (parentObject != null)
+            {
+                if (parentObject is MediaEdit)
+                {
+                    return parentObject as MediaEdit;
+                }
+
+                parentObject = VisualTreeHelper.GetParent(parentObject);
+            }
+
+            return null; // 如果没有找到Canvas，则返回null
+        }
+    }
 }
