@@ -312,9 +312,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (viewModel.RepeatMode == "quarter")
+            if (viewModel.RepeatMode == "year")
             {
-                if (viewModel.QuarterMonthStart >= viewModel.QuarterMonthEnd)
+                if (string.IsNullOrEmpty(viewModel.RepeatString))
                 {
                     ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_126");
                     await ShowConfirmDialogCommand.ExecuteAsync(null);

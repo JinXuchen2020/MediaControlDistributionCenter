@@ -235,7 +235,7 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_123">[实时控制] 命令会覆盖当前正在执行的 [定时控制] 命令，直至下个时间点的 [定时控制]，命令生效</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_124">手动是根据当前所选时区的时间对时，NTP是根据所选服务器和时区对时，射频是根据对时基准设备对时，GPS是根据GPS卫星进行对时。</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_125">立即重启后,播放器将在20s左右完成重启,在此期间,播放器会处于离线状态.请在播放器重新上线后,再进行其他操作。</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">季度开始月份大于结束月份！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>

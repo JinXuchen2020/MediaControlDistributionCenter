@@ -42,7 +42,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public void StartHeart()
         {
-
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
             int interval = 1000; // 5000毫秒即5秒 
@@ -68,7 +67,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpUserPwd = ftpServer._userPwd;
             Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
 
@@ -80,10 +78,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             }
             else
             {
-
                 Thread thread = new Thread(() =>
                 {
-
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
                     netClient.Send(utf8Bytes);

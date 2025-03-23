@@ -19,7 +19,7 @@ namespace MediaControlDistributionCenter.Converters
 
                 return isVisible == expectedValue ? Visibility.Visible : Visibility.Collapsed;
             }
-            else if (parameter != null)
+            else if (parameter != null && value != null)
             {
                 var expectedValues = parameter.ToString()!.Split(";").ToList();
                 if (expectedValues.Contains(value.ToString())) 

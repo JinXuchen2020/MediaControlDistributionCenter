@@ -108,7 +108,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Id = model.Id;
             Type = model.ControlType;
             Value = model.Value;
-            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|")[1];
+            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|").Last();
             ExecuteMethod = model.ExecutionType;
             Status = model.IsEnabled;
             StartDate = DateTime.Parse(model.ValidDateStart);
@@ -118,6 +118,7 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSelected = isSelected;
             RepeatMode = model.RepeatMode;
             UserAccount = model.UserAccount;
+            RepeatString = string.IsNullOrEmpty(model.Execution) || !model.Execution.Contains("|") ? string.Empty : model.Execution.Split("|").First();
         }
 
         public string GetStatus()
@@ -144,9 +145,8 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "week":
                 case "month":
+                case "year":
                     return $"{RepeatString}|{ExecuteTime}";
-                case "quarter":
-                    return $"M{QuarterMonthStart!}D{QuarterMonthDayStart}~M{QuarterMonthEnd}D{QuarterMonthDayEnd}|{ExecuteTime}";
                 default:
                     return ExecuteTime;
             }
