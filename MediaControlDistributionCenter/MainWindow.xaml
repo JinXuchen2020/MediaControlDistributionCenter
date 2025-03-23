@@ -32,14 +32,16 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Margin="64,0,0,0" x:Name="Dashboard" Text="{DynamicResource LanguageKey_Code_Dashboard}" Tag="1" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
                     <!--<TextBlock Margin="64,0,0,0" x:Name="MediaManagement" Text="媒体管理" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>-->
-                    
-                    <TextBlock 
-                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
-                        Margin="64,0,0,0" x:Name="UserManagement" Text="{DynamicResource LanguageKey_Code_Management_Users}" Tag="2" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
 
-                    <TextBlock 
-                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}"
-                        Margin="64,0,0,0" x:Name="MediaStore" Text="{DynamicResource LanguageKey_Code_MediaStore}" Tag="3" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"></TextBlock>
+                        <TextBlock 
+                        Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
+                        Margin="64,0,0,0" x:Name="UserManagement" Text="{DynamicResource LanguageKey_Code_Management_Users}" Tag="2" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"/>
+
+                        <StackPanel Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
+                            <TextBlock 
+                                Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}"
+                                Margin="64,0,0,0" x:Name="MediaStore" Text="{DynamicResource LanguageKey_Code_MediaStore}" Tag="3" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"/>
+                        </StackPanel>
 
                     <TextBlock 
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"

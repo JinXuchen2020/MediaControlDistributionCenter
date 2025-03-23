@@ -10,6 +10,8 @@ namespace MediaControlDistributionCenter.Helpers
     {
         public const string OutPath = "MediaContents";
 
+        public const string MediaStorePath = "MediaStore";
+
         public const string FtpPath = "NetWorkData";
 
         public const string ConfigFileName = "MediaConfig.json";

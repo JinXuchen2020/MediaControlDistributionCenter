@@ -117,7 +117,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnToMediaEdit_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var viewModel = ((sender as StackPanel).DataContext as MediaViewModel)!;
+            var viewModel = ((sender as StackPanel).DataContext as ProgramViewModel)!;
             manageViewModel.SelectedMedia = viewModel;
             var content = serviceProvider.GetRequiredService<MediaEdit>();
             (App.Current.MainWindow as MainWindow).GoContent(content, 2);

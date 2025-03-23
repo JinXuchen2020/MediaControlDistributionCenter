@@ -387,7 +387,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SendProgram(MediaViewModel program)
+        private async Task SendProgram(ProgramViewModel program)
         {
             if (client == null)
             {

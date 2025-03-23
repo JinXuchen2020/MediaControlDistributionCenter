@@ -1,105 +1,101 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Serilog;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaViewModel : DataViewModel<ProgramDto>
+    public partial class MediaViewModel : DataViewModel<MediaDto>
     {
         [ObservableProperty]
-        public long id;
+        private long id;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目名称!")]
-        public string name;
+        [Required]
+        private string name;
 
         [ObservableProperty]
-        [Required(ErrorMessage ="请选择节目类型!")]
-        public string type;
+        private string extension;
 
         [ObservableProperty]
-        public string resolution;
+        private string resolution;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目高度!")]
-        public string width;
+        private double? size;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目宽度!")]
-        public string height;
+        private string? src;
 
         [ObservableProperty]
-        public double? size;
+        private string type;
 
         [ObservableProperty]
-        public int screensCount;
+        private long? groupId;
 
         [ObservableProperty]
-        public string lastUpdatedTime;
-
-        [ObservableProperty]
-        public string createdSource;
-
-        [ObservableProperty]
-        public int status;
-
-        [ObservableProperty]
-        public long? groupId;
-
-        [ObservableProperty]
-        public string group;
-
-        [ObservableProperty]
-        public string userId;
+        private string? mediaGroupName;
 
         [ObservableProperty]
         private bool isSelected;
 
         [ObservableProperty]
-        public string rackingBtnContent;
+        [Required]
+        private double width;
 
-        public override ProgramDto ToModel()
+        [ObservableProperty]
+        [Required]
+        private double height;
+
+        [ObservableProperty]
+        private ObservableCollection<MediaGroupViewModel> groups;
+
+        public MediaViewModel()
         {
-            return new ProgramDto
+        }
+
+        public override MediaDto ToModel()
+        {
+            return new MediaDto
             {
                 Id = Id,
                 Name = Name,
-                MediaType = Type,
-                Resolution = Resolution,
-                Size = Size,
-                MonitorCount = ScreensCount,
-                LastUpdatedTime = LastUpdatedTime,
-                CreatedSource = CreatedSource,
-                Status = Status,
                 GroupId = GroupId,
-                UserAccount = UserId,                
+                Extension = Extension,
+                Resolution = $"{Width}*{Height}",
+                Size = Size,
+                Src = Src,
+                Type = Type,
             };
         }
 
-        public override void Binding(ProgramDto model, bool isSelected = false)
+        public override void Binding(MediaDto model, bool isSelected = false)
         {
             Id = model.Id;
             Name = model.Name;
-            Type = model.MediaType;
+            Type = model.Type;
             Resolution = model.Resolution;
-            Width = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[0];
-            Height = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[1];
+            Width = string.IsNullOrEmpty(model.Resolution) ? 0 : double.Parse(model.Resolution.Split("*")[0]);
+            Height = string.IsNullOrEmpty(model.Resolution) ? 0 : double.Parse(model.Resolution.Split("*")[1]);
             Size = model.Size;
-            ScreensCount = model.MonitorCount;
-            LastUpdatedTime = model.LastUpdatedTime;
-            CreatedSource = model.CreatedSource;
-            Status = model.Status;
             GroupId = model.GroupId;
-            UserId = model.UserAccount;
+            MediaGroupName = model.MediaGroupName ?? FindResource("LanguageKey_Code_NoGroup");
+            Src = model.Src; 
             IsSelected = isSelected;
-            Group = model.ProgramGroupName ?? FindResource("LanguageKey_Code_NoGroup");
-            RackingBtnContent = model.Status == 1 ? FindResource("LanguageKey_Code_OffShelf") : FindResource("LanguageKey_Code_OnShelf");
+            Extension = model.Extension;
         }
-        
+
         [RelayCommand]
         private async Task ShowConfirmDialog()
         {

@@ -1,6 +1,7 @@
 ﻿using Dm.filter;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -75,6 +76,26 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 TimeZone = TimeZoneInfo.Local.DisplayName,
             };
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
+            viewModel.RoleList = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            }) : new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            });
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -82,6 +103,26 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             var viewModel = ((sender as Button).DataContext as UserViewModel)!;
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
+            viewModel.RoleList = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            }) : new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            });
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 

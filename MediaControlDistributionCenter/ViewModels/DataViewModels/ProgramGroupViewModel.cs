@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
-    public partial class MediaGroupViewModel : DataViewModel<MediaGroupDto>
+    public partial class ProgramGroupViewModel : DataViewModel<ProgramGroupDto>
     {
         [ObservableProperty]
         [Required]
@@ -13,6 +13,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         public long id;
+
+        [ObservableProperty]
+        public string userId;
 
         [ObservableProperty]
         public bool isSelected;
@@ -25,19 +28,21 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = string.Empty;
         }
 
-        public override MediaGroupDto ToModel()
+        public override ProgramGroupDto ToModel()
         {
-            return new MediaGroupDto
+            return new ProgramGroupDto
             {
                 Id = Id,
-                Name = Name
+                Name = Name,
+                UserAccount = UserId,
             };
         }
 
-        public override void Binding(MediaGroupDto model, bool selected = false)
+        public override void Binding(ProgramGroupDto model, bool selected = false)
         {
             Name = model.Name;
             Id = model.Id;
+            UserId = model.UserAccount;
             IsSelected = selected;
         }
     }

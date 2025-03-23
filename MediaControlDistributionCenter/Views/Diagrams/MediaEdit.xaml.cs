@@ -176,7 +176,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             string fileName = System.IO.Path.GetFileName(filePath);
-            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
+            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
 
             if (IsImageFile(filePath))
             {
@@ -251,7 +251,7 @@ namespace MediaControlDistributionCenter.Views
 
             var configContent = JsonConvert.SerializeObject(configModel);
 
-            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, configModel.Name);
+            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, configModel.Name);
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
@@ -260,7 +260,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentMedia.Name);
+            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name);
 
             if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
             {
@@ -269,7 +269,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentMedia.Name + ".zip");
+            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
             fileService.CreatZip(sourceDic, desZipFilePath);
 
             var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;

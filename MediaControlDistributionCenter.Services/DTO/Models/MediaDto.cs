@@ -47,13 +47,23 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 媒体下载地址
         /// </summary>
         [JsonProperty("src", NullValueHandling = NullValueHandling.Ignore)]
-        public string Src { get; set; }
+        public string? Src { get; set; }
 
         /// <summary>
         /// 媒体类型（IMAGE: 图片, VIDEO: 视频）
         /// </summary>
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
+
+        /// <summary>
+        /// 分组id
+        /// </summary>
+        [JsonProperty("groupId")]
+        public long? GroupId { get; set; }
+
+
+        [JsonIgnore]
+        public string? MediaGroupName { get; set; }
 
         public void CreateMappings(Profile configuration)
         {
@@ -71,6 +81,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Size = Size,
                 Src = Src,
                 Type = Type,
+                GroupId = GroupId,
             };
         }
     }

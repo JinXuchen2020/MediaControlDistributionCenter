@@ -18,7 +18,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<DeviceViewModel> devices;
 
         [ObservableProperty]
-        private MediaViewModel currentMedia;
+        private ProgramViewModel currentMedia;
 
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;

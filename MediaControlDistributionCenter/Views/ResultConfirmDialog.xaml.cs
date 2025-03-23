@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 case var o when o is UserViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
-                case var o when o is MediaViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
+                case var o when o is ProgramViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
                 case var o when (o is PageViewModel viewModel && viewModel.CanDelete.HasValue):
                     return (DataTemplate)dialogBox.FindResource("DeleteExecution");

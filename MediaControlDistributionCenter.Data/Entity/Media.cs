@@ -32,7 +32,7 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// <summary>
         /// 媒体大小（MB）
         /// </summary>
-        [Required]
+        [SugarColumn(IsNullable = true)]
         public double? Size { get; set; }
 
         /// <summary>
@@ -46,5 +46,8 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// </summary>
         [Required]
         public string Type { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public long? GroupId { get; set; }
     }
 }

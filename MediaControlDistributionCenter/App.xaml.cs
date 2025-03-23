@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using MediaControlDistributionCenter.Data;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
@@ -63,6 +64,7 @@ namespace MediaControlDistributionCenter
             LanguageTool.Instance.InitLanguageResourceCache(GetLanguageResourceCache());
 
             SQLite.InitServer();
+            SQLite.DbClient.DbMaintenance.DropTable<Media>();
             SQLite.InitTables();
 
             FtpServer server = new FtpServer();
@@ -98,7 +100,7 @@ namespace MediaControlDistributionCenter
         {
              string message = $"An error occured: {ex.Message}";
             //MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Log.Error(message);
+             Log.Error(message);
         }
 
         protected override void OnExit(ExitEventArgs e)

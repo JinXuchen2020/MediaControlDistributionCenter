@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public List<SchedulerDayViewModel> SchedulerDays { get; set; }
 
         [ObservableProperty]
-        private MediaViewModel currentMedia;
+        private ProgramViewModel currentMedia;
 
         [ObservableProperty]
         private MediaConfigViewModel mediaConfig;
@@ -51,9 +51,9 @@ namespace MediaControlDistributionCenter.ViewModels
         public void SetValues(Canvas canvas)
         {
             MediaConfig? config = null;
-            if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentMedia.Name)))
+            if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
             {
-                config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
+                config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
                 if (config != null)
                 {
                     config.Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width);
