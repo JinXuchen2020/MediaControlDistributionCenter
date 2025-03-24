@@ -104,7 +104,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     return new RssContentViewModel
                     {
-                        FieldName = c,
+                        FieldName = c.Key,
                         FieldNameContent = c.Value,
                         FontFamily = fontFamilis.First(),
                         Fonts = fontFamilis,

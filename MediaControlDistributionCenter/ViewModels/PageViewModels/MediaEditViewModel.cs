@@ -22,6 +22,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public List<SchedulerDayViewModel> SchedulerDays { get; set; }
 
+        public Canvas Canvas { get; set; }
+
         [ObservableProperty]
         private ProgramViewModel currentMedia;
 
@@ -41,14 +43,10 @@ namespace MediaControlDistributionCenter.ViewModels
         {            
             this.fileService = fileService;
             this.programService = GetService<IProgramService>();
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
-        {
-            return;
-        }
-
-        public void SetValues(Canvas canvas)
         {
             MediaConfig? config = null;
             if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
@@ -60,7 +58,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     config.Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height);
                     config.Name = CurrentMedia.Name;
                     config.UserAccount = CurrentMedia.UserId;
-                    config.Ratio = canvas.Width / double.Parse(CurrentMedia.Width);
+                    config.Ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
                 }
             }
 
@@ -70,7 +68,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = CurrentMedia.Name,
                 Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width),
                 Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height),
-                Ratio = canvas.Width / double.Parse(CurrentMedia.Width),
+                Ratio = Canvas.Width / double.Parse(CurrentMedia.Width),
                 UserAccount = CurrentMedia.UserId,
                 Pages = new List<MediaPage>()
             };

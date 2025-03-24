@@ -212,7 +212,7 @@
                     <DataTemplate DataType="{x:Type viewmodels:ProgramViewModel}">
                         <Border BorderThickness="1" Background="#090A0E">
                             <DockPanel LastChildFill="False">
-                                <Grid Width="889" Height="600" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                                <Grid Width="889" Height="500" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="2" />

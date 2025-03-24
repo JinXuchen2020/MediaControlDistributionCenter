@@ -63,7 +63,8 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel = mediaEditViewModel;
-            manageViewModel.SetValues(MainCanvas);
+            manageViewModel.Canvas = MainCanvas;
+            manageViewModel.LoadData();
             DataContext = mediaEditViewModel;
 
             this.Loaded += MediaEdit_Loaded;
@@ -527,6 +528,9 @@ namespace MediaControlDistributionCenter.Views
                     case "Text":
                         (manageViewModel.SelectedComponent as TextComponentViewModel).PlayMode = radioButton.Tag?.ToString();
                         break;
+                    case "Rss":
+                        (manageViewModel.SelectedComponent as RssComponentViewModel).PlayMode = radioButton.Tag?.ToString();
+                        break;
 
                 }
             }
@@ -654,6 +658,30 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
                 }
             }
+        }
+
+        private void SetRssFontStyle_Click(object sender, RoutedEventArgs e)
+        {
+            var element = (Button)sender;
+            var viewModel = element.DataContext as RssContentViewModel;
+            switch (element.Tag.ToString())
+            {
+                case "Bold":
+                    viewModel.IsBold = !viewModel.IsBold;
+                    break;
+                case "Italic":
+                    viewModel.IsItalic = !viewModel.IsItalic;
+                    break;
+                case "Underline":
+                    viewModel.IsUnderline = !viewModel.IsUnderline;
+                    break;
+            }
+        }
+
+        private void SelectRssColor_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (sender as Button).DataContext as RssContentViewModel;
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
     }
 
