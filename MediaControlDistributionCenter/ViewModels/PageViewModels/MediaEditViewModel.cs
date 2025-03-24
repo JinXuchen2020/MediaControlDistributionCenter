@@ -91,6 +91,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     return ImageComponentViewModel.CreateInstance(id);
                 case MediaType.Text:
                     return TextComponentViewModel.CreateInstance(id);
+                case MediaType.Web:
+                    return WebComponentViewModel.CreateInstance(id);
+                case MediaType.Stream:
+                    return StreamComponentViewModel.CreateInstance(id);
                 default:
                     return null;
             }
@@ -105,6 +109,18 @@ namespace MediaControlDistributionCenter.ViewModels
                     textComponent.Width = 300;
                     textComponent.Height = 200;
                     textComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "Web":
+                    var webComponent = (component as WebComponentViewModel)!;
+                    webComponent.Width = 220;
+                    webComponent.Height = 220;
+                    webComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "Stream":
+                    var streamComponent = (component as StreamComponentViewModel)!;
+                    streamComponent.Width = 220;
+                    streamComponent.Height = 220;
+                    streamComponent.DrawContentCommand.Execute(canvas);
                     break;
             }
         }

@@ -153,12 +153,19 @@ namespace MediaControlDistributionCenter.ViewModels
                 var canvas = FindCanvasParent(video);
                 thumbnail = thumbnail ?? CaptureMediaElement(video);
 
-                Image result = new()
+                Image image = new()
                 {
                     Source = thumbnail,
+                };
+
+                Border result = new Border
+                {
+                    BorderBrush = Brushes.White,
+                    BorderThickness = new Thickness(2),
                     Width = Width,
                     Height = Height,
-                    DataContext = this
+                    DataContext = this,
+                    Child = image
                 };
 
                 CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));

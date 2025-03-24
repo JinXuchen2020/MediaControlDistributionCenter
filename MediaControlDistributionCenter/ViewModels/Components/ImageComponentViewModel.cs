@@ -82,12 +82,19 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingContent()
         {
-            Image result = new()
+            Image image = new()
             {
                 Source = GetBitmap(Source!),
+            };
+
+            Border result = new Border
+            {
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(2),
                 Width = Width,
                 Height = Height,
-                DataContext = this
+                DataContext = this,
+                Child = image
             };
 
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));

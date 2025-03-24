@@ -662,17 +662,13 @@ namespace MediaControlDistributionCenter.Views
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             var dialogBox = FindDialog(container);
-            switch (item)
+            if(item is BaseComponentViewModel viewModel)
             {
-                case var o when o is VideoComponentViewModel viewModel:
-                    return (DataTemplate)dialogBox.FindResource("VideoComponent");
-                case var o when o is ImageComponentViewModel viewModel:
-                    return (DataTemplate)dialogBox.FindResource("ImageComponent");
-                case var o when o is TextComponentViewModel viewModel:
-                    return (DataTemplate)dialogBox.FindResource("TextComponent");
-                default:
-                    return null;
+                var resourceKey = $"{viewModel.Type}Component";
+                return dialogBox.FindResource(resourceKey) as DataTemplate;
             }
+
+            return null;
         }
 
         private MediaEdit FindDialog(DependencyObject child)

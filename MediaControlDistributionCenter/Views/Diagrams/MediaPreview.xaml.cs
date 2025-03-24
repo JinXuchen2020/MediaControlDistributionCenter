@@ -130,6 +130,14 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                             var textComponent = component as TextComponentViewModel;
                             textComponent!.DrawRunningContentCommand.Execute(MainCanvas);
                             break;
+                        case "Web":
+                            var webComponent = component as WebComponentViewModel;
+                            webComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Stream":
+                            var streamComponent = component as StreamComponentViewModel;
+                            streamComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
                     }
                 }
             }

@@ -143,4 +143,34 @@ namespace MediaControlDistributionCenter.ViewModels
         public double LineSpacing { get; set; } //16", 
           
     }
+
+    public class WebComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Web;
+    }
+
+    public class WordComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Word;
+    }
+
+    public class RssComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Rss;
+    }
+
+    public class StreamComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Stream;
+    }
+
+    public class ColorTextComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.ColorText;
+    }
+
+    public class HdmiComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Hdmi;
+    }
 }

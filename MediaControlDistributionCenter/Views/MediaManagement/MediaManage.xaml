@@ -24,7 +24,7 @@
         <materialDesign:DialogHost.DialogContentTemplate>
             <DataTemplate>
                 <DataTemplate.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:MediaGroupViewModel}">
+                    <DataTemplate DataType="{x:Type viewmodels:ProgramGroupViewModel}">
                         <DockPanel LastChildFill="False" Background="#090A0E">
                             <Grid Width="500" Height="300" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
@@ -209,7 +209,7 @@
                             </Grid>
                         </Border>
                     </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewmodels:MediaViewModel}">
+                    <DataTemplate DataType="{x:Type viewmodels:ProgramViewModel}">
                         <Border BorderThickness="1" Background="#090A0E">
                             <DockPanel LastChildFill="False">
                                 <Grid Width="889" Height="600" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">

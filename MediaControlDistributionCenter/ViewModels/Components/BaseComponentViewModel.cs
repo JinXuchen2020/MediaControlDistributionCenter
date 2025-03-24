@@ -334,7 +334,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
-                case Models.MediaType.Text:
+                default:
                     isFile = false;
                     source = component.Source;
                     isShowInfo = true;
