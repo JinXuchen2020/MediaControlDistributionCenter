@@ -353,6 +353,7 @@
     <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_BigIcon">大图</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_List">列表</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Preview_Title">媒体预览</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_GroupDialogTitle">媒体分组</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_MediaDialogTitle">媒体信息</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_100">媒体名称</sys:String>

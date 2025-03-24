@@ -64,7 +64,6 @@ namespace MediaControlDistributionCenter
             LanguageTool.Instance.InitLanguageResourceCache(GetLanguageResourceCache());
 
             SQLite.InitServer();
-            SQLite.DbClient.DbMaintenance.DropTable<Media>();
             SQLite.InitTables();
 
             FtpServer server = new FtpServer();

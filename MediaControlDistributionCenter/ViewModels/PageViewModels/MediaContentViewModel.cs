@@ -27,7 +27,16 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<MediaGroupViewModel> mediaGroups;
 
         [ObservableProperty]
-        private string selectedType = "all";
+        private string selectedType = "All";
+
+        [ObservableProperty]
+        private int allCount;
+
+        [ObservableProperty]
+        private int videoCount;
+
+        [ObservableProperty]
+        private int imageCount;
 
         [ObservableProperty]
         private long? selectedGroupId;
@@ -62,7 +71,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return result;
             }));
 
-            var type = SelectedType == "all" ? null : SelectedType;
+            var type = SelectedType == "All" ? null : SelectedType;
             var medias = mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
@@ -70,6 +79,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 result.Binding(c);
                 return result;
             }));
+
+            var allMedias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            AllCount = allMedias.Count;
+            VideoCount = allMedias.Where(c => c.Type == "Video").Count();
+            ImageCount = allMedias.Where(c => c.Type == "Image").Count();
         }
 
         public MediaViewModel CreateMedia()
@@ -84,8 +98,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var type = SelectedType == "all" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var type = SelectedType == "All" ? null : SelectedType;
+            var medias = mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new MediaViewModel();

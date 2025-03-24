@@ -4,9 +4,12 @@ using MaterialDesignThemes.Wpf;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
+using MediaControlDistributionCenter.Views.DeviceManagement;
+using MediaControlDistributionCenter.Views.Diagrams;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -160,7 +163,9 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPreview_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+            var previewWindow = new MediaContentPreview(viewModel);
+            previewWindow.Show();
         }
 
         private void btnUpload_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -199,6 +204,14 @@ namespace MediaControlDistributionCenter.Views
 
                 viewModel.Src = desPath;
             }
+        }
+
+        private void RefreshData_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var tag = ((sender as Border).Tag as string)!;
+            manageViewModel.SelectedType = tag;
+            manageViewModel.SearchString = null;
+            manageViewModel.LoadData();
         }
     }
 }

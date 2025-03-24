@@ -204,7 +204,34 @@
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_MediaStore}" />
             </StackPanel>
             <!--<CustomControls:Breadcrumb BreadcrumbItems="{Binding BreadcrumbItems}" />-->
-            <TextBlock VerticalAlignment="Center" FontSize="16" Margin="10,10" Foreground="White" Text="{DynamicResource LanguageKey_Code_MediaStore}" />
+            <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Margin="0,0,0,10">
+                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=All}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="All" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_All}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="(" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{Binding AllCount}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text=")" />
+                    </StackPanel>
+                </Border>
+                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Video}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Video">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_103}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="(" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{Binding VideoCount}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text=")" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Image}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Image">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_104}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="(" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{Binding ImageCount}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text=")" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
 
             <Grid Height="2">
                 <Border Width="auto" Background="#40476F"/>
@@ -261,8 +288,8 @@
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>
                             </Border>
-                        </StackPanel>
 
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" VerticalAlignment="Top" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >
                                 <TextBox Height="32" Width="185" BorderBrush="#404870" BorderThickness="1" Text="{Binding SearchString}" FontSize="16" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="12,0,0,0"  Foreground="White" />
