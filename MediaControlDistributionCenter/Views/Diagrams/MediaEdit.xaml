@@ -187,7 +187,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="0,10,0,0">
-                                                <CheckBox IsChecked="{Binding IsSelected}" Checked="SetRssContent_Click" Unchecked="SetRssContent_Click" Content="{Binding FieldNameContent}" Tag="{Binding FieldName}" />
+                                                <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding FieldNameContent}" Tag="{Binding FieldName}" />
                                                 <StackPanel Orientation="Horizontal" Margin="10">
                                                     <ComboBox Padding="5" Width="100" BorderBrush="#404870" BorderThickness="1" ItemsSource="{Binding Fonts}" SelectedValue="{Binding FontFamily}" />
                                                     <materialDesign:NumericUpDown Padding="5" Margin="10,0,0,0" Width="100" BorderBrush="#404870" BorderThickness="1" Value="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
