@@ -59,6 +59,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     config.Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width);
                     config.Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height);
                     config.Name = CurrentMedia.Name;
+                    config.UserAccount = CurrentMedia.UserId;
                     config.Ratio = canvas.Width / double.Parse(CurrentMedia.Width);
                 }
             }
@@ -70,6 +71,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width),
                 Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height),
                 Ratio = canvas.Width / double.Parse(CurrentMedia.Width),
+                UserAccount = CurrentMedia.UserId,
                 Pages = new List<MediaPage>()
             };
             this.MediaConfig = new MediaConfigViewModel(config);
@@ -95,6 +97,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     return WebComponentViewModel.CreateInstance(id);
                 case MediaType.Stream:
                     return StreamComponentViewModel.CreateInstance(id);
+                case MediaType.Hdmi:
+                    return HdmiComponentViewModel.CreateInstance(id);
+                case MediaType.Rss:
+                    return RssComponentViewModel.CreateInstance(id);
                 default:
                     return null;
             }
@@ -121,6 +127,18 @@ namespace MediaControlDistributionCenter.ViewModels
                     streamComponent.Width = 220;
                     streamComponent.Height = 220;
                     streamComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "Hdmi":
+                    var hdmiComponent = (component as HdmiComponentViewModel)!;
+                    hdmiComponent.Width = 241;
+                    hdmiComponent.Height = 160;
+                    hdmiComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "Rss":
+                    var rssComponent = (component as RssComponentViewModel)!;
+                    rssComponent.Width = 200;
+                    rssComponent.Height = 200;
+                    rssComponent.DrawContentCommand.Execute(canvas);
                     break;
             }
         }

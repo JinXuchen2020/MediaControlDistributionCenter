@@ -346,7 +346,11 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_186">向下展开</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_187">向上展开</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_188">上下展开</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_189">上下合并</sys:String>  
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_189">上下合并</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_191">显示内容</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_192">标题</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_193">发布时间</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_194">正文</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 

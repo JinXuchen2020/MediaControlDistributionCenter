@@ -343,8 +343,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 // 开始Storyboard
                 storyboard.Begin();
-            }
-            
+            }            
         }
         private void InitializeTimer(RichTextBox target)
         {

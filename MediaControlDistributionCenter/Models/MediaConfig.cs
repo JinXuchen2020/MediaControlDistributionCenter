@@ -29,6 +29,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
+        public string UserAccount { get; set; }
+
         public List<MediaPage> Pages { get; set; }
     }
 
@@ -157,7 +159,39 @@ namespace MediaControlDistributionCenter.ViewModels
     public class RssComponent : BaseComponent
     {
         public override MediaType Type => MediaType.Rss;
+
+        public int Interval { get; set; }
+
+        public IList<RssContent> Contents { get; set; }
+
+        public string PlayMode { get; set; }
+
+        public string Direction { get; set; } //"向右滚动"
+
+        public int RollingSpeed { get; set; }  //滚动速度档位        一共1-10个档位
+
+        public int EffectDuration { get; set; } //特效时长    -毫秒   文本翻页时才用到
+
+        public string ComponentEffect { get; set; } //入场特效               文本翻页时才用到
     }
+
+    public class RssContent
+    {
+        public string FieldName { get; set; }
+
+        public string FontFamily { get; set; }
+
+        public int FontSize { get; set; } = 12;
+
+        public string FontColor { get; set; } = "White";
+
+        public bool IsBold { get; set; }
+
+        public bool IsItalic { get; set; }
+
+        public bool IsUnderline { get; set; }
+    }
+
 
     public class StreamComponent : BaseComponent
     {

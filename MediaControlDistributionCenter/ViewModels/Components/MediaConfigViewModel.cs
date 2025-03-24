@@ -45,6 +45,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double ratio;
 
         [ObservableProperty]
+        private string userAccount;
+
+        [ObservableProperty]
         private ObservableCollection<MediaPageViewModel> pages;
 
         public MediaConfigViewModel(MediaConfig config)
@@ -56,6 +59,7 @@ namespace MediaControlDistributionCenter.ViewModels
             left = config.Left;
             top = config.Top;
             ratio = config.Ratio;
+            userAccount = config.UserAccount;
             pages = new ObservableCollection<MediaPageViewModel>(config.Pages.OrderBy(c => c.Order).Select(c => new MediaPageViewModel(c, config.Ratio)));
         }
 
@@ -70,6 +74,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Left = Left,
                 Top = Top,
                 Ratio = Ratio,
+                UserAccount = UserAccount,
                 Pages = Pages.Select(c => c.ToModel(Ratio)).ToList()
             };
         }
@@ -108,7 +113,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     using var memoryStream = new MemoryStream();
                     png.Save(memoryStream);
                     var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
-                    var filePath = Path.Combine(Constants.OutPath, Name, page.Name);
+                    var filePath = Path.Combine(Constants.OutPath, UserAccount, Name, page.Name);
                     var fileName = "thumbnail.png";
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
