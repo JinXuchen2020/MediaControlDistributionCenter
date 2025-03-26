@@ -16,14 +16,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
     {
         public UserDto User { get; set; }
 
-        public UserGroupDto? UserGroup { get; set; }
-
         public MonitorSync? Monitor { get; set; }
 
-        public UserSync(UserDto user, UserGroupDto? userGrous, MonitorSync? monitor)
+        public UserSync(UserDto user, MonitorSync? monitor)
         {
             this.User = user;
-            this.UserGroup = userGrous;
             this.Monitor = monitor;
         }
     }

@@ -66,6 +66,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isShowInfo;
 
+        [ObservableProperty]
+        private bool isRunningLoaded;
+
         private bool isDragging = false;
         private Point startPoint;
         private FrameworkElement selectedElement;

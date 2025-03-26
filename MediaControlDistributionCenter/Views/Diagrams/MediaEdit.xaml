@@ -1139,6 +1139,22 @@
                                                             </TabItem>
                                                             <TabItem Header="{DynamicResource LanguageKey_Code_MediaStore}" Cursor="">
                                                                 <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
+                                                                    <materialDesign:Card Background="#16171D" Cursor="">
+                                                                        <!--<WrapPanel Width="220">-->
+                                                                            <ItemsControl ItemsSource="{Binding Medias}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                    <ItemsPanelTemplate>
+                                                                                    <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="100" />
+                                                                                    </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Image Source="{Binding Thumbnail }" MouseDown="CreateComponentFromStore_MouseDown" Width="110" />
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
+                                                                        <!--</WrapPanel>-->
+                                                                    </materialDesign:Card>
                                                                 </ScrollViewer>
                                                             </TabItem>
                                                         </TabControl>

@@ -104,8 +104,14 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// <summary>
         /// 用户分组id
         /// </summary>
-        [JsonProperty("userGroupId", NullValueHandling = NullValueHandling.Ignore)]
-        public long? UserGroupId { get; set; }
+        [JsonProperty("adminUserGroupId", NullValueHandling = NullValueHandling.Ignore)]
+        public long? AdminUserGroupId { get; set; }
+
+        /// <summary>
+        /// 用户分组id
+        /// </summary>
+        [JsonProperty("agentUserGroupId", NullValueHandling = NullValueHandling.Ignore)]
+        public long? AgentUserGroupId { get; set; }
 
         [JsonIgnore]
         public string? UserGroupName { get; set; }
@@ -125,7 +131,8 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Password = Password,
                 Role = Role,
                 Status = Status,
-                UserGroupId = UserGroupId,
+                AdminUserGroupId = AdminUserGroupId,
+                AgentUserGroupId = AgentUserGroupId,
                 Region = Region,
                 Company = Company,
                 Contact = Contact,

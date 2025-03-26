@@ -24,7 +24,7 @@ namespace MediaControlDistributionCenter.Converters
 
                 return isVisible == expectedValue;
             }
-            else if (parameter != null)
+            else if (parameter != null && value != null)
             {
                 var expectedValues = parameter.ToString()!.Split(";").ToList();
                 if (expectedValues.Contains(value.ToString()))

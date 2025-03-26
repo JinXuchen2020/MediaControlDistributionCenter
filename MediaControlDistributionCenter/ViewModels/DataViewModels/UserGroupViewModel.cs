@@ -21,8 +21,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isSelected;
 
-        [ObservableProperty]
-        private List<UserViewModel> agents;
+        //[ObservableProperty]
+        //private List<UserViewModel> agents;
 
         public bool IsUpdated { get; set; }
 

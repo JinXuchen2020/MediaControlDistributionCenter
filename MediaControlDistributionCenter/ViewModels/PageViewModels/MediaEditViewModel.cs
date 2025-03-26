@@ -4,10 +4,17 @@ using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using Azure;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -36,13 +43,18 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private BaseComponentViewModel selectedComponent;
 
+        [ObservableProperty]
+        private ObservableCollection<MediaViewModel> medias;
+
         private readonly IFileService fileService;
         private readonly IProgramService programService;
+        private readonly IMediaService mediaService;
 
         public MediaEditViewModel(IFileService fileService)
         {            
             this.fileService = fileService;
             this.programService = GetService<IProgramService>();
+            this.mediaService = GetService<IMediaService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
@@ -79,6 +91,14 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 SelectedPage.IsSelected = true;
             }
+
+            var medias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            {
+                var result = new MediaViewModel();
+                result.Binding(c);
+                return result;
+            }));
         }
 
         public BaseComponentViewModel? CreateComponent(MediaType type, int id)
@@ -166,6 +186,57 @@ namespace MediaControlDistributionCenter.ViewModels
             if (response.Code == 200)
             {
             }
+        }
+
+        [RelayCommand]
+        private void Capture(Canvas canvas)
+        {
+            if(SelectedPage != null)
+            {
+                SelectedPage.ThumbnailFilePath = canvas.Dispatcher.Invoke<string>(() =>
+                {
+                    // 创建一个RenderTargetBitmap
+                    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+                        (int)canvas.ActualWidth,
+                        (int)canvas.ActualHeight,
+                        96, 96,
+                        PixelFormats.Pbgra32);
+                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
+                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+                    // 将MediaElement绘制到RenderTargetBitmap
+                    renderTargetBitmap.Render(canvas);
+                    PngBitmapEncoder png = new PngBitmapEncoder();
+                    png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                    using var memoryStream = new MemoryStream();
+                    png.Save(memoryStream);
+                    var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
+                    var filePath = Path.Combine(Constants.OutPath, CurrentUser.Account, CurrentMedia.Name, SelectedPage.Name);
+                    var fileName = "thumbnail.png";
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
+
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+                });
+
+                SelectedPage.Thumbnail = GetBitmap(SelectedPage.ThumbnailFilePath);
+            }
+        }
+
+        private BitmapImage? GetBitmap(string? source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bitmap.UriSource = new Uri(source);
+            bitmap.EndInit();
+
+            return bitmap;
         }
     }
 }

@@ -131,12 +131,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height * Ratio,
             };
 
+            IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
                 if (sender is WebBrowser target)
                 {
                     target.Navigate(Source);
                     InitializeTimer(target);
+                    IsRunningLoaded = true;
                 }
             };
             result.Unloaded += (sender, e) =>

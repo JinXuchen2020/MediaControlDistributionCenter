@@ -218,7 +218,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingRunningContent()
         {
-           return LoadRssFeed().GetAwaiter().GetResult();
+            IsRunningLoaded = false;
+            var result = LoadRssFeed().GetAwaiter().GetResult();
+            IsRunningLoaded = true;
+            return result;
         }
 
         private void InitializeTimer(Canvas canvas)

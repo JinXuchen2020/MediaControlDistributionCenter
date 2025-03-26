@@ -22,23 +22,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]        
         private string role;
 
-        private long? groupId;
-        
-        public long? GroupId
-        {
-            get => groupId;
-            set
-            {
-                if (groupId != value)
-                {
-                    groupId = value;
-                    OnPropertyChanged(nameof(GroupId));
-                    // 当 groupId 更新时，更新 agentId
-                    AgentId = Groups?.FirstOrDefault(c=>c.Id == groupId)?.AgentId;
-                }
+        [ObservableProperty]
+        private long? adminUserGroupId;
 
-            }
-        }
+        [ObservableProperty]
+        private long? agentUserGroupId;
 
         [ObservableProperty]
         private string? agentId;
@@ -87,10 +75,16 @@ namespace MediaControlDistributionCenter.ViewModels
         public bool isUpload;
 
         [ObservableProperty]
-        private bool isSelected;        
+        private bool isSelected;
+
+        [ObservableProperty]
+        private long? selectedGroupId;
 
         [ObservableProperty]
         private ObservableCollection<UserGroupViewModel> groups;
+
+        [ObservableProperty]
+        private ObservableCollection<UserViewModel> agents;
 
         [ObservableProperty]
         private ObservableCollection<TimeZoneInfo> timeZoneInfos;
@@ -130,7 +124,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Account = Account,
                 Region = Region,
                 Password = Password,
-                UserGroupId = GroupId,
+                AdminUserGroupId = AdminUserGroupId,
+                AgentUserGroupId = AgentUserGroupId,
                 AgentAccount = AgentId,
                 Role = Role,
                 LogoSrc = GetImageData(Logo),
@@ -145,7 +140,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Id = model.Id;
             Role = model.Role.ToLower();
-            GroupId = model.UserGroupId;
+            AdminUserGroupId = model.AdminUserGroupId;
+            AgentUserGroupId = model.AgentUserGroupId;
             AgentId = model.AgentAccount;
             Group = model.UserGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             Account = model.Account;

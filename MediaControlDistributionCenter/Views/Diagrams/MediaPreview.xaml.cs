@@ -142,7 +142,15 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 }
             }
 
-            LoadingOverlay.Visibility = Visibility.Collapsed;
+            this.Dispatcher.Invoke(async () =>
+            {
+                while (viewModel.SelectedPage.Components.Any(c => !c.IsRunningLoaded))
+                {
+                    await Task.Delay(1000);
+                }
+
+                LoadingOverlay.Visibility = Visibility.Collapsed;
+            });
         }
 
         private void DisposeCanvasComponents()

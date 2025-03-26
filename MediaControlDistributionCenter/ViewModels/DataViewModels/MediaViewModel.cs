@@ -59,6 +59,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double height;
 
         [ObservableProperty]
+        private BitmapImage? thumbnail;        
+
+        [ObservableProperty]
         private ObservableCollection<MediaGroupViewModel> groups;
 
         public MediaViewModel()
@@ -94,6 +97,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Src = model.Src; 
             IsSelected = isSelected;
             Extension = model.Extension;
+            Thumbnail = GetBitmap(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, model.Src));
         }
 
         [RelayCommand]
@@ -101,6 +105,41 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+        }
+
+        private BitmapImage? GetBitmap(string? source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+
+            if (Type == "Image")
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                bitmap.UriSource = new Uri(source);
+                bitmap.EndInit();
+
+                return bitmap;
+            }
+            else
+            {
+
+                var videoPath = source;
+                var thumbnailPath = source.Replace(Extension, ".png");
+                VideoScreenCapture.CaptureFrame(videoPath, thumbnailPath, 1);
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                bitmap.UriSource = new Uri(thumbnailPath);
+                bitmap.EndInit();
+
+                return bitmap;
+            }
         }
     }
 }

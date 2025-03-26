@@ -24,6 +24,9 @@ namespace MediaControlDistributionCenter.Services.LocalImps
         public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request)
         {
             Expression result = MakeExpression(request);
+
+            Expression joinUserGroup = Expression.Constant(true);
+            ParameterExpression g = Expression.Parameter(typeof(UserGroup), "g");
             if (request == null || string.IsNullOrEmpty(request.Role))
             {
                 var memberInfo = typeof(User).GetMember("Role").FirstOrDefault();
@@ -32,10 +35,30 @@ namespace MediaControlDistributionCenter.Services.LocalImps
                 var binaryExp = Expression.NotEqual(leftExpression, rightExpression);
                 result = Expression.AndAlso(result, binaryExp);
             }
+            if (request != null && !string.IsNullOrEmpty(request.AgentAccount))
+            {
+                var memberInfo = typeof(User).GetMember("AgentUserGroupId").FirstOrDefault();
+                var leftExpression = Expression.MakeMemberAccess(p, memberInfo!);
+                var groupMemberInfo = typeof(UserGroup).GetMember("Id").FirstOrDefault();
+                var rightExpression = Expression.MakeMemberAccess(g, groupMemberInfo!);
+                var binaryExp = Expression.Equal(Expression.Convert(leftExpression, typeof(long)), Expression.Convert(rightExpression, typeof(long)));
 
+                joinUserGroup = Expression.AndAlso(joinUserGroup, binaryExp);
+            }
+            else
+            {
+                var memberInfo = typeof(User).GetMember("AdminUserGroupId").FirstOrDefault();
+                var leftExpression = Expression.MakeMemberAccess(p, memberInfo!);
+                var groupMemberInfo = typeof(UserGroup).GetMember("Id").FirstOrDefault();
+                var rightExpression = Expression.MakeMemberAccess(g, groupMemberInfo!);
+                var binaryExp = Expression.Equal(Expression.Convert(leftExpression, typeof(long)), Expression.Convert(rightExpression, typeof(long)));
+
+                joinUserGroup = Expression.AndAlso(joinUserGroup, binaryExp);
+            }
+            var groupExp = Expression.Lambda<Func<User, UserGroup, bool>>(joinUserGroup, p, g);
             var finalExp = Expression.Lambda<Func<User, bool>>(result, p);
             var results = await SQLite.QueryTable<User>()
-                .LeftJoin<UserGroup>((c, g) => g.AgentAccount == c.AgentAccount && g.Id == c.UserGroupId)
+                .LeftJoin<UserGroup>(groupExp)
                 .Where(finalExp).OrderByDescending(c => c.Role)
                 .Select<UserDto>()
                 .ToListAsync();
@@ -48,59 +71,58 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             });
         }
 
-        public override async Task<ResultResponse<IEnumerable<UserDto>>> GetPageAll(int pageSize, int page, UserDto? request)
-        {
-            int totalNumber = 0;
-            if (request?.AgentAccount != null)
-            {
-                var results = SQLite.QueryTable<User>()
-                    .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
-                    .Where(u => u.AgentAccount == request.AgentAccount && (request.UserGroupId == null || u.UserGroupId == request.UserGroupId))
-                    .Select<UserDto>().ToPageList(page, pageSize, ref totalNumber)
-                    .ToList();
+        //public override async Task<ResultResponse<IEnumerable<UserDto>>> GetPageAll(int pageSize, int page, UserDto? request)
+        //{
+        //    int totalNumber = 0;
+        //    if (request?.AgentAccount != null)
+        //    {
+        //        var results = SQLite.QueryTable<User>()
+        //            .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
+        //            .Where(u => u.AgentAccount == request.AgentAccount && (request.UserGroupId == null || u.UserGroupId == request.UserGroupId))
+        //            .Select<UserDto>().ToPageList(page, pageSize, ref totalNumber)
+        //            .ToList();
 
-                return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
-                {
-                    Code = 200,
-                    Message = "OK",
-                    Data = results,
-                    Pagination = new Pagination
-                    {
-                        CurrentPage = page,
-                        PageSize = pageSize,
-                        TotalItems = totalNumber,
-                        TotalPages = (long)Math.Ceiling((decimal)totalNumber / pageSize)
-                    }
-                });
-            }
-            else
-            {
-                var results = SQLite.QueryTable<User>()
-                    .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
-                    .Where(u => u.Role != "admin" && (request == null || request.UserGroupId == null || u.UserGroupId == request.UserGroupId)).OrderByDescending(u => u.Role)
-                    .Select<UserDto>().ToPageList(page, pageSize, ref totalNumber)
-                    .ToList();
+        //        return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
+        //        {
+        //            Code = 200,
+        //            Message = "OK",
+        //            Data = results,
+        //            Pagination = new Pagination
+        //            {
+        //                CurrentPage = page,
+        //                PageSize = pageSize,
+        //                TotalItems = totalNumber,
+        //                TotalPages = (long)Math.Ceiling((decimal)totalNumber / pageSize)
+        //            }
+        //        });
+        //    }
+        //    else
+        //    {
+        //        var results = SQLite.QueryTable<User>()
+        //            .LeftJoin<UserGroup>((u, g) => g.AgentAccount == u.AgentAccount && g.Id == u.UserGroupId)
+        //            .Where(u => u.Role != "admin" && (request == null || request.UserGroupId == null || u.UserGroupId == request.UserGroupId)).OrderByDescending(u => u.Role)
+        //            .Select<UserDto>().ToPageList(page, pageSize, ref totalNumber)
+        //            .ToList();
 
-                return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
-                {
-                    Code = 200,
-                    Message = "OK",
-                    Data = results,
-                    Pagination = new Pagination
-                    {
-                        CurrentPage = page,
-                        PageSize = pageSize,
-                        TotalItems = totalNumber,
-                        TotalPages = (long)Math.Ceiling((decimal)totalNumber / pageSize)
-                    }
-                });
-            }
-        }
+        //        return await Task.FromResult(new ResultResponse<IEnumerable<UserDto>>
+        //        {
+        //            Code = 200,
+        //            Message = "OK",
+        //            Data = results,
+        //            Pagination = new Pagination
+        //            {
+        //                CurrentPage = page,
+        //                PageSize = pageSize,
+        //                TotalItems = totalNumber,
+        //                TotalPages = (long)Math.Ceiling((decimal)totalNumber / pageSize)
+        //            }
+        //        });
+        //    }
+        //}
 
         public override async Task<ResultResponse<UserDto>> GetById(long id)
         {
             var result = SQLite.QueryTable<User>()
-                .LeftJoin<UserGroup>((u, g) => u.UserGroupId == g.Id)
                 .Where(u => u.Id == id)
                 .Select<UserDto>()
                 .First();

@@ -131,10 +131,17 @@ namespace MediaControlDistributionCenter.ViewModels
             Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
 
+            IsRunningLoaded = false;
+            result.MediaOpened += (sender, e) =>
+            {
+                IsRunningLoaded = true;
+            };
+
             // 添加鼠标事件处理
             result.MediaFailed += (sender, e) =>
             {
                 MessageBox.Show($"视频加载失败，错误: {e.ErrorException.Message}");
+                IsRunningLoaded = true;
             };
 
             result.MediaEnded += (sender, e) =>

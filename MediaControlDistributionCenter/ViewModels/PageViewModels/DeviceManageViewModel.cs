@@ -209,23 +209,19 @@ namespace MediaControlDistributionCenter.ViewModels
             var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
             if (adminUser != null)
             {
-                users.Add(new UserSync(adminUser, null, null));
+                users.Add(new UserSync(adminUser, null));
             }
 
-            UserGroupDto? userGroup = null;
             if (!string.IsNullOrEmpty(CurrentUser.AgentId))
             {
                 var agentUser = userService.GetAll(new UserDto { Account = CurrentUser.AgentId }).GetAwaiter().GetResult().Data?.FirstOrDefault();
                 if (agentUser != null)
                 {
-                    users.Add(new UserSync(agentUser, null, null));
+                    users.Add(new UserSync(agentUser, null));
                 }
-
-                userGroup = (await userGroupService.GetById(CurrentUser.GroupId!.Value)).Data;
             }
 
-
-            users.Add(new UserSync(CurrentUser.ToModel(), userGroup, new MonitorSync(SelectedDevice!.ToModel(), null)));
+            users.Add(new UserSync(CurrentUser.ToModel(), new MonitorSync(SelectedDevice!.ToModel(), null)));
             result.Users = users;
 
             await SelectedDevice.SendUserCommand.ExecuteAsync(result);

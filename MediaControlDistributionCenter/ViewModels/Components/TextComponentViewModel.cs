@@ -250,8 +250,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Scrolling(result);
             }
 
+            IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
+                IsRunningLoaded = true;
                 if (sender is RichTextBox richTextBox)
                 {
                     if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)

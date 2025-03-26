@@ -153,10 +153,6 @@ namespace MediaControlDistributionCenter.ViewModels
                         foreach (var item in syncUsers.Users)
                         {
                             await userService.Save(item.User);
-                            if (item.UserGroup != null)
-                            {
-                                await userGroupService.Save(item.UserGroup);
-                            }
 
                             if (item.Monitor != null)
                             {

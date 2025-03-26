@@ -87,59 +87,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 page.DisposeCommand.Execute(null);
             }
         }
-
-
-
-        [RelayCommand]
-        private void Capture(Canvas canvas)
-        {
-            foreach (var page in Pages) 
-            {
-                page.ThumbnailFilePath = canvas.Dispatcher.Invoke<string>(() =>
-                {
-                    // 创建一个RenderTargetBitmap
-                    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                        (int)canvas.ActualWidth,
-                        (int)canvas.ActualHeight,
-                        96, 96,
-                        PixelFormats.Pbgra32);
-                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
-                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
-
-                    // 将MediaElement绘制到RenderTargetBitmap
-                    renderTargetBitmap.Render(canvas);
-                    PngBitmapEncoder png = new PngBitmapEncoder();
-                    png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-                    using var memoryStream = new MemoryStream();
-                    png.Save(memoryStream);
-                    var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
-                    var filePath = Path.Combine(Constants.OutPath, UserAccount, Name, page.Name);
-                    var fileName = "thumbnail.png";
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
-
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                });
-
-                page.Thumbnail = GetBitmap(page.ThumbnailFilePath);
-            }            
-        }
-
-        private BitmapImage? GetBitmap(string? source)
-        {
-            if (string.IsNullOrEmpty(source))
-            {
-                return null;
-            }
-            BitmapImage bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            bitmap.UriSource = new Uri(source);
-            bitmap.EndInit();
-
-            return bitmap;
-        }
     }
 
     public partial class MediaPageViewModel : ObservableValidator

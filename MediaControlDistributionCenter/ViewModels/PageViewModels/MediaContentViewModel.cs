@@ -146,16 +146,15 @@ namespace MediaControlDistributionCenter.ViewModels
             foreach (var item in selectedItems)
             {
                 item.GroupId = SelectedGroupId;
-                item.IsSelected = false;
-
                 var response = await mediaService.Save(item.ToModel());
                 if (response.Code == 200)
                 {
-                    SelectedGroupId = null;
-                    LoadData();
-                    CloseDialog();
                 }
             }
+
+            SelectedGroupId = null;
+            LoadData();
+            CloseDialog();
         }
 
         [RelayCommand]

@@ -40,12 +40,12 @@ namespace MediaControlDistributionCenter.ViewModels
         public override void LoadData()
         {
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
+            var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
             groups.Insert(0, new UserGroupDto
             {
                 Id = -1,
                 Name = FindResource("LanguageKey_Code_All"),
-                AgentAccount = CurrentUser.AgentId,
+                AgentAccount = CurrentUser.Account,
             });
 
             this.Groups = new ObservableCollection<UserGroupViewModel>(groups.Select(c =>
@@ -55,7 +55,21 @@ namespace MediaControlDistributionCenter.ViewModels
                 return viewModel;
             }));
 
-            var users = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var query = new UserDto
+            {
+                AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null
+            };
+
+            if (CurrentUser.Role == "agent")
+            {
+                query.AgentUserGroupId = groupId;
+            }
+            else
+            {
+                query.AdminUserGroupId = groupId;
+            }
+
+            var users = userService.GetAll(query).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             this.Users = new ObservableCollection<UserViewModel>(users.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new UserViewModel();
@@ -91,7 +105,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            userViewModel.AgentId = Groups.FirstOrDefault(c => c.Id == userViewModel.GroupId)?.AgentId;
             var response = await userService.Save(userViewModel.ToModel());
             if (response.Code == 200)
             {
@@ -113,10 +126,21 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (viewModel.Role == RoleType.Agent.ToString().ToLower())
                 {
                     var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = viewModel.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
-                    await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                    if (groups.Count > 0)
+                    {
+                        await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                    }
+
+                    var agentUsers = userService.GetAll(new UserDto { AgentAccount = viewModel.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    foreach (var item in agentUsers)
+                    {
+                        item.AgentAccount = null;
+                        await userService.Save(item);
+                    }
                 }
-                LoadData();
             }
+
+            LoadData();
         }
 
         [RelayCommand]
@@ -129,7 +153,17 @@ namespace MediaControlDistributionCenter.ViewModels
                 foreach (var item in Users.Where(c => c.IsSelected && c.Role == "agent"))
                 {
                     var groups = userGroupService.GetAll(new UserGroupDto { AgentAccount = item.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserGroupDto>();
-                    await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                    if (groups.Count > 0)
+                    {
+                        await userGroupService.DeleteBatch(groups.Select(c => c.Id).ToList());
+                    }
+
+                    var agentUsers = userService.GetAll(new UserDto { AgentAccount = item.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    foreach (var user in agentUsers)
+                    {
+                        user.AgentAccount = null;
+                        await userService.Save(user);
+                    }
                 }
 
                 LoadData();
@@ -159,10 +193,15 @@ namespace MediaControlDistributionCenter.ViewModels
 
             foreach (var user in selectedUsers)
             {
-                user.GroupId = viewModel.Id == -1 ? null : viewModel.Id;
-                user.AgentId = viewModel.AgentId;
+                if (CurrentUser.Role == "agent")
+                {
+                    user.AgentUserGroupId = viewModel.Id;                    
+                }
+                else
+                {
+                    user.AdminUserGroupId = viewModel.Id;
+                }
 
-                user.IsSelected = false;
                 var response = await userService.Save(user.ToModel());
                 if (response.Code == 200)
                 {
@@ -177,7 +216,21 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var results = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null, Account = SearchString, UserGroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var query = new UserDto
+            {
+                AgentAccount = CurrentUser.Role == "agent" ? CurrentUser.Account : null,
+                Account = SearchString
+            };
+
+            if (CurrentUser.Role == "agent")
+            {
+                query.AgentUserGroupId = groupId;
+            }
+            else
+            {
+                query.AdminUserGroupId = groupId;
+            }
+            var results = userService.GetAll(query).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             this.Users = new ObservableCollection<UserViewModel>(results.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new UserViewModel();

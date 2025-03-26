@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Xaml.Behaviors.Layout;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -124,8 +125,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height * Ratio,
             };
 
+            IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
+                IsRunningLoaded = true;
                 if (sender is Image image)
                 {
                     if (ComponentEffectKey != null)

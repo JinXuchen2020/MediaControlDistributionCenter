@@ -246,7 +246,7 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
 
             var configModel = manageViewModel.MediaConfig.ToModel();
 
@@ -645,7 +645,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageCapture_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void LeftTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -655,7 +655,7 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+                    manageViewModel.CaptureCommand.Execute(MainCanvas);
                 }
             }
         }
@@ -682,6 +682,14 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = (sender as Button).DataContext as RssContentViewModel;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void CreateComponentFromStore_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var element = (Image)sender;
+            var viewModel = element.DataContext as MediaViewModel;
+
+            UpdateFileComponent(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src));
         }
     }
 

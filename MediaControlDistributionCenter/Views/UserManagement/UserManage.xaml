@@ -66,7 +66,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10" >
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
-                                            <TextBox IsEnabled="False" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding AgentId}" />
+                                            <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" ItemsSource="{Binding Agents}" SelectedValue="{Binding AgentId}" SelectedValuePath="Account" DisplayMemberPath="Account" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10" >
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
@@ -89,7 +89,7 @@
                                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="10">
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" />
-                                            <ComboBox IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                            <ComboBox ItemsSource="{Binding Groups}" SelectedValue="{Binding SelectedGroupId}" SelectedValuePath="Id" DisplayMemberPath="Name" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
@@ -155,10 +155,10 @@
                                         <TextBox VerticalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
                                     </StackPanel>
 
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
+                                    <!--<StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="10">
                                         <TextBlock Width="60" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Agent}" />
                                         <ComboBox x:Name="cbGroups" ItemsSource="{Binding Agents}" DisplayMemberPath="Name" SelectedValue="{Binding AgentId}" SelectedValuePath="Account" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
-                                    </StackPanel>
+                                    </StackPanel>-->
                                 </StackPanel>
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
