@@ -104,6 +104,30 @@ namespace MediaControlDistributionCenter.Views
                             var textComponent = component as TextComponentViewModel;
                             textComponent!.DrawContentCommand.Execute(MainCanvas);
                             break;
+                        case "Hdmi":
+                            var hdmiComponent = component as HdmiComponentViewModel;
+                            hdmiComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Stream":
+                            var streamComponent = component as StreamComponentViewModel;
+                            streamComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Web":
+                            var webComponent = component as WebComponentViewModel;
+                            webComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Rss":
+                            var rssComponent = component as RssComponentViewModel;
+                            rssComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Word":
+                            var wordComponent = component as WordComponentViewModel;
+                            wordComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "ColorText":
+                            var colorComponent = component as BaseComponentViewModel;
+                            colorComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
                     }
                 }
             }
@@ -163,6 +187,13 @@ namespace MediaControlDistributionCenter.Views
             string[] imageExtensions = { ".mp4", ".mp3", ".avi", ".wmv", ".mkv" };
             string ext = System.IO.Path.GetExtension(filePath);
             return imageExtensions.Contains(ext);
+        }
+
+        private bool IsWordFile(string filePath)
+        {
+            string[] extensions = { ".pdf" };
+            string ext = System.IO.Path.GetExtension(filePath);
+            return extensions.Contains(ext);
         }
 
         private void UpdateFileComponent(string filePath, double left = 0 , double top = 0)
@@ -228,6 +259,34 @@ namespace MediaControlDistributionCenter.Views
                 viewModel.Top = top;
                 viewModel.Width = 300;
                 viewModel.Height = 200;
+                viewModel.Source = uploadPath;
+                viewModel.FileName = fileName;
+                viewModel.IsShowInfo = true;
+
+                viewModel.DrawContentCommand.Execute(MainCanvas);
+                manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            }
+            else if (IsWordFile(filePath))
+            {
+                if (currentComponent.Type != MediaType.Word.ToString())
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_195");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
+
+                var uploadPath = System.IO.Path.Combine(localFolder, fileName);
+                if (!File.Exists(uploadPath))
+                {
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
+                }
+
+                var viewModel = currentComponent;
+                viewModel.Left = left;
+                viewModel.Top = top;
+                viewModel.Width = 229;
+                viewModel.Height = 329;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;

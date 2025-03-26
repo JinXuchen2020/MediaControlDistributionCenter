@@ -58,9 +58,9 @@
     <None Remove="Assets\site-rss.png" />
     <None Remove="Assets\site-stream.png" />
     <None Remove="Assets\site-web.png" />
+    <None Remove="Assets\site-word.png" />
     <None Remove="Assets\svg-clean.png" />
     <None Remove="Assets\svg-colortext.png" />
-    <None Remove="Assets\svg-doc.png" />
     <None Remove="Assets\svg-hdmi.png" />
     <None Remove="Assets\svg-image.png" />
     <None Remove="Assets\svg-mixed.png" />
@@ -69,6 +69,7 @@
     <None Remove="Assets\svg-text.png" />
     <None Remove="Assets\svg-video.png" />
     <None Remove="Assets\svg-web.png" />
+    <None Remove="Assets\svg-word.png" />
     <None Remove="Assets\username.png" />
     <None Remove="Assets\user_control.png" />
     <None Remove="Assets\windows-fill.png" />
@@ -145,11 +146,12 @@
     <Resource Include="Assets\site-rss.png" />
     <Resource Include="Assets\site-stream.png" />
     <Resource Include="Assets\site-web.png" />
+    <Resource Include="Assets\site-word.png" />
     <Resource Include="Assets\svg-clean.png" />
     <Resource Include="Assets\svg-mixed.png" />
     <Resource Include="Assets\svg-video.png" />
     <Resource Include="Assets\svg-colortext.png" />
-    <Resource Include="Assets\svg-doc.png" />
+    <Resource Include="Assets\svg-word.png" />
     <Resource Include="Assets\svg-hdmi.png" />
     <Resource Include="Assets\svg-image.png" />
     <Resource Include="Assets\svg-rss.png" />
@@ -173,6 +175,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
+    <PackageReference Include="PdfiumViewer.Core" Version="1.0.4" />
+    <PackageReference Include="PdfiumViewer.Native.x86.no_v8-no_xfa" Version="2018.4.8.256" />
+    <PackageReference Include="PdfiumViewer.Native.x86.v8-xfa" Version="2018.4.8.256" />
+    <PackageReference Include="PdfiumViewer.Native.x86_64.no_v8-no_xfa" Version="2018.4.8.256" />
+    <PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />

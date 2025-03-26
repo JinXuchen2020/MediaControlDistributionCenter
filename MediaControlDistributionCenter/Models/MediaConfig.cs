@@ -146,6 +146,31 @@ namespace MediaControlDistributionCenter.ViewModels
           
     }
 
+    public class ColorTextComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.ColorText;
+
+        public string Background { get; set; }
+
+        public string FontFamily { get; set; }
+
+        public int FontSize { get; set; } = 12;
+
+        public bool IsBold { get; set; }
+
+        public bool IsItalic { get; set; }
+
+        public bool IsUnderline { get; set; }
+
+        public double LetterSpacing { get; set; }
+
+        public string ComponentEffect { get; set; }
+
+        public string Direction { get; set; }
+
+        public int RollingSpeed { get; set; }
+    }
+
     public class WebComponent : BaseComponent
     {
         public override MediaType Type => MediaType.Web;
@@ -154,6 +179,12 @@ namespace MediaControlDistributionCenter.ViewModels
     public class WordComponent : BaseComponent
     {
         public override MediaType Type => MediaType.Word;
+        
+        public int EffectDuration { get; set; }
+        
+        public string ComponentEffect { get; set; }
+        
+        public int PageDuration { get; set; }
     }
 
     public class RssComponent : BaseComponent
@@ -196,11 +227,6 @@ namespace MediaControlDistributionCenter.ViewModels
     public class StreamComponent : BaseComponent
     {
         public override MediaType Type => MediaType.Stream;
-    }
-
-    public class ColorTextComponent : BaseComponent
-    {
-        public override MediaType Type => MediaType.ColorText;
     }
 
     public class HdmiComponent : BaseComponent

@@ -138,6 +138,18 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                             var streamComponent = component as StreamComponentViewModel;
                             streamComponent!.DrawRunningContentCommand.Execute(MainCanvas);
                             break;
+                        case "Rss":
+                            var rssComponent = component as RssComponentViewModel;
+                            rssComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Hdmi":
+                            var hdmiComponent = component as HdmiComponentViewModel;
+                            hdmiComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Word":
+                            var wordComponent = component as WordComponentViewModel;
+                            wordComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
                     }
                 }
             }

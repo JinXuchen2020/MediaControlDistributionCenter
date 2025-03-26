@@ -32,7 +32,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string componentEffectKey;
 
-        private DispatcherTimer? _timer;        
+        private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
         public override string Type => "Image";

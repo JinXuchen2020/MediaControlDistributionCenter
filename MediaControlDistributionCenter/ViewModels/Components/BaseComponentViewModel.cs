@@ -337,6 +337,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
+                case Models.MediaType.Word:
+                    isFile = true;
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
+                    isShowInfo = !string.IsNullOrEmpty(component.Source);
+                    break;
                 default:
                     isFile = false;
                     source = component.Source;
@@ -366,7 +372,10 @@ namespace MediaControlDistributionCenter.ViewModels
             if (!string.IsNullOrEmpty(Source))
             {
                 var element = DrawingRunningContent();
-                canvas.Children.Add(element);
+                if (element != null)
+                {
+                    canvas.Children.Add(element);
+                }
             }
         }
 

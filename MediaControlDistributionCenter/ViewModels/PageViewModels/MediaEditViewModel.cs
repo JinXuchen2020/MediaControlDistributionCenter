@@ -119,6 +119,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     return HdmiComponentViewModel.CreateInstance(id);
                 case MediaType.Rss:
                     return RssComponentViewModel.CreateInstance(id);
+                case MediaType.Word:
+                    return WordComponentViewModel.CreateInstance(id);
                 default:
                     return null;
             }
@@ -157,6 +159,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     rssComponent.Width = 200;
                     rssComponent.Height = 200;
                     rssComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "Word":
+                    var wordComponent = (component as WordComponentViewModel)!;
+                    wordComponent.Width = 229;
+                    wordComponent.Height = 329;
+                    wordComponent.DrawContentCommand.Execute(canvas);
                     break;
             }
         }

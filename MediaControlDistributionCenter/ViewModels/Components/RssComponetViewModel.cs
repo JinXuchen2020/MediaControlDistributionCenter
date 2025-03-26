@@ -130,7 +130,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = 5,
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
-                Source = "https://www.baidu.com",
+                Source = "about:blank",
                 Interval = 10,
                 PlayMode = "pageTurning",
                 ComponentEffect = "FadeIn",

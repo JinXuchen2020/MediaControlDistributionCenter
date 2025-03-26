@@ -158,6 +158,23 @@ namespace MediaControlDistributionCenter.ViewModels
                     case MediaType.Text:
                         result = new TextComponentViewModel((TextComponent)c, ratio);
                         break;
+                    case MediaType.Hdmi:
+                        result = new HdmiComponentViewModel((HdmiComponent)c, ratio);
+                        break;
+                    case MediaType.Rss:
+                        result = new RssComponentViewModel((RssComponent)c, ratio);
+                        break;
+                    case MediaType.Stream:
+                        result = new StreamComponentViewModel((StreamComponent)c, ratio);
+                        break;
+                    case MediaType.Web:
+                        result = new WebComponentViewModel((WebComponent)c, ratio);
+                        break;
+                    case MediaType.Word:
+                        result = new WordComponentViewModel((WordComponent)c, ratio);
+                        break;
+                    case MediaType.ColorText:
+                        break;
                 }
 
                 return result;
