@@ -169,6 +169,8 @@ namespace MediaControlDistributionCenter.ViewModels
         public string Direction { get; set; }
 
         public int RollingSpeed { get; set; }
+
+        public bool IsLoopEnabled { get; set; }
     }
 
     public class WebComponent : BaseComponent

@@ -11,6 +11,7 @@
     <UserControl.Resources>
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <Style x:Key="LeftAlignedCheckBoxStyle" TargetType="CheckBox">
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -265,13 +266,37 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="4" Margin="10">
+                                    <StackPanel Grid.Row="4" Margin="10" Grid.ColumnSpan="2">
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_103}" />
                                             <ComboBox materialDesign:HintAssist.Hint="{Binding Type}" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" SelectedValue="{Binding Type}" SelectedValuePath="Tag" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
                                                 <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Program}" Tag="PROGRAM"  />
                                                 <ComboBoxItem Content="{DynamicResource LanguageKey_Code_AD}" Tag="AD"/>
                                             </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=AD}">
+                                            <StackPanel Orientation="Horizontal" Margin="10">
+                                                <TextBlock Width="120" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_112}" />
+                                                <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding PlayCountPerHour, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="10">
+                                                <TextBlock Width="80" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_142}" />
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_111}" Click="ValiditySelected_Click" Tag="false" IsChecked="{Binding IsHasValidity, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" />
+                                                    <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_142}" Margin="50,0,0,0" Click="ValiditySelected_Click" Tag="true" IsChecked="{Binding IsHasValidity, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="10" Visibility="{Binding IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                                                <StackPanel Orientation="Horizontal" Height="40">
+                                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_143}" FontSize="16" Width="80" VerticalAlignment="Center"/>
+                                                    <DatePicker Width="250" Height="32" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidStartDate}" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Height="40" Margin="55,0,0,0">
+                                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_144}" FontSize="16" Width="80" VerticalAlignment="Center"/>
+                                                    <DatePicker Width="250" Height="32" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidEndDate}"/>
+                                                </StackPanel>
+                                            </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>

@@ -4,10 +4,12 @@ using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +18,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -27,61 +31,84 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override string Type => "ColorText";
 
+        public List<ComponentEffect> ColorTextEffects => new List<ComponentEffect>
+        {
+            new ComponentEffect()
+            {
+                Key = "ColorText",
+                Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_110"),
+            },
+        };
+
         [ObservableProperty]
         private Color background;
 
         [ObservableProperty]
-        public string Background { get; set; }
+        public FontFamily fontFamily;
 
         [ObservableProperty]
-        public string FontFamily { get; set; }
+        public int fontSize;
 
         [ObservableProperty]
-        public int FontSize { get; set; } = 12;
+        public bool isBold;
 
         [ObservableProperty]
-        public bool IsBold { get; set; }
+        private FontWeight fontWeight;
 
         [ObservableProperty]
-        public bool IsItalic { get; set; }
+        public bool isItalic;
 
         [ObservableProperty]
-        public bool IsUnderline { get; set; }
+        private FontStyle fontStyle;
 
         [ObservableProperty]
-        public double LetterSpacing { get; set; }
+        public bool isUnderline;
 
         [ObservableProperty]
-        public string ComponentEffect { get; set; }
+        private TextDecorationCollection textDecoration;
 
         [ObservableProperty]
-        public string Direction { get; set; }
+        public double letterSpacing;
 
         [ObservableProperty]
-        public int RollingSpeed { get; set; }
+        public string componentEffect;
+
+        [ObservableProperty]
+        public string direction;
+
+        [ObservableProperty]
+        public int rollingSpeed;
+
+        [ObservableProperty]
+        private bool isLoopEnabled;
+
+        [ObservableProperty]
+        private ObservableCollection<FontFamily> fontFamilis;
 
         private DispatcherTimer? _timer;
-        private int currentPlayCount = 0;
 
         public ColorTextComponentViewModel(ColorTextComponent component, double ratio = 1): base(component, ratio)
         {
-            background = (Color)ColorConverter.ConvertFromString(component.Background);
-            foreground = (Color)ColorConverter.ConvertFromString(component.TextColor);
-            playMode = component.PlayMode;
             direction = component.Direction;
-            effectDuration = component.EffectDuration;
-            componentEffectKey = component.ComponentEffect;
-            componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
+            componentEffect = component.ComponentEffect;
             rollingSpeed = component.RollingSpeed;
-            textSize = component.TextSize;
-            letterSpacing = component.LetterSpacing;
-            lineSpacing = component.LineSpacing;
             isLoopEnabled = component.IsLoopEnabled;
+            fontFamilis = new ObservableCollection<FontFamily>(LoadFonts());
+            fontFamily = string.IsNullOrEmpty(component.FontFamily) ? fontFamilis.First() : new FontFamily(component.FontFamily);
+            fontSize = component.FontSize;
+            isBold = component.IsBold;
+            isItalic = component.IsItalic;
+            isUnderline = component.IsUnderline;
+            letterSpacing = component.LetterSpacing;
+            background = (Color)ColorConverter.ConvertFromString(component.Background);
+            fontWeight = component.IsBold ? FontWeights.Bold : FontWeights.Normal;
+            fontStyle = component.IsItalic ? FontStyles.Italic : FontStyles.Normal;
+            textDecoration = component.IsUnderline ? TextDecorations.Underline : null;
         }
 
-        public override TextComponent ToModel(double ratio)
+        public override ColorTextComponent ToModel(double ratio)
         {
-            return new TextComponent
+            return new ColorTextComponent
             {
                 Id = Id,
                 Name = Name,
@@ -94,179 +121,163 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = Source,
                 Timeline = Timeline,
                 Background = Background.ToString(),
-                TextColor = Foreground.ToString(),
-                PlayMode = PlayMode,
                 Direction = Direction,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
-                EffectDuration = EffectDuration,
-                ComponentEffect = ComponentEffectKey,
-                RollingSpeed = RollingSpeed == 0 ? 1 : RollingSpeed,
-                TextSize = TextSize,
+                ComponentEffect = ComponentEffect,
+                RollingSpeed = RollingSpeed == 0 ? 3 : RollingSpeed,
                 LetterSpacing = LetterSpacing,
-                LineSpacing = LineSpacing,
                 IsLoopEnabled = IsLoopEnabled,
+                FontFamily = FontFamily.ToString(),
+                FontSize = FontSize,
+                IsBold = IsBold,
+                IsItalic = IsItalic,
+                IsUnderline = IsUnderline,
             };
         }
 
-        public static TextComponentViewModel CreateInstance(int id)
+        public static ColorTextComponentViewModel CreateInstance(int id)
         {
-            return new TextComponentViewModel(new TextComponent
+            return new ColorTextComponentViewModel(new ColorTextComponent
             {
                 Id = id,
-                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{id}",
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_110")}{id}",
                 ZIndex = 1,
-                Type = MediaType.Text,
+                Type = MediaType.ColorText,
                 Source = $"{FindResource("LanguageKey_Code_HelloWorld")}",
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
-                PlayMode = "pageTurning",
-                ComponentEffect = "FadeIn",
-                EffectDuration = 1000,
+                ComponentEffect = "ColorText",
                 Direction = "rollingLeft",
                 Timeline = 5,
                 Background = "black",
-                TextColor = "white",
-                TextSize = 16,
                 IsLoopEnabled = true,
                 LetterSpacing = 2,
-                LineSpacing = 2,
-                RollingSpeed = 2,
+                RollingSpeed = 3,
+                FontSize = 12,
+                IsBold = false,
+                IsItalic = false,
+                IsUnderline = false,
+                FontFamily = "",                 
             });
         }
 
         protected override FrameworkElement DrawingContent()
         {
-            RichTextBox result = new()
+            TextBlock result = new()
             {
-                Width = Width,
-                Height = Height,
-                AllowDrop = true,
-                BorderThickness = new Thickness(2),
-                BorderBrush = new SolidColorBrush(Colors.White),
                 Background = new SolidColorBrush(Colors.Black),
-                DataContext = this,
+                Text = Source,
+                Foreground = new System.Windows.Media.LinearGradientBrush()
+                {
+                    StartPoint = new Point(0, 0),
+                    EndPoint = new Point(1, 1),
+                    GradientStops = new GradientStopCollection()
+                    {
+                        new GradientStop(Colors.Red, 0),
+                        new GradientStop(Colors.Orange, 0.5),
+                        new GradientStop(Colors.Yellow, 1)
+                    }
+                },
+                Effect = new DropShadowEffect()
+                {
+                    Color = Colors.Purple,
+                    Direction = 320,
+                    ShadowDepth = 10,
+                    BlurRadius = 10,
+                },
+                TextWrapping = TextWrapping.Wrap,
             };
 
-            Paragraph paragraph = new Paragraph();
-            Run run = new Run(Source);
+            Border border = new Border
+            {
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(2),
+                Width = Width,
+                Height = Height,
+                DataContext = this,
+                Child = result
+            };
 
-            CreateBinding(paragraph, Paragraph.LineHeightProperty, nameof(LineSpacing));
+            CreateBinding(result, TextBlock.TextProperty, nameof(Source));
+            CreateBinding(result, TextBlock.BackgroundProperty, nameof(Background), new ColorToBrushConverter());
+            CreateBinding(result, TextBlock.FontSizeProperty, nameof(FontSize));
+            CreateBinding(result, TextBlock.FontFamilyProperty, nameof(FontFamily));
+            CreateBinding(result, TextBlock.FontStyleProperty, nameof(FontStyle));
+            CreateBinding(result, TextBlock.FontWeightProperty, nameof(FontWeight));
+            CreateBinding(result, TextBlock.TextDecorationsProperty, nameof(TextDecoration));
 
-            CreateBinding(run, Run.TextProperty, nameof(Source));
-            CreateBinding(run, Run.BackgroundProperty, nameof(Background), new ColorToBrushConverter());
-            CreateBinding(run, Run.ForegroundProperty, nameof(Foreground), new ColorToBrushConverter());
+            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
+            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));
 
-            paragraph.Inlines.Add(run);
-            result.Document.Blocks.Clear();
-            result.Document.Blocks.Add(paragraph);
-
-            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
-            CreateBinding(result, TextBlock.FontSizeProperty, nameof(TextSize));
-
-            Canvas.SetLeft(result, Left);
-            Canvas.SetTop(result, Top);
-            Canvas.SetZIndex(result, ZIndex);
+            Canvas.SetLeft(border, Left);
+            Canvas.SetTop(border, Top);
+            Canvas.SetZIndex(border, ZIndex);
 
             // 添加鼠标事件处理
-            result.MouseLeftButtonDown += Element_MouseLeftButtonDown;
-            result.MouseLeftButtonUp += Element_MouseLeftButtonUp;
-            result.MouseMove += Element_MouseMove;
-            result.MouseWheel += Element_MouseWheel;
-            result.Loaded += RichTextBox_Loaded;
-            result.MouseDoubleClick += Result_MouseDoubleClick;
-            result.LostFocus += Result_LostFocus;
+            border.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+            border.MouseLeftButtonUp += Element_MouseLeftButtonUp;
+            border.MouseMove += Element_MouseMove;
+            border.MouseWheel += Element_MouseWheel;
 
-            FrameworkElement = result;
+            FrameworkElement = border;
 
-            return result;
-        }
-
-        private void Result_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is RichTextBox richTextBox)
-            {
-                richTextBox.IsReadOnly = true;
-                richTextBox.Focusable = false;
-            }
-        }
-
-        private void Result_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (sender is RichTextBox richTextBox)
-            {
-                richTextBox.IsReadOnly = false;
-                richTextBox.Focusable = true;
-                richTextBox.Focus();
-            }
-        }
-
-        private void RichTextBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is RichTextBox richTextBox)
-            {
-                richTextBox.IsReadOnly = true;
-                richTextBox.Focusable = false;
-            }
+            return border;
         }
 
         protected override FrameworkElement DrawingRunningContent()
         {
-            RichTextBox result = new()
+            TextBlock result = new()
             {
-                Width = Width * Ratio,
-                Height = Height * Ratio,
-                IsReadOnly = true,
-                Focusable = false,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏垂直滚动条
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏水平滚动条
-                Background = Brushes.Transparent, // 设置背景透明
-                BorderThickness = new Thickness(0), // 去掉边框
-                FontSize = TextSize != 0 ? TextSize : 12
+                Background = new SolidColorBrush(Colors.Black),
+                Text = Source,
+                Foreground = new System.Windows.Media.LinearGradientBrush()
+                {
+                    StartPoint = new Point(0, 0),
+                    EndPoint = new Point(1, 1),
+                    GradientStops = new GradientStopCollection()
+                    {
+                        new GradientStop(Colors.Red, 0),
+                        new GradientStop(Colors.Orange, 0.5),
+                        new GradientStop(Colors.Yellow, 1)
+                    }
+                },
+                Effect = new DropShadowEffect()
+                {
+                    Color = Colors.Purple,
+                    Direction = 320,
+                    ShadowDepth = 10,
+                    BlurRadius = 10,
+                },
+                FontSize = FontSize,
+                FontWeight = FontWeight,
+                FontStyle = FontStyle,
+                TextDecorations = TextDecoration,
+                FontFamily = FontFamily,
             };
 
-            Paragraph paragraph = new Paragraph();
-            Run run = new Run(Source);
-            run.Foreground = new SolidColorBrush(Foreground);
-            run.Background = new SolidColorBrush(Background);
-            paragraph.LineHeight = LineSpacing;
-            paragraph.Inlines.Add(run);
-            result.Document.Blocks.Clear();
-            result.Document.Blocks.Add(paragraph);
-
-            // 创建一个Canvas来放置RichTextBox
-            Canvas canvas = new Canvas
+            Border border = new Border
             {
+                BorderBrush = Brushes.Black,
+                BorderThickness = new Thickness(1),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
+                Child = result
             };
-
-            // 将RichTextBox添加到Canvas中
-            canvas.Children.Add(result);
-
-            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
-            {
-                Scrolling(result);
-            }
 
             IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
                 IsRunningLoaded = true;
-                if (sender is RichTextBox richTextBox)
+                if (sender is TextBlock target)
                 {
-                    if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(richTextBox);
-                    }
+                    Scrolling(target);
 
-                    InitializeTimer(richTextBox);
-                }                
+                    InitializeTimer(target);
+                }
             };
             result.Unloaded += (sender, e) =>
             {
-                currentPlayCount = 0;
                 if (_timer != null)
                 {
                     _timer.Stop();
@@ -274,14 +285,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             };
 
-            Canvas.SetLeft(canvas, Left * Ratio);
-            Canvas.SetTop(canvas, Top * Ratio);
-            Canvas.SetZIndex(canvas, ZIndex);
+            Canvas.SetLeft(border, Left * Ratio);
+            Canvas.SetTop(border, Top * Ratio);
+            Canvas.SetZIndex(border, ZIndex);
 
-            return canvas;
+            return border;
         }
 
-        private void Scrolling(RichTextBox target)
+        private void Scrolling(TextBlock target)
         {
             // 创建一个TranslateTransform来控制滚动
             TranslateTransform translateTransform = new TranslateTransform();
@@ -309,45 +320,7 @@ namespace MediaControlDistributionCenter.ViewModels
             storyboard.Begin();
         }
 
-        public double GetFormattedTextWidth(TextPointer start, TextPointer end, System.Windows.Media.FontFamily fontFamily, double fontSize)
-        {
-            var textRange = new TextRange(start, end);
-            var formattedText = new FormattedText(
-                textRange.Text,
-                System.Globalization.CultureInfo.CurrentUICulture,
-                FlowDirection.LeftToRight,
-                new Typeface(fontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                fontSize,
-                Brushes.Black, 1.25
-            );
-
-            return formattedText.WidthIncludingTrailingWhitespace;
-        }
-
-        protected override void FadeIn(FrameworkElement element)
-        {
-            if(element is RichTextBox target)
-            {
-                Storyboard storyboard = new Storyboard();
-                DoubleAnimation doubleAnimation = new DoubleAnimation
-                {
-                    From = 0.0, // 初始不透明度为0（完全透明）
-                    To = 1.0,   // 最终不透明度为1（完全不透明）
-                    Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
-                };
-
-                // 将动画应用到Image的Opacity属性
-                Storyboard.SetTarget(doubleAnimation, target);
-                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(RichTextBox.OpacityProperty));
-
-                // 将动画添加到Storyboard中
-                storyboard.Children.Add(doubleAnimation);
-
-                // 开始Storyboard
-                storyboard.Begin();
-            }            
-        }
-        private void InitializeTimer(RichTextBox target)
+        private void InitializeTimer(TextBlock target)
         {
             if (_timer != null)
             {
@@ -357,27 +330,12 @@ namespace MediaControlDistributionCenter.ViewModels
             _timer.Interval = TimeSpan.FromSeconds(Timeline);
             _timer.Tick += (s, e) => Timer_Tick(target);
             _timer.Start();
-            currentPlayCount++;
         }
 
-        private void Timer_Tick(RichTextBox target)
+        private void Timer_Tick(TextBlock target)
         {
-            if (currentPlayCount < PlayCount)
-            {
-                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                {
-                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
-                }
-
-                currentPlayCount++;
-            }
-            else
-            {
-                var canvas = FindCanvasParent(target);
-                canvas.Children.Remove(target);
-                var mainCanvas = FindCanvasParent(canvas);
-                mainCanvas.Children.Remove(canvas);
-            }
+            var mainCanvas = FindCanvasParent(target);
+            mainCanvas.Children.Remove(target);
         }
     }
 }

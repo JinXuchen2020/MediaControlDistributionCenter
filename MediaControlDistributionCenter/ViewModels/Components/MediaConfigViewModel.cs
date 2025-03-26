@@ -174,6 +174,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         result = new WordComponentViewModel((WordComponent)c, ratio);
                         break;
                     case MediaType.ColorText:
+                        result = new ColorTextComponentViewModel((ColorTextComponent)c, ratio);
                         break;
                 }
 

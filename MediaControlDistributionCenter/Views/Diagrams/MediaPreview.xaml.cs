@@ -150,6 +150,10 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                             var wordComponent = component as WordComponentViewModel;
                             wordComponent!.DrawRunningContentCommand.Execute(MainCanvas);
                             break;
+                        case "ColorText":
+                            var colorTextComponent = component as ColorTextComponentViewModel;
+                            colorTextComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            break;
                     }
                 }
             }

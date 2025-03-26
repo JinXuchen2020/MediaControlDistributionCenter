@@ -239,6 +239,13 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 return;
             }
 
+            if (selectedMedias.Any(c => c.Status == 0))
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_110");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             var selectedMedia = selectedMedias.First();
 
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
@@ -297,6 +304,16 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 {
                     item.IsSelected = false;
                 }
+            }
+        }
+
+        private void ValiditySelected_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            var viewModel = radioButton.DataContext as ProgramViewModel;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                viewModel.IsHasValidity = !string.IsNullOrEmpty(radioButton.Tag?.ToString()) && bool.Parse(radioButton.Tag.ToString()!);
             }
         }
     }

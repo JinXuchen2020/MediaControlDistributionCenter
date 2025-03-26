@@ -537,6 +537,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
         }
+        
+        protected IList<FontFamily> LoadFonts()
+        {
+            // 创建InstalledFontCollection对象
+            ICollection<FontFamily> fontFamilies = Fonts.SystemFontFamilies;
+            return fontFamilies.ToList();
+        }
     }
 
     public class ComponentEffect

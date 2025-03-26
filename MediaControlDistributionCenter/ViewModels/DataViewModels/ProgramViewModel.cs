@@ -11,56 +11,68 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class ProgramViewModel : DataViewModel<ProgramDto>
     {
         [ObservableProperty]
-        public long id;
+        private long id;
 
         [ObservableProperty]
         [Required(ErrorMessage = "请填写节目名称!")]
-        public string name;
+        private string name;
 
         [ObservableProperty]
         [Required(ErrorMessage ="请选择节目类型!")]
-        public string type;
+        private string type;
 
         [ObservableProperty]
-        public string resolution;
+        private string resolution;
 
         [ObservableProperty]
         [Required(ErrorMessage = "请填写节目高度!")]
-        public string width;
+        private string width;
 
         [ObservableProperty]
         [Required(ErrorMessage = "请填写节目宽度!")]
-        public string height;
+        private string height;
 
         [ObservableProperty]
-        public double? size;
+        private double? size;
 
         [ObservableProperty]
-        public int screensCount;
+        private int screensCount;
 
         [ObservableProperty]
-        public string lastUpdatedTime;
+        private string lastUpdatedTime;
 
         [ObservableProperty]
-        public string createdSource;
+        private string createdSource;
 
         [ObservableProperty]
-        public int status;
+        private int status;
 
         [ObservableProperty]
-        public long? groupId;
+        private long? groupId;
 
         [ObservableProperty]
-        public string group;
+        private string group;
 
         [ObservableProperty]
-        public string userId;
+        private string userId;
 
         [ObservableProperty]
         private bool isSelected;
 
         [ObservableProperty]
-        public string rackingBtnContent;
+        private string rackingBtnContent;
+
+        [ObservableProperty]
+        private int? playCountPerHour;
+
+        [ObservableProperty]
+        private bool isHasValidity;
+
+        [ObservableProperty]
+        private string? validStartDate;
+
+        [ObservableProperty]
+        private string? validEndDate;
 
         public override ProgramDto ToModel()
         {
@@ -76,7 +88,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 CreatedSource = CreatedSource,
                 Status = Status,
                 GroupId = GroupId,
-                UserAccount = UserId,                
+                UserAccount = UserId,
+                PlayCountPerHour = PlayCountPerHour,
+                IsHasValidity = IsHasValidity,
+                ValidStartDate = ValidStartDate,
+                ValidEndDate = ValidEndDate,
             };
         }
 
@@ -98,6 +114,10 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSelected = isSelected;
             Group = model.ProgramGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             RackingBtnContent = model.Status == 1 ? FindResource("LanguageKey_Code_OffShelf") : FindResource("LanguageKey_Code_OnShelf");
+            PlayCountPerHour = model.PlayCountPerHour;
+            IsHasValidity = model.IsHasValidity;
+            ValidStartDate = model.ValidStartDate;
+            ValidEndDate = model.ValidEndDate;
         }
         
         [RelayCommand]

@@ -125,7 +125,7 @@ namespace MediaControlDistributionCenter.Views
                             wordComponent!.DrawContentCommand.Execute(MainCanvas);
                             break;
                         case "ColorText":
-                            var colorComponent = component as BaseComponentViewModel;
+                            var colorComponent = component as ColorTextComponentViewModel;
                             colorComponent!.DrawContentCommand.Execute(MainCanvas);
                             break;
                     }
@@ -749,6 +749,33 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = element.DataContext as MediaViewModel;
 
             UpdateFileComponent(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src));
+        }
+
+        private void SelectColorTextColor_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (sender as Button).DataContext as ColorTextComponentViewModel;
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void SetColorTexFontStyle_Click(object sender, RoutedEventArgs e)
+        {
+            var element = (Button)sender;
+            var viewModel = element.DataContext as ColorTextComponentViewModel;
+            switch (element.Tag.ToString())
+            {
+                case "Bold":
+                    viewModel.IsBold = !viewModel.IsBold;
+                    viewModel.FontWeight = viewModel.IsBold ? FontWeights.Bold : FontWeights.Normal;
+                    break;
+                case "Italic":
+                    viewModel.IsItalic = !viewModel.IsItalic;
+                    viewModel.FontStyle = viewModel.IsItalic ? FontStyles.Italic : FontStyles.Normal;
+                    break;
+                case "Underline":
+                    viewModel.IsUnderline = !viewModel.IsUnderline;
+                    viewModel.TextDecoration = viewModel.IsUnderline ? TextDecorations.Underline : null;
+                    break;
+            }
         }
     }
 

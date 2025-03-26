@@ -121,6 +121,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     return RssComponentViewModel.CreateInstance(id);
                 case MediaType.Word:
                     return WordComponentViewModel.CreateInstance(id);
+                case MediaType.ColorText:
+                    return ColorTextComponentViewModel.CreateInstance(id);
                 default:
                     return null;
             }
@@ -165,6 +167,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     wordComponent.Width = 229;
                     wordComponent.Height = 329;
                     wordComponent.DrawContentCommand.Execute(canvas);
+                    break;
+                case "ColorText":
+                    var colorTextComponent = (component as ColorTextComponentViewModel)!;
+                    colorTextComponent.Width = 300;
+                    colorTextComponent.Height = 200;
+                    colorTextComponent.DrawContentCommand.Execute(canvas);
                     break;
             }
         }

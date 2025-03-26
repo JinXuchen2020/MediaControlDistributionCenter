@@ -48,7 +48,7 @@
                     result = target?.ToObject<WordComponent>();
                     break;
                 case MediaType.ColorText:
-                    result = target?.ToObject<TextComponent>();
+                    result = target?.ToObject<ColorTextComponent>();
                     break;
             }
 

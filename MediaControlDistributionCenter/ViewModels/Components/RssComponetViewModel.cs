@@ -215,7 +215,6 @@ namespace MediaControlDistributionCenter.ViewModels
             return bitmap;
         }
 
-
         protected override FrameworkElement DrawingRunningContent()
         {
             IsRunningLoaded = false;
@@ -314,13 +313,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 // 开始Storyboard
                 storyboard.Begin();
             }
-        }
-
-        private IList<FontFamily> LoadFonts()
-        {
-            // 创建InstalledFontCollection对象
-            ICollection<FontFamily> fontFamilies = Fonts.SystemFontFamilies;
-            return fontFamilies.ToList();
         }
 
         private async Task<Canvas> LoadRssFeed()
