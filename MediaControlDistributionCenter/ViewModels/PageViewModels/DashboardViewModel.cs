@@ -89,7 +89,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     Users = new ObservableCollection<UserViewModel>();
 
                     var mediaResponse = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-                    Medias = new ObservableCollection<ProgramViewModel>(mediaResponse.OrderByDescending(c => c.Id).Select(c =>
+                    Medias = new ObservableCollection<ProgramViewModel>(mediaResponse.OrderByDescending(c => c.Id).Take(3).Select(c =>
                     {
                         var viewModel = new ProgramViewModel();
                         viewModel.Binding(c);

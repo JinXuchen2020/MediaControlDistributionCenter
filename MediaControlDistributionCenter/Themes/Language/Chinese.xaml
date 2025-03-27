@@ -133,7 +133,7 @@
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_111">当前节目</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_112">总数</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_113">用户</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">在线显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">显示器</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Management">用户管理</sys:String>

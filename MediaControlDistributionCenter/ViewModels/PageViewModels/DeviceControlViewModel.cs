@@ -112,6 +112,15 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
+                        }
+
+                        if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
+                        {
+                            await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
                         }
                     }
                 }
@@ -289,13 +298,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
-            {
-                await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
-                ErrorMessage = CurrentDevice.ErrorMessage;
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
             var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
             DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c=>
             {

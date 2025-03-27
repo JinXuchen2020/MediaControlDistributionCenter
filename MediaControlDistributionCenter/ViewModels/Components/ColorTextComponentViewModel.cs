@@ -261,8 +261,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
             Border border = new Border
             {
-                BorderBrush = Brushes.Black,
-                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(2),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
                 Child = result

@@ -229,6 +229,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel.DeleteBatchCommand.Execute(null);
+            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
         }
 
         private void btnPublish_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -27,13 +27,16 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private double _ratio;
 
         private int currentPlayCount = 0;
+
+        private MediaPageViewModel CurrentPage;
+
         public MediaPreview(MediaEditViewModel viewModel)
         {
             InitializeComponent();
-            viewModel.SelectedPage = viewModel.MediaConfig.Pages.First();
+            CurrentPage = viewModel.MediaConfig.Pages.First();
             DataContext = viewModel;
 
-            InitializeTimer(viewModel);
+            InitializeTimer();
 
             MainCanvas.Width = Width;
             MainCanvas.Height = Height;
@@ -45,14 +48,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void MediaPreview_Unloaded(object sender, RoutedEventArgs e)
         {
-            var viewModel = (MediaEditViewModel)DataContext;
             DisposeCanvasComponents();
         }
 
         private void MediaPreview_Loaded(object sender, RoutedEventArgs e)
-        {
-            var viewModel = (MediaEditViewModel)DataContext;
-            LoadCanvasComponents(viewModel);
+        {            
+            LoadCanvasComponents();
         }
 
         private void MediaPreview_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -61,7 +62,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             MainCanvas.Height = (sender as Window).Width; 
             _ratio = MainCanvas.Width / 768;
 
-            LoadCanvasComponents((MediaEditViewModel)DataContext);
+            LoadCanvasComponents();
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -69,14 +70,14 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             this.Close();
         }
 
-        private void InitializeTimer(MediaEditViewModel viewModel)
+        private void InitializeTimer()
         {
             if (_timer != null)
             {
                 _timer.Stop();
             }
             _timer = new DispatcherTimer();
-            var pageTimeline = viewModel.SelectedPage.Components.Count == 0 ? 5 : viewModel.SelectedPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+            var pageTimeline = CurrentPage.Components.Count == 0 ? 5 : CurrentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
             _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
             _timer.Tick += Timer_Tick; ;
             _timer.Start();
@@ -86,86 +87,83 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void Timer_Tick(object? sender, EventArgs e)
         {
             var viewModel = (MediaEditViewModel)DataContext;
-            if (currentPlayCount < viewModel.SelectedPage.PlayCount)
+            if (currentPlayCount < CurrentPage.PlayCount)
             {
-                LoadCanvasComponents(viewModel);
-                InitializeTimer(viewModel);
+                LoadCanvasComponents();
+                InitializeTimer();
             }
             else
             {
                 currentPlayCount = 0;
-                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > viewModel.SelectedPage.Order);
+                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > CurrentPage.Order);
                 if (nextPage == null)
                 {
                     nextPage = viewModel.MediaConfig.Pages.First();
                 }
 
-                viewModel.SelectedPage = nextPage;
-                LoadCanvasComponents(viewModel);
-                InitializeTimer(viewModel);
+                CurrentPage = nextPage;
+                LoadCanvasComponents();
+                InitializeTimer();
             }
         }
 
-        private void LoadCanvasComponents(MediaEditViewModel viewModel)
+        private void LoadCanvasComponents()
         {
             LoadingOverlay.Visibility = Visibility.Visible;
             MainCanvas.Visibility = Visibility.Collapsed;
             MainCanvas.Children.Clear();
             var effectComponents = new List<BaseComponentViewModel>();
-            if (viewModel.SelectedPage != null)
+            foreach (var component in CurrentPage.Components)
             {
-                foreach (var component in viewModel.SelectedPage.Components)
+                if (component == null) continue;
+                component.Ratio = _ratio;
+                switch (component.Type)
                 {
-                    if (component == null) continue;
-                    component.Ratio = _ratio;
-                    switch (component.Type)
-                    {
-                        case "Image":
-                            var imageComponent = component as ImageComponentViewModel;
-                            imageComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            effectComponents.Add(imageComponent);
-                            break;
-                        case "Video":
-                            var videoComponent = component as VideoComponentViewModel;
-                            videoComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Text":
-                            var textComponent = component as TextComponentViewModel;
-                            textComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            effectComponents.Add(textComponent);
-                            break;
-                        case "Web":
-                            var webComponent = component as WebComponentViewModel;
-                            webComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Stream":
-                            var streamComponent = component as StreamComponentViewModel;
-                            streamComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Rss":
-                            var rssComponent = component as RssComponentViewModel;
-                            rssComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            effectComponents.Add(rssComponent);
-                            break;
-                        case "Hdmi":
-                            var hdmiComponent = component as HdmiComponentViewModel;
-                            hdmiComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Word":
-                            var wordComponent = component as WordComponentViewModel;
-                            wordComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                        case "ColorText":
-                            var colorTextComponent = component as ColorTextComponentViewModel;
-                            colorTextComponent!.DrawRunningContentCommand.Execute(MainCanvas);
-                            break;
-                    }
+                    case "Image":
+                        var imageComponent = component as ImageComponentViewModel;
+                        imageComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        effectComponents.Add(imageComponent);
+                        break;
+                    case "Video":
+                        var videoComponent = component as VideoComponentViewModel;
+                        videoComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
+                    case "Text":
+                        var textComponent = component as TextComponentViewModel;
+                        textComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        effectComponents.Add(textComponent);
+                        break;
+                    case "Web":
+                        var webComponent = component as WebComponentViewModel;
+                        webComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
+                    case "Stream":
+                        var streamComponent = component as StreamComponentViewModel;
+                        streamComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
+                    case "Rss":
+                        var rssComponent = component as RssComponentViewModel;
+                        rssComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        effectComponents.Add(rssComponent);
+                        break;
+                    case "Hdmi":
+                        var hdmiComponent = component as HdmiComponentViewModel;
+                        hdmiComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
+                    case "Word":
+                        var wordComponent = component as WordComponentViewModel;
+                        wordComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
+                    case "ColorText":
+                        var colorTextComponent = component as ColorTextComponentViewModel;
+                        colorTextComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                        break;
                 }
             }
 
             this.Dispatcher.Invoke(async () =>
             {
-                while (viewModel.SelectedPage.Components.Any(c => !c.IsRunningLoaded))
+                while (CurrentPage.Components.Any(c => !c.IsRunningLoaded))
                 {
                     await Task.Delay(1000);
                 }
@@ -173,7 +171,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 MainCanvas.Visibility = Visibility.Visible;
 
-                foreach (var component in viewModel.SelectedPage.Components)
+                foreach (var component in CurrentPage.Components)
                 {
                     component.EffectExecution();                    
                 }

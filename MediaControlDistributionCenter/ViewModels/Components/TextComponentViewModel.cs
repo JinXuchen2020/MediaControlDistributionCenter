@@ -241,7 +241,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Width = Width * Ratio,
                 Height = Height * Ratio,
-                Margin= new Thickness(10, 0,0,0),
             };
 
             // 将RichTextBox添加到Canvas中

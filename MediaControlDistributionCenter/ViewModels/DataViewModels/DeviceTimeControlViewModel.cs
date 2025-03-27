@@ -95,7 +95,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ExecutionType = ExecuteMethod,
                 ValidDateStart = StartDate.ToShortDateString(),
                 ValidDateEnd = EndDate.ToShortDateString(),
-                IsEnabled = IsSelected ? 1 : Status,
+                IsEnabled = IsSelected ? 1 : 0,
                 RepeatMode = RepeatMode,
                 UserAccount = UserAccount,
             };
@@ -112,7 +112,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Status = model.IsEnabled;
             StartDate = DateTime.Parse(model.ValidDateStart);
             EndDate = DateTime.Parse(model.ValidDateEnd);
-            ValidPeriod = $"{model.ValidDateStart}-{model.ValidDateEnd}";
+            ValidPeriod = $"{StartDate.ToShortDateString()}-{EndDate.ToShortDateString()}";
             StatusText = GetStatus();
             IsSelected = isSelected;
             RepeatMode = model.RepeatMode;

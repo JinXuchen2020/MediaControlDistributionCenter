@@ -72,10 +72,10 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("isHasValidity")]
         public bool IsHasValidity { get; set; }
 
-        [JsonProperty("isHasValidity")]
+        [JsonProperty("validStartDate")]
         public string? ValidStartDate { get; set; }
 
-        [JsonProperty("isHasValidity")]
+        [JsonProperty("validEndDate")]
         public string? ValidEndDate { get; set; }
 
         /// <summary>

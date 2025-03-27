@@ -118,6 +118,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 MediaType = "PROGRAM",
                 UserAccount = manageViewModel.CurrentUser.Account,
                 Status = 1,
+                Resolution = "256*192",
                 CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User"),
             };
 

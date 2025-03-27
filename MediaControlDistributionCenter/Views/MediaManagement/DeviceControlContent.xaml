@@ -401,7 +401,7 @@
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_114}" />
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>
-                                                <DataGridTextColumn Width="1*" Binding="{Binding ValidPeriod}">
+                                                <DataGridTextColumn Width="200" Binding="{Binding ValidPeriod}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_115}" />
                                                     </DataGridTextColumn.Header>
@@ -418,11 +418,11 @@
                                                     </Style>
                                                 </DataGridTextColumn.CellStyle>-->
                                                 </DataGridTextColumn>
-                                                <DataGridTextColumn Width="1*" Binding="{Binding StatusText}">
+                                                <!--<DataGridTextColumn Width="1*" Binding="{Binding StatusText}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_116}" />
                                                     </DataGridTextColumn.Header>
-                                                </DataGridTextColumn>
+                                                </DataGridTextColumn>-->
                                                     
                                                 <!--<DataGridTemplateColumn Header="操作"  Width="80" >
                                                     <DataGridTemplateColumn.CellTemplate>

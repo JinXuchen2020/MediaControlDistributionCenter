@@ -334,7 +334,7 @@ namespace MediaControlDistributionCenter.Views
 
             var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;
 
-            manageViewModel.CurrentMedia.Size = fileSize;
+            manageViewModel.CurrentMedia.Size = Math.Round(fileSize, 2);
             manageViewModel.SaveCommand.Execute(null);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
@@ -416,7 +416,7 @@ namespace MediaControlDistributionCenter.Views
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                manageViewModel.SelectedComponent.Left =Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
+                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
                 manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
                 Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
                 Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top);
@@ -532,42 +532,6 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.SelectedElement = null;
             }
         }
-
-        //private void btnMediaUpOrder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var manageViewModel = (DataContext as MediaEditViewModel)!;
-        //    var currentMedia = manageViewModel.SelectedPage.MixedMedias.First(c => c.IsSelected);
-        //    if (manageViewModel.SelectedPage.MixedMedias.Count > 1)
-        //    {
-        //        var prePage = manageViewModel.SelectedPage.MixedMedias.FirstOrDefault(c => c.Order < currentMedia.Order);
-        //        if (prePage != null)
-        //        {
-        //            var currentOrder = currentMedia.Order;
-        //            currentMedia.Order = prePage.Order;
-        //            prePage.Order = currentOrder;
-        //        }
-
-        //        manageViewModel.SelectedPage.MixedMedias = new System.Collections.ObjectModel.ObservableCollection<MixedMediaViewModel>(manageViewModel.SelectedPage.MixedMedias.OrderBy(c => c.Order).ToList());
-        //    }
-        //}
-
-        //private void btnMediaDownOrder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var manageViewModel = (DataContext as MediaEditViewModel)!;
-        //    var currentMedia = manageViewModel.SelectedPage.MixedMedias.First(c => c.IsSelected);
-        //    if (manageViewModel.SelectedPage.MixedMedias.Count > 1)
-        //    {
-        //        var nextPage = manageViewModel.SelectedPage.MixedMedias.FirstOrDefault(c => c.Order > currentMedia.Order);
-        //        if (nextPage != null)
-        //        {
-        //            var currentOrder = currentMedia.Order;
-        //            currentMedia.Order = nextPage.Order;
-        //            nextPage.Order = currentOrder;
-        //        }
-
-        //        manageViewModel.SelectedPage.MixedMedias = new System.Collections.ObjectModel.ObservableCollection<MixedMediaViewModel>(manageViewModel.SelectedPage.MixedMedias.OrderBy(c => c.Order).ToList());
-        //    }
-        //}
 
         private void SwitchComponent(BaseComponentViewModel viewModel)
         {

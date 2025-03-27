@@ -274,7 +274,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 if (image != null)
                 {
+                    Canvas.SetLeft(image, Left * Ratio);
+                    Canvas.SetTop(image, Top * Ratio);
+                    Canvas.SetZIndex(image, ZIndex);
                     canvas.Children.Add(image);
+                    InitializeTimer(image);
                     RunningElement = image;
                     EffectExecution();
                 }

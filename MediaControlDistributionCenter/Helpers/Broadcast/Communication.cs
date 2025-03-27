@@ -236,7 +236,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         private void NetClient_ReceiveCompleted(byte[] obj)
         {
             string str = Encoding.UTF8.GetString(obj);
-            string[] data = str.Replace("\0", "").Split("|");
+            string[] data = str.Replace("\0", "").Split("|", 3);
             switch (data[0])
             {
                 case "CMD":
