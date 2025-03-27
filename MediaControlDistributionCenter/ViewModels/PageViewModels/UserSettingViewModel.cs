@@ -64,7 +64,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override void LoadData()
         {
-            return;
+            CurrentUser.LoadLogo();
         }
 
         [RelayCommand]

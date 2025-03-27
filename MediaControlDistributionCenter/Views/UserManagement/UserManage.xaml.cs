@@ -1,6 +1,7 @@
 ﻿using Dm.filter;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -136,6 +137,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     RoleText = (string)FindResource("LanguageKey_Code_Role_User")
                 }
             });
+            viewModel.LoadLogo();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -225,13 +227,19 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             {
                 // 获取所选文件的路径
                 string filePath = openFileDialog.FileName;
+                string extension = System.IO.Path.GetExtension(filePath);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                    await ftpClient.UploadFileToFtpServer(filePath, $"{viewModel.Account}{extension}");
 
-                // 显示缩略图
-                BitmapImage bitmap = new BitmapImage(new Uri(filePath));
-                viewModel.LogoThumbnail = bitmap;
-                viewModel.Logo = filePath;
-                viewModel.LogoFileName = System.IO.Path.GetFileName(filePath);
-                viewModel.IsUpload = true;
+                    // 显示缩略图
+                    BitmapImage bitmap = new BitmapImage(new Uri(filePath));
+                    viewModel.LogoThumbnail = bitmap;
+                    viewModel.Logo = filePath;
+                    viewModel.LogoFileName = $"{viewModel.Account}{extension}";
+                    viewModel.IsUpload = true;
+                });
             }
         }
 

@@ -72,7 +72,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private int rollingSpeed;
 
-        public RssComponentViewModel(RssComponent component, double ratio = 1) : base(component, ratio)
+        public RssComponentViewModel(RssComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             playMode = component.PlayMode;
             direction = component.Direction;
@@ -120,7 +120,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
         }
 
-        public static RssComponentViewModel CreateInstance(int id)
+        public static RssComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new RssComponentViewModel(new RssComponent
             {
@@ -139,10 +139,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Direction = "rollingLeft",
                 RollingSpeed = 3,
                 Contents = new List<RssContent>()
-            });
+            },userAccount);
         }
 
-        public override RssComponent ToModel(double ratio)
+        public override RssComponent ToModel(string userAccount, double ratio)
         {
             return new RssComponent
             {

@@ -29,11 +29,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private int currentPlayCount = 0;
 
-        public HdmiComponentViewModel(HdmiComponent component, double ratio = 1) : base(component, ratio)
+        public HdmiComponentViewModel(HdmiComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
         }
 
-        public static HdmiComponentViewModel CreateInstance(int id)
+        public static HdmiComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new HdmiComponentViewModel(new HdmiComponent
             {
@@ -45,10 +45,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 Source = "https://www.baidu.com"
-            });
+            }, userAccount);
         }
 
-        public override HdmiComponent ToModel(double ratio)
+        public override HdmiComponent ToModel(string userAccount, double ratio)
         {
             return new HdmiComponent
             {

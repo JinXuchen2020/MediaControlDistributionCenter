@@ -44,7 +44,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private int currentPlayPage = 1;
         private FrameworkElement RunningElement;
 
-        public WordComponentViewModel(WordComponent component, double ratio = 1) : base(component, ratio)
+        public WordComponentViewModel(WordComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             effectDuration = component.EffectDuration;
             componentEffectKey = component.ComponentEffect;
@@ -52,7 +52,7 @@ namespace MediaControlDistributionCenter.ViewModels
             pageDuration = component.PageDuration;
         }
 
-        public static WordComponentViewModel CreateInstance(int id)
+        public static WordComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new WordComponentViewModel(new WordComponent
             {
@@ -66,10 +66,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 ComponentEffect = "FadeIn",
                 EffectDuration = 1000,
                 PageDuration = 10,
-            });
+            }, userAccount);
         }
 
-        public override WordComponent ToModel(double ratio)
+        public override WordComponent ToModel(string userAccount, double ratio)
         {
             return new WordComponent
             {
@@ -81,7 +81,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Top = Top / ratio,
                 Width = Width / ratio,
                 Height = Height / ratio,
-                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,

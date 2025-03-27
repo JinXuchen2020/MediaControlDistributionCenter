@@ -29,11 +29,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private int currentPlayCount = 0;
 
-        public StreamComponentViewModel(StreamComponent component, double ratio = 1) : base(component, ratio)
+        public StreamComponentViewModel(StreamComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
         }
 
-        public static StreamComponentViewModel CreateInstance(int id)
+        public static StreamComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new StreamComponentViewModel(new StreamComponent
             {
@@ -45,10 +45,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 Source = "https://www.baidu.com"
-            });
+            }, userAccount);
         }
 
-        public override StreamComponent ToModel(double ratio)
+        public override StreamComponent ToModel(string userAccount, double ratio)
         {
             return new StreamComponent
             {

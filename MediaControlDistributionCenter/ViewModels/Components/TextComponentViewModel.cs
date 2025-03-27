@@ -64,7 +64,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private int currentPlayCount = 0;
         private FrameworkElement RunningElement;
 
-        public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
+        public TextComponentViewModel(TextComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             background = (Color)ColorConverter.ConvertFromString(component.Background);
             foreground = (Color)ColorConverter.ConvertFromString(component.TextColor);
@@ -80,7 +80,7 @@ namespace MediaControlDistributionCenter.ViewModels
             isLoopEnabled = component.IsLoopEnabled;
         }
 
-        public override TextComponent ToModel(double ratio)
+        public override TextComponent ToModel(string userAccount, double ratio)
         {
             return new TextComponent
             {
@@ -110,7 +110,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public static TextComponentViewModel CreateInstance(int id)
+        public static TextComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new TextComponentViewModel(new TextComponent
             {
@@ -133,7 +133,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 LetterSpacing = 2,
                 LineSpacing = 2,
                 RollingSpeed = 2,
-            });
+            },userAccount);
         }
 
         protected override FrameworkElement DrawingContent()

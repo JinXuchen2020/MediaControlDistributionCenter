@@ -209,7 +209,7 @@ namespace MediaControlDistributionCenter.ViewModels
             else
             {
                 viewModel?.ShowConfirmDialogCommand.Execute(null);
-                if (viewModel.StatusText == FindResource("LanguageKey_Code_Online"))
+                if (viewModel.IsConntectd())
                 {
                     SelectedDevice = viewModel;
                 }

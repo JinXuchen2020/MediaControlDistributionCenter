@@ -221,10 +221,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\FTP\Client\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MediaControlDistributionCenter.Services\MediaControlDistributionCenter.Services.csproj" />
   </ItemGroup>
 

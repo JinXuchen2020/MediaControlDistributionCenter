@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -25,12 +26,14 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private readonly IMonitorService monitorService;
         private readonly IPlaybackRecordService playbackRecordService;
+        private readonly Communication communication;
 
-        public MediaDevicesViewModel() 
+        public MediaDevicesViewModel(Communication communication) 
         {
             this.monitorService = GetService<IMonitorService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
+            this.communication = communication;
         }
 
         public override void LoadData()
@@ -55,8 +58,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
                     if (existRecord == null) 
                     {
+                        item.ConnectCommand.Execute(communication);
                         string filePath = $"{CurrentMedia.Name}.zip";
-                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
+                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                         if (!string.IsNullOrEmpty(item.ErrorMessage))
                         {
                             ErrorMessage = item.ErrorMessage;

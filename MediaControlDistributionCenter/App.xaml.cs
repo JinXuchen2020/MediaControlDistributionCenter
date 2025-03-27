@@ -3,6 +3,7 @@ using System.Windows;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -34,9 +35,12 @@ namespace MediaControlDistributionCenter
             var connectionMode = new ConnectionMode();
             configuration.Bind("ConnectionMode", connectionMode);
             connectionMode.Mode = "Remote";
-            services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
+            services.AddSingleton(connectionMode);
 
-            services.AddSingleton(new Communication());
+            FtpServer server = new FtpServer();
+            services.AddSingleton(server);
+            services.AddSingleton(new FtpClient(server));
+            services.AddSingleton(new Communication(server));
 
             services.AddLocalServices();
             services.AddRemoteServices();
@@ -65,9 +69,6 @@ namespace MediaControlDistributionCenter
 
             SQLite.InitServer();
             SQLite.InitTables();
-
-            FtpServer server = new FtpServer();
-            server.FtpServerStart();
 
             // 3. 启动主窗口
             var mainWindow = ServicesProvider.GetRequiredService<Login>();

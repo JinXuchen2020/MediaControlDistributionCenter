@@ -32,11 +32,11 @@ namespace MediaControlDistributionCenter.ViewModels
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
-        public WebComponentViewModel(WebComponent component, double ratio = 1) : base(component, ratio)
+        public WebComponentViewModel(WebComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
         }
 
-        public static WebComponentViewModel CreateInstance(int id)
+        public static WebComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new WebComponentViewModel(new WebComponent
             {
@@ -48,10 +48,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 Source = "https://www.baidu.com"
-            });
+            }, userAccount);
         }
 
-        public override WebComponent ToModel(double ratio)
+        public override WebComponent ToModel(string userAccount, double ratio)
         {
             return new WebComponent
             {

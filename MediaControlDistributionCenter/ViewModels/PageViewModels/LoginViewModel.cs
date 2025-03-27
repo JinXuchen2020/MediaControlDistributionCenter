@@ -31,6 +31,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSync;
 
         [ObservableProperty]
+        private bool isSyncing;
+
+        [ObservableProperty]
         private ConnectionMode connectionMode;
 
         [ObservableProperty]
@@ -130,6 +133,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect()
         {
+            if (IsSyncing)
+            {
+                return;
+            }
             communication.Connect(SelectedIpAddress, "5001");
             int count = 1;
             while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -143,6 +150,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
+                IsSyncing = true;
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
@@ -152,23 +160,32 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         foreach (var item in syncUsers.Users)
                         {
-                            await userService.Save(item.User);
-
-                            if (item.Monitor != null)
+                            var respone = await userService.Save(item.User);
+                            if (respone.Code == 200)
                             {
-                                await monitorService.Save(item.Monitor.Monitor);
-                                foreach (var program in item.Monitor.Programs)
+                                if (item.Monitor != null)
                                 {
-                                    await programService.Save(program);
+                                    respone = await monitorService.Save(item.Monitor.Monitor);
+                                    if (respone.Code == 200)
+                                    {
+                                        foreach (var program in item.Monitor.Programs)
+                                        {
+                                            respone = await programService.Save(program);
+                                            if (respone.Code == 200)
+                                            { 
+                                            }
+                                        }
+                                    }
                                 }
-                            }
 
-                            this.SyncUsers.Add(item.User.Account);
+                                this.SyncUsers.Add(item.User.Account);
+                            }
                         }
                     }
 
                     this.IsSync = true;
                     RefreshLogo();
+                    IsSyncing = false;
                 }
                 else
                 {
@@ -178,6 +195,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+            IsSyncing = false;
         }
 
         public override void LoadData()

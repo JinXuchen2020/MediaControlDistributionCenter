@@ -34,12 +34,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private int currentPlayCount;
 
-        public VideoComponentViewModel(VideoComponent component, double ratio = 1) : base(component, ratio)
+        public VideoComponentViewModel(VideoComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             playMode = component.PlayMode;
         }
 
-        public static VideoComponentViewModel CreateInstance(int id)
+        public static VideoComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new VideoComponentViewModel(new VideoComponent
             {
@@ -50,10 +50,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Type = MediaType.Video,
                 PlayCount = 1,
                 PlayDuration = "",
-            });
+            }, userAccount);
         }
 
-        public override VideoComponent ToModel(double ratio)
+        public override VideoComponent ToModel(string userAccount, double ratio)
         {
             return new VideoComponent
             {
@@ -65,7 +65,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Top = Top / ratio,
                 Width = Width / ratio,
                 Height = Height / ratio,
-                Source = Source == null ? string.Empty : Source.Replace(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                Source = Source == null ? string.Empty : Source.Replace(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayMode = PlayMode,
                 PlayCount = PlayCount,

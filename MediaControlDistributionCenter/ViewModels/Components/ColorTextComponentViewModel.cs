@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private FrameworkElement RunningElement;
 
-        public ColorTextComponentViewModel(ColorTextComponent component, double ratio = 1): base(component, ratio)
+        public ColorTextComponentViewModel(ColorTextComponent component, string userAccount, double ratio = 1): base(component, userAccount, ratio)
         {
             direction = component.Direction;
             componentEffect = component.ComponentEffect;
@@ -109,7 +109,7 @@ namespace MediaControlDistributionCenter.ViewModels
             textDecoration = component.IsUnderline ? TextDecorations.Underline : null;
         }
 
-        public override ColorTextComponent ToModel(double ratio)
+        public override ColorTextComponent ToModel(string userAccount, double ratio)
         {
             return new ColorTextComponent
             {
@@ -139,7 +139,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public static ColorTextComponentViewModel CreateInstance(int id)
+        public static ColorTextComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new ColorTextComponentViewModel(new ColorTextComponent
             {
@@ -162,7 +162,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 IsItalic = false,
                 IsUnderline = false,
                 FontFamily = "",                 
-            });
+            }, userAccount);
         }
 
         protected override FrameworkElement DrawingContent()

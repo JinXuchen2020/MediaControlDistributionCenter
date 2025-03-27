@@ -339,11 +339,19 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 }
                 else
                 {
-                    StreamReader streamReader = new StreamReader(fs);
-                    while (streamReader.Peek() > -1)
-                    {
-                        user.dataSession.streamWriter.WriteLine(streamReader.ReadLine());
-                    }
+                    byte[] bytes = new byte[fs.Length];
+                    fs.Read(bytes, 0, bytes.Length);
+                    user.FileSize = bytes.Length;
+                    user.commandSession.networkStream.Write(bytes, 0, bytes.Length);
+                    user.commandSession.networkStream.Flush();
+
+                    //byte[] endSignal = Encoding.ASCII.GetBytes("\n");
+                    //user.commandSession.networkStream.Write(endSignal, 0, endSignal.Length);
+                    //StreamReader streamReader = new StreamReader(fs);
+                    //while (streamReader.Peek() > -1)
+                    //{
+                    //    user.commandSession.networkStream..WriteLine(streamReader.ReadLine());
+                    //}
                 }
 
                 AddInfo("...]发送完毕！");

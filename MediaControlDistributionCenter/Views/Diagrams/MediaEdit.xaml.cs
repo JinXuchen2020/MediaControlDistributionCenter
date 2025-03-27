@@ -432,7 +432,7 @@ namespace MediaControlDistributionCenter.Views
                 PlayCount = 1,
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() } },
                 Components = new List<BaseComponent>()
-            });
+            }, manageViewModel.CurrentUser.Account);
 
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }

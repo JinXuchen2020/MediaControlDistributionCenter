@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
@@ -170,11 +171,16 @@ namespace MediaControlDistributionCenter.ViewModels
             return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
+        public bool IsConntectd()
+        {
+            return client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? true : false;
+        }
+
         [RelayCommand]
         private async Task Connect(Communication client)
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            if (connectionMode.Mode == "Local" && client.netClient.IsConnected)
+            if (connectionMode.Mode == "Local" && client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 this.client = client;
                 StatusText = GetStatus();
@@ -384,13 +390,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
-            if (client == null)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
-            }
+            var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
 
-            var result = await client.UploadFileToFtpServer(filePath);
+            var result = await ftpClient.UploadFileToFtpServer(filePath);
             if (result)
             {
                 UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_118");
@@ -433,13 +435,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
-            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName)).LongLength;
+            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
             var syncObj = new FileSync
             {
-                HostName = client.ftpServer._Ip,
-                ServerPort = int.Parse(client.ftpServer._port),
-                UserName = client.ftpServer._userName,
-                Password = client.ftpServer._userPwd,
+                HostName = client.Heart.FtpIp,
+                ServerPort = int.Parse(client.Heart.FtpPort),
+                UserName = client.Heart.FtpUserName,
+                Password = client.Heart.FtpUserPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };

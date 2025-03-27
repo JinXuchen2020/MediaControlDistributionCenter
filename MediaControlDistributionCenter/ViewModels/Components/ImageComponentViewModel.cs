@@ -39,14 +39,14 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override string Type => "Image";
 
-        public ImageComponentViewModel(ImageComponent component, double ratio = 1) : base(component, ratio)
+        public ImageComponentViewModel(ImageComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             effectDuration = component.EffectDuration;
             componentEffectKey = component.ComponentEffect;
             componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
         }
 
-        public override ImageComponent ToModel(double ratio)
+        public override ImageComponent ToModel(string userAccount, double ratio)
         {
             return new ImageComponent()
             {
@@ -58,7 +58,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Top = Top / ratio,
                 Width = Width / ratio,
                 Height = Height / ratio,
-                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
@@ -67,7 +67,7 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
-        public static ImageComponentViewModel CreateInstance(int id)
+        public static ImageComponentViewModel CreateInstance(string userAccount, int id)
         {
             return new ImageComponentViewModel(new ImageComponent
             {
@@ -80,7 +80,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = 5,
                 ComponentEffect = "FadeIn",
                 EffectDuration = 1000
-            });
+            }, userAccount);
         }
 
         protected override FrameworkElement DrawingContent()

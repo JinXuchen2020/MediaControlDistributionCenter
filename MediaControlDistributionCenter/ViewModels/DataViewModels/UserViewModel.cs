@@ -1,12 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using OpenCvSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -128,7 +130,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 AgentUserGroupId = AgentUserGroupId,
                 AgentAccount = AgentId,
                 Role = Role,
-                LogoSrc = GetImageData(Logo),
+                LogoSrc = LogoFileName,
                 LogoFileName = LogoFileName,
                 TimeZone = TimeZone,
                 Status = Status,
@@ -148,13 +150,46 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = model.Company;
             Region = model.Region;
             Password = model.Password;
-            Logo = model.LogoSrc;
             LogoFileName = model.LogoFileName;
+            //Logo = DownloadLogo();
             TimeZone = model.TimeZone;
-            LogoThumbnail = GetThumbnail();
+            //LogoThumbnail = GetThumbnail();
             IsSelected = isSelected;
             IsUpload = Logo != null;
             TagLine = model.TagLine;
+        }
+
+        public void LoadLogo()
+        {
+            Logo = DownloadLogo();
+            LogoThumbnail = GetThumbnail();
+            IsUpload = Logo != null;
+        }
+
+        public string? DownloadLogo()
+        {
+            if (string.IsNullOrEmpty(LogoFileName)) 
+            {
+                return null;
+            }
+
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, LogoFileName!);
+            if (!File.Exists(filePath)) 
+            {
+                var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                var result = ftpClient.DownloadFile(LogoFileName!).GetAwaiter().GetResult();
+                if (result)
+                {
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, LogoFileName!);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return filePath;
+            
         }
 
         public BitmapImage? GetThumbnail()
@@ -165,7 +200,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     var image = new BitmapImage();
                     image.BeginInit();
-                    image.StreamSource = new MemoryStream(Convert.FromBase64String(Logo));
+                    image.UriSource = new Uri(Logo);
                     image.EndInit();
 
                     return image;

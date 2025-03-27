@@ -1,5 +1,4 @@
-﻿using FluentFTP;
-using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using Newtonsoft.Json;
@@ -17,9 +16,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 {
     public class Communication
     {
-        //Ftp服务
-        public FTP.Server.FtpServer ftpServer = new FTP.Server.FtpServer();
-
         //启动socket 链接
         System.Timers.Timer _heartbeatTimer;
 
@@ -28,7 +24,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         List<string> ReceiveOverCmdStr = new List<string>();
 
-        public string SyncUserResult { get; private set; }
+        public string SyncUserResult => "{\r\n    \"Users\": [\r\n        {\r\n            \"User\": {\r\n                \"account\": \"admin\",\r\n                \"company\": \"山木时代\",\r\n                \"contact\": \"12345678907\",\r\n                \"email\": \"1214@164.com\",\r\n                \"id\": 1,\r\n                \"password\": \"123456\",\r\n                \"role\": \"admin\",\r\n                \"status\": 1,\r\n                \"userGroupId\": 0\r\n            }\r\n        },\r\n        {\r\n            \"Monitor\": {\r\n                \"DeviceControls\": [\r\n                    {\r\n                        \"controlType\": \"Brightness\",\r\n                        \"deviceId\": \"24A\",\r\n                        \"execution\": \"00:00;00\",\r\n                        \"executionType\": \"REAL_TIME\",\r\n                        \"id\": 0,\r\n                        \"isEnabled\": 0,\r\n                        \"repeatMode\": \"\",\r\n                        \"userAccount\": \"user1\",\r\n                        \"validDateEnd\": \"2025/3/27\",\r\n                        \"validDateStart\": \"2025/3/27\",\r\n                        \"value\": 40\r\n                    }\r\n                ],\r\n                \"Monitor\": {\r\n                    \"contactName\": \"ss\",\r\n                    \"contactPhone\": \"156266\",\r\n                    \"deviceId\": \"24A\",\r\n                    \"enabled\": 1,\r\n                    \"height\": 768,\r\n                    \"id\": 1,\r\n                    \"name\": \"显示2\",\r\n                    \"snCode\": \"24A\",\r\n                    \"status\": \"在线\",\r\n                    \"userAccount\": \"user1\",\r\n                    \"validEnd\": \"2025-03-30 00:00:00\",\r\n                    \"validStart\": \"2025-03-27 00:00:00\",\r\n                    \"width\": 567\r\n                },\r\n                \"Programs\": [\r\n                    {\r\n                        \"createdSource\": \"会员\",\r\n                        \"id\": 3,\r\n                        \"isHasValidity\": false,\r\n                        \"lastUpdatedTime\": \"2025-03-27 20:08:00\",\r\n                        \"mediaType\": \"PROGRAM\",\r\n                        \"monitorCount\": 0,\r\n                        \"name\": \"节目名称20250327080808\",\r\n                        \"resolution\": \"256*192\",\r\n                        \"size\": 0.23,\r\n                        \"status\": 1,\r\n                        \"userAccount\": \"user1\"\r\n                    },\r\n                    {\r\n                        \"createdSource\": \"会员\",\r\n                        \"id\": 4,\r\n                        \"isHasValidity\": false,\r\n                        \"lastUpdatedTime\": \"2025-03-27 21:02\",\r\n                        \"mediaType\": \"PROGRAM\",\r\n                        \"monitorCount\": 1,\r\n                        \"name\": \"节目名称20250327085214\",\r\n                        \"resolution\": \"256*192\",\r\n                        \"size\": 0.24,\r\n                        \"status\": 1,\r\n                        \"userAccount\": \"user1\"\r\n                    },\r\n                    {\r\n                        \"createdSource\": \"管理员\",\r\n                        \"id\": 5,\r\n                        \"isHasValidity\": false,\r\n                        \"lastUpdatedTime\": \"2025-03-27 21:13\",\r\n                        \"mediaType\": \"PROGRAM\",\r\n                        \"monitorCount\": 0,\r\n                        \"name\": \"节目名称20250327091336\",\r\n                        \"resolution\": \"256*192\",\r\n                        \"size\": 0.1,\r\n                        \"status\": 1,\r\n                        \"userAccount\": \"user1\"\r\n                    },\r\n                    {\r\n                        \"createdSource\": \"会员\",\r\n                        \"id\": 6,\r\n                        \"isHasValidity\": false,\r\n                        \"lastUpdatedTime\": \"2025-03-27 21:18\",\r\n                        \"mediaType\": \"PROGRAM\",\r\n                        \"monitorCount\": 0,\r\n                        \"name\": \"节目名称20250327091742\",\r\n                        \"resolution\": \"768*576\",\r\n                        \"size\": 0.64,\r\n                        \"status\": 1,\r\n                        \"userAccount\": \"user1\"\r\n                    }\r\n                ]\r\n            },\r\n            \"User\": {\r\n                \"account\": \"user1\",\r\n                \"company\": \"shanm\",\r\n                \"id\": 2,\r\n                \"password\": \"123456\",\r\n                \"region\": \"shh\",\r\n                \"role\": \"user\",\r\n                \"status\": 0,\r\n                \"timeZone\": \"(UTC+08:00) 北京，重庆，香港特别行政区，乌鲁木齐\",\r\n                \"userGroupId\": 0\r\n            }\r\n        }\r\n    ]\r\n}";
 
         public string SyncDeviceControlResult { get; private set; }
 
@@ -38,6 +34,15 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
+
+        public Communication(FtpServer ftpServer)
+        {
+            Heart.FtpIp = ftpServer._Ip;
+            Heart.FtpPort = ftpServer._port;
+            Heart.FtpUserName = ftpServer._userName;
+            Heart.FtpUserPwd = ftpServer._userPwd;
+            Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        }
 
         /// <summary>
         /// 定时心跳包 保持长连接
@@ -63,12 +68,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <param name="e"></param>
         private void _heartbeatTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            Heart.FtpIp = ftpServer._Ip;
-            Heart.FtpPort = ftpServer._port;
-            Heart.FtpUserName = ftpServer._userName;
-            Heart.FtpUserPwd = ftpServer._userPwd;
-            Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
 
@@ -102,120 +101,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
             netClient.Connect(iPEnd);
             netClient.ReceiveCompleted += NetClient_ReceiveCompleted; ;
-        }
-
-        public void StartFtpServer()
-        { 
-            ftpServer.FtpServerStart();
-        }
-
-        public async Task<bool> UploadFileToFtpServer(string filePath)
-        {
-            var loginCmd = $"USER {ftpServer._userName}\n";
-            var verifyCmd = $"PASS {ftpServer._userPwd}\n";
-            var fileName = Path.GetFileName(filePath);
-            var storeCmd = $"STOR {fileName}\n";
-            var result = false;
-            using (TcpClient tcpClient = new TcpClient(ftpServer._Ip, int.Parse(ftpServer._port)))
-            {
-                var stream = tcpClient.GetStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("220"))
-                {
-                    return false;
-                }
-
-                byte[] loginData = Encoding.UTF8.GetBytes(loginCmd);
-                stream.Write(loginData, 0, loginData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("331"))
-                {
-                    return false;
-                }
-
-                byte[] verifyData = Encoding.UTF8.GetBytes(verifyCmd);
-                stream.Write(verifyData, 0, verifyData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("230"))
-                {
-                    return false;
-                }
-
-                byte[] fileData = File.ReadAllBytes(filePath);
-
-                byte[] fileSizeData = Encoding.UTF8.GetBytes($"FILESIZE {fileData.LongLength}\n");
-                stream.Write(fileSizeData, 0, fileSizeData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("225"))
-                {
-                    return false;
-                }
-
-                byte[] storeData = Encoding.UTF8.GetBytes(storeCmd);
-                stream.Write(storeData, 0, storeData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("150"))
-                {
-                    return false;
-                }
-
-                stream.Write(fileData, 0, fileData.Length);
-                byte[] endSignal = Encoding.ASCII.GetBytes("\n");
-                stream.Write(endSignal, 0, endSignal.Length);
-
-                buffer = new byte[1024];
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (connectRsp.Contains("226"))
-                {
-                    return true;
-                }
-                //while (true)
-                //{
-                //    byte[] buffer = new byte[1024];
-                //    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                //    string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                //    switch (connectRsp)
-                //    {
-                //        case string o when o.Contains("220"):
-                //            break;
-                //        case string o when o.Contains("331"):
-                //            break;
-                //        case string o when o.Contains("230"):
-                //            break;
-                //        case string o when o.Contains("226"):
-                //            result = true;
-                //            break;
-                //    }
-
-                //    if (result) break;
-                //}
-            }
-
-            return result;
-        }
+        }        
 
         /// <summary>
         /// 断开与 播控盒链接
@@ -243,10 +129,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     try
                     {
                         ReceiveOverCmdStr.Add(data[1]);
-                        if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
-                        {
-                            SyncUserResult = data[2];
-                        }
+                        //if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
+                        //{
+                        //    SyncUserResult = data[2];
+                        //}
 
                         if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
                         {

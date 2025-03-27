@@ -309,7 +309,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
         }
 
-        public BaseComponentViewModel(BaseComponent component, double ratio)
+        public BaseComponentViewModel(BaseComponent component, string userAccount, double ratio)
         {
             Id = component.Id;
             Name = component.Name;
@@ -327,19 +327,19 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case Models.MediaType.Video:
                     isFile = true;
-                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
                 case Models.MediaType.Image:
                     isFile = true;
-                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
                 case Models.MediaType.Word:
                     isFile = true;
-                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
@@ -351,7 +351,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        public virtual BaseComponent ToModel(double ratio)
+        public virtual BaseComponent ToModel(string userAccount, double ratio)
         {
             return new BaseComponent();
         }

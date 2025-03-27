@@ -121,23 +121,23 @@ namespace MediaControlDistributionCenter.ViewModels
             switch (type)
             {
                 case MediaType.Video:
-                    return VideoComponentViewModel.CreateInstance(id);
+                    return VideoComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Image:
-                    return ImageComponentViewModel.CreateInstance(id);
+                    return ImageComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Text:
-                    return TextComponentViewModel.CreateInstance(id);
+                    return TextComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Web:
-                    return WebComponentViewModel.CreateInstance(id);
+                    return WebComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Stream:
-                    return StreamComponentViewModel.CreateInstance(id);
+                    return StreamComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Hdmi:
-                    return HdmiComponentViewModel.CreateInstance(id);
+                    return HdmiComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Rss:
-                    return RssComponentViewModel.CreateInstance(id);
+                    return RssComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.Word:
-                    return WordComponentViewModel.CreateInstance(id);
+                    return WordComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 case MediaType.ColorText:
-                    return ColorTextComponentViewModel.CreateInstance(id);
+                    return ColorTextComponentViewModel.CreateInstance(CurrentUser.Account, id);
                 default:
                     return null;
             }
