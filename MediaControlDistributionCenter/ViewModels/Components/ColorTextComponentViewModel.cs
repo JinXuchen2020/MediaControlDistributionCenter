@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Models;
+using OpenCvSharp.Dnn;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -86,6 +87,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<FontFamily> fontFamilis;
 
         private DispatcherTimer? _timer;
+
+        private FrameworkElement RunningElement;
 
         public ColorTextComponentViewModel(ColorTextComponent component, double ratio = 1): base(component, ratio)
         {
@@ -271,7 +274,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 IsRunningLoaded = true;
                 if (sender is TextBlock target)
                 {
-                    Scrolling(target);
+                    RunningElement = target;
 
                     InitializeTimer(target);
                 }
@@ -292,7 +295,12 @@ namespace MediaControlDistributionCenter.ViewModels
             return border;
         }
 
-        private void Scrolling(TextBlock target)
+        public override void EffectExecution()
+        {
+            Scrolling(RunningElement);
+        }
+
+        private void Scrolling(FrameworkElement target)
         {
             // 创建一个TranslateTransform来控制滚动
             TranslateTransform translateTransform = new TranslateTransform();

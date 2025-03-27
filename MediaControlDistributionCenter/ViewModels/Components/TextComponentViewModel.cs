@@ -62,6 +62,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
+        private FrameworkElement RunningElement;
 
         public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
         {
@@ -246,11 +247,6 @@ namespace MediaControlDistributionCenter.ViewModels
             // 将RichTextBox添加到Canvas中
             canvas.Children.Add(result);
 
-            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
-            {
-                Scrolling(result);
-            }
-
             IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
@@ -282,7 +278,20 @@ namespace MediaControlDistributionCenter.ViewModels
             return canvas;
         }
 
-        private void Scrolling(RichTextBox target)
+        public override void EffectExecution()
+        {
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
+            {
+                Scrolling(RunningElement);
+            }
+
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
+        }
+
+        private void Scrolling(FrameworkElement target)
         {
             // 创建一个TranslateTransform来控制滚动
             TranslateTransform translateTransform = new TranslateTransform();

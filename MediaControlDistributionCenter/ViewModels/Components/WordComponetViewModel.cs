@@ -42,6 +42,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private DispatcherTimer? _timer;
         private int currentPlayPage = 1;
+        private FrameworkElement RunningElement;
 
         public WordComponentViewModel(WordComponent component, double ratio = 1) : base(component, ratio)
         {
@@ -147,11 +148,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     IsRunningLoaded = true;
                     if (sender is Image image)
                     {
-                        if (ComponentEffectKey != null)
-                        {
-                            Effects.Find(c => c.Key == ComponentEffectKey)?.Action(image);
-                        }
-
+                        RunningElement = image;
                         InitializeTimer(image);
                     }
                 };
@@ -169,6 +166,13 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             
             return result;
+        }
+        public override void EffectExecution()
+        {
+            if (ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
         }
 
         protected override void DisposeContent()
@@ -271,11 +275,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (image != null)
                 {
                     canvas.Children.Add(image);
-                    FrameworkElement = image;
-                    if (ComponentEffect != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(image);
-                    }
+                    RunningElement = image;
+                    EffectExecution();
                 }
             }
         }

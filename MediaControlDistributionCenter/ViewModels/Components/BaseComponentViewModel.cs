@@ -408,6 +408,11 @@ namespace MediaControlDistributionCenter.ViewModels
             return;
         }
 
+        public virtual void EffectExecution()
+        {
+            return;
+        }
+
         protected void Element_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             selectedElement = sender as FrameworkElement;

@@ -109,7 +109,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
         {
             LoadingOverlay.Visibility = Visibility.Visible;
+            MainCanvas.Visibility = Visibility.Collapsed;
             MainCanvas.Children.Clear();
+            var effectComponents = new List<BaseComponentViewModel>();
             if (viewModel.SelectedPage != null)
             {
                 foreach (var component in viewModel.SelectedPage.Components)
@@ -121,6 +123,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         case "Image":
                             var imageComponent = component as ImageComponentViewModel;
                             imageComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            effectComponents.Add(imageComponent);
                             break;
                         case "Video":
                             var videoComponent = component as VideoComponentViewModel;
@@ -129,6 +132,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         case "Text":
                             var textComponent = component as TextComponentViewModel;
                             textComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            effectComponents.Add(textComponent);
                             break;
                         case "Web":
                             var webComponent = component as WebComponentViewModel;
@@ -141,6 +145,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         case "Rss":
                             var rssComponent = component as RssComponentViewModel;
                             rssComponent!.DrawRunningContentCommand.Execute(MainCanvas);
+                            effectComponents.Add(rssComponent);
                             break;
                         case "Hdmi":
                             var hdmiComponent = component as HdmiComponentViewModel;
@@ -166,6 +171,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 }
 
                 LoadingOverlay.Visibility = Visibility.Collapsed;
+                MainCanvas.Visibility = Visibility.Visible;
+
+                foreach (var component in viewModel.SelectedPage.Components)
+                {
+                    component.EffectExecution();                    
+                }
             });
         }
 

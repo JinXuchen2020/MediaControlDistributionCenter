@@ -464,6 +464,7 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.MediaConfig.Pages.Remove(currentPage);
                 manageViewModel.SelectedPage = manageViewModel.MediaConfig.Pages.First();
                 manageViewModel.SelectedPage.IsSelected = true;
+                LoadCanvasComponents(manageViewModel);
             }
         }
 
@@ -697,8 +698,8 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnUpload_Click(object sender, MouseButtonEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
-                if (manageViewModel.SelectedComponent.Type == "Image")
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (manageViewModel.SelectedComponent.Type == "Image")
             {
                 openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
             }

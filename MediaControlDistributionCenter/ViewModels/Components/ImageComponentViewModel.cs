@@ -32,6 +32,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string componentEffectKey;
 
+        private FrameworkElement RunningElement;
+
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
@@ -131,11 +133,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 IsRunningLoaded = true;
                 if (sender is Image image)
                 {
-                    if (ComponentEffectKey != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(image);
-                    }
-
+                    RunningElement = image;
                     InitializeTimer(image);
                 }
             };
@@ -153,6 +151,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
             return result;
+        }
+
+        public override void EffectExecution()
+        {
+            if (ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
         }
 
         protected override void DisposeContent()

@@ -36,6 +36,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private int currentPlayCount = 0;
         private DispatcherTimer? _timer;
+        private FrameworkElement RunningElement;
 
         private Dictionary<string, string> FieldList = new Dictionary<string, string>()
         {
@@ -223,6 +224,19 @@ namespace MediaControlDistributionCenter.ViewModels
             return result;
         }
 
+        public override void EffectExecution()
+        {
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
+            {
+                Scrolling(RunningElement);
+            }
+
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
+        }
+
         private void InitializeTimer(Canvas canvas)
         {
             if (_timer != null)
@@ -248,7 +262,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        private void Scrolling(TextBlock target)
+        private void Scrolling(FrameworkElement target)
         {
             // 创建一个TranslateTransform来控制滚动
             TranslateTransform translateTransform = new TranslateTransform();
@@ -363,16 +377,6 @@ namespace MediaControlDistributionCenter.ViewModels
                                 };
 
                                 panel.Children.Add(valueBlock);
-
-                                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
-                                {
-                                    Scrolling(valueBlock);
-                                }
-
-                                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                                {
-                                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(valueBlock);
-                                }
                             }
                         }
 
@@ -384,6 +388,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                         canvas.Children.Add(border);
                     }
+
+                    RunningElement = canvas;
 
                     Canvas.SetLeft(canvas, Left * Ratio);
                     Canvas.SetTop(canvas, Top * Ratio);
