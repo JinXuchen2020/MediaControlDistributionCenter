@@ -201,7 +201,7 @@ namespace MediaControlDistributionCenter.Views
                 Type = manageViewModel.CommandType,
                 RepeatMode = "day",
                 ExecuteMethod = "SCHEDULED",
-                Status = 1,
+                Status = 0,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
                 UserAccount = manageViewModel.CurrentUser.Account,

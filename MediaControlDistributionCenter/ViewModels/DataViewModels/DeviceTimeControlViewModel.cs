@@ -20,7 +20,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         [Required]
-        public double? value;
+        public double? value = 1;
 
         [ObservableProperty]
         [Required]
@@ -123,11 +123,7 @@ namespace MediaControlDistributionCenter.ViewModels
         public string GetStatus()
         {
             string? result;
-            if (DateTime.Now > EndDate)
-            {
-                result = FindResource("LanguageKey_Code_Expired");
-            }
-            else if(Status == 1)
+            if(Status == 1)
             {
                 result = FindResource("LanguageKey_Code_Enable");
             }
