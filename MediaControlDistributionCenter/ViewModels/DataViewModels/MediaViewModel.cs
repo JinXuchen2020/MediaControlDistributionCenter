@@ -27,6 +27,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private string name;
 
         [ObservableProperty]
+        [Required]
         private string extension;
 
         [ObservableProperty]
@@ -36,7 +37,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? size;
 
         [ObservableProperty]
-        private string? src;
+        [Required]
+        private string src;
 
         [ObservableProperty]
         private string type;

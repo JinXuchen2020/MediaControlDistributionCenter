@@ -75,7 +75,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var groupViewModel = ((sender as StackPanel).DataContext as DeviceGroupViewModel)!;
+            var groupViewModel = ((sender as DockPanel).DataContext as DeviceGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
             manageViewModel.LoadData();
         }
@@ -169,6 +169,26 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                 {
                     item.IsSelected = false;
                 }
+            }
+        }
+
+        private void btnGroupDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceGroupViewModel)!;
+            if (viewModel.Id != -1)
+            {
+                this.Dispatcher.Invoke(async () =>
+                {
+                    manageViewModel.CanDelete = false;
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                    if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                    {
+                        await manageViewModel.DeleteGroupCommand.ExecuteAsync(viewModel);
+                    }
+
+                    manageViewModel.CanDelete = null;
+                });
+
             }
         }
     }

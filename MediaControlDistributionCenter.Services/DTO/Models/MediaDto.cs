@@ -47,7 +47,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 媒体下载地址
         /// </summary>
         [JsonProperty("src", NullValueHandling = NullValueHandling.Ignore)]
-        public string? Src { get; set; }
+        public string Src { get; set; }
 
         /// <summary>
         /// 媒体类型（IMAGE: 图片, VIDEO: 视频）

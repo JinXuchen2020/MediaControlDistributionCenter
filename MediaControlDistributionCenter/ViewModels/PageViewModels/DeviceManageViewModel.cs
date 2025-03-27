@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -121,6 +122,23 @@ namespace MediaControlDistributionCenter.ViewModels
                 LoadData();
                 CloseDialog();
             }
+        }
+
+        [RelayCommand]
+        private async Task DeleteGroup(DeviceGroupViewModel viewModel)
+        {
+            var response = await monitorGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                var agentUsers = monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                foreach (var item in agentUsers)
+                {
+                    item.GroupId = null;
+                    await monitorService.Save(item);
+                }
+            }
+
+            LoadData();
         }
 
         [RelayCommand]

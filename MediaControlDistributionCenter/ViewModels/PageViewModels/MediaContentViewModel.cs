@@ -139,6 +139,23 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task DeleteGroup(MediaGroupViewModel viewModel)
+        {
+            var response = await mediaGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                var agentUsers = mediaService.GetAll(new MediaDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+                foreach (var item in agentUsers)
+                {
+                    item.GroupId = null;
+                    await mediaService.Save(item);
+                }
+            }
+
+            LoadData();
+        }
+
+        [RelayCommand]
         private async Task ChangeGroup()
         {
             var selectedItems = Medias.Where(c => c.IsSelected);

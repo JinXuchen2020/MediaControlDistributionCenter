@@ -35,7 +35,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override void LoadData()
         {
-            var devices = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var result = new DeviceViewModel();

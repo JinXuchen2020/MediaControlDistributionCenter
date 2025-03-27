@@ -212,6 +212,35 @@ namespace MediaControlDistributionCenter.ViewModels
             CloseDialog();
         }
 
+        [RelayCommand]
+        private async Task DeleteGroup(UserGroupViewModel viewModel)
+        {
+            var response = await userGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                if (CurrentUser.Role == RoleType.Agent.ToString().ToLower())
+                {
+                    var agentUsers = userService.GetAll(new UserDto { AgentUserGroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    foreach (var item in agentUsers)
+                    {
+                        item.AgentUserGroupId = null;
+                        await userService.Save(item);
+                    }
+                }
+                if (CurrentUser.Role == RoleType.Admin.ToString().ToLower())
+                {
+                    var agentUsers = userService.GetAll(new UserDto { AdminUserGroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    foreach (var item in agentUsers)
+                    {
+                        item.AdminUserGroupId = null;
+                        await userService.Save(item);
+                    }
+                }
+            }
+
+            LoadData();
+        }
+
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;

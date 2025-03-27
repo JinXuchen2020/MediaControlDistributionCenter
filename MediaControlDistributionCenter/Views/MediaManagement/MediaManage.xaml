@@ -350,10 +350,13 @@
                         <ItemsControl ItemsSource="{Binding MediaGroups}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel MouseDown="StackPanel_MouseDown" Cursor="Hand" Orientation="Horizontal" Height="44" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
+                                    <DockPanel MouseDown="StackPanel_MouseDown" Cursor="Hand" Height="44" Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                         <CheckBox Width="24" IsChecked="{Binding IsSelected}" Style="{StaticResource MaterialDesignCheckBox}" Margin="20,0,10,0" />
                                         <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding Name}" />
-                                    </StackPanel>
+                                        <Button Width="22" Height="22" DockPanel.Dock="Right" Click="btnGroupDelete_Click" Padding="0" Margin="0,0,10,0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray" BorderThickness="0" HorizontalAlignment="Right">
+                                            <materialDesign:PackIcon Kind="DeleteOutline" Foreground="LightGray"  Width="22" Height="22"/>
+                                        </Button>
+                                    </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

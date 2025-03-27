@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -219,6 +220,23 @@ namespace MediaControlDistributionCenter.ViewModels
                     CloseDialog();
                 }                
             }
+        }
+
+        [RelayCommand]
+        private async Task DeleteGroup(ProgramGroupViewModel viewModel)
+        {
+            var response = await programGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                var agentUsers = programService.GetAll(new ProgramDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                foreach (var item in agentUsers)
+                {
+                    item.GroupId = null;
+                    await programService.Save(item);
+                }
+            }
+
+            LoadData();
         }
 
         protected override async Task SearchContent()

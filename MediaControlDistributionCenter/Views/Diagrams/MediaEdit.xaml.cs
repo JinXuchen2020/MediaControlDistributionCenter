@@ -412,6 +412,12 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
             {
+                double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
+                double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
+                double minLeft = 0;
+                double minTop = 0;
+                manageViewModel.SelectedComponent.Left =Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
+                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
                 Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
                 Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top);
             }
@@ -691,7 +697,19 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnUpload_Click(object sender, MouseButtonEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+                if (manageViewModel.SelectedComponent.Type == "Image")
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
+            }
+            else if (manageViewModel.SelectedComponent.Type == "Video")
+            {
+                openFileDialog.Filter = "Video Files|*.mp4;*.mp3;*.avi;*.wmv;*.mkv"; // 过滤器，允许的文件类型
+            }
+            else if (manageViewModel.SelectedComponent.Type == "Word")
+            {
+                openFileDialog.Filter = "PDF Files|*.pdf"; // 过滤器，允许的文件类型
+            }
 
             if (openFileDialog.ShowDialog() == true)
             {

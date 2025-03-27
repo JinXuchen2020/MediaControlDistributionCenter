@@ -62,7 +62,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             manageViewModel.MediaGroups.First(c => c.IsSelected).IsSelected = false;
-            var groupViewModel = ((sender as StackPanel).DataContext as ProgramGroupViewModel)!;
+            var groupViewModel = ((sender as DockPanel).DataContext as ProgramGroupViewModel)!;
             groupViewModel.IsSelected = true;
             manageViewModel.SelectedGroup = groupViewModel;
             manageViewModel.LoadData();
@@ -314,6 +314,26 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
             {
                 viewModel.IsHasValidity = !string.IsNullOrEmpty(radioButton.Tag?.ToString()) && bool.Parse(radioButton.Tag.ToString()!);
+            }
+        }
+
+        private void btnGroupDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as ProgramGroupViewModel)!;
+            if (viewModel.Id != -1)
+            {
+                this.Dispatcher.Invoke(async () =>
+                {
+                    manageViewModel.CanDelete = false;
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                    if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                    {
+                        await manageViewModel.DeleteGroupCommand.ExecuteAsync(viewModel);
+                    }
+
+                    manageViewModel.CanDelete = null;
+                });
+
             }
         }
     }
