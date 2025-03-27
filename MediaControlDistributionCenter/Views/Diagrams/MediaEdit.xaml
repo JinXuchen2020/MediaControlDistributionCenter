@@ -1317,11 +1317,29 @@
                                                             <TabItem Header="{DynamicResource LanguageKey_Code_MediaStore}" Cursor="">
                                                                 <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
                                                                     <materialDesign:Card Background="#16171D" Cursor="">
-                                                                        <!--<WrapPanel Width="220">-->
+                                                                        <StackPanel>
+                                                                            <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=All}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="All" >
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_All}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Video}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Video">
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_103}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Image}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Image">
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_104}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+                                                                            </StackPanel>
                                                                             <ItemsControl ItemsSource="{Binding Medias}">
                                                                                 <ItemsControl.ItemsPanel>
                                                                                     <ItemsPanelTemplate>
-                                                                                    <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="100" />
+                                                                                        <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="100" />
                                                                                     </ItemsPanelTemplate>
                                                                                 </ItemsControl.ItemsPanel>
                                                                                 <ItemsControl.ItemTemplate>
@@ -1330,7 +1348,7 @@
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
                                                                             </ItemsControl>
-                                                                        <!--</WrapPanel>-->
+                                                                        </StackPanel>
                                                                     </materialDesign:Card>
                                                                 </ScrollViewer>
                                                             </TabItem>

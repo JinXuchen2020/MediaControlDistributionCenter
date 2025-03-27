@@ -32,6 +32,9 @@ namespace MediaControlDistributionCenter.ViewModels
         public Canvas Canvas { get; set; }
 
         [ObservableProperty]
+        private string selectedType = "All";
+
+        [ObservableProperty]
         private ProgramViewModel currentMedia;
 
         [ObservableProperty]
@@ -94,6 +97,18 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var medias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
             Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            {
+                var result = new MediaViewModel();
+                result.Binding(c);
+                return result;
+            }));
+        }
+
+        public void RefreshMedias()
+        {
+            var type = SelectedType == "All" ? null : SelectedType;
+            var medias = mediaService.GetAll(new MediaDto { Type = type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new MediaViewModel();
                 result.Binding(c);

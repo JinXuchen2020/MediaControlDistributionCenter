@@ -95,6 +95,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdSyncUser = "CMD|SyncUser|";
 
         /// <summary>
+        /// 返回机顶盒上设备控制记录        
+        /// </summary>
+        public readonly static string CmdSyncDeviceControl = "CMD|SyncDeviceControl|";
+
+        /// <summary>
         /// 发送用户信息到机顶盒上
         /// </summary>
         public readonly static string CmdSendUser = "CMD|SendUser|";

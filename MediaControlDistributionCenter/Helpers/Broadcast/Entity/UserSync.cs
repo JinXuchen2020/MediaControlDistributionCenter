@@ -31,10 +31,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
 
         public IList<ProgramDto> Programs { get; set; }
 
+        public IList<DeviceControlDto> DeviceControls { get; set; }
+
         public MonitorSync(MonitorDto monitor, IList<ProgramDto>? programs)
         {
             this.Monitor = monitor;
             this.Programs = programs ?? new List<ProgramDto>();
+            this.DeviceControls = new List<DeviceControlDto>();
         }
     }
 }

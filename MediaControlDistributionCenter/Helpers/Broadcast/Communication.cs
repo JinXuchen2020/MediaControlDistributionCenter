@@ -30,6 +30,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncUserResult { get; private set; }
 
+        public string SyncDeviceControlResult { get; private set; }
+
 
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
@@ -244,6 +246,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
                         {
                             SyncUserResult = data[2];
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
+                        {
+                            SyncDeviceControlResult = data[2];
                         }
                     }
                     catch (Exception ex)

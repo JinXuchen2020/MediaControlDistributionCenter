@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -95,7 +96,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ConnectDevice()
         {
             if (CurrentDevice != null)
-            {
+            {                
                 await CurrentDevice.ConnectCommand.ExecuteAsync(communication);
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
@@ -192,7 +193,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ExecuteScheduleControl()
         {
-            var viewModels = DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            var viewModels = DeviceTimeControls.ToList();
             if (CurrentDevice != null && viewModels.Count > 0)
             {
                 var modelList = viewModels.Select(c => c.ToModel());
@@ -226,6 +227,11 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
+                }
+
+                foreach (var deviceControl in modelList)
+                {
+                    await deviceControlService.Save(deviceControl);
                 }
             }
         }
@@ -280,6 +286,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (CurrentDevice == null)
             {
+                return;
+            }
+
+            if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
+            {
+                await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
+                ErrorMessage = CurrentDevice.ErrorMessage;
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 return;
             }
             var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();

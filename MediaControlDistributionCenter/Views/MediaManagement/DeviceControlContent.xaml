@@ -116,7 +116,7 @@
                                     <StackPanel Margin="10">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
-                                            <LocalCore:TimeTextBox Text="{Binding ExecuteTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="32" />
+                                            <LocalCore:TimeTextBox Is24Hour="True"  Text="{Binding ExecuteTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="32" />
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Row="5" Margin="10">
@@ -247,7 +247,7 @@
 
                     <!--分页及统计说明-->
                     <Grid Grid.Row="2" Background="Transparent" HorizontalAlignment="Center" >
-                        <WrapPanel  HorizontalAlignment="Right" Margin="6"  DataContext="{Binding GridPagingService}">
+                        <WrapPanel  HorizontalAlignment="Right" Margin="6" >
                             <Button  Content="&lt;"  Background="Transparent" BorderBrush="Transparent"  Foreground="White"  Command="{Binding PrevPage}"  Margin="2"  >
                             </Button>
 

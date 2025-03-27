@@ -777,6 +777,13 @@ namespace MediaControlDistributionCenter.Views
                     break;
             }
         }
+
+        private void RefreshData_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var tag = ((sender as Border).Tag as string)!;
+            manageViewModel.SelectedType = tag;
+            manageViewModel.RefreshMedias();
+        }
     }
 
     public class ComponentDataTemplateSelector : DataTemplateSelector

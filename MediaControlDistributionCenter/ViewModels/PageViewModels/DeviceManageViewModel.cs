@@ -41,6 +41,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorGroupService monitorGroupService;
         private readonly IUserService userService;
         private readonly IUserGroupService userGroupService;
+        private readonly IPlaybackRecordService playbackRecordService;
+        private readonly IProgramService programService;
         private readonly Communication communication;
 
         public DeviceManageViewModel(Communication communication) 
@@ -49,6 +51,8 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
+            this.playbackRecordService = GetService<IPlaybackRecordService>();
+            this.programService = GetService<IProgramService>();
             this.communication = communication;
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
@@ -221,7 +225,19 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            users.Add(new UserSync(CurrentUser.ToModel(), new MonitorSync(SelectedDevice!.ToModel(), null)));
+            var programs = new List<ProgramDto>();
+            var publishRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SelectedDevice.SNumber}).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            
+            foreach (var record in publishRecords) 
+            {
+                var program = programService.GetAll(new ProgramDto { Name = record.MediaName}).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (program != null) 
+                {
+                    programs.Add(program);
+                }
+            }
+
+            users.Add(new UserSync(CurrentUser.ToModel(), new MonitorSync(SelectedDevice!.ToModel(), programs)));
             result.Users = users;
 
             await SelectedDevice.SendUserCommand.ExecuteAsync(result);

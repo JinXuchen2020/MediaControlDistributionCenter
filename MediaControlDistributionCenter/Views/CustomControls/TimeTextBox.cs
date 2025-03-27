@@ -33,6 +33,10 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                             int seconds = timeSeconds % 60;
                             int minutes = (timeSeconds / 60) % 60;
                             int hours = timeSeconds / 60 / 60;
+                            if (textBox.Is24Hour && hours > 23)
+                            {
+                                hours = 23;
+                            }
                             textBox.SetCurrentValue(TimelineProperty, timeSeconds);
                             textBox.SetCurrentValue(TextProperty, $"{hours:D2}:{minutes:D2}:{seconds:D2}");
                         }
@@ -49,7 +53,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                         int seconds = match.Groups["second"].Success ? int.Parse(match.Groups["second"].Value) : 0;
 
                         // 确保小时、分钟和秒都在有效范围内
-                        hours = Math.Min(hours, 100);
+                        hours = textBox.Is24Hour ? Math.Min(hours, 23) : hours;
                         minutes = Math.Min(minutes, 59);
                         seconds = Math.Min(seconds, 59);
 
@@ -60,6 +64,9 @@ namespace MediaControlDistributionCenter.Views.CustomControls
             }));
         public static readonly DependencyProperty TimelineProperty =
             DependencyProperty.Register("Timeline", typeof(int), typeof(TimeTextBox), new PropertyMetadata(0));
+
+        public static readonly DependencyProperty Is24HourProperty =
+           DependencyProperty.Register("Is24Hour", typeof(bool), typeof(TimeTextBox), new PropertyMetadata(false));
 
         public static readonly DependencyProperty IsDisabledProperty =
             DependencyProperty.Register("IsDisabled", typeof(bool), typeof(TimeTextBox), new PropertyMetadata((d, e) =>
@@ -93,6 +100,12 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         {
             get { return (bool)GetValue(IsDisabledProperty); }
             set { SetValue(IsDisabledProperty, value); }
+        }
+
+        public bool Is24Hour
+        {
+            get { return (bool)GetValue(Is24HourProperty); }
+            set { SetValue(Is24HourProperty, value); }
         }
     }
 }

@@ -4,6 +4,8 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -171,12 +173,25 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect(Communication client)
         {
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            if (connectionMode.Mode == "Local" && client.netClient.IsConnected)
+            {
+                this.client = client;
+                StatusText = GetStatus();
+                return;
+            }
+
             if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
                client.Disconnect();
             }
 
             var ipAddress = NetworkTool.GetGatewayIp();
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
+                return;
+            }
             client.Connect(ipAddress, "5001");
             int count = 1;
             while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -438,6 +453,34 @@ namespace MediaControlDistributionCenter.ViewModels
             else
             {
                 SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_121");
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncDeviceControl(IDeviceControlService deviceControlService)
+        {
+            if (client == null)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                var syncResult = JsonConvert.DeserializeObject<IList<DeviceControlDto>>(client.SyncDeviceControlResult);
+                if (syncResult != null)
+                {
+                    foreach (var item in syncResult)
+                    {
+                        await deviceControlService.Save(item);
+                    }
+                }
+            }
+            else
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
             }
         }
 
