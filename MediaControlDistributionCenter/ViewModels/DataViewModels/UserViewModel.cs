@@ -179,13 +179,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
                 var result = ftpClient.DownloadFile(LogoFileName!).GetAwaiter().GetResult();
-                if (result)
+                if (!result)
                 {
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, LogoFileName!);
-                }
-                else
-                {
-                    return null;
+                    filePath = null;
                 }
             }
 
