@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿//using Aspose.Words;
+//using Aspose.Words.Saving;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
@@ -6,6 +8,7 @@ using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PdfiumViewer;
 using SqlSugar;
+using Syncfusion.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -95,7 +98,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Image result = CapturePage(1);
 
-            Border border = new Border
+            System.Windows.Controls.Border border = new System.Windows.Controls.Border
             {
                 BorderBrush = Brushes.White,
                 BorderThickness = new Thickness(2),
@@ -187,19 +190,89 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private Image? CapturePage(int page)
         {
+            Image? result = null;
             if (!string.IsNullOrEmpty(Source))
             {
-                var pdfDocument = PdfDocument.Load(Source);
-                if (page <= pdfDocument.PageCount)
+                var fileExtension = Path.GetExtension(Source);
+                switch (fileExtension)
                 {
-                    var image = pdfDocument.Render(page - 1, 229, 329, true);
-                    var bitmapImage = BitmapSourceFromImage(image);
-                    var imageControl = new Image { Source = bitmapImage, Width = Width, Height = Height };
-                    return imageControl;
+                    case ".pdf":
+                        var pdfDocument = PdfDocument.Load(Source);
+                        if (page <= pdfDocument.PageCount)
+                        {
+                            var image = pdfDocument.Render(page - 1, 229, 329, true);
+                            var bitmapImage = BitmapSourceFromImage(image);
+                            var imageControl = new Image { Source = bitmapImage, Width = Width, Height = Height };
+                            result = imageControl;
+                        }
+                        break;
+                    case ".docx":
+                    case ".doc":
+                        var docDocument = new Syncfusion.DocIO.DLS.WordDocument(Source);
+                        if (page < docDocument.BuiltinDocumentProperties.PageCount)
+                        {
+                            using (Syncfusion.DocIORenderer.DocIORenderer render = new Syncfusion.DocIORenderer.DocIORenderer())
+                            {
+                                var stream = docDocument.RenderAsImages(page - 1, Syncfusion.DocIO.ExportImageFormat.Png);
+                                var docImage = new BitmapImage();
+                                docImage.BeginInit();
+                                docImage.StreamSource = stream;
+                                docImage.CacheOption = BitmapCacheOption.OnLoad;
+                                docImage.EndInit();
+                                result = new Image { Source = docImage, Width = Width, Height = Height };
+                                docDocument.Dispose();
+                                stream.Dispose();
+                            }
+                        }
+                        //if (page <= docDocument.PageCount)
+                        //{
+                        //    var options = new ImageSaveOptions(SaveFormat.Png);
+                        //    options.Resolution = 300;
+                        //    options.PageSet = new PageSet(page -1);
+                        //    using (var memoryStream = new MemoryStream())
+                        //    {
+                        //        docDocument.Save(memoryStream, options);
+                        //        memoryStream.Seek(0, SeekOrigin.Begin);
+                        //        var bitmapImage = new BitmapImage();
+                        //        bitmapImage.BeginInit();
+                        //        bitmapImage.StreamSource = memoryStream;
+                        //        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        //        bitmapImage.EndInit();
+                        //        result = new Image { Source = bitmapImage, Width = Width, Height = Height };
+                        //    }
+                        //}
+                        break;
+                    case ".pptx":
+                        var pptDocument = Presentation.Open(Source);
+                        if (page <= pptDocument.BuiltInDocumentProperties.SlideCount)
+                        {
+                            pptDocument.PresentationRenderer = new Syncfusion.PresentationRenderer.PresentationRenderer();
+                            var slide = pptDocument.Slides[page - 1];
+                            if (slide.SlideSize.SlideOrientation == SlideOrientation.Landscape)
+                            {
+                                Width = Math.Min(slide.SlideSize.Width, 768);
+                                Height = Math.Ceiling(slide.SlideSize.Height / slide.SlideSize.Width * Width);
+                            }
+                            else
+                            {
+                                Height = Math.Min(slide.SlideSize.Height, 596);
+                                Width = Math.Ceiling(slide.SlideSize.Width / slide.SlideSize.Height * Height);
+                            }
+                            var stream = slide.ConvertToImage(ExportImageFormat.Png);
+                            var docImage = new BitmapImage();
+                            docImage.BeginInit();
+                            docImage.StreamSource = stream;
+                            docImage.CacheOption = BitmapCacheOption.OnLoad;
+                            docImage.EndInit();
+                            result = new Image { Source = docImage };
+                            pptDocument.Dispose();
+                            stream.Dispose();
+                        }
+                        break;
                 }
             }
 
-            return null;
+            return result;
         }
 
         private BitmapSource BitmapSourceFromImage(System.Drawing.Image image)
@@ -281,6 +354,20 @@ namespace MediaControlDistributionCenter.ViewModels
                     InitializeTimer(image);
                     RunningElement = image;
                     EffectExecution();
+                }
+                else
+                {
+                    if (_timer != null)
+                    {
+                        _timer.Stop();
+                    }
+                }
+            }
+            else
+            {
+                if (_timer != null)
+                {
+                    _timer.Stop();
                 }
             }
         }

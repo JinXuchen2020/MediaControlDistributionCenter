@@ -11,6 +11,7 @@ using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Syncfusion.Licensing;
 
 namespace MediaControlDistributionCenter
 {
@@ -55,6 +56,8 @@ namespace MediaControlDistributionCenter
 
             services.AddPageViewServices();
             services.AddPageViewModelServices();
+
+            //SyncfusionLicenseProvider.RegisterLicense();
 
             ServicesProvider = services.BuildServiceProvider();
 

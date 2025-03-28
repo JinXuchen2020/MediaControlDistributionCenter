@@ -191,7 +191,7 @@ namespace MediaControlDistributionCenter.Views
 
         private bool IsWordFile(string filePath)
         {
-            string[] extensions = { ".pdf" };
+            string[] extensions = { ".pdf", ".doc", ".docx", ".pptx" };
             string ext = System.IO.Path.GetExtension(filePath);
             return extensions.Contains(ext);
         }
@@ -673,7 +673,7 @@ namespace MediaControlDistributionCenter.Views
             }
             else if (manageViewModel.SelectedComponent.Type == "Word")
             {
-                openFileDialog.Filter = "PDF Files|*.pdf"; // 过滤器，允许的文件类型
+                openFileDialog.Filter = "DOC Files|*.pdf; *.doc; *.docx;*.pptx"; // 过滤器，允许的文件类型
             }
 
             if (openFileDialog.ShowDialog() == true)
