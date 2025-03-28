@@ -159,7 +159,16 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                     return false;
                 }
 
-                buffer = new byte[10 * 1024 * 1024];
+                buffer = new byte[1024];
+                bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (!long.TryParse(connectRsp, out var fileLength))
+                {
+                    return false;
+                }
+
+                buffer = new byte[fileLength];
                 int fileSize = 0;// 缓冲区
                 string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName);
                 using var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -173,7 +182,11 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                             fileStream.Write(buffer, 0, bytesRead);
                         }
 
-                        break;
+                        fileSize += bytesRead;
+                        if (fileSize >= fileLength)
+                        {
+                            break;
+                        }
                     }
                     catch (Exception ex)
                     {

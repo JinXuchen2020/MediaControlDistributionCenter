@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
@@ -73,7 +74,15 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                deviceManageViewModel.SelectedDevice?.ShowConfirmDialogCommand.Execute(null);
+                if (ConnectionMode.Mode == "Local")
+                {
+                    var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+                    loginViewModel.ConnectedDevice?.ShowConfirmDialogCommand.Execute(null);
+                }
+                else
+                {
+                    deviceManageViewModel.SelectedDevice?.ShowConfirmDialogCommand.Execute(null);
+                }
             }
         }
 

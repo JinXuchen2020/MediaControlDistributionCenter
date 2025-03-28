@@ -626,6 +626,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                     }
 
                     RepleyCommandToUser(user, sendString);
+                    RepleyCommandToUser(user, filestream.Length.ToString());
                     InitDataSession(user);  // 初始化数据连接会话
                     SendFileByUserSession(user, filestream);  // 通过会话发送文件内容
                     RepleyCommandToUser(user, "226 Transfer complete");  // 传输完成，发送226响应

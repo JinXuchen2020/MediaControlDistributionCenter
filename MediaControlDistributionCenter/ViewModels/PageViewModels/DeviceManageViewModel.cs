@@ -208,10 +208,13 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
-                viewModel?.ShowConfirmDialogCommand.Execute(null);
-                if (viewModel.IsConntectd())
+                if (ConnectionMode.Mode == "Remote")
                 {
-                    SelectedDevice = viewModel;
+                    viewModel?.ShowConfirmDialogCommand.Execute(null);
+                    if (viewModel.IsConnected())
+                    {
+                        SelectedDevice = viewModel;
+                    }
                 }
             }
         }

@@ -97,6 +97,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? volume;
 
         [ObservableProperty]
+        private double? storagePercentage;
+
+        [ObservableProperty]
         private string deviceId;
 
         [ObservableProperty]
@@ -133,7 +136,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 ContactPhone = ContactNumber,
                 Brightness = Brightness,
                 Volume = Volume,
-                DeviceId = SNumber,                 
+                StoragePercentage = StoragePercentage,
+                DeviceId = SNumber, 
             };
         }
 
@@ -162,6 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Brightness = model.Brightness;
             Volume = model.Volume;
             DeviceId = model.DeviceId;
+            StoragePercentage = model.StoragePercentage;
             MediaNames = string.Empty;
             MediaIds = new List<int>();
         }
@@ -171,7 +176,7 @@ namespace MediaControlDistributionCenter.ViewModels
             return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
-        public bool IsConntectd()
+        public bool IsConnected()
         {
             return client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? true : false;
         }
@@ -180,14 +185,14 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Connect(Communication client)
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            if (connectionMode.Mode == "Local" && client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (connectionMode.Mode == "Local")
             {
                 this.client = client;
                 StatusText = GetStatus();
                 return;
             }
 
-            if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            if (connectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
                client.Disconnect();
             }

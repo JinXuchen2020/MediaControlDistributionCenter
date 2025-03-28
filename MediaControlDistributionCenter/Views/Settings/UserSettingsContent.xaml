@@ -16,7 +16,7 @@
         <Grid Background="#0F0F10">
             <Grid Background="#0F0F10">
                 <DockPanel LastChildFill="False" Background="#090A0E">
-                    <Grid Width="889" Height="650" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+                    <Grid Width="889" Height="600" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

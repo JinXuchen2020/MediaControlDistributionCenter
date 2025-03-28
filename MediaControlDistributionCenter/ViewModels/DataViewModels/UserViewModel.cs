@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using OpenCvSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -200,6 +201,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     var image = new BitmapImage();
                     image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
                     image.UriSource = new Uri(Logo);
                     image.EndInit();
 

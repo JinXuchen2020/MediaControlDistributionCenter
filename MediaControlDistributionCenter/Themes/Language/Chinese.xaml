@@ -117,6 +117,8 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">剩余机器容量</sys:String>
+    
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>
@@ -134,7 +136,7 @@
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_112">总数</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_113">用户</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">显示器</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>    
 
     <sys:String x:Key="LanguageKey_Code_Management">用户管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Users">会员管理</sys:String>

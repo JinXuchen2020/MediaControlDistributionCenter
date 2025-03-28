@@ -46,6 +46,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string selectedIpAddress;
 
         [ObservableProperty]
+        private DeviceViewModel? connectedDevice;
+
+        [ObservableProperty]
         public BitmapImage logoThumbnail;
 
         [ObservableProperty]
@@ -168,6 +171,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                     respone = await monitorService.Save(item.Monitor.Monitor);
                                     if (respone.Code == 200)
                                     {
+                                        ConnectedDevice = new DeviceViewModel();
+                                        ConnectedDevice.Binding(item.Monitor.Monitor);
                                         foreach (var program in item.Monitor.Programs)
                                         {
                                             respone = await programService.Save(program);
@@ -224,10 +229,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         try
                         {
-                            result = new BitmapImage();
-                            result.BeginInit();
-                            result.StreamSource = new MemoryStream(Convert.FromBase64String(user.LogoSrc));
-                            result.EndInit();
+                            UserViewModel viewModel = new UserViewModel();
+                            viewModel.Binding(user);
+                            viewModel.LoadLogo();
+                            result = viewModel.LogoThumbnail;
                         }
                         catch
                         {

@@ -126,7 +126,7 @@
                             <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="66" Height="10"
                                      Background="Transparent"
                                      Foreground="#538AF0"
-                                     Value="70"
+                                     Value="{Binding ConnectedDevice.StoragePercentage}"
                                      Style="{StaticResource MaterialDesignLinearProgressBar}">
                                 <ProgressBar.Resources>
                                     <Style TargetType="Rectangle">
@@ -137,7 +137,8 @@
                                 </ProgressBar.Resources>
                             </ProgressBar>
                         </Border>
-                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="70%剩余机器容量"/>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectedDevice.StoragePercentage}"/>
+                            <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_107}"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
