@@ -71,7 +71,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Image result = new()
             {
-                Source = GetBitmap(),                
+                Source = GetBitmap(), 
+                Stretch = Stretch.Fill,
             };
 
             Border border = new Border

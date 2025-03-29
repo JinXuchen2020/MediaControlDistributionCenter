@@ -72,7 +72,7 @@
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
                                             <TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
                                         </StackPanel>
-                                        <StackPanel Margin="10"  Orientation="Horizontal" VerticalAlignment="Center">
+                                        <StackPanel Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=agent}" Margin="10"  Orientation="Horizontal" VerticalAlignment="Center">
                                             <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_111}" />
                                             <StackPanel>
                                                 <Border Width="110" Height="110" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
@@ -105,7 +105,7 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="10">
+                                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="10" Visibility="{Binding Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=agent}">
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_113}" />
                                             <TextBox AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="464" Height="64" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding TagLine}" />
@@ -225,18 +225,18 @@
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid VerticalAlignment="Top" Margin="0,20,0,0" >
                         <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
-                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
+                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnRegister" Cursor="Hand" VerticalAlignment="Center" Margin="15,4,15,4" MouseDown="btnRegister_MouseDown" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Users_Register}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnChangeGroup" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnChangeGroup_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ChangGroup}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>

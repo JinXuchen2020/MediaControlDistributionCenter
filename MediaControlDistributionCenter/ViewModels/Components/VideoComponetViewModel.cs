@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SqlSugar;
+using Syncfusion.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private string playMode;
+
+        [ObservableProperty]
+        private double totalTimeline;
 
         private int currentPlayCount;
 
@@ -100,6 +104,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height * Ratio,
                 LoadedBehavior = MediaState.Manual,
                 UnloadedBehavior = MediaState.Stop,
+                Stretch = Stretch.Fill,
             };
 
             Canvas.SetLeft(result, Left * Ratio);
@@ -163,6 +168,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Image image = new()
                 {
                     Source = thumbnail,
+                    Stretch = Stretch.Fill,
                 };
 
                 Border result = new Border
@@ -177,6 +183,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
                 CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+
+                CreateBinding(image, FrameworkElement.WidthProperty, nameof(Width));
+                CreateBinding(image, FrameworkElement.HeightProperty, nameof(Height));
 
                 Canvas.SetLeft(result, Left);
                 Canvas.SetTop(result, Top);
@@ -207,6 +216,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     Timeline = video.NaturalDuration.TimeSpan.TotalSeconds;
                     PlayDuration = video.NaturalDuration.TimeSpan.ToString();
+                    TotalTimeline = Timeline;
                 }
             }            
         }
@@ -221,29 +231,42 @@ namespace MediaControlDistributionCenter.ViewModels
                 throw new InvalidOperationException("MediaElement没有加载媒体源。");
             }
 
-            return mediaElement.Dispatcher.Invoke<BitmapSource>(() =>
+            if (mediaElement.NaturalVideoWidth > mediaElement.NaturalVideoHeight)
             {
-                // 创建一个RenderTargetBitmap
-                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                    (int)mediaElement.ActualWidth,
-                    (int)mediaElement.ActualHeight,
-                    96, 96,
-                    PixelFormats.Pbgra32);
-                mediaElement.Measure(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight));
-                mediaElement.Arrange(new Rect(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight)));
+                Width = Math.Min(mediaElement.NaturalVideoWidth, 768);
+                Height = Math.Ceiling(((double)mediaElement.NaturalVideoHeight / mediaElement.NaturalVideoWidth) * Width) + 2;
+            }
+            else
+            {
+                Height = Math.Min(mediaElement.NaturalVideoHeight, 596);
+                Width = Math.Ceiling((double)mediaElement.NaturalVideoWidth / mediaElement.NaturalVideoHeight * Height) + 2;
+            }
 
-                // 将MediaElement绘制到RenderTargetBitmap
-                renderTargetBitmap.Render(mediaElement);
-                return renderTargetBitmap;
+            return VideoScreenCapture.CaptureFrame(Source!, 1);
 
-                //// 保存位图为PNG文件
-                //PngBitmapEncoder png = new PngBitmapEncoder();
-                //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-                //using (Stream stream = File.Create("screenshot.png"))
-                //{
-                //    png.Save(stream);
-                //}
-            });
+            //return mediaElement.Dispatcher.Invoke<BitmapSource>(() =>
+            //{
+            //    // 创建一个RenderTargetBitmap
+            //    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+            //        (int)mediaElement.ActualWidth,
+            //        (int)mediaElement.ActualHeight,
+            //        96, 96,
+            //        PixelFormats.Pbgra32);
+            //    mediaElement.Measure(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight));
+            //    mediaElement.Arrange(new Rect(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight)));
+
+            //    // 将MediaElement绘制到RenderTargetBitmap
+            //    renderTargetBitmap.Render(mediaElement);
+            //    return renderTargetBitmap;
+
+            //    //// 保存位图为PNG文件
+            //    //PngBitmapEncoder png = new PngBitmapEncoder();
+            //    //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+            //    //using (Stream stream = File.Create("screenshot.png"))
+            //    //{
+            //    //    png.Save(stream);
+            //    //}
+            //});
         }
     }
 }

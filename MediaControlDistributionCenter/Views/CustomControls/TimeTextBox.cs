@@ -30,6 +30,10 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                     {
                         if (int.TryParse(newValue, out int timeSeconds))
                         {
+                            if (textBox.MaxTimeline > 0)
+                            {
+                                timeSeconds = Math.Min(timeSeconds, textBox.MaxTimeline);
+                            }
                             int seconds = timeSeconds % 60;
                             int minutes = (timeSeconds / 60) % 60;
                             int hours = timeSeconds / 60 / 60;
@@ -57,13 +61,29 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                         minutes = Math.Min(minutes, 59);
                         seconds = Math.Min(seconds, 59);
 
-                        textBox.SetCurrentValue(TimelineProperty, hours * 3600 + minutes * 60 + seconds);
+                        var totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                        if (textBox.MaxTimeline > 0)
+                        {
+                            totalSeconds = Math.Min(totalSeconds, textBox.MaxTimeline);
+                            seconds = totalSeconds % 60;
+                            minutes = (totalSeconds / 60) % 60;
+                            hours = totalSeconds / 60 / 60;
+                            if (textBox.Is24Hour && hours > 23)
+                            {
+                                hours = 23;
+                            }
+                        }
+
+                        textBox.SetCurrentValue(TimelineProperty, totalSeconds);
                         textBox.SetCurrentValue(TextProperty, $"{hours:D2}:{minutes:D2}:{seconds:D2}");
                     }
                 }
             }));
         public static readonly DependencyProperty TimelineProperty =
             DependencyProperty.Register("Timeline", typeof(int), typeof(TimeTextBox), new PropertyMetadata(0));
+
+        public static readonly DependencyProperty MaxTimelineProperty =
+            DependencyProperty.Register("MaxTimeline", typeof(int), typeof(TimeTextBox), new PropertyMetadata(0));
 
         public static readonly DependencyProperty Is24HourProperty =
            DependencyProperty.Register("Is24Hour", typeof(bool), typeof(TimeTextBox), new PropertyMetadata(false));
@@ -106,6 +126,12 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         {
             get { return (bool)GetValue(Is24HourProperty); }
             set { SetValue(Is24HourProperty, value); }
+        }
+
+        public int MaxTimeline
+        {
+            get { return (int)GetValue(MaxTimelineProperty); }
+            set { SetValue(MaxTimelineProperty, value); }
         }
     }
 }

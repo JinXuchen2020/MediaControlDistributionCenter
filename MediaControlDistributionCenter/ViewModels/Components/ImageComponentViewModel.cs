@@ -88,6 +88,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Image image = new()
             {
                 Source = GetBitmap(Source!),
+                Stretch = Stretch.Fill,
             };
 
             Border result = new Border
@@ -102,6 +103,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
             CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+
 
             Canvas.SetLeft(result, Left);
             Canvas.SetTop(result, Top);
@@ -125,6 +127,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = GetBitmap(Source!),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
+                Stretch = Stretch.Fill,
             };
 
             IsRunningLoaded = false;

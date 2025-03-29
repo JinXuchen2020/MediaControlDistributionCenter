@@ -57,7 +57,7 @@
                         Margin="64,0,0,0" x:Name="DeviceControl" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Control_Device}" Text="{DynamicResource LanguageKey_Code_Control_Device}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
                     <TextBlock
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=agent;user}"
-                        Margin="64,0,0,0" x:Name="Settings" MouseDown="TopMenu_MouseDown"   Cursor="Hand"  Tag="{DynamicResource LanguageKey_Code_User_Config}"  Text="{DynamicResource LanguageKey_Code_User_Config}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
+                        Margin="64,0,0,0" x:Name="Configs" MouseDown="TopMenu_MouseDown"   Cursor="Hand"  Tag="{DynamicResource LanguageKey_Code_User_Config}"  Text="{DynamicResource LanguageKey_Code_User_Config}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
                 </StackPanel>               
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

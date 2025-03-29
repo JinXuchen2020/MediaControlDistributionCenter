@@ -370,28 +370,28 @@
                     </Grid.RowDefinitions>
                     <Grid Margin="20,0,0,0">
                         <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
-                            <Border Background="#40A9FF" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnCreate" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnCreate_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Media_Create}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#30479C" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnPublish" Cursor="Hand" VerticalAlignment="Center" MouseDown="btnPublish_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Media_Send}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnChangeGroup" MouseDown="btnChangeGroup_MouseDown" VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ChangGroup}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnCopy" MouseDown="btnCopy_MouseDown" VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Media_Copy}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" MouseDown="btnDeleteAll_MouseDown" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>

@@ -34,7 +34,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 userSettingViewModel.CurrentUser = dashboardViewModel.CurrentUser;
                 userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
-                userSettingViewModel.IsShelf = dashboardViewModel.CurrentUser.Role == RoleType.User.ToString().ToLower();
+                userSettingViewModel.IsShelf = dashboardViewModel.CurrentUser.Role != RoleType.Admin.ToString().ToLower();
             }
             else
             {

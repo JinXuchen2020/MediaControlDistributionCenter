@@ -78,6 +78,15 @@ namespace MediaControlDistributionCenter.Views
             viewModel.CanDelete = true;
             MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
         }
+
+        private void loginUser_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var userAccount = ((sender as TextBlock).DataContext as string)!;
+            var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+            loginViewModel.InputAccount = userAccount;
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
+
+        }
     }
 
     public class ConfirmDialogDataTemplateSelector : DataTemplateSelector

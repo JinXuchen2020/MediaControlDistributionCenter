@@ -120,7 +120,14 @@
                             ItemsSource="{Binding SyncUsers}"
                         >
                             <DataGrid.Columns>
-                                <DataGridTextColumn Width="1*" Binding="{Binding}" Header="{DynamicResource LanguageKey_Code_LoginAccount}" />
+                                <DataGridTemplateColumn Width="1*" Header="{DynamicResource LanguageKey_Code_LoginAccount}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" MouseDown="loginUser_MouseDown" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

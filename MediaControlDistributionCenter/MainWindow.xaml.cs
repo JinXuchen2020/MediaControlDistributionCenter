@@ -227,7 +227,7 @@ namespace MediaControlDistributionCenter
                 case "DeviceControl":
                     GoContent(serviceProvider.GetRequiredService<DeviceControlContent>(), 4);
                     break;
-                case "Settings":
+                case "Configs":
                     var viewModel = serviceProvider.GetRequiredService<UserSettingViewModel>();
                     viewModel.IsShelf = true;
                     GoContent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
@@ -248,35 +248,35 @@ namespace MediaControlDistributionCenter
                         MediaManagement.Opacity = 0.7;
                         DeviceManagement.Opacity = 0.7;
                         DeviceControl.Opacity = 0.7;
-                        Settings.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 2:
                         Dashboard.Opacity = 0.7;
                         MediaManagement.Opacity = 1;
                         DeviceManagement.Opacity = 0.7;
                         DeviceControl.Opacity = 0.7;
-                        Settings.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 3:
                         Dashboard.Opacity = 0.7;
                         MediaManagement.Opacity = 0.7;
                         DeviceManagement.Opacity = 1;
                         DeviceControl.Opacity = 0.7;
-                        Settings.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 4:
                         Dashboard.Opacity = 0.7;
                         MediaManagement.Opacity = 0.7;
                         DeviceManagement.Opacity = 0.7;
                         DeviceControl.Opacity = 1;
-                        Settings.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 5:
                         Dashboard.Opacity = 0.7;
                         MediaManagement.Opacity = 0.7;
                         DeviceManagement.Opacity = 0.7;
                         DeviceControl.Opacity = 0.7;
-                        Settings.Opacity = 1;
+                        Configs.Opacity = 1;
                         break;
                     default:
                         break;
@@ -295,11 +295,17 @@ namespace MediaControlDistributionCenter
                         Dashboard.Opacity = 0.7;
                         UserManagement.Opacity = 1;
                         MediaStore.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 3:
                         Dashboard.Opacity = 0.7;
                         UserManagement.Opacity = 0.7;
                         MediaStore.Opacity = 1;
+                        break;
+                    case 5:
+                        Dashboard.Opacity = 0.7;
+                        UserManagement.Opacity = 0.7;
+                        Configs.Opacity = 1;
                         break;
                     default:
                         break;

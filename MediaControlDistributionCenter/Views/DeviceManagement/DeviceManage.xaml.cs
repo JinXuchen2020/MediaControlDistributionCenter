@@ -51,8 +51,16 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
 
+            this.Unloaded += DeviceManage_Unloaded;
+
             InitializeComponent();
         }
+
+        private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            manageViewModel.SelectDisabled = 1;
+        }
+
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -99,7 +107,18 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                 viewModel.Enabled = 0;
             }
 
-            manageViewModel.EnableDeviceCommand.Execute(viewModel);
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    manageViewModel.EnableDeviceCommand.Execute(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
@@ -190,6 +209,20 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                 });
 
             }
+        }
+
+        private void ShowDisabledDevices_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(manageViewModel.SelectDisabled == 0)
+            {
+                manageViewModel.SelectDisabled = 1;
+            }
+            else
+            {
+                manageViewModel.SelectDisabled = 0;
+            }
+
+            manageViewModel.LoadData();
         }
     }
 }

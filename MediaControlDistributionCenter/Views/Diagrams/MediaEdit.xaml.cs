@@ -765,6 +765,7 @@ namespace MediaControlDistributionCenter.Views
         {
             var tag = ((sender as Border).Tag as string)!;
             manageViewModel.SelectedType = tag;
+            manageViewModel.SearchString = null;
             manageViewModel.RefreshMedias();
         }
     }

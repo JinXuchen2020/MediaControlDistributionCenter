@@ -168,9 +168,9 @@ namespace MediaControlDistributionCenter.Helpers.SocketClient
         /// <summary>Store incoming bytes to be processed</summary>
         protected byte[] byteBuffer;
         // 发送缓冲区大小
-        protected int sendBufferSize = 8192;
+        protected int sendBufferSize = int.MaxValue;
         // 接收缓冲区大小
-        protected int receiveBufferSize = 8192;
+        protected int receiveBufferSize = int.MaxValue;
 
         /// <summary>Position of the bom header in the rxBuffer</summary>
         protected int rxHeaderIndex = -1;

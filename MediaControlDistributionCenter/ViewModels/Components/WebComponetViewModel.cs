@@ -75,6 +75,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Image result = new()
             {
                 Source = GetBitmap(),
+                Stretch = Stretch.Fill,
                 //Width = Width,
                 //Height = Height,
                 //DataContext = this,

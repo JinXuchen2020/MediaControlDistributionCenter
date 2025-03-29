@@ -35,8 +35,14 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> devices;
 
+        //[ObservableProperty]
+        //private ObservableCollection<DeviceViewModel> disabledDevices;
+
         [ObservableProperty]
         private long? selectedGroupId;
+
+        [ObservableProperty]
+        private int selectDisabled = 1;
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
@@ -76,12 +82,20 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == SelectDisabled).OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);
                 return result;
             }));
+
+            //var disabledDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId, Enabled = 0 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            //this.DisabledDevices = new ObservableCollection<DeviceViewModel>(disabledDevices.OrderByDescending(c => c.Id).Select(c =>
+            //{
+            //    var result = new DeviceViewModel();
+            //    result.Binding(c);
+            //    return result;
+            //}));
         }
 
         [RelayCommand]

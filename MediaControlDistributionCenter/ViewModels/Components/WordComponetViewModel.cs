@@ -202,7 +202,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             var image = pdfDocument.Render(page - 1, 229, 329, true);
                             var bitmapImage = BitmapSourceFromImage(image);
-                            var imageControl = new Image { Source = bitmapImage, Width = Width, Height = Height };
+                            var imageControl = new Image { Source = bitmapImage, Width = Width, Height = Height, Stretch = Stretch.Fill };
                             result = imageControl;
                         }
                         break;
@@ -219,7 +219,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                 docImage.StreamSource = stream;
                                 docImage.CacheOption = BitmapCacheOption.OnLoad;
                                 docImage.EndInit();
-                                result = new Image { Source = docImage, Width = Width, Height = Height };
+                                result = new Image { Source = docImage, Width = Width, Height = Height,  Stretch = Stretch.Fill, };
                                 docDocument.Dispose();
                                 stream.Dispose();
                             }
@@ -264,7 +264,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             docImage.StreamSource = stream;
                             docImage.CacheOption = BitmapCacheOption.OnLoad;
                             docImage.EndInit();
-                            result = new Image { Source = docImage };
+                            result = new Image { Source = docImage, Stretch = Stretch.Fill };
                             pptDocument.Dispose();
                             stream.Dispose();
                         }

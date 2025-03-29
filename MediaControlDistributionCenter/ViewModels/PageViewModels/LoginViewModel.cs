@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
@@ -23,6 +24,9 @@ namespace MediaControlDistributionCenter.ViewModels
     { 
         [ObservableProperty]
         private UserViewModel currentUser;
+
+        [ObservableProperty]
+        private string inputAccount;
 
         [ObservableProperty]
         private bool isLogin;
@@ -183,7 +187,10 @@ namespace MediaControlDistributionCenter.ViewModels
                                     }
                                 }
 
-                                this.SyncUsers.Add(item.User.Account);
+                                if (item.User.Role != RoleType.Admin.ToString().ToLower())
+                                {
+                                    this.SyncUsers.Add(item.User.Account);
+                                }
                             }
                         }
                     }

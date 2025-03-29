@@ -162,8 +162,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public void LoadLogo()
         {
-            Logo = DownloadLogo();
-            LogoThumbnail = GetThumbnail();
+            Logo = Logo ?? DownloadLogo();
+            LogoThumbnail = LogoThumbnail ?? GetThumbnail();
             IsUpload = Logo != null;
         }
 

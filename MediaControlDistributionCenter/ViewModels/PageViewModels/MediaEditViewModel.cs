@@ -192,6 +192,21 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        protected override async Task SearchContent()
+        {
+            if (string.IsNullOrEmpty(SearchString)) SearchString = null;
+            var type = SelectedType == "All" ? null : SelectedType;
+            var medias = mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+            {
+                var viewModel = new MediaViewModel();
+                viewModel.Binding(c);
+                return viewModel;
+            }));
+
+            await Task.CompletedTask;
+        }
+
         [RelayCommand]
         private async Task ShowDialog(ObservableObject content)
         {
