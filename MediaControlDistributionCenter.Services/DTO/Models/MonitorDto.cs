@@ -110,6 +110,9 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("deviceId")]
         public string DeviceId { get; set; }
 
+        [JsonProperty("storagePercentage")]
+        public double? StoragePercentage { get; set; }
+
         ///// <summary>
         ///// 显示器本地账号
         ///// </summary>
@@ -147,6 +150,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Volume = Volume,
                 GroupId = GroupId,
                 DeviceId = DeviceId,
+                StoragePercentage = StoragePercentage
             };
         }
     }

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Xaml.Behaviors.Layout;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,19 +32,21 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string componentEffectKey;
 
-        private DispatcherTimer? _timer;        
+        private FrameworkElement RunningElement;
+
+        private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
         public override string Type => "Image";
 
-        public ImageComponentViewModel(ImageComponent component, double ratio = 1) : base(component, ratio)
+        public ImageComponentViewModel(ImageComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             effectDuration = component.EffectDuration;
             componentEffectKey = component.ComponentEffect;
             componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
         }
 
-        public override ImageComponent ToModel(double ratio)
+        public override ImageComponent ToModel(string userAccount, double ratio)
         {
             return new ImageComponent()
             {
@@ -55,7 +58,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Top = Top / ratio,
                 Width = Width / ratio,
                 Height = Height / ratio,
-                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
@@ -64,18 +67,36 @@ namespace MediaControlDistributionCenter.ViewModels
             };
         }
 
+        public static ImageComponentViewModel CreateInstance(string userAccount, int id)
+        {
+            return new ImageComponentViewModel(new ImageComponent
+            {
+                Id = id,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{id}",
+                ZIndex = 1,
+                Type = MediaType.Image,
+                PlayCount = 1,
+                PlayDuration = "00:00:05",
+                Timeline = 5,
+                ComponentEffect = "FadeIn",
+                EffectDuration = 1000
+            }, userAccount);
+        }
+
         protected override FrameworkElement DrawingContent()
         {
-            Image result = new()
+            Image image = new()
             {
                 Source = GetBitmap(Source!),
-                Width = Width,
-                Height = Height,
-                DataContext = this
+                Stretch = Stretch.Fill,
             };
+
+            Border result = CreateBorder();
+            result.Child = image;
 
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
             CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+
 
             Canvas.SetLeft(result, Left);
             Canvas.SetTop(result, Top);
@@ -99,17 +120,16 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = GetBitmap(Source!),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
+                Stretch = Stretch.Fill,
             };
 
+            IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
+                IsRunningLoaded = true;
                 if (sender is Image image)
                 {
-                    if (ComponentEffectKey != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(image);
-                    }
-
+                    RunningElement = image;
                     InitializeTimer(image);
                 }
             };
@@ -127,6 +147,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
             return result;
+        }
+
+        public override void EffectExecution()
+        {
+            if (ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
         }
 
         protected override void DisposeContent()

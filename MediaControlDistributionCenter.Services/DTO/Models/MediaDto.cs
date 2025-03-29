@@ -55,6 +55,16 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
 
+        /// <summary>
+        /// 分组id
+        /// </summary>
+        [JsonProperty("groupId")]
+        public long? GroupId { get; set; }
+
+
+        [JsonIgnore]
+        public string? MediaGroupName { get; set; }
+
         public void CreateMappings(Profile configuration)
         {
             configuration.CreateMap<Media, MediaDto>();
@@ -71,6 +81,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Size = Size,
                 Src = Src,
                 Type = Type,
+                GroupId = GroupId,
             };
         }
     }

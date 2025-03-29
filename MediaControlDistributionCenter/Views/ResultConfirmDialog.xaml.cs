@@ -37,7 +37,7 @@ namespace MediaControlDistributionCenter.Views
                 case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
-                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.StatusText == (string)FindResource("LanguageKey_Code_Online"):
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected():
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
                 case var o when o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage):
@@ -78,6 +78,15 @@ namespace MediaControlDistributionCenter.Views
             viewModel.CanDelete = true;
             MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
         }
+
+        private void loginUser_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var userAccount = ((sender as TextBlock).DataContext as string)!;
+            var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+            loginViewModel.InputAccount = userAccount;
+            MaterialDesignThemes.Wpf.DialogHost.Close(null);
+
+        }
     }
 
     public class ConfirmDialogDataTemplateSelector : DataTemplateSelector
@@ -90,7 +99,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 case var o when o is UserViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
-                case var o when o is MediaViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
+                case var o when o is ProgramViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
                 case var o when (o is PageViewModel viewModel && viewModel.CanDelete.HasValue):
                     return (DataTemplate)dialogBox.FindResource("DeleteExecution");
@@ -98,7 +107,7 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
                 case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):                    
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
-                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.StatusText == FindResource("LanguageKey_Code_Online"):
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected():
                     return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
                 case var o when (o is LoginViewModel loginViewModel && string.IsNullOrEmpty(loginViewModel.ErrorMessage) && loginViewModel.IsSync):
                     return (DataTemplate)dialogBox.FindResource("SyncUserResult");

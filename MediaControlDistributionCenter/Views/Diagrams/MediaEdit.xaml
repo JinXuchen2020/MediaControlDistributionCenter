@@ -16,6 +16,602 @@
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:StringToTimeSpanConverter x:Key="StringToTimeSpanConverter" />
         <converters:NotEmptyConverter x:Key="NotEmptyConverter" />
+        <local:ComponentDataTemplateSelector x:Key="ComponentDataTemplateSelector"/>
+        <DataTemplate x:Key="VideoComponent" DataType="{x:Type viewmodels:VideoComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <!--<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_118}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_119}" Tag="fullscreen" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=fullscreen}" />
+                                    <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_120}" Tag="origin" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=origin}" />
+                                </StackPanel>
+                            </StackPanel>-->
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxTimeline="{Binding TotalTimeline}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="WebComponent" DataType="{x:Type viewmodels:WebComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="StreamComponent" DataType="{x:Type viewmodels:StreamComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="HdmiComponent" DataType="{x:Type viewmodels:HdmiComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="RssComponent" DataType="{x:Type viewmodels:RssComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_190}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding Interval, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock HorizontalAlignment="Left" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_191}" Width="80" VerticalAlignment="Center"/>
+                                <ItemsControl ItemsSource="{Binding Contents}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,10,0,0">
+                                                <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding FieldNameContent}" Tag="{Binding FieldName}" />
+                                                <StackPanel Orientation="Horizontal" Margin="10">
+                                                    <ComboBox Padding="5" Width="100" BorderBrush="#404870" BorderThickness="1" ItemsSource="{Binding Fonts}" SelectedValue="{Binding FontFamily}" />
+                                                    <materialDesign:NumericUpDown Padding="5" Margin="10,0,0,0" Width="100" BorderBrush="#404870" BorderThickness="1" Value="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                                    <TextBlock Text="px" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button Width="25" Height="25"
+                                                        Margin="10,0,0,0"
+                                                        Padding="0"
+                                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                                        Click="SetRssFontStyle_Click"
+                                                        Tag="Bold"
+                                                        Background="{Binding IsBold, Converter={StaticResource SelectedValueConverter}}"
+                                                        BorderBrush="Gray">
+                                                        <materialDesign:PackIcon Kind="FormatBold" Foreground="#737B8A"  Width="22" Height="22"/>
+                                                    </Button>
+                                                    <Button Width="25" Height="25"
+                                                        Margin="10,0,0,0"
+                                                        Padding="0"
+                                                        Click="SetRssFontStyle_Click"
+                                                        Tag="Italic"
+                                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                                        Background="{Binding IsItalic, Converter={StaticResource SelectedValueConverter}}"
+                                                        BorderBrush="Gray">
+                                                        <materialDesign:PackIcon Kind="FormatItalic" Foreground="#737B8A"  Width="22" Height="22"/>
+                                                    </Button>
+                                                    <Button Width="25" Height="25"
+                                                        Margin="10,0,0,0"
+                                                        Padding="0"
+                                                        Click="SetRssFontStyle_Click"
+                                                        Tag="Underline"
+                                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                                        Background="{Binding IsUnderline, Converter={StaticResource SelectedValueConverter}}"
+                                                        BorderBrush="Gray">
+                                                        <materialDesign:PackIcon Kind="FormatUnderline" Foreground="#737B8A"  Width="22" Height="22"/>
+                                                    </Button>
+                                                    <Button Width="25" Height="25"
+                                                        Margin="10,0,0,0"
+                                                        Padding="0"
+                                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                                        Click="SelectRssColor_Click"
+                                                        Background="#16171D"
+                                                        BorderBrush="Gray">
+                                                        <materialDesign:PackIcon Kind="FormatColorText" Foreground="#737B8A"  Width="22" Height="22"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <RadioButton VerticalAlignment="Center" Tag="pageTurning" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=pageTurning}" />
+                                <RadioButton VerticalAlignment="Center" Tag="rolling" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=rolling}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PlayMode}" Value="pageTurning">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PlayMode}" Value="rolling">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" SelectedValue="{Binding Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Tag" >
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" Tag="rollingLeft" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" Tag="rollingUp"/>
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" Tag="rollingRight" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" Tag="rollingDown"/>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_140}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ImageComponent" DataType="{x:Type viewmodels:ImageComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox IsDisabled="False" Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="TextComponent" DataType="{x:Type viewmodels:TextComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
+                                    <TextBox AcceptsReturn="True" Margin="0,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Height="150" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding Source}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_122}" Width="80" VerticalAlignment="Center"/>
+                                    <Button Width="25" Height="25" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Click="SelectColor_Click" Background="#16171D" BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_123}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_124}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_125}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding LineSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                </StackPanel>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_126}" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <RadioButton VerticalAlignment="Center" Tag="pageTurning" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=pageTurning}" />
+                                    <RadioButton VerticalAlignment="Center" Tag="rolling" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=rolling}" />
+                                    <RadioButton VerticalAlignment="Center" Tag="stop" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_129}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=stop}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox IsDisabled="False" Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PlayMode}" Value="pageTurning">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <!--<DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>-->
+                                            <DataTrigger Binding="{Binding PlayMode}" Value="rolling">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" SelectedValue="{Binding Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Tag" >
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" Tag="rollingLeft" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" Tag="rollingUp"/>
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" Tag="rollingRight" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" Tag="rollingDown"/>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_140}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                                    <CheckBox IsChecked="{Binding IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_141}" Width="80" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="WordComponent" DataType="{x:Type viewmodels:WordComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_196}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding PageDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox IsDisabled="False" Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ColorTextComponent" DataType="{x:Type viewmodels:ColorTextComponentViewModel}">
+            <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
+                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80" VerticalAlignment="Center"/>
+                                <Button Width="25" Height="25" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Click="SelectColorTextColor_Click" Background="#16171D" BorderBrush="Gray">
+                                    <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_105}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <ComboBox Padding="5" Width="100" BorderBrush="#404870" BorderThickness="1" ItemsSource="{Binding FontFamilis}" SelectedValue="{Binding FontFamily}" />
+                                    <materialDesign:NumericUpDown Padding="5" Margin="10,0,0,0" Width="100" BorderBrush="#404870" BorderThickness="1" Value="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                    <TextBlock Text="px" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Width="25" Height="25"
+                                        Margin="10,0,0,0"
+                                        Padding="0"
+                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                        Click="SetColorTexFontStyle_Click"
+                                        Tag="Bold"
+                                        Background="{Binding IsBold, Converter={StaticResource SelectedValueConverter}}"
+                                        BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="FormatBold" Foreground="#737B8A"  Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Width="25" Height="25"
+                                        Margin="10,0,0,0"
+                                        Padding="0"
+                                        Click="SetColorTexFontStyle_Click"
+                                        Tag="Italic"
+                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                        Background="{Binding IsItalic, Converter={StaticResource SelectedValueConverter}}"
+                                        BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="FormatItalic" Foreground="#737B8A"  Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Width="25" Height="25"
+                                        Margin="10,0,0,0"
+                                        Padding="0"
+                                        Click="SetColorTexFontStyle_Click"
+                                        Tag="Underline"
+                                        materialDesign:ButtonAssist.CornerRadius="2"
+                                        Background="{Binding IsUnderline, Converter={StaticResource SelectedValueConverter}}"
+                                        BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="FormatUnderline" Foreground="#737B8A"  Width="22" Height="22"/>
+                                    </Button>
+                                </StackPanel>
+                                <TextBox AcceptsReturn="True" Margin="0,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="220" Height="150" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding Source}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_124}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_110}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" ItemsSource="{Binding ColorTextEffects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffect}" SelectedValuePath="Key" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+                <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                    <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
+                                <LocalCore:TimeTextBox Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
+                                    <ComboBox Width="150" SelectedValue="{Binding Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Tag" >
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" Tag="rollingLeft" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" Tag="rollingUp"/>
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" Tag="rollingRight" />
+                                        <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" Tag="rollingDown"/>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_140}" Width="80" VerticalAlignment="Center"/>
+                                    <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                                <CheckBox IsChecked="{Binding IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_141}" Width="80" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+        </DataTemplate>
         <Style x:Key="LeftAlignedCheckBoxStyle" TargetType="CheckBox">
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -199,10 +795,66 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80"/>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_101}" Width="80"/>
                                     <StackPanel Width="700">
                                         <materialDesign:ColorPicker x:Name="textColorPicker" Color="{Binding Foreground}" Height="250" />
                                         <TextBlock Text="{Binding Foreground}" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:RssContentViewModel}">
+                        <Border BorderThickness="1" Background="#090A0E">
+                            <Grid Width="800" Height="400" Background="#090A0E" HorizontalAlignment="Center" Margin="10" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40" />
+                                    <RowDefinition Height="280" />
+                                </Grid.RowDefinitions>
+                                <StackPanel HorizontalAlignment="Right">
+                                    <Button Width="60" Height="38" HorizontalAlignment="Right"
+                                        Background="#090A0E" Foreground="WhiteSmoke"
+                                        BorderThickness="0"
+                                        HorizontalContentAlignment="Center"
+                                        materialDesign:ColorZoneAssist.Mode="Custom"
+                                        materialDesign:ColorZoneAssist.Background="#090A0E"
+                                        materialDesign:ButtonAssist.CornerRadius="5"
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_101}" Width="80"/>
+                                    <StackPanel Width="700">
+                                        <materialDesign:ColorPicker x:Name="textRssColorPicker" Color="{Binding FontColor}" Height="250" />
+                                        <TextBlock Text="{Binding FontColor}" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:ColorTextComponentViewModel}">
+                        <Border BorderThickness="1" Background="#090A0E">
+                            <Grid Width="800" Height="400" Background="#090A0E" HorizontalAlignment="Center" Margin="10" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40" />
+                                    <RowDefinition Height="280" />
+                                </Grid.RowDefinitions>
+                                <StackPanel HorizontalAlignment="Right">
+                                    <Button Width="60" Height="38" HorizontalAlignment="Right"
+                                        Background="#090A0E" Foreground="WhiteSmoke"
+                                        BorderThickness="0"
+                                        HorizontalContentAlignment="Center"
+                                        materialDesign:ColorZoneAssist.Mode="Custom"
+                                        materialDesign:ColorZoneAssist.Background="#090A0E"
+                                        materialDesign:ButtonAssist.CornerRadius="5"
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                        Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80"/>
+                                    <StackPanel Width="700">
+                                        <materialDesign:ColorPicker x:Name="textRssColorPicker" Color="{Binding Background}" Height="250" />
+                                        <TextBlock Text="{Binding Background}" Foreground="White" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -270,7 +922,7 @@
                     </Border>
                     <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Word" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
-                            <Image Source="/Assets/svg-doc.png" Width="30" Height="30"/>
+                            <Image Source="/Assets/svg-word.png" Width="30" Height="30"/>
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_107}"/>
                         </StackPanel>
                     </Border>
@@ -292,12 +944,12 @@
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_110}"/>
                         </StackPanel>
                     </Border>
-                    <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
+                    <!--<Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Hdmi" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-hdmi.png" Width="30" Height="30"/>
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_111}"/>
                         </StackPanel>
-                    </Border>
+                    </Border>-->
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,15,0">
                     <Button Background="#393C45" Margin="20,0,0,0"
@@ -322,7 +974,6 @@
                         Foreground="LightGray"
                         x:Name="btnSave"
                         Click="btnSave_Click"
-                        IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                         Style="{StaticResource MaterialDesignOutlinedButton}">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
@@ -336,7 +987,6 @@
                         Background="#30479C"
                         Name="btnPublish"
                         Click="btnPublish_Click"
-                        IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                         Style="{StaticResource MaterialDesignOutlinedButton}">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
@@ -380,7 +1030,7 @@
                                     <ItemsControl ItemsSource="{Binding SelectedPage.Components}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <StackPanel>
+                                                <StackPanel Visibility="{Binding IsDeleted, Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=false}">
                                                     <Expander Visibility="{Binding IsFile, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" Margin="0,10" HorizontalAlignment="Stretch" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.HorizontalHeaderPadding="5" materialDesign:ExpanderAssist.HeaderBackground="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D" Cursor="">
                                                         <Expander.Header>
                                                             <DockPanel>
@@ -431,7 +1081,7 @@
                                     <ItemsControl ItemsSource="{Binding MediaConfig.Pages}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
+                                                <StackPanel Visibility="{Binding IsDeleted, Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=false}" Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                                     <TextBlock Margin="20,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Id}"/>
                                                     <Image Margin="10,0,0,0" Width="150" Height="100" Source="{Binding Thumbnail}"/>
                                                     <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
@@ -634,195 +1284,93 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                         <TextBlock Text="W" Width="12" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" Value="{Binding SelectedComponent.Width, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" Value="{Binding SelectedComponent.Width, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" Maximum="768" />
                                                         <TextBlock Text="H" VerticalAlignment="Center" Margin="15,0,0,0"/>
-                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="8,0,0,0" Value="{Binding SelectedComponent.Height, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="8,0,0,0" Value="{Binding SelectedComponent.Height, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" Maximum="576"/>
                                                     </StackPanel>
-                                                </StackPanel>
-                                            </Border>
-                                        </Expander>
-                                        <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_114}" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
-                                            <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
-                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
-                                                    <TabControl Width="auto" Height="auto" Cursor="Hand" materialDesign:ColorZoneAssist.Background="#16171D" materialDesign:ColorZoneAssist.Foreground="White">
-                                                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_115}">
-                                                            <Border Width="250" Height="110" Margin="10,20,0,0" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_Click" materialDesign:ButtonAssist.CornerRadius="5">
-                                                                <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                            </Border>
-                                                        </TabItem>
-                                                        <TabItem Header="{DynamicResource LanguageKey_Code_MediaStore}" Cursor="">
-                                                            <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
-                                                            </ScrollViewer>
-                                                        </TabItem>
-                                                    </TabControl>
                                                 </StackPanel>
                                             </Border>
                                         </Expander>
                                         <StackPanel>
-                                            <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_116}"  Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding SelectedComponent.IsShowInfo}" Value="false">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+                                            <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_114}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
-                                                            <TextBox Text="{Binding SelectedComponent.Name}" Width="150" Padding="5,0" BorderBrush="#404870" BorderThickness="1" Height="28"  VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_117}" Width="80" VerticalAlignment="Center"/>
-                                                            <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" ValueChanged="Level_ValueChanged"  BorderThickness="1" Value="{Binding SelectedComponent.ZIndex, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                                            <StackPanel.Style>
-                                                                <Style TargetType="StackPanel">
-                                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
-                                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                                        </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Video">
-                                                                            <Setter Property="Visibility" Value="Visible" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </StackPanel.Style>
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_118}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_119}" Tag="fullscreen" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=fullscreen}" />
-                                                                <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_120}" Tag="origin" Margin="50,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=origin}" />
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                                            <StackPanel.Style>
-                                                                <Style TargetType="StackPanel">
-                                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
-                                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                                        </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Text">
-                                                                            <Setter Property="Visibility" Value="Visible" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </StackPanel.Style>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
-                                                                <TextBox Text="{Binding SelectedComponent.Source}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Height="60"  VerticalAlignment="Center"/>
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_122}" Width="80" VerticalAlignment="Center"/>
-                                                                <Button Width="25" Height="25"
-                                                                    Padding="0"
-                                                                    materialDesign:ButtonAssist.CornerRadius="2"
-                                                                    Click="SelectColor_Click"
-                                                                    Background="#16171D"
-                                                                    BorderBrush="Gray">
-                                                                    <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
-                                                                </Button>
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_123}" Width="80" VerticalAlignment="Center"/>
-                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_124}" Width="80" VerticalAlignment="Center"/>
-                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_125}" Width="80" VerticalAlignment="Center"/>
-                                                                <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding SelectedComponent.LineSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
-                                                            </StackPanel>
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_126}" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                                <RadioButton VerticalAlignment="Center" Tag="pageTurning" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=pageTurning}" />
-                                                                <RadioButton VerticalAlignment="Center" Tag="rolling" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_128}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=rolling}" />
-                                                                <RadioButton VerticalAlignment="Center" Tag="stop" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_129}" Margin="30,0,0,0" Click="PlayModeChanged_Click" IsChecked="{Binding SelectedComponent.PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=stop}" />
-                                                            </StackPanel>
-                                                        </StackPanel>
+                                                        <TabControl Width="auto" Height="auto" Cursor="Hand" materialDesign:ColorZoneAssist.Background="#16171D" materialDesign:ColorZoneAssist.Foreground="White">
+                                                            <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_115}">
+                                                                <Border Width="250" Height="110" Margin="10,20,0,0" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_Click" materialDesign:ButtonAssist.CornerRadius="5">
+                                                                    <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                </Border>
+                                                            </TabItem>
+                                                            <TabItem Header="{DynamicResource LanguageKey_Code_MediaStore}" Cursor="">
+                                                                <ScrollViewer VerticalScrollBarVisibility="Auto" Width="250" Margin="10,20,0,0">
+                                                                    <materialDesign:Card Background="#16171D" Cursor="">
+                                                                        <StackPanel>
+                                                                            <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=All}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="All" >
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_All}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Video}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Video">
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_103}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+
+                                                                                <Border Background="{Binding SelectedType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Image}" MouseDown="RefreshData_MouseDown" BorderBrush="#538AF0" BorderThickness="1" Cursor="Hand" CornerRadius="2" Margin="0,0,4,0" Width="80" Tag="Image">
+                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_104}" />
+                                                                                    </StackPanel>
+                                                                                </Border>
+                                                                            </StackPanel>
+                                                                            <StackPanel Orientation="Horizontal" Height="24" Margin="0,0,0,10" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                                                                <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="0,0,0,0" >
+                                                                                    <TextBox Height="24" Width="185" BorderBrush="#404870" BorderThickness="1" Text="{Binding SearchString}" FontSize="12" materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_Search_Hint}" Padding="5,0,0,0"  Foreground="White" />
+                                                                                    <Button Background="#2A3255" Width="24" Height="24" Padding="0" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="MaterialDesignIconButton" Command="{Binding SearchCommand}">
+                                                                                        <Image Width="24" Height="24" Source="/Assets/5.png" HorizontalAlignment="Left"/>
+                                                                                    </Button>
+                                                                                </StackPanel>
+                                                                            </StackPanel>
+                                                                            <ItemsControl ItemsSource="{Binding Medias}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                    <ItemsPanelTemplate>
+                                                                                        <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="100" />
+                                                                                    </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <!--<TextBlock Foreground="White" Text="{Binding Name}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="14"/>-->
+                                                                                            <Image Source="{Binding Thumbnail }" MouseDown="CreateComponentFromStore_MouseDown" Width="110" />
+                                                                                        </StackPanel>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
+                                                                        </StackPanel>
+                                                                    </materialDesign:Card>
+                                                                </ScrollViewer>
+                                                            </TabItem>
+                                                        </TabControl>
                                                     </StackPanel>
                                                 </Border>
                                             </Expander>
+                                        </StackPanel>                                        
+                                        <StackPanel>
+                                            <ContentControl Content="{Binding SelectedComponent}" ContentTemplateSelector="{StaticResource ComponentDataTemplateSelector}" />                                            
                                         </StackPanel>
-
-                                        <Expander Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_130}" Visibility="{Binding SelectedComponent.IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">                                            
-                                            <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
-                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" TextBlock.Foreground="White">
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" BorderBrush="#404870" BorderThickness="1" Width="150"  Value="{Binding SelectedComponent.PlayCount, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
-                                                    </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
-                                                        <LocalCore:TimeTextBox IsDisabled="{Binding SelectedComponent.Type, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=Video}" Width="150" Timeline="{Binding SelectedComponent.Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding SelectedComponent.PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                    </StackPanel>
-                                                    <StackPanel>
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent.Type}" Value="Image">
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </DataTrigger>
-                                                                    <MultiDataTrigger>
-                                                                        <MultiDataTrigger.Conditions>
-                                                                            <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="pageTurning" />
-                                                                        </MultiDataTrigger.Conditions>
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </MultiDataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
-                                                            <ComboBox Width="150" ItemsSource="{Binding SelectedComponent.Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding SelectedComponent.ComponentEffectKey}" SelectedValuePath="Key" />
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
-                                                            <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                    <StackPanel>
-                                                        <StackPanel.Style>
-                                                            <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                    </DataTrigger>
-                                                                    <MultiDataTrigger>
-                                                                        <MultiDataTrigger.Conditions>
-                                                                            <Condition Binding="{Binding SelectedComponent.Type}" Value="Text" />
-                                                                            <Condition Binding="{Binding SelectedComponent.PlayMode}" Value="rolling" />
-                                                                        </MultiDataTrigger.Conditions>
-                                                                        <Setter Property="Visibility" Value="Visible" />
-                                                                    </MultiDataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </StackPanel.Style>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_135}" Width="80" VerticalAlignment="Center"/>
-                                                            <ComboBox Width="150" SelectedValue="{Binding SelectedComponent.Direction, UpdateSourceTrigger=PropertyChanged}" Padding="5"  BorderBrush="#404870" BorderThickness="1" SelectedValuePath="Tag" >
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_136}" Tag="rollingLeft" />
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_137}" Tag="rollingUp"/>
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_138}" Tag="rollingRight" />
-                                                                <ComboBoxItem Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_139}" Tag="rollingDown"/>
-                                                            </ComboBox>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_140}" Width="80" VerticalAlignment="Center"/>
-                                                            <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding SelectedComponent.RollingSpeed, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="1" Maximum="10"/>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
-                                                            <CheckBox IsChecked="{Binding SelectedComponent.IsLoopEnabled, UpdateSourceTrigger=PropertyChanged}" />
-                                                            <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_141}" Width="80" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </StackPanel>                                                    
-                                                </StackPanel>
-                                            </Border>
-                                        </Expander>
                                     </StackPanel>
                                 </materialDesign:Card>
                             </ScrollViewer>

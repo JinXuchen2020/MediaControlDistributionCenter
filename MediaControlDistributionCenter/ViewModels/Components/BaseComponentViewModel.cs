@@ -66,6 +66,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isShowInfo;
 
+        [ObservableProperty]
+        private bool isRunningLoaded;
+
+        [ObservableProperty]
+        private bool isDeleted;
+
         private bool isDragging = false;
         private Point startPoint;
         private FrameworkElement selectedElement;
@@ -306,7 +312,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
         }
 
-        public BaseComponentViewModel(BaseComponent component, double ratio)
+        public BaseComponentViewModel(BaseComponent component, string userAccount, double ratio)
         {
             Id = component.Id;
             Name = component.Name;
@@ -324,17 +330,23 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case Models.MediaType.Video:
                     isFile = true;
-                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
                 case Models.MediaType.Image:
                     isFile = true;
-                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, component.Source);
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
                     fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
                     isShowInfo = !string.IsNullOrEmpty(component.Source);
                     break;
-                case Models.MediaType.Text:
+                case Models.MediaType.Word:
+                    isFile = true;
+                    source = string.IsNullOrEmpty(component.Source) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.Source);
+                    fileName = string.IsNullOrEmpty(component.Source) ? null : Path.GetFileName(source);
+                    isShowInfo = !string.IsNullOrEmpty(component.Source);
+                    break;
+                default:
                     isFile = false;
                     source = component.Source;
                     isShowInfo = true;
@@ -342,7 +354,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        public virtual BaseComponent ToModel(double ratio)
+        public virtual BaseComponent ToModel(string userAccount, double ratio)
         {
             return new BaseComponent();
         }
@@ -363,7 +375,10 @@ namespace MediaControlDistributionCenter.ViewModels
             if (!string.IsNullOrEmpty(Source))
             {
                 var element = DrawingRunningContent();
-                canvas.Children.Add(element);
+                if (element != null)
+                {
+                    canvas.Children.Add(element);
+                }
             }
         }
 
@@ -392,6 +407,11 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         protected virtual void FadeIn(FrameworkElement element)
+        {
+            return;
+        }
+
+        public virtual void EffectExecution()
         {
             return;
         }
@@ -524,6 +544,58 @@ namespace MediaControlDistributionCenter.ViewModels
                 frameworkElement.SetBinding(dp, binding);
                 return;
             }
+        }
+
+        protected Border CreateBorder()
+        {
+            Border result = new Border
+            {
+                BorderThickness = new Thickness(2),
+                Width = Width,
+                Height = Height,
+                DataContext = this,
+            };
+
+            var rectangle = new System.Windows.Shapes.Rectangle
+            {
+                StrokeDashArray = new DoubleCollection([4, 2]),
+                Stroke = Brushes.Gray,
+                StrokeThickness = 2,
+            };
+
+            var binding = new Binding("Width")
+            {
+                RelativeSource = new RelativeSource
+                {
+                    AncestorType = typeof(Border)
+                }
+            };
+
+            rectangle.SetBinding(System.Windows.Shapes.Rectangle.WidthProperty, binding);
+            var heightBinding = new Binding("Height")
+            {
+                RelativeSource = new RelativeSource
+                {
+                    AncestorType = typeof(Border)
+                }
+            };
+
+            rectangle.SetBinding(System.Windows.Shapes.Rectangle.HeightProperty, heightBinding);
+
+            VisualBrush borderBrush = new VisualBrush()
+            {
+                Visual = rectangle
+            };
+            result.BorderBrush = borderBrush;
+
+            return result;
+        }
+        
+        protected IList<FontFamily> LoadFonts()
+        {
+            // 创建InstalledFontCollection对象
+            ICollection<FontFamily> fontFamilies = Fonts.SystemFontFamilies;
+            return fontFamilies.ToList();
         }
     }
 

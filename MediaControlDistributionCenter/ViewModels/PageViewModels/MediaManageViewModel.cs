@@ -2,10 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -18,21 +21,21 @@ namespace MediaControlDistributionCenter.ViewModels
         private const string DialogHostId = "RootDialogHostId";
         public UserViewModel CurrentUser { get; set; }
 
-        public MediaGroupViewModel SelectedGroup { get; set; }
+        public ProgramGroupViewModel SelectedGroup { get; set; }
 
         public bool ShowNavigation { get; set; }
 
         [ObservableProperty]
-        private ObservableCollection<MediaGroupViewModel> mediaGroups;
+        private ObservableCollection<ProgramGroupViewModel> mediaGroups;
 
         [ObservableProperty]
-        private ObservableCollection<MediaViewModel> medias;
+        private ObservableCollection<ProgramViewModel> medias;
 
         [ObservableProperty]
         private long? selectedGroupId;
 
         [ObservableProperty]
-        private MediaViewModel selectedMedia;
+        private ProgramViewModel selectedMedia;
 
         public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
 
@@ -58,16 +61,16 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = FindResource("LanguageKey_Code_All"),
                 UserAccount = CurrentUser.Account,
             });
-            this.MediaGroups = new ObservableCollection<MediaGroupViewModel>(groups.Select(c=>
+            this.MediaGroups = new ObservableCollection<ProgramGroupViewModel>(groups.Select(c=>
             {
-                var result = new MediaGroupViewModel();
+                var result = new ProgramGroupViewModel();
                 result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
                 return result;
             }));
             var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+            this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
-                var result = new MediaViewModel();
+                var result = new ProgramViewModel();
                 result.Binding(c);
                 return result;
             }));
@@ -87,7 +90,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
 
         [RelayCommand]
-        private async Task CreateGroup(MediaGroupViewModel groupViewModel)
+        private async Task CreateGroup(ProgramGroupViewModel groupViewModel)
         {
             groupViewModel.SubmitCommand.Execute(null);
             if (groupViewModel.HasErrors)
@@ -104,7 +107,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ChangeGroup(MediaGroupViewModel groupViewModel)
+        private async Task ChangeGroup(ProgramGroupViewModel groupViewModel)
         {
             var selectedMedias = Medias.Where(c => c.IsSelected);
 
@@ -124,7 +127,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ChangeMediaStatus(MediaViewModel viewModel)
+        private async Task ChangeMediaStatus(ProgramViewModel viewModel)
         {
             if (viewModel.Status == 1)
             {
@@ -143,28 +146,52 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteMedia(MediaViewModel viewModel)
+        private async Task DeleteMedia(ProgramViewModel viewModel)
         {
             var response = await programService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                LoadData();
+                var playbackRecordService = GetService<IPlaybackRecordService>();
+                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                var deviceService = GetService<IMonitorService>();
+                foreach (var playbackRecord in playRecords)
+                {
+                    if (ConnectionMode.Mode == "Local")
+                    {
+                        var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+                        loginViewModel.ConnectedDevice?.DeleteProgramCommand.Execute(viewModel);
+                    }
+                    else
+                    {
+                        var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                        if (device != null)
+                        {
+                            var deviceManageViewModel = App.ServicesProvider.GetRequiredService<DeviceManageViewModel>();
+                            deviceManageViewModel.SelectedDevice?.DeleteProgramCommand.Execute(viewModel);
+                        }
+                    }
+
+                    await playbackRecordService.DeleteById(playbackRecord.Id);
+                }
+
+                fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.UserId, viewModel.Name));
             }
         }
 
         [RelayCommand]
         private async Task DeleteMedias()
         {
-            var selectedIds = Medias.Where(c => c.IsSelected).Select(c => c.Id).ToList();
-            var response = await programService.DeleteBatch(selectedIds);
-            if (response.Code == 200)
+            var selectedItems = Medias.Where(c => c.IsSelected).ToList();
+            foreach (var selectedItem in selectedItems) 
             {
-                LoadData();
+                await DeleteMedia(selectedItem);
             }
+
+            LoadData();
         }
 
         [RelayCommand]
-        private async Task SaveMedia(MediaViewModel viewModel)
+        private async Task SaveMedia(ProgramViewModel viewModel)
         {
             viewModel.SubmitCommand.Execute(null);
             if (!viewModel.HasErrors)
@@ -182,11 +209,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         if (dbModel.Name != viewModel.Name)
                         {
-                            var oldFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, dbModel.Name);
-                            var newFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, viewModel.Name);
+                            var oldFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name);
+                            var newFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, CurrentUser.Account, viewModel.Name);
                             if (Directory.Exists(oldFolderPath))
                             {
-                                var config = fileService.ReadFileContent<MediaConfig>(Path.Combine(Helpers.Constants.OutPath, dbModel.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
+                                var config = fileService.ReadFileContent<MediaConfig>(Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
                                 if (config != null)
                                 {
                                     config.Name = viewModel.Name;
@@ -204,7 +231,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                     }));
                                     var configContent = JsonConvert.SerializeObject(config);
 
-                                    var mediaResourcePath = Path.Combine(Helpers.Constants.OutPath, dbModel.Name);
+                                    var mediaResourcePath = Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name);
                                     fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
                                 }
 
@@ -221,14 +248,31 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async Task DeleteGroup(ProgramGroupViewModel viewModel)
+        {
+            var response = await programGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                var agentUsers = programService.GetAll(new ProgramDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                foreach (var item in agentUsers)
+                {
+                    item.GroupId = null;
+                    await programService.Save(item);
+                }
+            }
+
+            LoadData();
+        }
+
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            this.Medias = new ObservableCollection<ProgramViewModel>(medias.Select(c =>
             {
-                var viewModel = new MediaViewModel();
+                var viewModel = new ProgramViewModel();
                 viewModel.Binding(c);
                 return viewModel;
             }));

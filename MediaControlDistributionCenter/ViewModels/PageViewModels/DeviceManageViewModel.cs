@@ -1,8 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Autofac.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -34,13 +36,21 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> devices;
 
+        //[ObservableProperty]
+        //private ObservableCollection<DeviceViewModel> disabledDevices;
+
         [ObservableProperty]
         private long? selectedGroupId;
+
+        [ObservableProperty]
+        private int selectDisabled = 1;
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
         private readonly IUserService userService;
         private readonly IUserGroupService userGroupService;
+        private readonly IPlaybackRecordService playbackRecordService;
+        private readonly IProgramService programService;
         private readonly Communication communication;
 
         public DeviceManageViewModel(Communication communication) 
@@ -49,6 +59,8 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
+            this.playbackRecordService = GetService<IPlaybackRecordService>();
+            this.programService = GetService<IProgramService>();
             this.communication = communication;
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
@@ -71,12 +83,20 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == SelectDisabled).OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);
                 return result;
             }));
+
+            //var disabledDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId, Enabled = 0 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            //this.DisabledDevices = new ObservableCollection<DeviceViewModel>(disabledDevices.OrderByDescending(c => c.Id).Select(c =>
+            //{
+            //    var result = new DeviceViewModel();
+            //    result.Binding(c);
+            //    return result;
+            //}));
         }
 
         [RelayCommand]
@@ -120,11 +140,34 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task DeleteGroup(DeviceGroupViewModel viewModel)
+        {
+            var response = await monitorGroupService.DeleteById(viewModel.Id);
+            if (response.Code == 200)
+            {
+                var agentUsers = monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                foreach (var item in agentUsers)
+                {
+                    item.GroupId = null;
+                    await monitorService.Save(item);
+                }
+            }
+
+            LoadData();
+        }
+
+        [RelayCommand]
         private async Task DeleteDevice(DeviceViewModel viewModel)
         {
             var response = await monitorService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                var deviceControlService = GetService<IDeviceControlService>();
+                var deviceControls = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = viewModel.DeviceId })).Data?.ToList() ?? new List<DeviceControlDto>();
+                await deviceControlService.DeleteBatch(deviceControls.Select(c => c.Id).ToList());
+
+                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = viewModel.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                await playbackRecordService.DeleteBatch(playRecords.Select(c => c.Id).ToList());
                 LoadData();
             }
         }
@@ -178,6 +221,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ConnectDevice(DeviceViewModel viewModel)
         {
+            if (SelectedDevice != null && SelectedDevice.Id == viewModel.Id)
+            {
+                return;
+            }
             await viewModel.ConnectCommand.ExecuteAsync(communication);
             if (!string.IsNullOrEmpty(viewModel?.ErrorMessage))
             {
@@ -186,10 +233,13 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
-                viewModel?.ShowConfirmDialogCommand.Execute(null);
-                if (viewModel.StatusText == FindResource("LanguageKey_Code_Online"))
+                if (ConnectionMode.Mode == "Remote")
                 {
-                    SelectedDevice = viewModel;
+                    viewModel?.ShowConfirmDialogCommand.Execute(null);
+                    if (viewModel.IsConnected())
+                    {
+                        SelectedDevice = viewModel;
+                    }
                 }
             }
         }
@@ -209,23 +259,31 @@ namespace MediaControlDistributionCenter.ViewModels
             var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
             if (adminUser != null)
             {
-                users.Add(new UserSync(adminUser, null, null));
+                users.Add(new UserSync(adminUser, null));
             }
 
-            UserGroupDto? userGroup = null;
             if (!string.IsNullOrEmpty(CurrentUser.AgentId))
             {
                 var agentUser = userService.GetAll(new UserDto { Account = CurrentUser.AgentId }).GetAwaiter().GetResult().Data?.FirstOrDefault();
                 if (agentUser != null)
                 {
-                    users.Add(new UserSync(agentUser, null, null));
+                    users.Add(new UserSync(agentUser, null));
                 }
-
-                userGroup = (await userGroupService.GetById(CurrentUser.GroupId!.Value)).Data;
             }
 
+            var programs = new List<ProgramDto>();
+            var publishRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SelectedDevice.SNumber}).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            
+            foreach (var record in publishRecords) 
+            {
+                var program = programService.GetAll(new ProgramDto { Name = record.MediaName}).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (program != null) 
+                {
+                    programs.Add(program);
+                }
+            }
 
-            users.Add(new UserSync(CurrentUser.ToModel(), userGroup, new MonitorSync(SelectedDevice!.ToModel(), null)));
+            users.Add(new UserSync(CurrentUser.ToModel(), new MonitorSync(SelectedDevice!.ToModel(), programs)));
             result.Users = users;
 
             await SelectedDevice.SendUserCommand.ExecuteAsync(result);

@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Data;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -63,7 +64,8 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel = mediaEditViewModel;
-            manageViewModel.SetValues(MainCanvas);
+            manageViewModel.Canvas = MainCanvas;
+            manageViewModel.LoadData();
             DataContext = mediaEditViewModel;
 
             this.Loaded += MediaEdit_Loaded;
@@ -102,6 +104,30 @@ namespace MediaControlDistributionCenter.Views
                         case "Text":
                             var textComponent = component as TextComponentViewModel;
                             textComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Hdmi":
+                            var hdmiComponent = component as HdmiComponentViewModel;
+                            hdmiComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Stream":
+                            var streamComponent = component as StreamComponentViewModel;
+                            streamComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Web":
+                            var webComponent = component as WebComponentViewModel;
+                            webComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Rss":
+                            var rssComponent = component as RssComponentViewModel;
+                            rssComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "Word":
+                            var wordComponent = component as WordComponentViewModel;
+                            wordComponent!.DrawContentCommand.Execute(MainCanvas);
+                            break;
+                        case "ColorText":
+                            var colorComponent = component as ColorTextComponentViewModel;
+                            colorComponent!.DrawContentCommand.Execute(MainCanvas);
                             break;
                     }
                 }
@@ -159,9 +185,16 @@ namespace MediaControlDistributionCenter.Views
 
         private bool IsVideoFile(string filePath)
         {
-            string[] imageExtensions = { ".mp4", ".avi", ".wmv", ".mkv" };
+            string[] imageExtensions = { ".mp4", ".mp3", ".avi", ".wmv", ".mkv" };
             string ext = System.IO.Path.GetExtension(filePath);
             return imageExtensions.Contains(ext);
+        }
+
+        private bool IsWordFile(string filePath)
+        {
+            string[] extensions = { ".pdf", ".doc", ".docx", ".pptx" };
+            string ext = System.IO.Path.GetExtension(filePath);
+            return extensions.Contains(ext);
         }
 
         private void UpdateFileComponent(string filePath, double left = 0 , double top = 0)
@@ -176,7 +209,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             string fileName = System.IO.Path.GetFileName(filePath);
-            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
+            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
 
             if (IsImageFile(filePath))
             {
@@ -234,6 +267,34 @@ namespace MediaControlDistributionCenter.Views
                 viewModel.DrawContentCommand.Execute(MainCanvas);
                 manageViewModel.SelectedElement = viewModel.FrameworkElement;
             }
+            else if (IsWordFile(filePath))
+            {
+                if (currentComponent.Type != MediaType.Word.ToString())
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_195");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
+
+                var uploadPath = System.IO.Path.Combine(localFolder, fileName);
+                if (!File.Exists(uploadPath))
+                {
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    uploadPath = fileService.SaveFileContent(localFolder, fileName, fileStream);
+                }
+
+                var viewModel = currentComponent;
+                viewModel.Left = left;
+                viewModel.Top = top;
+                viewModel.Width = 229;
+                viewModel.Height = 329;
+                viewModel.Source = uploadPath;
+                viewModel.FileName = fileName;
+                viewModel.IsShowInfo = true;
+
+                viewModel.DrawContentCommand.Execute(MainCanvas);
+                manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -245,22 +306,37 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
 
             var configModel = manageViewModel.MediaConfig.ToModel();
 
             var configContent = JsonConvert.SerializeObject(configModel);
 
-            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, configModel.Name);
+            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, configModel.Name);
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
             manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
+
+            foreach(var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
+            {
+                fileService.DeleteResourcePath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name));
+            }
+
+            foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.Components.Any(c => c.IsDeleted)))
+            {
+                var deleteCompos = deletePage.Components.Where(c => c.IsDeleted);
+                foreach (var compo in deleteCompos) 
+                {
+                    var componentPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name, compo.Name);
+                    fileService.DeleteResourcePath(componentPath);
+                }
+            }
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentMedia.Name);
+            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name);
 
             if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
             {
@@ -269,12 +345,12 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentMedia.Name + ".zip");
+            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
             fileService.CreatZip(sourceDic, desZipFilePath);
 
             var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;
 
-            manageViewModel.CurrentMedia.Size = fileSize;
+            manageViewModel.CurrentMedia.Size = Math.Round(fileSize, 2);
             manageViewModel.SaveCommand.Execute(null);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
@@ -352,6 +428,12 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
             {
+                double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
+                double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
+                double minLeft = 0;
+                double minTop = 0;
+                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
+                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
                 Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
                 Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top);
             }
@@ -366,7 +448,7 @@ namespace MediaControlDistributionCenter.Views
                 PlayCount = 1,
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() } },
                 Components = new List<BaseComponent>()
-            });
+            }, manageViewModel.CurrentUser.Account);
 
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
@@ -391,19 +473,20 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
         {
-            if(manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c =>!c.IsDeleted).Count() > 1)
             {
                 var currentPage = manageViewModel.SelectedPage;
                 currentPage.IsSelected = false;
-                manageViewModel.MediaConfig.Pages.Remove(currentPage);
+                currentPage.IsDeleted = true;
                 manageViewModel.SelectedPage = manageViewModel.MediaConfig.Pages.First();
                 manageViewModel.SelectedPage.IsSelected = true;
+                LoadCanvasComponents(manageViewModel);
             }
         }
 
         private void btnPageUpOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c => !c.IsDeleted).Count() > 1)
             {
                 var prePage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order < manageViewModel.SelectedPage.Order);
                 if (prePage != null) 
@@ -419,9 +502,9 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDownOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c => !c.IsDeleted).Count() > 1)
             {
-                var nextPage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > manageViewModel.SelectedPage.Order);
+                var nextPage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > manageViewModel.SelectedPage.Order && !c.IsDeleted);
                 if (nextPage != null)
                 {
                     var currentOrder = manageViewModel.SelectedPage.Order;
@@ -452,11 +535,11 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnComponentDelete_Click(object sender, RoutedEventArgs e)
         {
-            if(manageViewModel.SelectedComponent != null)
+            if (manageViewModel.SelectedComponent != null)
             {
                 var currentCom = manageViewModel.SelectedComponent;
                 currentCom.IsSelected = false;
-                manageViewModel.SelectedPage.Components.Remove(currentCom);
+                currentCom.IsDeleted = true;
                 if (currentCom.FrameworkElement != null)
                 {
                     MainCanvas.Children.Remove(currentCom.FrameworkElement);
@@ -465,42 +548,6 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.SelectedElement = null;
             }
         }
-
-        //private void btnMediaUpOrder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var manageViewModel = (DataContext as MediaEditViewModel)!;
-        //    var currentMedia = manageViewModel.SelectedPage.MixedMedias.First(c => c.IsSelected);
-        //    if (manageViewModel.SelectedPage.MixedMedias.Count > 1)
-        //    {
-        //        var prePage = manageViewModel.SelectedPage.MixedMedias.FirstOrDefault(c => c.Order < currentMedia.Order);
-        //        if (prePage != null)
-        //        {
-        //            var currentOrder = currentMedia.Order;
-        //            currentMedia.Order = prePage.Order;
-        //            prePage.Order = currentOrder;
-        //        }
-
-        //        manageViewModel.SelectedPage.MixedMedias = new System.Collections.ObjectModel.ObservableCollection<MixedMediaViewModel>(manageViewModel.SelectedPage.MixedMedias.OrderBy(c => c.Order).ToList());
-        //    }
-        //}
-
-        //private void btnMediaDownOrder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var manageViewModel = (DataContext as MediaEditViewModel)!;
-        //    var currentMedia = manageViewModel.SelectedPage.MixedMedias.First(c => c.IsSelected);
-        //    if (manageViewModel.SelectedPage.MixedMedias.Count > 1)
-        //    {
-        //        var nextPage = manageViewModel.SelectedPage.MixedMedias.FirstOrDefault(c => c.Order > currentMedia.Order);
-        //        if (nextPage != null)
-        //        {
-        //            var currentOrder = currentMedia.Order;
-        //            currentMedia.Order = nextPage.Order;
-        //            nextPage.Order = currentOrder;
-        //        }
-
-        //        manageViewModel.SelectedPage.MixedMedias = new System.Collections.ObjectModel.ObservableCollection<MixedMediaViewModel>(manageViewModel.SelectedPage.MixedMedias.OrderBy(c => c.Order).ToList());
-        //    }
-        //}
 
         private void SwitchComponent(BaseComponentViewModel viewModel)
         {
@@ -526,6 +573,9 @@ namespace MediaControlDistributionCenter.Views
                         break;
                     case "Text":
                         (manageViewModel.SelectedComponent as TextComponentViewModel).PlayMode = radioButton.Tag?.ToString();
+                        break;
+                    case "Rss":
+                        (manageViewModel.SelectedComponent as RssComponentViewModel).PlayMode = radioButton.Tag?.ToString();
                         break;
 
                 }
@@ -554,77 +604,19 @@ namespace MediaControlDistributionCenter.Views
 
                 manageViewModel.SelectedElement = null;
 
-                switch (type)
-                {
-                    case MediaType.Video:
-                        manageViewModel.SelectedComponent = new VideoComponentViewModel(new VideoComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{maxId + 1}",
-                            ZIndex = 1,
-                            PlayMode = "fullscreen",
-                            Type = (MediaType)type,
-                            PlayCount = 1,
-                            PlayDuration = "",
-                        });
-                        break;
-                    case MediaType.Image:
-                        manageViewModel.SelectedComponent = new ImageComponentViewModel(new ImageComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{maxId + 1}",
-                            ZIndex = 1,
-                            Type = (MediaType)type,
-                            PlayCount = 1,
-                            PlayDuration = "00:00:05",
-                            Timeline = 5, 
-                            ComponentEffect = "FadeIn",
-                            EffectDuration = 1000
-                        });
-                        break;
-                    case MediaType.Text:
-                        manageViewModel.SelectedComponent = new TextComponentViewModel(new TextComponent
-                        {
-                            Id = maxId + 1,
-                            Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{maxId + 1}",
-                            ZIndex = 1,
-                            Type = (MediaType)type,
-                            Source = " ",
-                            PlayCount = 1,
-                            PlayDuration = "00:00:05",
-                            PlayMode = "pageTurning",
-                            ComponentEffect = "FadeIn",
-                            EffectDuration = 1000,
-                            Direction = "rollingLeft",
-                            Timeline = 5,
-                            Background ="black",
-                            TextColor = "white",
-                            TextSize = 16,
-                            IsLoopEnabled = true,
-                            LetterSpacing = 2,
-                            LineSpacing = 2,
-                            RollingSpeed = 2,
-                        });
-                        break;
-                }
+                manageViewModel.SelectedComponent = manageViewModel.CreateComponent((MediaType)type, maxId + 1);
 
-                manageViewModel.SelectedComponent.IsSelected = true;
-
-                if (!manageViewModel.SelectedComponent.IsFile)
+                if (manageViewModel.SelectedComponent != null)
                 {
-                    switch (manageViewModel.SelectedComponent.Type)
+                    manageViewModel.SelectedComponent.IsSelected = true;
+                    if (!manageViewModel.SelectedComponent.IsFile)
                     {
-                        case "Text":
-                            var textComponent = (manageViewModel.SelectedComponent as TextComponentViewModel)!;
-                            textComponent.Width = 300;
-                            textComponent.Height = 200;
-                            textComponent.DrawContentCommand.Execute(MainCanvas);
-                            manageViewModel.SelectedElement = textComponent.FrameworkElement;
-                            break;
+                        manageViewModel.DrawingComponent(MainCanvas, manageViewModel.SelectedComponent);
+                        manageViewModel.SelectedElement = manageViewModel.SelectedComponent.FrameworkElement;
                     }
-                }
 
-                manageViewModel.SelectedPage.Components.Add(manageViewModel.SelectedComponent);
+                    manageViewModel.SelectedPage.Components.Add(manageViewModel.SelectedComponent);
+                }
             }
         }
 
@@ -687,6 +679,18 @@ namespace MediaControlDistributionCenter.Views
         private void btnUpload_Click(object sender, MouseButtonEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (manageViewModel.SelectedComponent.Type == "Image")
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"; // 过滤器，允许的文件类型
+            }
+            else if (manageViewModel.SelectedComponent.Type == "Video")
+            {
+                openFileDialog.Filter = "Video Files|*.mp4;*.mp3;*.avi;*.wmv;*.mkv"; // 过滤器，允许的文件类型
+            }
+            else if (manageViewModel.SelectedComponent.Type == "Word")
+            {
+                openFileDialog.Filter = "DOC Files|*.pdf; *.doc; *.docx;*.pptx"; // 过滤器，允许的文件类型
+            }
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -699,7 +703,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageCapture_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void LeftTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -709,9 +713,108 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    manageViewModel.MediaConfig.CaptureCommand.Execute(MainCanvas);
+                    manageViewModel.CaptureCommand.Execute(MainCanvas);
                 }
             }
+        }
+
+        private void SetRssFontStyle_Click(object sender, RoutedEventArgs e)
+        {
+            var element = (Button)sender;
+            var viewModel = element.DataContext as RssContentViewModel;
+            switch (element.Tag.ToString())
+            {
+                case "Bold":
+                    viewModel.IsBold = !viewModel.IsBold;
+                    break;
+                case "Italic":
+                    viewModel.IsItalic = !viewModel.IsItalic;
+                    break;
+                case "Underline":
+                    viewModel.IsUnderline = !viewModel.IsUnderline;
+                    break;
+            }
+        }
+
+        private void SelectRssColor_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (sender as Button).DataContext as RssContentViewModel;
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void CreateComponentFromStore_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var element = (Image)sender;
+            var viewModel = element.DataContext as MediaViewModel;
+
+            UpdateFileComponent(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src));
+        }
+
+        private void SelectColorTextColor_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (sender as Button).DataContext as ColorTextComponentViewModel;
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void SetColorTexFontStyle_Click(object sender, RoutedEventArgs e)
+        {
+            var element = (Button)sender;
+            var viewModel = element.DataContext as ColorTextComponentViewModel;
+            switch (element.Tag.ToString())
+            {
+                case "Bold":
+                    viewModel.IsBold = !viewModel.IsBold;
+                    viewModel.FontWeight = viewModel.IsBold ? FontWeights.Bold : FontWeights.Normal;
+                    break;
+                case "Italic":
+                    viewModel.IsItalic = !viewModel.IsItalic;
+                    viewModel.FontStyle = viewModel.IsItalic ? FontStyles.Italic : FontStyles.Normal;
+                    break;
+                case "Underline":
+                    viewModel.IsUnderline = !viewModel.IsUnderline;
+                    viewModel.TextDecoration = viewModel.IsUnderline ? TextDecorations.Underline : null;
+                    break;
+            }
+        }
+
+        private void RefreshData_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var tag = ((sender as Border).Tag as string)!;
+            manageViewModel.SelectedType = tag;
+            manageViewModel.SearchString = null;
+            manageViewModel.RefreshMedias();
+        }
+    }
+
+    public class ComponentDataTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var dialogBox = FindDialog(container);
+            if(item is BaseComponentViewModel viewModel)
+            {
+                var resourceKey = $"{viewModel.Type}Component";
+                return dialogBox.FindResource(resourceKey) as DataTemplate;
+            }
+
+            return null;
+        }
+
+        private MediaEdit FindDialog(DependencyObject child)
+        {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            while (parentObject != null)
+            {
+                if (parentObject is MediaEdit)
+                {
+                    return parentObject as MediaEdit;
+                }
+
+                parentObject = VisualTreeHelper.GetParent(parentObject);
+            }
+
+            return null; // 如果没有找到Canvas，则返回null
         }
     }
 }

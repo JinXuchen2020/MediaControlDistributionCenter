@@ -45,6 +45,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double ratio;
 
         [ObservableProperty]
+        private string userAccount;
+
+        [ObservableProperty]
         private ObservableCollection<MediaPageViewModel> pages;
 
         public MediaConfigViewModel(MediaConfig config)
@@ -56,7 +59,8 @@ namespace MediaControlDistributionCenter.ViewModels
             left = config.Left;
             top = config.Top;
             ratio = config.Ratio;
-            pages = new ObservableCollection<MediaPageViewModel>(config.Pages.OrderBy(c => c.Order).Select(c => new MediaPageViewModel(c, config.Ratio)));
+            userAccount = config.UserAccount;
+            pages = new ObservableCollection<MediaPageViewModel>(config.Pages.OrderBy(c => c.Order).Select(c => new MediaPageViewModel(c, config.UserAccount, config.Ratio)));
         }
 
         public MediaConfig ToModel()
@@ -70,7 +74,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Left = Left,
                 Top = Top,
                 Ratio = Ratio,
-                Pages = Pages.Select(c => c.ToModel(Ratio)).ToList()
+                UserAccount = UserAccount,
+                Pages = Pages.Where(c => !c.IsDeleted).Select(c => c.ToModel(UserAccount, Ratio)).ToList()
             };
         }
 
@@ -81,59 +86,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 page.DisposeCommand.Execute(null);
             }
-        }
-
-
-
-        [RelayCommand]
-        private void Capture(Canvas canvas)
-        {
-            foreach (var page in Pages) 
-            {
-                page.ThumbnailFilePath = canvas.Dispatcher.Invoke<string>(() =>
-                {
-                    // 创建一个RenderTargetBitmap
-                    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                        (int)canvas.ActualWidth,
-                        (int)canvas.ActualHeight,
-                        96, 96,
-                        PixelFormats.Pbgra32);
-                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
-                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
-
-                    // 将MediaElement绘制到RenderTargetBitmap
-                    renderTargetBitmap.Render(canvas);
-                    PngBitmapEncoder png = new PngBitmapEncoder();
-                    png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-                    using var memoryStream = new MemoryStream();
-                    png.Save(memoryStream);
-                    var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
-                    var filePath = Path.Combine(Constants.OutPath, Name, page.Name);
-                    var fileName = "thumbnail.png";
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
-
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                });
-
-                page.Thumbnail = GetBitmap(page.ThumbnailFilePath);
-            }            
-        }
-
-        private BitmapImage? GetBitmap(string? source)
-        {
-            if (string.IsNullOrEmpty(source))
-            {
-                return null;
-            }
-            BitmapImage bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            bitmap.UriSource = new Uri(source);
-            bitmap.EndInit();
-
-            return bitmap;
         }
     }
 
@@ -171,6 +123,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSelected;
 
         [ObservableProperty]
+        private bool isDeleted;
+
+        [ObservableProperty]
         private BitmapImage? thumbnail;
 
         [ObservableProperty]
@@ -179,7 +134,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<BaseComponentViewModel> components;
 
-        public MediaPageViewModel(MediaPage mediaPage, double ratio = 1)
+        public MediaPageViewModel(MediaPage mediaPage, string userAccount, double ratio = 1)
         {
             id = mediaPage.Id;
             name = mediaPage.Name;
@@ -189,7 +144,7 @@ namespace MediaControlDistributionCenter.ViewModels
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
             thumbnailFilePath = mediaPage.ThumbnailFilePath;
-            thumbnail = GetBitmap(string.IsNullOrEmpty(mediaPage.ThumbnailFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, mediaPage.ThumbnailFilePath));
+            thumbnail = GetBitmap(string.IsNullOrEmpty(mediaPage.ThumbnailFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, mediaPage.ThumbnailFilePath));
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
             components = new ObservableCollection<BaseComponentViewModel>(mediaPage.Components.Select(c =>
             {
@@ -198,13 +153,31 @@ namespace MediaControlDistributionCenter.ViewModels
                 switch (c.Type)
                 {
                     case MediaType.Image:
-                        result = new ImageComponentViewModel((ImageComponent)c, ratio);
+                        result = new ImageComponentViewModel((ImageComponent)c, userAccount, ratio);
                         break;
                     case MediaType.Video:
-                        result = new VideoComponentViewModel((VideoComponent)c, ratio);
+                        result = new VideoComponentViewModel((VideoComponent)c, userAccount, ratio);
                         break;
                     case MediaType.Text:
-                        result = new TextComponentViewModel((TextComponent)c, ratio);
+                        result = new TextComponentViewModel((TextComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.Hdmi:
+                        result = new HdmiComponentViewModel((HdmiComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.Rss:
+                        result = new RssComponentViewModel((RssComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.Stream:
+                        result = new StreamComponentViewModel((StreamComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.Web:
+                        result = new WebComponentViewModel((WebComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.Word:
+                        result = new WordComponentViewModel((WordComponent)c, userAccount, ratio);
+                        break;
+                    case MediaType.ColorText:
+                        result = new ColorTextComponentViewModel((ColorTextComponent)c, userAccount, ratio);
                         break;
                 }
 
@@ -212,20 +185,20 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
         }
 
-        public MediaPage ToModel(double ratio)
+        public MediaPage ToModel(string userAccount, double ratio)
         {
             return new MediaPage
             {
                 Id = Id,
                 Name = Name,
                 Order = Order,
-                ThumbnailFilePath = ThumbnailFilePath == null ? string.Empty : ThumbnailFilePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath) + "\\", string.Empty),
+                ThumbnailFilePath = ThumbnailFilePath == null ? string.Empty : ThumbnailFilePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 IsHasValidity = IsHasValidity,
                 ValidStartDate = ValidStartDate,
                 ValidEndDate = ValidEndDate,
                 PlayCount = PlayCount,
                 Schedulers = Schedulers.Select(c => c.ToModel()).ToList(),
-                Components = Components.Select(c => c!.ToModel(ratio)).ToList()
+                Components = Components.Where(c => !c.IsDeleted).Select(c => c!.ToModel(userAccount, ratio)).ToList()
             };
         }
 

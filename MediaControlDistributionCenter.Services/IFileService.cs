@@ -13,6 +13,8 @@ namespace MediaControlDistributionCenter.Services
     {
         public void CreateResourcePath(string resPath);
 
+        public void DeleteResourcePath(string resPath);
+
         public string SaveFileContent(string fileDicPath, string fileName, string fileContent);
 
         public void DeleteFileContent(string filePath);

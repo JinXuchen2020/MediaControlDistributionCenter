@@ -28,6 +28,10 @@ namespace MediaControlDistributionCenter.Views.CustomControls
             CreateResizeArea(control, ResizeDirection.TopRight);
             CreateResizeArea(control, ResizeDirection.BottomLeft);
             CreateResizeArea(control, ResizeDirection.BottomRight);
+            CreateResizeArea(control, ResizeDirection.Left);
+            CreateResizeArea(control, ResizeDirection.Right);
+            CreateResizeArea(control, ResizeDirection.Bottom);
+            CreateResizeArea(control, ResizeDirection.Top);
 
             UpdateThumbPositions(control);
         }
@@ -128,6 +132,20 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                             newWidth = newHeight * ratio;
                         }
                         break;
+                    case ResizeDirection.Left:
+                        newWidth = Math.Max(control.Width - deltaX, 10);
+                        newLeft = Math.Max(newLeft + (control.Width - newWidth), 0);
+                        break;
+                    case ResizeDirection.Right:
+                        newWidth = Math.Max(control.Width + deltaX, 10);
+                        break;
+                    case ResizeDirection.Top:
+                        newHeight = Math.Max(control.Height - deltaY, 10);
+                        newTop = Math.Max(newTop + (control.Height - newHeight), 0);
+                        break;
+                    case ResizeDirection.Bottom:
+                        newHeight = Math.Max(control.Height + deltaY, 10);
+                        break;                 
                 }
 
                 control.Width = Math.Min(newWidth, _canvas.Width - newLeft);
@@ -185,6 +203,30 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                             Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
                             Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
                             break;
+                        case ResizeDirection.Left:
+                            thumb.Cursor = Cursors.SizeWE;
+                            thumb.Height = 20;
+                            Canvas.SetLeft(thumb, conLeft + offsetX);
+                            Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
+                            break;
+                        case ResizeDirection.Right:
+                            thumb.Cursor = Cursors.SizeWE;
+                            thumb.Height = 20;
+                            Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
+                            Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
+                            break;
+                        case ResizeDirection.Top:
+                            thumb.Cursor = Cursors.SizeNS;
+                            thumb.Width = 20;
+                            Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX);
+                            Canvas.SetTop(thumb, conTop + offsetY);
+                            break;
+                        case ResizeDirection.Bottom:
+                            thumb.Cursor = Cursors.SizeNS;
+                            thumb.Width = 20;
+                            Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX - thumb.Width);
+                            Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
+                            break;
                     }
 
                     Canvas.SetZIndex(thumb, zIndex);
@@ -198,6 +240,10 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         TopLeft,
         TopRight,
         BottomLeft,
-        BottomRight
+        BottomRight,
+        Top,
+        Bottom,
+        Left,
+        Right
     }
 }

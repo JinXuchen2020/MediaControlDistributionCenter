@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -18,24 +19,26 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<DeviceViewModel> devices;
 
         [ObservableProperty]
-        private MediaViewModel currentMedia;
+        private ProgramViewModel currentMedia;
 
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
         private readonly IPlaybackRecordService playbackRecordService;
+        private readonly Communication communication;
 
-        public MediaDevicesViewModel() 
+        public MediaDevicesViewModel(Communication communication) 
         {
             this.monitorService = GetService<IMonitorService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
+            this.communication = communication;
         }
 
         public override void LoadData()
         {
-            var devices = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var result = new DeviceViewModel();
@@ -55,8 +58,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
                     if (existRecord == null) 
                     {
+                        item.ConnectCommand.Execute(communication);
                         string filePath = $"{CurrentMedia.Name}.zip";
-                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, filePath));
+                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                         if (!string.IsNullOrEmpty(item.ErrorMessage))
                         {
                             ErrorMessage = item.ErrorMessage;

@@ -144,12 +144,14 @@ namespace MediaControlDistributionCenter
             {
                 viewModel.ConnectionMode.Mode = "Local";
                 spAddress.Visibility = Visibility.Visible;
+                spSlogan.Visibility = Visibility.Visible;
                 viewModel.RefreshService();
             }
             else
             {
                 viewModel.ConnectionMode.Mode = "Remote";
                 spAddress.Visibility = Visibility.Collapsed;
+                spSlogan.Visibility = Visibility.Collapsed;
                 viewModel.RefreshService();
             }
         }

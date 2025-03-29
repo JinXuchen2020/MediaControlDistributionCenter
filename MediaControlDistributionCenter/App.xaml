@@ -14,7 +14,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MediaControlDistributionCenter;component/Themes/Language/Chinese.xaml"/> 
+                <ResourceDictionary Source="pack://application:,,,/MediaControlDistributionCenter;component/Themes/Language/Korean.xaml"/> 
             </ResourceDictionary.MergedDictionaries>
             <!-- 注册 LocalizationManager 为全局资源 -->
             <!--<localized:LocalizationManager x:Key="LocalizationManager" LanguageCode="zh-CN"/>-->

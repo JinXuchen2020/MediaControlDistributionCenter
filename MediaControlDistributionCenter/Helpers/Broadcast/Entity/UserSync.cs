@@ -16,14 +16,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
     {
         public UserDto User { get; set; }
 
-        public UserGroupDto? UserGroup { get; set; }
-
         public MonitorSync? Monitor { get; set; }
 
-        public UserSync(UserDto user, UserGroupDto? userGrous, MonitorSync? monitor)
+        public UserSync(UserDto user, MonitorSync? monitor)
         {
             this.User = user;
-            this.UserGroup = userGrous;
             this.Monitor = monitor;
         }
     }
@@ -34,10 +31,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
 
         public IList<ProgramDto> Programs { get; set; }
 
+        public IList<DeviceControlDto> DeviceControls { get; set; }
+
         public MonitorSync(MonitorDto monitor, IList<ProgramDto>? programs)
         {
             this.Monitor = monitor;
             this.Programs = programs ?? new List<ProgramDto>();
+            this.DeviceControls = new List<DeviceControlDto>();
         }
     }
 }

@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
@@ -25,10 +26,16 @@ namespace MediaControlDistributionCenter.ViewModels
         private UserViewModel currentUser;
 
         [ObservableProperty]
+        private string inputAccount;
+
+        [ObservableProperty]
         private bool isLogin;
 
         [ObservableProperty]
         private bool isSync;
+
+        [ObservableProperty]
+        private bool isSyncing;
 
         [ObservableProperty]
         private ConnectionMode connectionMode;
@@ -41,6 +48,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private string selectedIpAddress;
+
+        [ObservableProperty]
+        private DeviceViewModel? connectedDevice;
 
         [ObservableProperty]
         public BitmapImage logoThumbnail;
@@ -110,6 +120,10 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 CurrentUser.Binding(userResult);
                                 IsLogin = true;
+                                if (ConnectionMode.Mode == "Local")
+                                {
+                                    communication.StartHeart();
+                                }
                             }
                         }
                     }
@@ -130,6 +144,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect()
         {
+            if (IsSyncing)
+            {
+                return;
+            }
+
             communication.Connect(SelectedIpAddress, "5001");
             int count = 1;
             while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -143,6 +162,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
+                IsSyncing = true;
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
@@ -152,27 +172,37 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         foreach (var item in syncUsers.Users)
                         {
-                            await userService.Save(item.User);
-                            if (item.UserGroup != null)
+                            var respone = await userService.Save(item.User);
+                            if (respone.Code == 200)
                             {
-                                await userGroupService.Save(item.UserGroup);
-                            }
-
-                            if (item.Monitor != null)
-                            {
-                                await monitorService.Save(item.Monitor.Monitor);
-                                foreach (var program in item.Monitor.Programs)
+                                if (item.Monitor != null)
                                 {
-                                    await programService.Save(program);
+                                    respone = await monitorService.Save(item.Monitor.Monitor);
+                                    if (respone.Code == 200)
+                                    {
+                                        ConnectedDevice = new DeviceViewModel();
+                                        ConnectedDevice.Binding(item.Monitor.Monitor);
+                                        foreach (var program in item.Monitor.Programs)
+                                        {
+                                            respone = await programService.Save(program);
+                                            if (respone.Code == 200)
+                                            { 
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (item.User.Role != RoleType.Admin.ToString().ToLower())
+                                {
+                                    this.SyncUsers.Add(item.User.Account);
                                 }
                             }
-
-                            this.SyncUsers.Add(item.User.Account);
                         }
                     }
 
                     this.IsSync = true;
                     RefreshLogo();
+                    IsSyncing = false;
                 }
                 else
                 {
@@ -182,6 +212,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+            IsSyncing = false;
         }
 
         public override void LoadData()
@@ -210,10 +241,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         try
                         {
-                            result = new BitmapImage();
-                            result.BeginInit();
-                            result.StreamSource = new MemoryStream(Convert.FromBase64String(user.LogoSrc));
-                            result.EndInit();
+                            UserViewModel viewModel = new UserViewModel();
+                            viewModel.Binding(user);
+                            viewModel.LoadLogo();
+                            result = viewModel.LogoThumbnail;
                         }
                         catch
                         {

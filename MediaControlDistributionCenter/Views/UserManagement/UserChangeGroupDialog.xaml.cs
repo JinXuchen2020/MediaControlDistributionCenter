@@ -35,7 +35,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             var manageViewModel = (DataContext as UserManageViewModel)!;
             var selectedGroup = cbGroups.SelectedValue as UserGroupViewModel;
-            if (selectedGroup == null) 
+            if (selectedGroup == null || selectedGroup.Id == -1) 
             {
                 manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_110");
                 //var dialog = new ResultConfirmDialog(manageViewModel);

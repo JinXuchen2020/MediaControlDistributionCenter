@@ -47,14 +47,14 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            var groupViewModel = ((sender as Button).DataContext as MediaGroupViewModel)!;
+            var groupViewModel = ((sender as Button).DataContext as ProgramGroupViewModel)!;
 
             manageViewModel.CreateGroupCommand.Execute(groupViewModel);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var groupViewModel = new MediaGroupViewModel();
+            var groupViewModel = new ProgramGroupViewModel();
             groupViewModel.UserId = manageViewModel.CurrentUser.Account;
             manageViewModel.ShowDialogCommand.Execute(groupViewModel);
         }
@@ -62,7 +62,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             manageViewModel.MediaGroups.First(c => c.IsSelected).IsSelected = false;
-            var groupViewModel = ((sender as StackPanel).DataContext as MediaGroupViewModel)!;
+            var groupViewModel = ((sender as DockPanel).DataContext as ProgramGroupViewModel)!;
             groupViewModel.IsSelected = true;
             manageViewModel.SelectedGroup = groupViewModel;
             manageViewModel.LoadData();
@@ -71,7 +71,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void btnRacking_Click(object sender, RoutedEventArgs e)
         {
             var btnObject = sender as Button;
-            var viewModel = (btnObject!.DataContext as MediaViewModel)!;
+            var viewModel = (btnObject!.DataContext as ProgramViewModel)!;
 
             this.Dispatcher.Invoke(async () =>
             {
@@ -89,7 +89,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+            var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -102,8 +102,9 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
                 if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
                 {
-                    var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
-                    manageViewModel.DeleteMediaCommand.ExecuteAsync(viewModel);
+                    var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
+                    await manageViewModel.DeleteMediaCommand.ExecuteAsync(viewModel);
+                    manageViewModel.LoadData();
                 }
 
                 manageViewModel.CanDelete = null;
@@ -118,10 +119,11 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 MediaType = "PROGRAM",
                 UserAccount = manageViewModel.CurrentUser.Account,
                 Status = 1,
+                Resolution = "256*192",
                 CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User"),
             };
 
-            var newViewModel = new MediaViewModel();
+            var newViewModel = new ProgramViewModel();
             newViewModel.Binding(newMediaModel);
 
             manageViewModel.ShowDialogCommand.Execute(newViewModel);
@@ -173,7 +175,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var selectedModel = selectedMedias.First().ToModel();
             selectedModel.ProgramGroupName = selectedMedias.First().Group;
 
-            var newMedia = new MediaViewModel();
+            var newMedia = new ProgramViewModel();
             newMedia.Binding(selectedModel);
             newMedia.Name += $"_{FindResource("LanguageKey_Code_Media_Copy")}";
             newMedia.Id = 0;
@@ -239,10 +241,17 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 return;
             }
 
+            if (selectedMedias.Any(c => c.Status == 0))
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_110");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             var selectedMedia = selectedMedias.First();
 
-            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, selectedMedia.Name);
-            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, selectedMedia.Name + ".zip");
+            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
+            var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name + ".zip");
 
             fileService.CreatZip(sourceDic, desZipFilePath);
 
@@ -255,7 +264,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnMediaSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;  
+            var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;  
             viewModel.Resolution = $"{viewModel.Width}*{viewModel.Height}";
             viewModel.LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
@@ -270,7 +279,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnMediaCancel_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+            var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
             manageViewModel.CloseDialogCommand.Execute(null);
 
             if (viewModel.Id != 0)
@@ -297,6 +306,36 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 {
                     item.IsSelected = false;
                 }
+            }
+        }
+
+        private void ValiditySelected_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            var viewModel = radioButton.DataContext as ProgramViewModel;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                viewModel.IsHasValidity = !string.IsNullOrEmpty(radioButton.Tag?.ToString()) && bool.Parse(radioButton.Tag.ToString()!);
+            }
+        }
+
+        private void btnGroupDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as ProgramGroupViewModel)!;
+            if (viewModel.Id != -1)
+            {
+                this.Dispatcher.Invoke(async () =>
+                {
+                    manageViewModel.CanDelete = false;
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                    if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                    {
+                        await manageViewModel.DeleteGroupCommand.ExecuteAsync(viewModel);
+                    }
+
+                    manageViewModel.CanDelete = null;
+                });
+
             }
         }
     }

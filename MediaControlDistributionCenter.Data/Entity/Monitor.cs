@@ -95,5 +95,8 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// </summary>
         [SugarColumn(IsNullable = true)]
         public long? GroupId { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public double? StoragePercentage { get; set; }
     }
 }

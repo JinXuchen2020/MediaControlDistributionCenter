@@ -14,34 +14,9 @@
     </UserControl.Resources>
     <materialDesign:DialogHost Identifier="RootDialogHostId" Background="#0F0F10">
         <Grid Background="#0F0F10">
-            <Grid Margin="112,124" Background="#16171D" Width="1215" Height="829" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}">
-                <StackPanel Width="400" Margin="0,100,0,0" >
-                    <!--<StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
-                    <Label FontSize="16" Foreground="White" Width="71" >用户名</Label>
-                    <TextBox Margin="32,0,0,0" Width="296" Height="32" BorderBrush="#404870" BorderThickness="1" Foreground="White"  Background="#2A3255"/>
-                </StackPanel>-->
-                    <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_OldPassword}" ></TextBlock>
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding OldPassword}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_NewPassword}" />
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding NewPassword}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,36,0,0"  Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Setting_NewPasswordConfirm}" />
-                        <TextBox Margin="32,0,0,0" Width="296" Height="32" Padding="5" Text="{Binding NewPasswordConfirm}" BorderBrush="#404870" BorderThickness="1" Foreground="White" Background="#2A3255"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,88,0,0"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Button Background="#30479C" Foreground="White" Click="btnChangePassword_Click" Content="{DynamicResource LanguageKey_Code_Confirm}" />
-                        <Button Margin="32,0,0,0" Background="#090A0E" Foreground="White" Click="btnCancelPassword_Click" Content="{DynamicResource LanguageKey_Code_Cancel}" />
-
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-            <Grid Background="#0F0F10" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}">
-                <DockPanel LastChildFill="False" Background="#090A0E" DataContext="{Binding CurrentUser}">
-                    <Grid Width="889" Height="650" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
+            <Grid Background="#0F0F10">
+                <DockPanel LastChildFill="False" Background="#090A0E">
+                    <Grid Width="889" Height="600" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -53,28 +28,28 @@
                         <StackPanel Margin="10">
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_100}" />
-                                <ComboBox Foreground="White" ItemsSource="{Binding RoleList}" SelectedValue="{Binding Role}" SelectedValuePath="Role" DisplayMemberPath="RoleText" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                <ComboBox IsEnabled="False" Foreground="White" ItemsSource="{Binding RoleList}" SelectedValue="{Binding CurrentUser.Role}" SelectedValuePath="Role" DisplayMemberPath="RoleText" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_102}" />
-                                <TextBox IsEnabled="False" Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Account}" />
+                                <TextBox IsEnabled="False" Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding CurrentUser.Account}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10" >
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_101}" />
-                                <TextBox Foreground="White" IsEnabled="False" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding AgentId}" />
+                                <TextBox Foreground="White" IsEnabled="False" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding CurrentUser.AgentId}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10" >
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_103}" />
-                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Name}" />
+                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding CurrentUser.Name}" />
                             </StackPanel>
-                            <StackPanel Margin="10"  Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Margin="10"  Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}">
                                 <TextBlock FontSize="16" Foreground="White" Width="80" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_111}" />
                                 <StackPanel>
-                                    <Border Width="110" Height="110" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
+                                    <Border Width="110" Height="110" HorizontalAlignment="Left" Background="#2A3255" BorderBrush="#404870" BorderThickness="1" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding CurrentUser.IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
                                         <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
-                                    <Border Width="110" Height="110" Background="#0F0F10" BorderBrush="#404870" BorderThickness="1" HorizontalAlignment="Left" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
-                                        <Image Source="{Binding LogoThumbnail}" Width="110" Height="110" />
+                                    <Border Width="110" Height="110" Background="#0F0F10" BorderBrush="#404870" BorderThickness="1" HorizontalAlignment="Left" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding CurrentUser.IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                                        <Image Source="{Binding CurrentUser.LogoThumbnail}" Stretch="Fill" Width="110" Height="110" />
                                     </Border>
                                     <TextBlock FontSize="12" Foreground="White" Width="300" VerticalAlignment="Bottom" Margin="0,20,0,0" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_112}" />
                                 </StackPanel>
@@ -82,28 +57,28 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="10">
-                            <StackPanel Orientation="Horizontal" Margin="10">
+                            <StackPanel Orientation="Horizontal" Margin="10" Visibility="{Binding CurrentUser.Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" >
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" />
-                                <ComboBox Foreground="White" IsEnabled="{Binding Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" materialDesign:HintAssist.Hint="{Binding GroupId}" ItemsSource="{Binding Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                <ComboBox Foreground="White" IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" materialDesign:HintAssist.Hint="{Binding CurrentUser.GroupId}" ItemsSource="{Binding CurrentUser.Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding CurrentUser.GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
-                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />
+                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding CurrentUser.Password}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_109}" />
-                                <TextBox Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Region}" />
+                                <TextBox IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Foreground="White" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding CurrentUser.Region}" />
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
                                 <TextBlock Foreground="White" VerticalAlignment="Center" Width="80" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_114}" />
-                                <ComboBox Height="32" Width="250" Background="#2A3255" Padding="5" ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="DisplayName" SelectedValue="{Binding TimeZone}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+                                <ComboBox IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Height="32" Width="250" Background="#2A3255" Padding="5" ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="DisplayName" SelectedValue="{Binding CurrentUser.TimeZone}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="10">
+                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="10" Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}">
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_113}" />
-                                <TextBox AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="464" Height="64" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding TagLine}" />
+                                <TextBox IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="464" Height="64" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding CurrentUser.TagLine}" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>

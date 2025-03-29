@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Windows;
 using MediaControlDistributionCenter.Data;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -9,6 +11,7 @@ using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Syncfusion.Licensing;
 
 namespace MediaControlDistributionCenter
 {
@@ -33,9 +36,12 @@ namespace MediaControlDistributionCenter
             var connectionMode = new ConnectionMode();
             configuration.Bind("ConnectionMode", connectionMode);
             connectionMode.Mode = "Remote";
-            services.AddSingleton(connectionMode); // Configure<ConnectionMode>(configuration);
+            services.AddSingleton(connectionMode);
 
-            services.AddSingleton(new Communication());
+            FtpServer server = new FtpServer();
+            services.AddSingleton(server);
+            services.AddSingleton(new FtpClient(server));
+            services.AddSingleton(new Communication(server));
 
             services.AddLocalServices();
             services.AddRemoteServices();
@@ -51,6 +57,8 @@ namespace MediaControlDistributionCenter
             services.AddPageViewServices();
             services.AddPageViewModelServices();
 
+            //SyncfusionLicenseProvider.RegisterLicense();
+
             ServicesProvider = services.BuildServiceProvider();
 
             // 2. 配置 Serilog
@@ -64,9 +72,6 @@ namespace MediaControlDistributionCenter
 
             SQLite.InitServer();
             SQLite.InitTables();
-
-            FtpServer server = new FtpServer();
-            server.FtpServerStart();
 
             // 3. 启动主窗口
             var mainWindow = ServicesProvider.GetRequiredService<Login>();
@@ -97,8 +102,8 @@ namespace MediaControlDistributionCenter
         private void HandleException(Exception ex)
         {
              string message = $"An error occured: {ex.Message}";
-            //MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Log.Error(message);
+             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+             Log.Error(message);
         }
 
         protected override void OnExit(ExitEventArgs e)

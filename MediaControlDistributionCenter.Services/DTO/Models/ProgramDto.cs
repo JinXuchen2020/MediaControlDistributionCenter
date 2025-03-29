@@ -64,6 +64,21 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         public int Status { get; set; }
 
         /// <summary>
+        /// 广告每小时播放次数
+        /// </summary>
+        [JsonProperty("playCountPerHour")]
+        public int? PlayCountPerHour { get; set; }
+
+        [JsonProperty("isHasValidity")]
+        public bool IsHasValidity { get; set; }
+
+        [JsonProperty("validStartDate")]
+        public string? ValidStartDate { get; set; }
+
+        [JsonProperty("validEndDate")]
+        public string? ValidEndDate { get; set; }
+
+        /// <summary>
         /// 所属用户账号
         /// </summary>
         [JsonProperty("userAccount", NullValueHandling = NullValueHandling.Ignore)]
@@ -99,6 +114,10 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
                 Status = Status,
                 UserAccount = UserAccount,
                 GroupId = GroupId,
+                PlayCountPerHour = PlayCountPerHour,
+                IsHasValidity = IsHasValidity,
+                ValidStartDate = string.IsNullOrEmpty(ValidStartDate) ? null : DateTime.Parse(ValidStartDate),
+                ValidEndDate = string.IsNullOrEmpty(ValidEndDate) ? null : DateTime.Parse(ValidEndDate),
             };
         }
     }

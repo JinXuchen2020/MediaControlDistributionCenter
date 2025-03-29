@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -70,7 +71,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
         public override void LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var viewModel = new DeviceViewModel();
@@ -95,7 +96,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ConnectDevice()
         {
             if (CurrentDevice != null)
-            {
+            {                
                 await CurrentDevice.ConnectCommand.ExecuteAsync(communication);
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
@@ -104,13 +105,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    if (CurrentDevice.StatusText == FindResource("LanguageKey_Code_Online"))
+                    if (CurrentDevice.IsConnected())
                     {
                         await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
+                        }
+
+                        if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
+                        {
+                            await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                return;
+                            }
                         }
                     }
                 }
@@ -192,7 +205,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ExecuteScheduleControl()
         {
-            var viewModels = DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            var viewModels = DeviceTimeControls.ToList();
             if (CurrentDevice != null && viewModels.Count > 0)
             {
                 var modelList = viewModels.Select(c => c.ToModel());
@@ -226,6 +239,11 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
+                }
+
+                foreach (var deviceControl in modelList)
+                {
+                    await deviceControlService.Save(deviceControl);
                 }
             }
         }
@@ -282,6 +300,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 return;
             }
+
             var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
             DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c=>
             {
@@ -312,9 +331,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (viewModel.RepeatMode == "quarter")
+            if (viewModel.RepeatMode == "year")
             {
-                if (viewModel.QuarterMonthStart >= viewModel.QuarterMonthEnd)
+                if (string.IsNullOrEmpty(viewModel.RepeatString))
                 {
                     ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_126");
                     await ShowConfirmDialogCommand.ExecuteAsync(null);

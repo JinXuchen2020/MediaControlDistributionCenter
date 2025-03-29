@@ -35,7 +35,7 @@
                     <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Center" PlacementMode="BottomAndAlignCentres" PopupMode="Click">
                         <materialDesign:PopupBox.ToggleContent>
                             <Border CornerRadius="2" Padding="10" Width="100" BorderBrush="White" BorderThickness="1">
-                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ZH}" Foreground="White"/>
+                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_KO}" Foreground="White"/>
                             </Border>
                         </materialDesign:PopupBox.ToggleContent>
                         <ListView Width="100">
@@ -103,7 +103,7 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Orientation="Horizontal" Margin="165,875,10,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
+            <StackPanel x:Name="spSlogan" Visibility="Collapsed" Orientation="Horizontal" Margin="165,875,10,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
                 <TextBlock Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"/>
                 <TextBlock TextWrapping="Wrap" Margin="10, 0,0,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{Binding Slogan}" Opacity="0.7"/>
             </StackPanel>
@@ -125,7 +125,7 @@
                     <Grid>
                         <Label  Margin="113,145,0,0" VerticalAlignment="Top" FontSize="28" HorizontalAlignment="Left" Content="{DynamicResource LanguageKey_Code_LoginTitle}" />
                         <StackPanel Margin="0,265,0,0" VerticalAlignment="Top">
-                            <TextBox x:Name="txtLoginId" BorderBrush="White"
+                            <TextBox x:Name="txtLoginId" BorderBrush="White" Text="{Binding InputAccount}"
                                  FontSize="18" Foreground="White" Width="300" Height="60" 
                                  materialDesign:HintAssist.Hint="{DynamicResource LanguageKey_Code_LoginAccount}"
                                  materialDesign:TextFieldAssist.UnderlineBrush="WhiteSmoke"
@@ -148,9 +148,8 @@
                             </StackPanel>
 
                             <Button Content="{DynamicResource LanguageKey_Code_LoginBtn}" Margin="0,30,0,0"
-                                  Width="325" Height="44"
+                                  Width="325" Height="44" 
                                   IsDefault="True" Background="#3B57BF" Foreground="White"
-                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignPaperDarkButton}"
                                   materialDesign:ButtonAssist.CornerRadius="2"
                                   Click="btnLogin_Click"
@@ -159,7 +158,7 @@
                             <StackPanel Visibility="Collapsed" x:Name="spAddress" Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Width="320" Height="40">
                                 <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
                                 <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
-                                <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                <Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                     <materialDesign:PackIcon Kind="LocalAreaNetworkConnect" Foreground="LightGray"  Width="22" Height="22"/>
                                 </Button>
                             </StackPanel>

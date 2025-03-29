@@ -62,8 +62,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
+        private FrameworkElement RunningElement;
 
-        public TextComponentViewModel(TextComponent component, double ratio = 1): base(component, ratio)
+        public TextComponentViewModel(TextComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
             background = (Color)ColorConverter.ConvertFromString(component.Background);
             foreground = (Color)ColorConverter.ConvertFromString(component.TextColor);
@@ -79,7 +80,7 @@ namespace MediaControlDistributionCenter.ViewModels
             isLoopEnabled = component.IsLoopEnabled;
         }
 
-        public override TextComponent ToModel(double ratio)
+        public override TextComponent ToModel(string userAccount, double ratio)
         {
             return new TextComponent
             {
@@ -107,6 +108,32 @@ namespace MediaControlDistributionCenter.ViewModels
                 LineSpacing = LineSpacing,
                 IsLoopEnabled = IsLoopEnabled,
             };
+        }
+
+        public static TextComponentViewModel CreateInstance(string userAccount, int id)
+        {
+            return new TextComponentViewModel(new TextComponent
+            {
+                Id = id,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{id}",
+                ZIndex = 1,
+                Type = MediaType.Text,
+                Source = $"{FindResource("LanguageKey_Code_HelloWorld")}",
+                PlayCount = 1,
+                PlayDuration = "00:00:05",
+                PlayMode = "pageTurning",
+                ComponentEffect = "FadeIn",
+                EffectDuration = 1000,
+                Direction = "rollingLeft",
+                Timeline = 5,
+                Background = "black",
+                TextColor = "white",
+                TextSize = 16,
+                IsLoopEnabled = true,
+                LetterSpacing = 2,
+                LineSpacing = 2,
+                RollingSpeed = 2,
+            },userAccount);
         }
 
         protected override FrameworkElement DrawingContent()
@@ -219,13 +246,10 @@ namespace MediaControlDistributionCenter.ViewModels
             // 将RichTextBox添加到Canvas中
             canvas.Children.Add(result);
 
-            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
-            {
-                Scrolling(result);
-            }
-
+            IsRunningLoaded = false;
             result.Loaded += (sender, e) =>
             {
+                IsRunningLoaded = true;
                 if (sender is RichTextBox richTextBox)
                 {
                     if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
@@ -253,7 +277,20 @@ namespace MediaControlDistributionCenter.ViewModels
             return canvas;
         }
 
-        private void Scrolling(RichTextBox target)
+        public override void EffectExecution()
+        {
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_128"))
+            {
+                Scrolling(RunningElement);
+            }
+
+            if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
+            {
+                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+            }
+        }
+
+        private void Scrolling(FrameworkElement target)
         {
             // 创建一个TranslateTransform来控制滚动
             TranslateTransform translateTransform = new TranslateTransform();
@@ -317,8 +354,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 // 开始Storyboard
                 storyboard.Begin();
-            }
-            
+            }            
         }
         private void InitializeTimer(RichTextBox target)
         {

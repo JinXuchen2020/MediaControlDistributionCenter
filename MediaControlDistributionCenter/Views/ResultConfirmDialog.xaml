@@ -87,11 +87,11 @@
         </DataTemplate>
         <DataTemplate x:Key="ScheduleSendUserExecution" DataType="{x:Type viewmodels:DeviceViewModel}">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="10" >
+                <!--<StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Device_DialogTitle}" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Margin="10,0,10,0" Text="{Binding Name}" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_124}" />
-                </StackPanel>
+                </StackPanel>-->
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_125}" />
                 </StackPanel>
@@ -120,7 +120,14 @@
                             ItemsSource="{Binding SyncUsers}"
                         >
                             <DataGrid.Columns>
-                                <DataGridTextColumn Width="1*" Binding="{Binding}" Header="{DynamicResource LanguageKey_Code_LoginAccount}" />
+                                <DataGridTemplateColumn Width="1*" Header="{DynamicResource LanguageKey_Code_LoginAccount}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" MouseDown="loginUser_MouseDown" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

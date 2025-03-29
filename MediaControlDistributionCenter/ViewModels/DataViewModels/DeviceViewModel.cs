@@ -3,7 +3,10 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +97,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? volume;
 
         [ObservableProperty]
+        private double? storagePercentage;
+
+        [ObservableProperty]
         private string deviceId;
 
         [ObservableProperty]
@@ -130,7 +136,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 ContactPhone = ContactNumber,
                 Brightness = Brightness,
                 Volume = Volume,
-                DeviceId = SNumber,                 
+                StoragePercentage = StoragePercentage,
+                DeviceId = SNumber, 
             };
         }
 
@@ -159,6 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Brightness = model.Brightness;
             Volume = model.Volume;
             DeviceId = model.DeviceId;
+            StoragePercentage = model.StoragePercentage;
             MediaNames = string.Empty;
             MediaIds = new List<int>();
         }
@@ -168,15 +176,34 @@ namespace MediaControlDistributionCenter.ViewModels
             return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
+        public bool IsConnected()
+        {
+            return client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? true : false;
+        }
+
         [RelayCommand]
         private async Task Connect(Communication client)
         {
-            if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            if (connectionMode.Mode == "Local")
+            {
+                this.client = client;
+                StatusText = GetStatus();
+                return;
+            }
+
+            if (connectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
                client.Disconnect();
             }
 
             var ipAddress = NetworkTool.GetGatewayIp();
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
+                return;
+            }
+
             client.Connect(ipAddress, "5001");
             int count = 1;
             while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -220,14 +247,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdSendUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                MessageBox.Show($"命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -244,15 +267,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                MessageBox.Show($"命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                client.Disconnect();
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -266,15 +284,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -288,15 +301,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -310,15 +318,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -332,15 +335,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdTime + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -354,28 +352,19 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
-            if (client == null)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
-            }
+            var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
 
-            var result = await client.UploadFileToFtpServer(filePath);
+            var result = await ftpClient.UploadFileToFtpServer(filePath);
             if (result)
             {
                 UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_118");
@@ -387,7 +376,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SendProgram(MediaViewModel program)
+        private async Task SendProgram(ProgramViewModel program)
         {
             if (client == null)
             {
@@ -398,15 +387,29 @@ namespace MediaControlDistributionCenter.ViewModels
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
-            else
+        }
+
+        [RelayCommand]
+        private async Task DeleteProgram(ProgramViewModel program)
+        {
+            if (client == null)
             {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+            var model = program.ToModel();
+            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string path = CommunicationCmd.CmdDeleteProgram + syncString;
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -418,13 +421,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
-            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName)).LongLength;
+            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
             var syncObj = new FileSync
             {
-                HostName = client.ftpServer._Ip,
-                ServerPort = int.Parse(client.ftpServer._port),
-                UserName = client.ftpServer._userName,
-                Password = client.ftpServer._userPwd,
+                HostName = client.Heart.FtpIp,
+                ServerPort = int.Parse(client.Heart.FtpPort),
+                UserName = client.Heart.FtpUserName,
+                Password = client.Heart.FtpUserPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };
@@ -438,6 +441,34 @@ namespace MediaControlDistributionCenter.ViewModels
             else
             {
                 SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_121");
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncDeviceControl(IDeviceControlService deviceControlService)
+        {
+            if (client == null)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                var syncResult = JsonConvert.DeserializeObject<IList<DeviceControlDto>>(client.SyncDeviceControlResult);
+                if (syncResult != null)
+                {
+                    foreach (var item in syncResult)
+                    {
+                        await deviceControlService.Save(item);
+                    }
+                }
+            }
+            else
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
             }
         }
 

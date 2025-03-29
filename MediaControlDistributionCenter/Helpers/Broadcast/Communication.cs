@@ -1,5 +1,4 @@
-﻿using FluentFTP;
-using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using Newtonsoft.Json;
@@ -17,9 +16,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 {
     public class Communication
     {
-        //Ftp服务
-        public FTP.Server.FtpServer ftpServer = new FTP.Server.FtpServer();
-
         //启动socket 链接
         System.Timers.Timer _heartbeatTimer;
 
@@ -30,6 +26,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncUserResult { get; private set; }
 
+        public string SyncDeviceControlResult { get; private set; }
 
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
@@ -37,15 +34,23 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public string IpAddr; //Ip地址
         public string Port; //端口
 
+        public Communication(FtpServer ftpServer)
+        {
+            Heart.FtpIp = ftpServer._Ip;
+            Heart.FtpPort = ftpServer._port;
+            Heart.FtpUserName = ftpServer._userName;
+            Heart.FtpUserPwd = ftpServer._userPwd;
+            Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
         /// <summary>
         /// 定时心跳包 保持长连接
         /// </summary>
         public void StartHeart()
         {
-
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
-            int interval = 1000; // 5000毫秒即5秒 
+            int interval = 5000; // 5000毫秒即5秒 
             // 创建定时器并设置间隔
             _heartbeatTimer = new System.Timers.Timer(interval);
 
@@ -62,13 +67,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <param name="e"></param>
         private void _heartbeatTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            Heart.FtpIp = ftpServer._Ip;
-            Heart.FtpPort = ftpServer._port;
-            Heart.FtpUserName = ftpServer._userName;
-            Heart.FtpUserPwd = ftpServer._userPwd;
-            Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
 
@@ -80,10 +78,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             }
             else
             {
-
                 Thread thread = new Thread(() =>
                 {
-
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
                     netClient.Send(utf8Bytes);
@@ -103,121 +99,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             this.Port = Port;
             IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
             netClient.Connect(iPEnd);
-            netClient.ReceiveCompleted += NetClient_ReceiveCompleted; ;
-        }
-
-        public void StartFtpServer()
-        { 
-            ftpServer.FtpServerStart();
-        }
-
-        public async Task<bool> UploadFileToFtpServer(string filePath)
-        {
-            var loginCmd = $"USER {ftpServer._userName}\n";
-            var verifyCmd = $"PASS {ftpServer._userPwd}\n";
-            var fileName = Path.GetFileName(filePath);
-            var storeCmd = $"STOR {fileName}\n";
-            var result = false;
-            using (TcpClient tcpClient = new TcpClient(ftpServer._Ip, int.Parse(ftpServer._port)))
-            {
-                var stream = tcpClient.GetStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("220"))
-                {
-                    return false;
-                }
-
-                byte[] loginData = Encoding.UTF8.GetBytes(loginCmd);
-                stream.Write(loginData, 0, loginData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("331"))
-                {
-                    return false;
-                }
-
-                byte[] verifyData = Encoding.UTF8.GetBytes(verifyCmd);
-                stream.Write(verifyData, 0, verifyData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("230"))
-                {
-                    return false;
-                }
-
-                byte[] fileData = File.ReadAllBytes(filePath);
-
-                byte[] fileSizeData = Encoding.UTF8.GetBytes($"FILESIZE {fileData.LongLength}\n");
-                stream.Write(fileSizeData, 0, fileSizeData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("225"))
-                {
-                    return false;
-                }
-
-                byte[] storeData = Encoding.UTF8.GetBytes(storeCmd);
-                stream.Write(storeData, 0, storeData.Length);
-
-                buffer = new byte[1024];
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (!connectRsp.Contains("150"))
-                {
-                    return false;
-                }
-
-                stream.Write(fileData, 0, fileData.Length);
-                byte[] endSignal = Encoding.ASCII.GetBytes("\n");
-                stream.Write(endSignal, 0, endSignal.Length);
-
-                buffer = new byte[1024];
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (connectRsp.Contains("226"))
-                {
-                    return true;
-                }
-                //while (true)
-                //{
-                //    byte[] buffer = new byte[1024];
-                //    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                //    string connectRsp = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                //    switch (connectRsp)
-                //    {
-                //        case string o when o.Contains("220"):
-                //            break;
-                //        case string o when o.Contains("331"):
-                //            break;
-                //        case string o when o.Contains("230"):
-                //            break;
-                //        case string o when o.Contains("226"):
-                //            result = true;
-                //            break;
-                //    }
-
-                //    if (result) break;
-                //}
-            }
-
-            return result;
-        }
+            netClient.ReceiveCompleted += NetClient_ReceiveCompleted;
+        }        
 
         /// <summary>
         /// 断开与 播控盒链接
@@ -238,7 +121,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         private void NetClient_ReceiveCompleted(byte[] obj)
         {
             string str = Encoding.UTF8.GetString(obj);
-            string[] data = str.Replace("\0", "").Split("|");
+            string[] data = str.Replace("\0", "").Split("|", 3);
             switch (data[0])
             {
                 case "CMD":
@@ -247,7 +130,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         ReceiveOverCmdStr.Add(data[1]);
                         if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
                         {
-                            SyncUserResult = data[2];
+                           SyncUserResult = data[2];
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
+                        {
+                            SyncDeviceControlResult = data[2];
                         }
                     }
                     catch (Exception ex)

@@ -104,7 +104,10 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// 用户分组id
         /// </summary>
         [SugarColumn(IsNullable = true)]
-        public long? UserGroupId { get; set; }
+        public long? AdminUserGroupId { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public long? AgentUserGroupId { get; set; }
 
         [SugarColumn(IsIgnore = true)]
         public UserGroup? Group { get; set; }

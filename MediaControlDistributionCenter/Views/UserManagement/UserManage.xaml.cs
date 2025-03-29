@@ -1,6 +1,8 @@
 ﻿using Dm.filter;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -61,6 +63,14 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             var userViewModel = ((sender as Button).DataContext as UserViewModel)!;
+            if (manageViewModel.CurrentUser.Role == "agent")
+            {
+                userViewModel.AgentUserGroupId = userViewModel.SelectedGroupId;
+            }
+            else
+            {
+                userViewModel.AdminUserGroupId = userViewModel.SelectedGroupId;
+            }
 
             manageViewModel.SaveUserCommand.Execute(userViewModel);
         }
@@ -75,6 +85,28 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 TimeZone = TimeZoneInfo.Local.DisplayName,
             };
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
+            viewModel.Agents = manageViewModel.CurrentUser.Role == "admin" ? new ObservableCollection<UserViewModel>(manageViewModel.Users.Where(c => c.Role == "agent")) :
+                new ObservableCollection<UserViewModel>(new List<UserViewModel> { manageViewModel.CurrentUser });
+            viewModel.RoleList = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            }) : new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            });
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -82,6 +114,30 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             var viewModel = ((sender as Button).DataContext as UserViewModel)!;
             viewModel.Groups = new ObservableCollection<UserGroupViewModel>(manageViewModel.Groups.Where(c => c.Id != -1));
+            viewModel.Agents = manageViewModel.CurrentUser.Role == "admin" ? new ObservableCollection<UserViewModel>(manageViewModel.Users.Where(c => c.Role == "agent")) :
+                new ObservableCollection<UserViewModel>(new List<UserViewModel> { manageViewModel.CurrentUser });
+            viewModel.SelectedGroupId = manageViewModel.CurrentUser.Role == "admin" ? viewModel.AdminUserGroupId : viewModel.AgentUserGroupId;
+            viewModel.RoleList = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.Agent.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_Agent")
+                },
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            }) : new ObservableCollection<object>(new List<RoleModel>
+            {
+                new RoleModel
+                {
+                    Role = RoleType.User.ToString().ToLower(),
+                    RoleText = (string)FindResource("LanguageKey_Code_Role_User")
+                }
+            });
+            viewModel.LoadLogo();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -107,13 +163,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             if(selectedUsers.Count() == 0)
             {
                 manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_105");
-                manageViewModel.ShowConfirmDialogCommand.Execute(null);
-                return;
-            }
-
-            if (selectedUsers.Any(c => c.Role == "agent"))
-            {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Users_Tooltip_106");
                 manageViewModel.ShowConfirmDialogCommand.Execute(null);
                 return;
             }
@@ -150,14 +199,13 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private void btnGroupAdd_Click(object sender, RoutedEventArgs e)
         {
             var groupViewModel = new UserGroupViewModel();
-            groupViewModel.Agents = manageViewModel.CurrentUser.Role == "agent" ? new List<UserViewModel> { manageViewModel.CurrentUser }
-                    : manageViewModel.Users.Where(c => c.Role == "agent").ToList();
+            groupViewModel.AgentId = manageViewModel.CurrentUser.Account;
             manageViewModel.ShowDialogCommand.Execute(groupViewModel);
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var groupViewModel = ((sender as StackPanel).DataContext as UserGroupViewModel)!;
+            var groupViewModel = ((sender as DockPanel).DataContext as UserGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
             manageViewModel.LoadData();
         }
@@ -179,13 +227,19 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             {
                 // 获取所选文件的路径
                 string filePath = openFileDialog.FileName;
+                string extension = System.IO.Path.GetExtension(filePath);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                    await ftpClient.UploadFileToFtpServer(filePath, $"{viewModel.Account}{extension}");
 
-                // 显示缩略图
-                BitmapImage bitmap = new BitmapImage(new Uri(filePath));
-                viewModel.LogoThumbnail = bitmap;
-                viewModel.Logo = filePath;
-                viewModel.LogoFileName = System.IO.Path.GetFileName(filePath);
-                viewModel.IsUpload = true;
+                    // 显示缩略图
+                    BitmapImage bitmap = new BitmapImage(new Uri(filePath));
+                    viewModel.LogoThumbnail = bitmap;
+                    viewModel.Logo = filePath;
+                    viewModel.LogoFileName = $"{viewModel.Account}{extension}";
+                    viewModel.IsUpload = true;
+                });
             }
         }
 
@@ -206,6 +260,27 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     item.IsSelected = false;
                 }
             }
+        }
+
+        private void btnGroupDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as UserGroupViewModel)!;
+            if (viewModel.Id != -1)
+            {
+                this.Dispatcher.Invoke(async () =>
+                {
+                    manageViewModel.CanDelete = false;
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                    if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                    {
+                        await manageViewModel.DeleteGroupCommand.ExecuteAsync(viewModel);
+                    }
+
+                    manageViewModel.CanDelete = null;
+                });
+
+            }
+            
         }
     }
 }

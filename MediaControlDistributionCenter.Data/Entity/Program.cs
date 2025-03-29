@@ -45,6 +45,17 @@ namespace MediaControlDistributionCenter.Data.Entity
         [Required]
         public string UserAccount { get; set; }
 
+        public bool IsHasValidity { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public DateTime? ValidStartDate { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public DateTime? ValidEndDate { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public int? PlayCountPerHour { get; set; }
+
         [SugarColumn(IsIgnore = true)]
         public IList<Monitor> Devices { get; set; }
 

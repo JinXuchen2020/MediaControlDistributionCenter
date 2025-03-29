@@ -29,6 +29,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
+        public string UserAccount { get; set; }
+
         public List<MediaPage> Pages { get; set; }
     }
 
@@ -142,5 +144,95 @@ namespace MediaControlDistributionCenter.ViewModels
         
         public double LineSpacing { get; set; } //16", 
           
+    }
+
+    public class ColorTextComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.ColorText;
+
+        public string Background { get; set; }
+
+        public string FontFamily { get; set; }
+
+        public int FontSize { get; set; } = 12;
+
+        public bool IsBold { get; set; }
+
+        public bool IsItalic { get; set; }
+
+        public bool IsUnderline { get; set; }
+
+        public double LetterSpacing { get; set; }
+
+        public string ComponentEffect { get; set; }
+
+        public string Direction { get; set; }
+
+        public int RollingSpeed { get; set; }
+
+        public bool IsLoopEnabled { get; set; }
+    }
+
+    public class WebComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Web;
+    }
+
+    public class WordComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Word;
+        
+        public int EffectDuration { get; set; }
+        
+        public string ComponentEffect { get; set; }
+        
+        public int PageDuration { get; set; }
+    }
+
+    public class RssComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Rss;
+
+        public int Interval { get; set; }
+
+        public IList<RssContent> Contents { get; set; }
+
+        public string PlayMode { get; set; }
+
+        public string Direction { get; set; } //"向右滚动"
+
+        public int RollingSpeed { get; set; }  //滚动速度档位        一共1-10个档位
+
+        public int EffectDuration { get; set; } //特效时长    -毫秒   文本翻页时才用到
+
+        public string ComponentEffect { get; set; } //入场特效               文本翻页时才用到
+    }
+
+    public class RssContent
+    {
+        public string FieldName { get; set; }
+
+        public string FontFamily { get; set; }
+
+        public int FontSize { get; set; } = 12;
+
+        public string FontColor { get; set; } = "White";
+
+        public bool IsBold { get; set; }
+
+        public bool IsItalic { get; set; }
+
+        public bool IsUnderline { get; set; }
+    }
+
+
+    public class StreamComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Stream;
+    }
+
+    public class HdmiComponent : BaseComponent
+    {
+        public override MediaType Type => MediaType.Hdmi;
     }
 }

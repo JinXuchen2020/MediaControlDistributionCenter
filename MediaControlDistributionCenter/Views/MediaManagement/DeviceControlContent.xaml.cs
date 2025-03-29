@@ -61,56 +61,6 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
         }
 
-        private async void Volume_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (manageViewModel.CurrentDevice == null)
-            {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_114");
-                manageViewModel.ShowConfirmDialogCommand.Execute(null);
-                return;
-            }
-
-            //音量設置
-            Communication communication = new Communication();
-            communication.Connect("192.168.1.3", "6767");
-            //communication.StartHeart();
-            string path = CommunicationCmd.CmdVolume + "80";
-            bool t = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (t)
-            {
-                //SendState.Text += "命令处理成功\r\n";
-            }
-            else
-            {
-                //SendState.Text += "命令无法被处理\r\n";
-            }
-            AddVolume();
-        }
-        private async void AddVolume()
-        {
-            //亮度定時
-            Communication communication = new Communication();
-            communication.Connect("192.168.1.3", "6767");
-            //communication.StartHeart();
-            VolumeControl volumeControl = new VolumeControl();
-            volumeControl.DateTime = DateTime.Now.AddMinutes(1).ToLongTimeString();
-            volumeControl.JobPara = "1";
-            volumeControl.Enable = true;
-            volumeControl.DateTime = DateTime.Now.AddMinutes(2).ToLongTimeString();
-            volumeControl.Volume = 60;
-
-            string path = CommunicationCmd.CmdBrightness + JsonConvert.SerializeObject(volumeControl, Newtonsoft.Json.Formatting.Indented);
-            bool t = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (t)
-            {
-                //SendState.Text += "命令处理成功\r\n";
-            }
-            else
-            {
-                //SendState.Text += "命令无法被处理\r\n";
-            }
-        }
-
         private void Brightness_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (manageViewModel.CurrentDevice == null)
@@ -127,52 +77,15 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
-
-            ////亮度
-            //Communication communication = new Communication();
-            //communication.Connect("192.168.1.3", "6767");
-            ////communication.StartHeart();
-            //string path = CommunicationCmd.CmdBrightness + "70";
-            //bool t = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            //if (t)
-            //{
-            //    //SendState.Text += "命令处理成功\r\n";
-            //}
-            //else
-            //{
-            //    //SendState.Text += "命令无法被处理\r\n";
-            //}
-            //AddBrightness();
-        }
-        private async void AddBrightness()
-        {
-            //亮度定時
-            Communication communication = new Communication();
-            communication.Connect("192.168.1.3", "6767");
-            //communication.StartHeart();
-            BrightnessControl brightnessControl = new BrightnessControl();
-            brightnessControl.Type = "1";
-            brightnessControl.DateTime = DateTime.Now.AddMinutes(1).ToLongTimeString();
-            brightnessControl.JobPara = "1";
-            brightnessControl.Enable = true;
-            brightnessControl.DateTime = DateTime.Now.AddMinutes(2).ToLongTimeString();
-            brightnessControl.Brightness =90;
-
-            string path = CommunicationCmd.CmdBrightness + JsonConvert.SerializeObject(brightnessControl, Newtonsoft.Json.Formatting.Indented);
-            bool t = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (t)
-            {
-                //SendState.Text += "命令处理成功\r\n";
-            }
-            else
-            {
-                //SendState.Text += "命令无法被处理\r\n";
-            }
         }
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
+            if (manageViewModel.CurrentDevice != null && manageViewModel.CurrentDevice.Id == viewModel.Id)
+            {
+                return;
+            }
             manageViewModel.CurrentDevice = viewModel;
             if (manageViewModel.CurrentDevice != null)
             {
@@ -201,7 +114,7 @@ namespace MediaControlDistributionCenter.Views
                 Type = manageViewModel.CommandType,
                 RepeatMode = "day",
                 ExecuteMethod = "SCHEDULED",
-                Status = 1,
+                Status = 0,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
                 UserAccount = manageViewModel.CurrentUser.Account,
@@ -229,6 +142,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel.DeleteBatchCommand.Execute(null);
+            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
         }
 
         private void btnPublish_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -477,12 +391,12 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
             if (viewModel.RepeatString.Contains(tagString))
             {
-                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
-                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
@@ -494,12 +408,12 @@ namespace MediaControlDistributionCenter.Views
             var viewModel = FindParentDataContext(button);
             if (viewModel.RepeatString.Contains(tagString))
             {
-                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString};", string.Empty);
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
-                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString};";
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
@@ -557,6 +471,23 @@ namespace MediaControlDistributionCenter.Views
             var month = button.SelectedValue;
             var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
             viewModel.RepeatString += $"";
+        }
+
+        private void SelectYearMonth_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var tagString = button.Tag.ToString()!;
+            var viewModel = (button.DataContext as DeviceTimeControlViewModel)!;
+            if (viewModel.RepeatString.Contains(tagString))
+            {
+                viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
+            }
+            else
+            {
+                viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
+                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
+            }
         }
     }
 }

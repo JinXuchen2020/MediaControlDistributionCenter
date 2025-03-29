@@ -339,6 +339,13 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 }
                 else
                 {
+                    //byte[] bytes = new byte[fs.Length];
+                    //fs.Read(bytes, 0, bytes.Length);
+                    //user.FileSize = bytes.Length;
+                    //user.commandSession.networkStream.Write(bytes, 0, bytes.Length);
+                    //user.commandSession.networkStream.Flush();
+
+
                     StreamReader streamReader = new StreamReader(fs);
                     while (streamReader.Peek() > -1)
                     {
@@ -618,6 +625,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                     }
 
                     RepleyCommandToUser(user, sendString);
+                    //RepleyCommandToUser(user, filestream.Length.ToString());
                     InitDataSession(user);  // 初始化数据连接会话
                     SendFileByUserSession(user, filestream);  // 通过会话发送文件内容
                     RepleyCommandToUser(user, "226 Transfer complete");  // 传输完成，发送226响应

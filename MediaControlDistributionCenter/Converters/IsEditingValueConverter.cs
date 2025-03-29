@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace MediaControlDistributionCenter.Converters
@@ -13,11 +14,20 @@ namespace MediaControlDistributionCenter.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string expectedValue = parameter?.ToString() ?? string.Empty;
-            var expectedValues = parameter!.ToString()!.Split(";").ToList();
-            if (value != null)
+            if (value is bool isVisible)
             {
-                if (expectedValues.Contains(value!.ToString()))
+                var expectedValue = true;
+                if (parameter != null)
+                {
+                    expectedValue = bool.Parse(parameter.ToString()!);
+                }
+
+                return isVisible == expectedValue;
+            }
+            else if (parameter != null && value != null)
+            {
+                var expectedValues = parameter.ToString()!.Split(";").ToList();
+                if (expectedValues.Contains(value.ToString()))
                 {
                     return true;
                 }

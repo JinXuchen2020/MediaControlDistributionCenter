@@ -1,0 +1,17 @@
+﻿using SqlSugar;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MediaControlDistributionCenter.Data.Entity
+{
+    [SugarTable("MediaGroups")]
+    public class MediaGroup : BaseModel
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+}

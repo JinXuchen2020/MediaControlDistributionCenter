@@ -20,7 +20,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         [Required]
-        public double? value;
+        public double? value = 1;
 
         [ObservableProperty]
         [Required]
@@ -83,7 +83,6 @@ namespace MediaControlDistributionCenter.ViewModels
             1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
         };
 
-
         public override DeviceControlDto ToModel()
         {
             return new DeviceControlDto
@@ -96,7 +95,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ExecutionType = ExecuteMethod,
                 ValidDateStart = StartDate.ToShortDateString(),
                 ValidDateEnd = EndDate.ToShortDateString(),
-                IsEnabled = Status,
+                IsEnabled = IsSelected ? 1 : 0,
                 RepeatMode = RepeatMode,
                 UserAccount = UserAccount,
             };
@@ -108,26 +107,23 @@ namespace MediaControlDistributionCenter.ViewModels
             Id = model.Id;
             Type = model.ControlType;
             Value = model.Value;
-            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|")[1];
+            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|").Last();
             ExecuteMethod = model.ExecutionType;
             Status = model.IsEnabled;
             StartDate = DateTime.Parse(model.ValidDateStart);
             EndDate = DateTime.Parse(model.ValidDateEnd);
-            ValidPeriod = $"{model.ValidDateStart}-{model.ValidDateEnd}";
+            ValidPeriod = $"{StartDate.ToShortDateString()}-{EndDate.ToShortDateString()}";
             StatusText = GetStatus();
             IsSelected = isSelected;
             RepeatMode = model.RepeatMode;
             UserAccount = model.UserAccount;
+            RepeatString = string.IsNullOrEmpty(model.Execution) || !model.Execution.Contains("|") ? string.Empty : model.Execution.Split("|").First();
         }
 
         public string GetStatus()
         {
             string? result;
-            if (DateTime.Now > EndDate)
-            {
-                result = FindResource("LanguageKey_Code_Expired");
-            }
-            else if(Status == 1)
+            if(Status == 1)
             {
                 result = FindResource("LanguageKey_Code_Enable");
             }
@@ -144,9 +140,8 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "week":
                 case "month":
+                case "year":
                     return $"{RepeatString}|{ExecuteTime}";
-                case "quarter":
-                    return $"M{QuarterMonthStart!}D{QuarterMonthDayStart}~M{QuarterMonthEnd}D{QuarterMonthDayEnd}|{ExecuteTime}";
                 default:
                     return ExecuteTime;
             }

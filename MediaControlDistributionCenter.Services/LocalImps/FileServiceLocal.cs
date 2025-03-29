@@ -22,6 +22,14 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             }
         }
 
+        public void DeleteResourcePath(string resPath)
+        {
+            if (Directory.Exists(resPath))
+            {
+                Directory.Delete(resPath, true);
+            }
+        }
+
         public string SaveFileContent(string fileDicPath, string fileName, string fileContent)
         {
             CreateResourcePath(fileDicPath);

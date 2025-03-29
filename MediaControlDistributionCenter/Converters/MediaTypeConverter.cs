@@ -32,6 +32,24 @@
                 case MediaType.Text:
                     result = target?.ToObject<TextComponent>();
                     break;
+                case MediaType.Hdmi:
+                    result = target?.ToObject<HdmiComponent>();
+                    break;
+                case MediaType.Stream:
+                    result = target?.ToObject<StreamComponent>();
+                    break;
+                case MediaType.Rss:
+                    result = target?.ToObject<RssComponent>();
+                    break;
+                case MediaType.Web:
+                    result = target?.ToObject<WebComponent>();
+                    break;
+                case MediaType.Word:
+                    result = target?.ToObject<WordComponent>();
+                    break;
+                case MediaType.ColorText:
+                    result = target?.ToObject<ColorTextComponent>();
+                    break;
             }
 
             return result;

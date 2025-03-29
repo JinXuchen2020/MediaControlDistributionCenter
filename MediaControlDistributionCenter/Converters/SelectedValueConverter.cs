@@ -26,7 +26,7 @@ namespace MediaControlDistributionCenter.Converters
             else if (value != null && parameter != null)
             {
                 var expectedValues = parameter.ToString()!.Split(";").ToList();
-                if (expectedValues.Contains(value))
+                if (expectedValues.Contains(value.ToString()))
                 {
                     return "#30479C";
                 }
