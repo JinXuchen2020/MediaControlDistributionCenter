@@ -91,15 +91,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Stretch = Stretch.Fill,
             };
 
-            Border result = new Border
-            {
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(2),
-                Width = Width,
-                Height = Height,
-                DataContext = this,
-                Child = image
-            };
+            Border result = CreateBorder();
+            result.Child = image;
 
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
             CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));

@@ -7,7 +7,10 @@ using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Data;
+using System.IO;
 using System.Windows.Controls;
 
 namespace MediaControlDistributionCenter.ViewModels
@@ -138,6 +141,38 @@ namespace MediaControlDistributionCenter.ViewModels
                         await userService.Save(item);
                     }
                 }
+
+                if (viewModel.Role == RoleType.User.ToString().ToLower())
+                {
+                    var deviceManageViewModel = App.ServicesProvider.GetRequiredService<DeviceManageViewModel>();
+                    deviceManageViewModel.CurrentUser = viewModel;
+                    deviceManageViewModel.LoadData();
+                    foreach (var device in deviceManageViewModel.Devices)
+                    {
+                        deviceManageViewModel.DeleteDeviceCommand.Execute(device);                       
+                    }
+
+                    foreach (var deviceGroup in deviceManageViewModel.DeviceGroups)
+                    {
+                        deviceManageViewModel.DeleteGroupCommand.Execute(deviceGroup);
+                    }
+
+                    var mediaManageViewModel = App.ServicesProvider.GetRequiredService<MediaManageViewModel>();
+                    mediaManageViewModel.CurrentUser = viewModel;
+                    mediaManageViewModel.LoadData();
+                    foreach (var media in mediaManageViewModel.Medias)
+                    {
+                        mediaManageViewModel.DeleteMediaCommand.Execute(media);
+                    }
+
+                    foreach (var programGroup in mediaManageViewModel.MediaGroups)
+                    {
+                        mediaManageViewModel.DeleteGroupCommand.Execute(programGroup);
+                    }
+                }
+                
+                var fileService = GetService<IFileService>();
+                fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.Account, viewModel.Name));
             }
 
             LoadData();

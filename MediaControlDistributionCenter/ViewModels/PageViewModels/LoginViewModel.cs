@@ -120,6 +120,10 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 CurrentUser.Binding(userResult);
                                 IsLogin = true;
+                                if (ConnectionMode.Mode == "Local")
+                                {
+                                    communication.StartHeart();
+                                }
                             }
                         }
                     }
@@ -144,6 +148,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 return;
             }
+
             communication.Connect(SelectedIpAddress, "5001");
             int count = 1;
             while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)

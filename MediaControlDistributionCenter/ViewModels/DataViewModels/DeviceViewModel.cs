@@ -203,6 +203,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
                 return;
             }
+
             client.Connect(ipAddress, "5001");
             int count = 1;
             while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -246,14 +247,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdSendUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                MessageBox.Show($"命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -270,15 +267,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                MessageBox.Show($"命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                client.Disconnect();
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -292,15 +284,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -314,15 +301,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -336,15 +318,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -358,15 +335,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdTime + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -380,15 +352,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
-            }
-            else
-            {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -420,15 +387,29 @@ namespace MediaControlDistributionCenter.ViewModels
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
+            if (!result)
             {
-                //SendState.Text += "命令处理成功\r\n";
-                MessageBox.Show("命令处理成功!");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
-            else
+        }
+
+        [RelayCommand]
+        private async Task DeleteProgram(ProgramViewModel program)
+        {
+            if (client == null)
             {
-                MessageBox.Show("命令无法被处理!");
-                //SendState.Text += "命令无法被处理\r\n";
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+            var model = program.ToModel();
+            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string path = CommunicationCmd.CmdDeleteProgram + syncString;
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                return;
             }
         }
 
@@ -487,7 +468,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
             }
         }
 

@@ -98,15 +98,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Image result = CapturePage(1);
 
-            System.Windows.Controls.Border border = new System.Windows.Controls.Border
-            {
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(2),
-                Width = Width,
-                Height = Height,
-                DataContext = this,
-                Child = result
-            };
+            Border border = CreateBorder();
+            border.Child = result;
 
             CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
             CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));

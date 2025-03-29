@@ -105,7 +105,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    if (CurrentDevice.StatusText == FindResource("LanguageKey_Code_Online"))
+                    if (CurrentDevice.IsConnected())
                     {
                         await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
@@ -118,9 +118,12 @@ namespace MediaControlDistributionCenter.ViewModels
                         if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
                         {
                             await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                return;
+                            }
                         }
                     }
                 }

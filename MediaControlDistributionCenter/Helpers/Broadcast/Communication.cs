@@ -28,7 +28,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncDeviceControlResult { get; private set; }
 
-
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
@@ -51,7 +50,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         {
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
-            int interval = 1000; // 5000毫秒即5秒 
+            int interval = 5000; // 5000毫秒即5秒 
             // 创建定时器并设置间隔
             _heartbeatTimer = new System.Timers.Timer(interval);
 
@@ -100,7 +99,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             this.Port = Port;
             IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
             netClient.Connect(iPEnd);
-            netClient.ReceiveCompleted += NetClient_ReceiveCompleted; ;
+            netClient.ReceiveCompleted += NetClient_ReceiveCompleted;
         }        
 
         /// <summary>

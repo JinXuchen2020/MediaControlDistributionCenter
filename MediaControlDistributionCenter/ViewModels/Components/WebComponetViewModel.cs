@@ -75,22 +75,11 @@ namespace MediaControlDistributionCenter.ViewModels
             Image result = new()
             {
                 Source = GetBitmap(),
-                Stretch = Stretch.Fill,
-                //Width = Width,
-                //Height = Height,
-                //DataContext = this,
-                
+                Stretch = Stretch.Fill,                
             };
 
-            Border border = new Border
-            {
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(2),
-                Width = Width,
-                Height = Height,
-                DataContext = this,
-                Child = result
-            };
+            Border border = CreateBorder();
+            border.Child = result;
 
             CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
             CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));

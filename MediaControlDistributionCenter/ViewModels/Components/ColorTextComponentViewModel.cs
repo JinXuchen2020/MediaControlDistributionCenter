@@ -192,15 +192,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 TextWrapping = TextWrapping.Wrap,
             };
 
-            Border border = new Border
-            {
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(2),
-                Width = Width,
-                Height = Height,
-                DataContext = this,
-                Child = result
-            };
+            Border border = CreateBorder();
+            border.Child = result;
 
             CreateBinding(result, TextBlock.TextProperty, nameof(Source));
             CreateBinding(result, TextBlock.BackgroundProperty, nameof(Background), new ColorToBrushConverter());

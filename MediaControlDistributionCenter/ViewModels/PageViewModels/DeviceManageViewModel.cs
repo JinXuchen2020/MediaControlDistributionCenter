@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Autofac.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
@@ -161,6 +162,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
+                var deviceControlService = GetService<IDeviceControlService>();
+                var deviceControls = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = viewModel.DeviceId })).Data?.ToList() ?? new List<DeviceControlDto>();
+                await deviceControlService.DeleteBatch(deviceControls.Select(c => c.Id).ToList());
+
+                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = viewModel.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                await playbackRecordService.DeleteBatch(playRecords.Select(c => c.Id).ToList());
                 LoadData();
             }
         }
@@ -214,6 +221,10 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ConnectDevice(DeviceViewModel viewModel)
         {
+            if (SelectedDevice != null && SelectedDevice.Id == viewModel.Id)
+            {
+                return;
+            }
             await viewModel.ConnectCommand.ExecuteAsync(communication);
             if (!string.IsNullOrEmpty(viewModel?.ErrorMessage))
             {

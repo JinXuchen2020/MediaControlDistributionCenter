@@ -82,6 +82,10 @@ namespace MediaControlDistributionCenter.Views
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
+            if (manageViewModel.CurrentDevice != null && manageViewModel.CurrentDevice.Id == viewModel.Id)
+            {
+                return;
+            }
             manageViewModel.CurrentDevice = viewModel;
             if (manageViewModel.CurrentDevice != null)
             {

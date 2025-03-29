@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -149,19 +151,43 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                LoadData();
+                var playbackRecordService = GetService<IPlaybackRecordService>();
+                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                var deviceService = GetService<IMonitorService>();
+                foreach (var playbackRecord in playRecords)
+                {
+                    if (ConnectionMode.Mode == "Local")
+                    {
+                        var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+                        loginViewModel.ConnectedDevice?.DeleteProgramCommand.Execute(viewModel);
+                    }
+                    else
+                    {
+                        var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                        if (device != null)
+                        {
+                            var deviceManageViewModel = App.ServicesProvider.GetRequiredService<DeviceManageViewModel>();
+                            deviceManageViewModel.SelectedDevice?.DeleteProgramCommand.Execute(viewModel);
+                        }
+                    }
+
+                    await playbackRecordService.DeleteById(playbackRecord.Id);
+                }
+
+                fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.UserId, viewModel.Name));
             }
         }
 
         [RelayCommand]
         private async Task DeleteMedias()
         {
-            var selectedIds = Medias.Where(c => c.IsSelected).Select(c => c.Id).ToList();
-            var response = await programService.DeleteBatch(selectedIds);
-            if (response.Code == 200)
+            var selectedItems = Medias.Where(c => c.IsSelected).ToList();
+            foreach (var selectedItem in selectedItems) 
             {
-                LoadData();
+                await DeleteMedia(selectedItem);
             }
+
+            LoadData();
         }
 
         [RelayCommand]

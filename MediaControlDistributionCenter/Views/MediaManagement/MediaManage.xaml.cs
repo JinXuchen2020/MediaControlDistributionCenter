@@ -103,7 +103,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
                 {
                     var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
-                    manageViewModel.DeleteMediaCommand.ExecuteAsync(viewModel);
+                    await manageViewModel.DeleteMediaCommand.ExecuteAsync(viewModel);
+                    manageViewModel.LoadData();
                 }
 
                 manageViewModel.CanDelete = null;
