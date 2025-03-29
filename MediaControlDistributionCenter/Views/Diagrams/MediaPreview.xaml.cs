@@ -33,7 +33,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         public MediaPreview(MediaEditViewModel viewModel)
         {
             InitializeComponent();
-            CurrentPage = viewModel.MediaConfig.Pages.First();
+            CurrentPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted);
             DataContext = viewModel;
 
             InitializeTimer();
@@ -95,10 +95,10 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             else
             {
                 currentPlayCount = 0;
-                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > CurrentPage.Order);
+                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > CurrentPage.Order && !c.IsDeleted);
                 if (nextPage == null)
                 {
-                    nextPage = viewModel.MediaConfig.Pages.First();
+                    nextPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted);
                 }
 
                 CurrentPage = nextPage;
@@ -113,7 +113,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             MainCanvas.Visibility = Visibility.Collapsed;
             MainCanvas.Children.Clear();
             var effectComponents = new List<BaseComponentViewModel>();
-            foreach (var component in CurrentPage.Components)
+            foreach (var component in CurrentPage.Components.Where(c => !c.IsDeleted))
             {
                 if (component == null) continue;
                 component.Ratio = _ratio;
@@ -163,7 +163,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             this.Dispatcher.Invoke(async () =>
             {
-                while (CurrentPage.Components.Any(c => !c.IsRunningLoaded))
+                while (CurrentPage.Components.Where(c => !c.IsDeleted).Any(c => !c.IsRunningLoaded))
                 {
                     await Task.Delay(1000);
                 }
@@ -171,7 +171,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 MainCanvas.Visibility = Visibility.Visible;
 
-                foreach (var component in CurrentPage.Components)
+                foreach (var component in CurrentPage.Components.Where(c => !c.IsDeleted))
                 {
                     component.EffectExecution();                    
                 }

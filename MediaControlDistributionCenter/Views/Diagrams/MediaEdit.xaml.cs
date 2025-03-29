@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Data;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -316,6 +317,21 @@ namespace MediaControlDistributionCenter.Views
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
             manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
+
+            foreach(var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
+            {
+                fileService.DeleteResourcePath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name));
+            }
+
+            foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.Components.Any(c => c.IsDeleted)))
+            {
+                var deleteCompos = deletePage.Components.Where(c => c.IsDeleted);
+                foreach (var compo in deleteCompos) 
+                {
+                    var componentPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name, compo.Name);
+                    fileService.DeleteResourcePath(componentPath);
+                }
+            }
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
@@ -457,11 +473,11 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
         {
-            if(manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c =>!c.IsDeleted).Count() > 1)
             {
                 var currentPage = manageViewModel.SelectedPage;
                 currentPage.IsSelected = false;
-                manageViewModel.MediaConfig.Pages.Remove(currentPage);
+                currentPage.IsDeleted = true;
                 manageViewModel.SelectedPage = manageViewModel.MediaConfig.Pages.First();
                 manageViewModel.SelectedPage.IsSelected = true;
                 LoadCanvasComponents(manageViewModel);
@@ -470,7 +486,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageUpOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c => !c.IsDeleted).Count() > 1)
             {
                 var prePage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order < manageViewModel.SelectedPage.Order);
                 if (prePage != null) 
@@ -486,9 +502,9 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDownOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.MediaConfig.Pages.Count > 1)
+            if (manageViewModel.MediaConfig.Pages.Where(c => !c.IsDeleted).Count() > 1)
             {
-                var nextPage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > manageViewModel.SelectedPage.Order);
+                var nextPage = manageViewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > manageViewModel.SelectedPage.Order && !c.IsDeleted);
                 if (nextPage != null)
                 {
                     var currentOrder = manageViewModel.SelectedPage.Order;
@@ -519,11 +535,11 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnComponentDelete_Click(object sender, RoutedEventArgs e)
         {
-            if(manageViewModel.SelectedComponent != null)
+            if (manageViewModel.SelectedComponent != null)
             {
                 var currentCom = manageViewModel.SelectedComponent;
                 currentCom.IsSelected = false;
-                manageViewModel.SelectedPage.Components.Remove(currentCom);
+                currentCom.IsDeleted = true;
                 if (currentCom.FrameworkElement != null)
                 {
                     MainCanvas.Children.Remove(currentCom.FrameworkElement);

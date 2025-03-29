@@ -79,7 +79,7 @@
                                                     <materialDesign:PackIcon Kind="Upload" Foreground="White" Width="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                 </Border>
                                                 <Border Width="110" Height="110" Background="#0F0F10" BorderBrush="#404870" BorderThickness="1" HorizontalAlignment="Left" MouseDown="btnUpload_MouseDown" materialDesign:ButtonAssist.CornerRadius="5"  Visibility="{Binding IsUpload, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
-                                                    <Image Source="{Binding LogoThumbnail}" Width="110" Height="110" />
+                                                    <Image Source="{Binding LogoThumbnail}" Width="110" Stretch="Fill" Height="110" />
                                                 </Border>
                                                 <TextBlock FontSize="12" Foreground="White" Width="300" VerticalAlignment="Bottom" Margin="0,20,0,0" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_112}" />
                                             </StackPanel>

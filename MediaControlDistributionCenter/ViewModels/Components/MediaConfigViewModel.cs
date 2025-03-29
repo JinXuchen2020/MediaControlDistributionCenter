@@ -75,7 +75,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Top = Top,
                 Ratio = Ratio,
                 UserAccount = UserAccount,
-                Pages = Pages.Select(c => c.ToModel(UserAccount, Ratio)).ToList()
+                Pages = Pages.Where(c => !c.IsDeleted).Select(c => c.ToModel(UserAccount, Ratio)).ToList()
             };
         }
 
@@ -121,6 +121,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool isSelected;
+
+        [ObservableProperty]
+        private bool isDeleted;
 
         [ObservableProperty]
         private BitmapImage? thumbnail;
@@ -195,7 +198,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ValidEndDate = ValidEndDate,
                 PlayCount = PlayCount,
                 Schedulers = Schedulers.Select(c => c.ToModel()).ToList(),
-                Components = Components.Select(c => c!.ToModel(userAccount, ratio)).ToList()
+                Components = Components.Where(c => !c.IsDeleted).Select(c => c!.ToModel(userAccount, ratio)).ToList()
             };
         }
 
