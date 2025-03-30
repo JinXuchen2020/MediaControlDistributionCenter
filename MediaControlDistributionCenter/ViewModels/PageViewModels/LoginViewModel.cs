@@ -166,6 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
+                Log.Debug("Connect Device successfully in login page!");
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
@@ -185,6 +186,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                     {
                                         ConnectedDevice = new DeviceViewModel();
                                         ConnectedDevice.Binding(item.Monitor.Monitor);
+                                        Log.Debug($"Current Connected Device is {ConnectedDevice.Name}");
                                         foreach (var program in item.Monitor.Programs)
                                         {
                                             respone = await programService.Save(program);

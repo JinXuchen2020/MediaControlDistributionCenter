@@ -241,16 +241,6 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             pptDocument.PresentationRenderer = new Syncfusion.PresentationRenderer.PresentationRenderer();
                             var slide = pptDocument.Slides[page - 1];
-                            if (slide.SlideSize.SlideOrientation == SlideOrientation.Landscape)
-                            {
-                                Width = Math.Min(slide.SlideSize.Width, 768);
-                                Height = Math.Ceiling(slide.SlideSize.Height / slide.SlideSize.Width * Width);
-                            }
-                            else
-                            {
-                                Height = Math.Min(slide.SlideSize.Height, 596);
-                                Width = Math.Ceiling(slide.SlideSize.Width / slide.SlideSize.Height * Height);
-                            }
                             var stream = slide.ConvertToImage(ExportImageFormat.Png);
                             var docImage = new BitmapImage();
                             docImage.BeginInit();

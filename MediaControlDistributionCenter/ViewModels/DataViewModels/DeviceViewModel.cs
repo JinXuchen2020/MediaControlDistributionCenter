@@ -11,6 +11,7 @@ using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Serilog;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Windows;
@@ -184,10 +185,13 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect(Communication client)
         {
-            if (ConnectionMode.Mode == "Local" && IsConnected())
+            Log.Debug($"Socket status:{client.netClient.State}!");
+            if (ConnectionMode.Mode == "Local" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
+                Log.Debug($"Device:{Name} has connected!");
                 this.client = client;
                 StatusText = GetStatus();
+                Log.Debug($"Device:{Name} setting comopleted!");
                 return;
             }
 
@@ -198,20 +202,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (ConnectionMode.Mode == "Remote" && IsConnected() && ipAddress != client.IpAddr)
+            if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected && ipAddress != client.IpAddr)
             {
                client.Disconnect();
             }
 
             client.Connect(ipAddress, "5001");
             int count = 1;
-            while (!IsConnected() && count > 0)
+            while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
             {
                 Thread.Sleep(500);
                 count--;
             }
 
-            if (!IsConnected())
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
                 return;
@@ -219,6 +223,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
             this.client = client;
             StatusText = GetStatus();
+            Log.Debug($"Device:{Name} connected success!");
+            await Task.CompletedTask;
+
         }
 
         [RelayCommand]
@@ -238,12 +245,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -261,14 +270,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task VerifyUser(UserViewModel user)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -286,14 +297,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeBrightness(string value)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -309,14 +322,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeVolume(string value)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -332,14 +347,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Restart(string value)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -355,14 +372,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeSync(DateTime value)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -378,14 +397,16 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task TimeGPSSync(DateTime value)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -419,12 +440,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -444,12 +467,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -469,12 +494,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 
@@ -506,12 +533,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (client == null)
             {
+                Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
 
             if (!IsConnected())
             {
+                Log.Debug($"Device:{Name} need to connected again!");
                 await Connect(client);
             }
 

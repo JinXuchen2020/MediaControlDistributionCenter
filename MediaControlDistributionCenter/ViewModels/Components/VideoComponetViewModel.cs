@@ -221,17 +221,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 throw new InvalidOperationException("MediaElement没有加载媒体源。");
             }
 
-            if (mediaElement.NaturalVideoWidth > mediaElement.NaturalVideoHeight)
-            {
-                Width = Math.Min(mediaElement.NaturalVideoWidth, 768);
-                Height = Math.Ceiling(((double)mediaElement.NaturalVideoHeight / mediaElement.NaturalVideoWidth) * Width) + 2;
-            }
-            else
-            {
-                Height = Math.Min(mediaElement.NaturalVideoHeight, 596);
-                Width = Math.Ceiling((double)mediaElement.NaturalVideoWidth / mediaElement.NaturalVideoHeight * Height) + 2;
-            }
-
             return VideoScreenCapture.CaptureFrame(Source!, 1);
 
             //return mediaElement.Dispatcher.Invoke<BitmapSource>(() =>

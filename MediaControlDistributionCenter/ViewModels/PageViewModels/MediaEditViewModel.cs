@@ -58,7 +58,6 @@ namespace MediaControlDistributionCenter.ViewModels
             this.fileService = fileService;
             this.programService = GetService<IProgramService>();
             this.mediaService = GetService<IMediaService>();
-            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()

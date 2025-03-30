@@ -293,12 +293,12 @@
                                             <StackPanel Orientation="Horizontal" Margin="10" Visibility="{Binding IsHasValidity, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
                                                 <StackPanel Orientation="Horizontal" Height="40">
                                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_143}" FontSize="16" Width="80" VerticalAlignment="Center"/>
-                                                    <DatePicker Width="250" Height="32" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidStartDate}" />
+                                                    <DatePicker Width="250" Height="32" SelectedDateFormat="Short" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidStartDate}" />
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Height="40" Margin="55,0,0,0">
                                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_144}" FontSize="16" Width="80" VerticalAlignment="Center"/>
-                                                    <DatePicker Width="250" Height="32" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidEndDate}"/>
+                                                    <DatePicker Width="250" Height="32" Padding="5" SelectedDateFormat="Short" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding ValidEndDate}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </StackPanel>

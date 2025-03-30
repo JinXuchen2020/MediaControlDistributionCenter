@@ -36,6 +36,12 @@ namespace MediaControlDistributionCenter.Views
             DataContext = manageViewModel;
 
             this.Loaded += DeviceControlContent_Loaded;
+            this.Unloaded += DeviceControlContent_Unloaded;
+        }
+
+        private void DeviceControlContent_Unloaded(object sender, RoutedEventArgs e)
+        {
+            dgDevices.SelectedItem = null;
         }
 
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
@@ -88,15 +94,23 @@ namespace MediaControlDistributionCenter.Views
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
-            if (manageViewModel.CurrentDevice != null && manageViewModel.CurrentDevice.Id == viewModel.Id)
+            if (viewModel != null)
             {
-                return;
+                if (manageViewModel.CurrentDevice != null && manageViewModel.CurrentDevice.Id == viewModel.Id)
+                {
+                    return;
+                }
+                manageViewModel.CurrentDevice = viewModel;
+                if (manageViewModel.CurrentDevice != null)
+                {
+                    manageViewModel.ConnectDeviceCommand.Execute(null);
+                    RefreshData();
+                }
             }
-            manageViewModel.CurrentDevice = viewModel;
-            if (manageViewModel.CurrentDevice != null)
+            else
             {
-                manageViewModel.ConnectDeviceCommand.Execute(null);
-                RefreshData();
+                manageViewModel.CurrentDevice = null;
+
             }
         }
 
@@ -147,8 +161,11 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            manageViewModel.DeleteBatchCommand.Execute(null);
-            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+            this.Dispatcher.BeginInvoke(async () => 
+            {
+                await manageViewModel.DeleteBatchCommand.ExecuteAsync(null);
+                dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+            });
         }
 
         private void btnPublish_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -168,18 +185,11 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CurrentDevice != null)
             {
-                manageViewModel.GetDeviceTimeControlsCommand.Execute(null);
-                dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
-
-                //if (!string.IsNullOrEmpty(manageViewModel.CommandTypeColumnName))
-                //{
-                //    var valueColumn = new DataGridTextColumn()
-                //    {
-                //        Binding = new Binding("Value") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
-                //        Header = manageViewModel.CommandTypeColumnName
-                //    };
-                //    dgTimeControls.Columns.Insert(1, valueColumn);
-                //}
+                this.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.GetDeviceTimeControlsCommand.ExecuteAsync(null);
+                    dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
+                });
             }
         }
 
