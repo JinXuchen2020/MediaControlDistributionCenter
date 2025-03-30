@@ -10,26 +10,30 @@
     <sys:String x:Key="LanguageKey_Code_KO">韩国节点</sys:String>
     <sys:String x:Key="LanguageKey_Code_JP">日本节点</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_Role_Admin">管理员</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Role_Agent">代理商</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Role_User">会员</sys:String>
-
     <sys:String x:Key="LanguageKey_Code_SystemTitle">统一媒体管理平台</sys:String>    
     
     <sys:String x:Key="LanguageKey_Code_LoginDescription">统一媒体管理平台登录</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemFeature1">多媒体全链路</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemFeature2">数字信息解决方案</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemFeature3">多语言</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SystemExitTip">关闭并退出软件</sys:String>    
-    
-    <sys:String x:Key="LanguageKey_Code_LoginSlogan">公司宣传语:</sys:String>
-    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">自强不息 厚德载物</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SystemExitTip">关闭并退出软件</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LoginTitle">登录你的Sign Plex账号</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginAccount">账号</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginPassword">密码</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginBtn">登录</sys:String>
-    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 neox@neoxcorp.co.kr</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSubTitle">账户疑问请联系供应商 neox@neoxcorp.co.kr</sys:String>    
+
+    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好，世界</sys:String>
+    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
+    <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>
+
+    <sys:String x:Key="LanguageKey_Code_Role_Admin">管理员</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_Agent">代理商</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Role_User">会员</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">公司宣传语:</sys:String>
+    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">自强不息 厚德载物</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
     <sys:String x:Key="LanguageKey_Code_RemoteMode">联网模式</sys:String>
@@ -380,11 +384,6 @@
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">未选择媒体！</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">媒体地址</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">未填写媒体名！</sys:String>
-
-    <sys:String x:Key="LanguageKey_Code_HelloWorld">你好，世界</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SwitchLanguage">切换语言</sys:String>
-    <sys:String x:Key="LanguageKey_Code_InputUserName">请输入用户名</sys:String>
-    <sys:String x:Key="LanguageKey_Code_InputPassword">请输入密码</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Totip_100">参数无效或缺失</sys:String>
     <sys:String x:Key="LanguageKey_Code_Totip_102">没有相关数据</sys:String>

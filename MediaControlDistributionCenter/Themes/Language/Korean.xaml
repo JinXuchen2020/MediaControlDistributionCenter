@@ -18,8 +18,6 @@
     <sys:String x:Key="LanguageKey_Code_SystemFeature3">다국어 지원</sys:String>
     <sys:String x:Key="LanguageKey_Code_SystemExitTip">소프트웨어를 닫고 종료합니다</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_LoginSlogan">회사 슬로건: 자강불식, 후덕재물</sys:String>
-
     <sys:String x:Key="LanguageKey_Code_LoginTitle">Sign Plex 계정에 로그인</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginAccount">계정</sys:String>
     <sys:String x:Key="LanguageKey_Code_LoginPassword">비밀번호</sys:String>
@@ -35,11 +33,12 @@
     <sys:String x:Key="LanguageKey_Code_Role_Admin">管理员</sys:String>
     <sys:String x:Key="LanguageKey_Code_Role_Agent">代理商</sys:String>
     <sys:String x:Key="LanguageKey_Code_Role_User">会员</sys:String>
-    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">自强不息 厚德载物</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LoginSlogan">회사 슬로건:</sys:String>
+    <sys:String x:Key="LanguageKey_Code_DefaultSlogan">자강불식, 후덕재물</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
     <sys:String x:Key="LanguageKey_Code_RemoteMode">联网模式</sys:String>
-    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>
+    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>  
     <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
     <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
     <sys:String x:Key="LanguageKey_Code_ChangGroup">变更分组</sys:String>
@@ -55,7 +54,7 @@
     <sys:String x:Key="LanguageKey_Code_Agent">代理商：</sys:String>
     <sys:String x:Key="LanguageKey_Code_Confirm">确定</sys:String>
     <sys:String x:Key="LanguageKey_Code_Width">宽</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Height">高</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Height">高</sys:String>    
     <sys:String x:Key="LanguageKey_Code_Search_Hint">输入关键字搜索</sys:String>
     <sys:String x:Key="LanguageKey_Code_OnShelf">上架</sys:String>
     <sys:String x:Key="LanguageKey_Code_OffShelf">下架</sys:String>
@@ -109,11 +108,13 @@
     <sys:String x:Key="LanguageKey_Code_Program">常规节目</sys:String>
     <sys:String x:Key="LanguageKey_Code_AD">广告</sys:String>
     <sys:String x:Key="LanguageKey_Code_DeleteConfirm">是否确认？</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Preview">预览</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Upload">上传</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_101">该账号不可用！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>   
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_100">无法连接机顶盒!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_101">命令无法被处理!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_102">同步机顶盒信息成功！可选择下列用户登录：</sys:String>
@@ -121,6 +122,8 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">剩余机器容量</sys:String>
+    
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>
@@ -137,8 +140,8 @@
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_111">当前节目</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_112">总数</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_113">用户</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">在线显示器</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_114">显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_115">我的媒体</sys:String>    
 
     <sys:String x:Key="LanguageKey_Code_Management">用户管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Management_Users">会员管理</sys:String>
@@ -160,11 +163,11 @@
     <sys:String x:Key="LanguageKey_Code_Users_Tooltip_112">添加LOGO尺寸描述和图片格式,JPG,PNG.</sys:String>
     <sys:String x:Key="LanguageKey_Code_Users_Tooltip_113">宣传语</sys:String>
     <sys:String x:Key="LanguageKey_Code_Users_Tooltip_114">时区</sys:String>
-
+    
     <sys:String x:Key="LanguageKey_Code_Controller_Tooltip_100">当前正在控制</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Controller_Tooltip_101">的设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Controller_Tooltip_101">的设备</sys:String>    
 
-    <sys:String x:Key="LanguageKey_Code_Management_Media">媒体管理</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Management_Media">节目管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_GroupDialogTitle">节目分组</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_Send">发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Media_Create">新增节目</sys:String>
@@ -181,11 +184,16 @@
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_107">节目来源</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_108">未选择节目！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_109">只能选择一条节目！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_110">选择的节目已下架！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_111">永久</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_112">每小时播放次数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_113">节目名称已存在！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">强制发布</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Management_Device">设备管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Create">新增显示器</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_GroupDialogTitle">设备分组</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Device_DialogTitle">显示器</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_DialogTitle">显示器</sys:String> 
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_100">显示器名称</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_101">状态</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_102">分辨率</sys:String>
@@ -212,6 +220,7 @@
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_123">发送状态</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_124">连接成功！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_125">是否录入当前用户？</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_126">不可用显示器</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Control_Device">设备控制</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_DialogTitle">定时控制</sys:String>
@@ -243,7 +252,7 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_125">立即重启后,播放器将在20s左右完成重启,在此期间,播放器会处于离线状态.请在播放器重新上线后,再进行其他操作。</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
-
+    
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_OldPassword">原密码</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_NewPassword">新密码</sys:String>
@@ -309,8 +318,8 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_145">时间计划表</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_146">每周</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_147">未选择组件！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_148">图片组件只能包含图片格式文件！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_149">视频组件只能包含视频格式文件！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_148">图片格式文件只能上传到图片组件！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_149">视频格式文件只能上传到视频组件！</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_150">请先创建页面!</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_151">请先保存节目!</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_152">请输入页面名称！</sys:String>
@@ -328,7 +337,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_164">向下平移</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_165">向右压缩</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_166">向左压缩</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_167">向上压缩</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_167">向上压缩</sys:String>  
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_168">向下压缩</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_169">左右压缩</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_170">上下压缩</sys:String>
@@ -351,14 +360,31 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_187">向上展开</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_188">上下展开</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_189">上下合并</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_191">显示内容</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_192">标题</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_193">发布时间</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_194">正文</sys:String>    
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_195">文档格式文件只能上传到文档组件！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_196">每页时长(s)</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 
     <sys:String x:Key="LanguageKey_Code_MediaStore">媒体库</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_BigIcon">大图</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_List">列表</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Preview_Title">媒体预览</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_GroupDialogTitle">媒体分组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_MediaDialogTitle">媒体信息</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_100">媒体名称</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_101">媒体类型</sys:String>
-    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_102">媒体大小</sys:String>
-    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_103">媒体地址</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_102">媒体组</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_103">媒体大小</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_104">分辨率</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_105">更新时间</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_106">选择分组无效！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">未选择媒体！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">媒体地址</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">未填写媒体名！</sys:String>
 
 
 

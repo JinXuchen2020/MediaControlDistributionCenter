@@ -66,6 +66,8 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel = mediaEditViewModel;
             manageViewModel.Canvas = MainCanvas;
             manageViewModel.LoadData();
+            manageViewModel.SelectedComponent = null;
+            manageViewModel.SelectedElement = null;
             DataContext = mediaEditViewModel;
 
             this.Loaded += MediaEdit_Loaded;

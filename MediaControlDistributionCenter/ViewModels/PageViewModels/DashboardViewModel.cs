@@ -79,7 +79,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     break;
                 case "user":
                     deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(6).Select(c =>
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(4).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);

@@ -1359,7 +1359,7 @@
                                                                                     <DataTemplate>
                                                                                         <StackPanel Orientation="Horizontal">
                                                                                             <!--<TextBlock Foreground="White" Text="{Binding Name}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="14"/>-->
-                                                                                            <Image Source="{Binding Thumbnail }" MouseDown="CreateComponentFromStore_MouseDown" Width="110" />
+                                                                                            <Image Source="{Binding Thumbnail }" Stretch="Fill" MouseDown="CreateComponentFromStore_MouseDown" Width="110" />
                                                                                         </StackPanel>
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
