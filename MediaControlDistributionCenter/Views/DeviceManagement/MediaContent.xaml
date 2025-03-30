@@ -357,11 +357,19 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_MediaStore_Tooltip_102}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Size}">
-                                        <DataGridTextColumn.Header>
+                                    <DataGridTemplateColumn Width="1*">
+                                        <DataGridTemplateColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_MediaStore_Tooltip_103}" />
-                                        </DataGridTextColumn.Header>
-                                    </DataGridTextColumn>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
+                                                    <TextBlock Text="{Binding Size}" />
+                                                    <TextBlock Text="MB" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_MediaStore_Tooltip_104}" />

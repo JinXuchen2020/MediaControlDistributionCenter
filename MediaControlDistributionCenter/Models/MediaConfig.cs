@@ -175,9 +175,9 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override MediaType Type => MediaType.Word;
         
-        public int EffectDuration { get; set; }
+        //public int EffectDuration { get; set; }
         
-        public string ComponentEffect { get; set; }
+        //public string ComponentEffect { get; set; }
         
         public int PageDuration { get; set; }
     }

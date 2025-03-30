@@ -205,25 +205,25 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                             break;
                         case ResizeDirection.Left:
                             thumb.Cursor = Cursors.SizeWE;
-                            thumb.Height = 20;
+                            thumb.Height = 40;
                             Canvas.SetLeft(thumb, conLeft + offsetX);
                             Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
                             break;
                         case ResizeDirection.Right:
                             thumb.Cursor = Cursors.SizeWE;
-                            thumb.Height = 20;
+                            thumb.Height = 40;
                             Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
                             Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
                             break;
                         case ResizeDirection.Top:
                             thumb.Cursor = Cursors.SizeNS;
-                            thumb.Width = 20;
+                            thumb.Width = 40;
                             Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX);
                             Canvas.SetTop(thumb, conTop + offsetY);
                             break;
                         case ResizeDirection.Bottom:
                             thumb.Cursor = Cursors.SizeNS;
-                            thumb.Width = 20;
+                            thumb.Width = 40;
                             Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX - thumb.Width);
                             Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
                             break;

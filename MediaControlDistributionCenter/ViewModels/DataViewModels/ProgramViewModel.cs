@@ -71,10 +71,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isHasValidity;
 
         [ObservableProperty]
-        private string? validStartDate;
+        private DateTime? validStartDate;
 
         [ObservableProperty]
-        private string? validEndDate;
+        private DateTime? validEndDate;
 
         public override ProgramDto ToModel()
         {
@@ -93,8 +93,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 UserAccount = UserId,
                 PlayCountPerHour = PlayCountPerHour,
                 IsHasValidity = IsHasValidity,
-                ValidStartDate = ValidStartDate,
-                ValidEndDate = ValidEndDate,
+                ValidStartDate = ValidStartDate?.ToString("yyyy-MM-dd"),
+                ValidEndDate = ValidEndDate?.ToString("yyyy-MM-dd"),
             };
         }
 
@@ -118,9 +118,10 @@ namespace MediaControlDistributionCenter.ViewModels
             RackingBtnContent = model.Status == 1 ? FindResource("LanguageKey_Code_OffShelf") : FindResource("LanguageKey_Code_OnShelf");
             PlayCountPerHour = model.PlayCountPerHour;
             IsHasValidity = model.IsHasValidity;
-            ValidStartDate = model.ValidStartDate;
-            ValidEndDate = model.ValidEndDate;
+            ValidStartDate = string.IsNullOrEmpty(model.ValidStartDate) ? null : DateTime.Parse(model.ValidStartDate);
+            ValidEndDate = string.IsNullOrEmpty(model.ValidEndDate) ? null : DateTime.Parse(model.ValidEndDate);
         }
+        
         
         [RelayCommand]
         private async Task ShowConfirmDialog()

@@ -41,7 +41,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "admin":
                     var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c=>c.Id).Select(c =>
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(5).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
@@ -49,7 +49,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }));
 
                     var userResponse = userService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
-                    Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(15).Select(c =>
+                    Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
                     {
                         var viewModel = new UserViewModel();
                         viewModel.Binding(c);
@@ -60,7 +60,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     break;
                 case "agent":
                     deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Select(c =>
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(5).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
@@ -68,7 +68,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }));
 
                     userResponse = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
-                    Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(15).Select(c =>
+                    Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
                     {
                         var viewModel = new UserViewModel();
                         viewModel.Binding(c);

@@ -103,14 +103,16 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.CurrentDevice = viewModel;
                 if (manageViewModel.CurrentDevice != null)
                 {
-                    manageViewModel.ConnectDeviceCommand.Execute(null);
-                    RefreshData();
+                    this.Dispatcher.Invoke(async () => 
+                    {
+                        await manageViewModel.ConnectDeviceCommand.ExecuteAsync(null);
+                        RefreshData();
+                    });
                 }
             }
             else
             {
                 manageViewModel.CurrentDevice = null;
-
             }
         }
 

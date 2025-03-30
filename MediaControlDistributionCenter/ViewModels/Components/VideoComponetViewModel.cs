@@ -37,6 +37,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private double totalTimeline;
 
         private int currentPlayCount;
+        private DispatcherTimer? _timer;
 
         public VideoComponentViewModel(VideoComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
@@ -53,7 +54,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayMode = "fullscreen",
                 Type = MediaType.Video,
                 PlayCount = 1,
-                PlayDuration = "",
+                Timeline = 5,
+                PlayDuration = "00:00:05",
             }, userAccount);
         }
 
@@ -88,7 +90,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 UnloadedBehavior = MediaState.Stop,
             };
 
-            video.MediaOpened += Video_MediaOpened;
             video.SizeChanged += Video_LayoutUpdated;
             video.Play();
 
@@ -115,6 +116,11 @@ namespace MediaControlDistributionCenter.ViewModels
             result.MediaOpened += (sender, e) =>
             {
                 IsRunningLoaded = true;
+
+                if (sender is MediaElement mediaElement && Timeline < TotalTimeline)
+                {
+                    InitializeTimer(mediaElement);
+                }
             };
 
             // 添加鼠标事件处理
@@ -138,6 +144,12 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 result.Stop();
                 result.Source = null;
+                if (Timeline < TotalTimeline)
+                {
+                    _timer?.Stop();
+                    _timer = null;
+                    currentPlayCount = 0;
+                }
             };
 
             result.Play();
@@ -151,6 +163,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 target.Stop();
                 target.Source = null;
+                _timer?.Stop();
+                _timer = null;
+                currentPlayCount = 0;
             }
         }
 
@@ -159,6 +174,10 @@ namespace MediaControlDistributionCenter.ViewModels
             if (FrameworkElement == null)
             {
                 var video = (sender as MediaElement)!;
+                if (video.NaturalDuration.HasTimeSpan)
+                {
+                    TotalTimeline = video.NaturalDuration.TimeSpan.TotalSeconds;
+                }
 
                 video.Position = TimeSpan.FromSeconds(1);
 
@@ -196,21 +215,6 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        private void Video_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            if (FrameworkElement == null)
-            {
-                var video = (sender as MediaElement)!;
-
-                if (video.NaturalDuration.HasTimeSpan)
-                {
-                    Timeline = video.NaturalDuration.TimeSpan.TotalSeconds;
-                    PlayDuration = video.NaturalDuration.TimeSpan.ToString();
-                    TotalTimeline = Timeline;
-                }
-            }            
-        }
-
         private BitmapSource CaptureMediaElement(MediaElement mediaElement)
         {
             // 确保MediaElement已经加载了媒体
@@ -246,6 +250,41 @@ namespace MediaControlDistributionCenter.ViewModels
             //    //    png.Save(stream);
             //    //}
             //});
+        }
+
+        private void InitializeTimer(MediaElement target)
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+            }
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(Timeline);
+            _timer.Tick += (s, e) => Timer_Tick(target);
+            _timer.Start();
+        }
+
+        private void Timer_Tick(MediaElement target)
+        {
+            if (currentPlayCount < PlayCount)
+            {
+                target.Position = TimeSpan.Zero;
+                target.Play();
+                InitializeTimer(target);
+                currentPlayCount++;
+            }
+            else
+            {
+                var canvas = FindCanvasParent(target);
+                if (canvas != null)
+                {
+                    var existControl = canvas.Children.Cast<FrameworkElement>().FirstOrDefault(c => c is MediaElement media && media.Source == target.Source);
+                    if (existControl != null)
+                    {
+                        canvas.Children.Remove(existControl);
+                    }
+                }
+            }
         }
     }
 }

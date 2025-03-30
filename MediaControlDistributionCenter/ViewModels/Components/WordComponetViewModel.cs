@@ -31,14 +31,14 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override string Type => "Word";
 
-        [ObservableProperty]
-        private int effectDuration;  //特效时长    -毫秒
+        //[ObservableProperty]
+        //private int effectDuration;  //特效时长    -毫秒
 
-        [ObservableProperty]
-        private string componentEffect; //"上下展开",
+        //[ObservableProperty]
+        //private string componentEffect; //"上下展开",
 
-        [ObservableProperty]
-        private string componentEffectKey;
+        //[ObservableProperty]
+        //private string componentEffectKey;
 
         [ObservableProperty]
         private int pageDuration;
@@ -49,9 +49,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public WordComponentViewModel(WordComponent component, string userAccount, double ratio = 1) : base(component, userAccount, ratio)
         {
-            effectDuration = component.EffectDuration;
-            componentEffectKey = component.ComponentEffect;
-            componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
+            //effectDuration = component.EffectDuration;
+            //componentEffectKey = component.ComponentEffect;
+            //componentEffect = Effects.FirstOrDefault(c => c.Key == component.ComponentEffect)!.Name;
             pageDuration = component.PageDuration;
         }
 
@@ -66,8 +66,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = 5,
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
-                ComponentEffect = "FadeIn",
-                EffectDuration = 1000,
+                //ComponentEffect = "FadeIn",
+                //EffectDuration = 1000,
                 PageDuration = 10,
             }, userAccount);
         }
@@ -88,8 +88,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = Timeline,
                 PlayCount = PlayCount,
                 PlayDuration = PlayDuration,
-                ComponentEffect = ComponentEffectKey,
-                EffectDuration = EffectDuration,
+                //ComponentEffect = ComponentEffectKey,
+                //EffectDuration = EffectDuration,
                 PageDuration = PageDuration
             };
         }
@@ -162,13 +162,6 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             
             return result;
-        }
-        public override void EffectExecution()
-        {
-            if (ComponentEffectKey != null)
-            {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
-            }
         }
 
         protected override void DisposeContent()
@@ -277,31 +270,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 bitmap.DecodePixelWidth = 0;
                 target.Source = null;
             }
-        }
-
-        protected override void FadeIn(FrameworkElement element)
-        {
-            if (element is Image image)
-            {
-                Storyboard storyboard = new Storyboard();
-                DoubleAnimation doubleAnimation = new DoubleAnimation
-                {
-                    From = 0.0, // 初始不透明度为0（完全透明）
-                    To = 1.0,   // 最终不透明度为1（完全不透明）
-                    Duration = new Duration(TimeSpan.FromMilliseconds(EffectDuration)) // 持续时间为2秒
-                };
-
-                // 将动画应用到Image的Opacity属性
-                Storyboard.SetTarget(doubleAnimation, image);
-                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(Image.OpacityProperty));
-
-                // 将动画添加到Storyboard中
-                storyboard.Children.Add(doubleAnimation);
-
-                // 开始Storyboard
-                storyboard.Begin();
-            }
-        }
+        }        
 
         private void InitializeTimer(Image target)
         {

@@ -466,11 +466,19 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_102}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Size}">
-                                        <DataGridTextColumn.Header>
+                                    <DataGridTemplateColumn Width="1*" >
+                                        <DataGridTemplateColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_104}" />
-                                        </DataGridTextColumn.Header>
-                                    </DataGridTextColumn>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
+                                                    <TextBlock Text="{Binding Size}" />
+                                                    <TextBlock Text="MB" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ScreensCount}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_105}" />

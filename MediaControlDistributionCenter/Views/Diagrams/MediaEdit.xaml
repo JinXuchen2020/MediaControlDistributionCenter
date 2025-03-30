@@ -491,7 +491,7 @@
                                 <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_132}" Width="80" VerticalAlignment="Center"/>
                                 <LocalCore:TimeTextBox IsDisabled="False" Width="150" Timeline="{Binding Timeline, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding PlayDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
-                            <StackPanel>
+                            <!--<StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
                                     <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
@@ -500,7 +500,7 @@
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
                                     <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                 </StackPanel>
-                            </StackPanel>
+                            </StackPanel>-->
                         </StackPanel>
                     </Border>
                 </Expander>
@@ -1352,14 +1352,14 @@
                                                                             <ItemsControl ItemsSource="{Binding Medias}">
                                                                                 <ItemsControl.ItemsPanel>
                                                                                     <ItemsPanelTemplate>
-                                                                                        <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="100" />
+                                                                                        <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="110" />
                                                                                     </ItemsPanelTemplate>
                                                                                 </ItemsControl.ItemsPanel>
                                                                                 <ItemsControl.ItemTemplate>
                                                                                     <DataTemplate>
                                                                                         <StackPanel Orientation="Horizontal">
                                                                                             <!--<TextBlock Foreground="White" Text="{Binding Name}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="14"/>-->
-                                                                                            <Image Source="{Binding Thumbnail }" Stretch="Fill" MouseDown="CreateComponentFromStore_MouseDown" Width="110" />
+                                                                                            <Image Source="{Binding Thumbnail }" Stretch="Fill" MouseDown="CreateComponentFromStore_MouseDown" Width="110" Height="100" />
                                                                                         </StackPanel>
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
