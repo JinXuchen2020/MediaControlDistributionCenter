@@ -105,6 +105,8 @@ namespace MediaControlDistributionCenter.Helpers.SocketClient
                         ReceiveBufferSize = receiveBufferSize,
                         SendBufferSize = sendBufferSize
                     };
+
+                    SetKeepAlive(socket, true, 30000, 5000);
                 }
 
                 this.socket.BeginConnect(endPoint, new AsyncCallback(this.ConnectCallback), this.socket);
@@ -166,6 +168,16 @@ namespace MediaControlDistributionCenter.Helpers.SocketClient
         //    base.Close(reason);
         //}
         #endregion
+
+        void SetKeepAlive(Socket socket, bool on, uint keepAliveTime, uint keepAliveInterval)
+        {
+            byte[] inValue = new byte[12];
+            BitConverter.GetBytes((uint)(on ? 1 : 0)).CopyTo(inValue, 0);
+            BitConverter.GetBytes(keepAliveTime).CopyTo(inValue, 4);
+            BitConverter.GetBytes(keepAliveInterval).CopyTo(inValue, 8);
+
+            socket.IOControl(IOControlCode.KeepAliveValues, inValue, null);
+        }
 
     }
 }

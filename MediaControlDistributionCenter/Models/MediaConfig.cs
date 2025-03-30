@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -15,21 +16,13 @@ namespace MediaControlDistributionCenter.ViewModels
 {
     public class MediaConfig
     {
-        public long Id { get; set; }
-
-        public string Name { get; set; }
-
-        public double Width { get; set; }
-
-        public double Height { get; set; }
-
         public double Left { get; set; }
 
         public double Top { get; set; }
 
         public double Ratio { get; set; }
 
-        public string UserAccount { get; set; }
+        public ProgramDto Program { get; set; }
 
         public List<MediaPage> Pages { get; set; }
     }

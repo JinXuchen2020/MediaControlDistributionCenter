@@ -69,25 +69,19 @@ namespace MediaControlDistributionCenter.ViewModels
                 config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
                 if (config != null)
                 {
-                    config.Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width);
-                    config.Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height);
-                    config.Name = CurrentMedia.Name;
-                    config.UserAccount = CurrentMedia.UserId;
+                    config.Program = CurrentMedia.ToModel();
                     config.Ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
                 }
             }
 
             config ??= new MediaConfig
             {
-                Id = CurrentMedia.Id,
-                Name = CurrentMedia.Name,
-                Width = string.IsNullOrEmpty(CurrentMedia.Width) ? 0 : double.Parse(CurrentMedia.Width),
-                Height = string.IsNullOrEmpty(CurrentMedia.Height) ? 0 : double.Parse(CurrentMedia.Height),
                 Ratio = Canvas.Width / double.Parse(CurrentMedia.Width),
-                UserAccount = CurrentMedia.UserId,
+                Program = CurrentMedia.ToModel(),
                 Pages = new List<MediaPage>()
             };
             this.MediaConfig = new MediaConfigViewModel(config);
+            this.MediaConfig.Program = CurrentMedia;
 
             SelectedPage = this.MediaConfig.Pages.FirstOrDefault();
             if (SelectedPage != null)

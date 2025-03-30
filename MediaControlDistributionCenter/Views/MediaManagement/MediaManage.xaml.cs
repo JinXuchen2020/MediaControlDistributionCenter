@@ -284,7 +284,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if (viewModel.Id != 0)
             {
-                manageViewModel.SelectedMedia = viewModel;
+                manageViewModel.LoadData();
+                manageViewModel.SelectedMedia = manageViewModel.Medias.First(c => c.Id == viewModel.Id);
                 var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
             }
@@ -336,6 +337,26 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                     manageViewModel.CanDelete = null;
                 });
 
+            }
+        }
+
+        private void SelectDevicesAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var mediaDevicesViewModel = checkbox.DataContext as MediaDevicesViewModel;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in mediaDevicesViewModel.Devices)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in mediaDevicesViewModel.Devices)
+                {
+                    item.IsSelected = false;
+                }
             }
         }
     }

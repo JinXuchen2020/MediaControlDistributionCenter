@@ -151,6 +151,9 @@
                                             Background="Transparent" 
                                             ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
                                         >
+                                            <DataGrid.Resources>
+                                                <customControls:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                            </DataGrid.Resources>
                                             <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Width="60"
                                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
@@ -158,7 +161,7 @@
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
                                                     <DataGridCheckBoxColumn.Header>
-                                                        <CheckBox />
+                                                        <CheckBox DataContext="{Binding Data, Source={StaticResource proxy}}" Unchecked="SelectDevicesAll_Click" Checked="SelectDevicesAll_Click" />
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
                                                 <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
@@ -199,8 +202,9 @@
                                 <Border Grid.Row="3" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
                                 <Grid Grid.Row="4">
                                     <StackPanel VerticalAlignment="Center" Margin="20,12,0,12" Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <TextBlock  FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
-                                        <TextBlock  FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
+                                        <TextBlock FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
+                                        <TextBlock FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
+                                        <CheckBox Margin="30,0,0,0" FontSize="14" VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_114}" IsChecked="{Binding IsCover, Converter={StaticResource IsEditingValueConverter}}" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />

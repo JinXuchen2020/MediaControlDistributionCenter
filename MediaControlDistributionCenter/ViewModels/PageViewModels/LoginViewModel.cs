@@ -7,10 +7,12 @@ using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using OpenCvSharp;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -206,7 +208,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");//                    MessageBox.Show("命令无法被处理!");
+                    ErrorMessage = $"{CommunicationCmd.CmdSyncUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 }
             }
 

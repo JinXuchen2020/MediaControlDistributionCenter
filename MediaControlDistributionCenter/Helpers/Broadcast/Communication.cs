@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +42,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpUserName = ftpServer._userName;
             Heart.FtpUserPwd = ftpServer._userPwd;
             Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            netClient.ErrorReceived += NetClient_ErrorReceived;
+        }
+
+        private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
+        {
+            Log.Error($"Socket Error: {e.Function}, Error Message: {e.Exception.Message}");
         }
 
         /// <summary>

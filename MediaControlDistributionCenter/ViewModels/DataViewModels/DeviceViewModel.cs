@@ -249,7 +249,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdSendUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -269,7 +269,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdVerifyUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -286,7 +286,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -303,7 +303,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdVolume} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -320,7 +320,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdReStart} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -337,7 +337,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdTime} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -354,7 +354,7 @@ namespace MediaControlDistributionCenter.ViewModels
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdTimeGPS} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -389,7 +389,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdSendProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -408,7 +408,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdDeleteProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }
@@ -468,7 +468,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_101");
+                ErrorMessage = $"{CommunicationCmd.CmdSyncDeviceControl} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
             }
         }
 

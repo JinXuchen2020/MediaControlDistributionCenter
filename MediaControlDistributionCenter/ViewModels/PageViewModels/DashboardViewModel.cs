@@ -40,7 +40,7 @@ namespace MediaControlDistributionCenter.ViewModels
             switch (CurrentUser.Role)
             {
                 case "admin":
-                    var deviceResponse = monitorService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c=>c.Id).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
@@ -59,7 +59,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     Medias = new ObservableCollection<ProgramViewModel>();
                     break;
                 case "agent":
-                    deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
@@ -78,7 +78,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     Medias = new ObservableCollection<ProgramViewModel>();
                     break;
                 case "user":
-                    deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                    deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(6).Select(c =>
                     {
                         var viewModel = new DeviceViewModel();

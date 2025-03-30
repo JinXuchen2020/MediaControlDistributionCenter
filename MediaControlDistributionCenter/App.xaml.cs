@@ -102,7 +102,7 @@ namespace MediaControlDistributionCenter
         private void HandleException(Exception ex)
         {
              string message = $"An error occured: {ex.Message}";
-             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+             //MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
              Log.Error(message);
         }
 

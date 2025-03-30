@@ -216,13 +216,14 @@ namespace MediaControlDistributionCenter.ViewModels
                                 var config = fileService.ReadFileContent<MediaConfig>(Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
                                 if (config != null)
                                 {
-                                    config.Name = viewModel.Name;
+                                    config.Program = viewModel.ToModel();
                                     config.Pages.ForEach(page => page.Components.ForEach(c =>
                                     {
                                         switch (c.Type)
                                         {
                                             case Models.MediaType.Image:
                                             case Models.MediaType.Video:
+                                            case MediaType.Word:
                                                 c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
                                                 break;
                                             default:

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         [Required(ErrorMessage = "请填写节目名称!")]
+        [CustomValidation(typeof(ProgramViewModel), nameof(ValidateAccount))]
         private string name;
 
         [ObservableProperty]
@@ -125,6 +127,22 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
+        }
+
+        public static ValidationResult ValidateAccount(string name, ValidationContext context)
+        {
+            ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
+            var userService = GetService<IProgramService>();
+            var response = userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
+
+            if (isValid)
+            {
+                return ValidationResult.Success;
+            }
+
+            var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
+            return new(erroMessage);
         }
     }
 }

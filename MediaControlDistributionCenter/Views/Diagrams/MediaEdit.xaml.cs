@@ -209,7 +209,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             string fileName = System.IO.Path.GetFileName(filePath);
-            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.MediaConfig.Name, pageViewModel.Name, currentComponent.Name);
+            string localFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, pageViewModel.Name, currentComponent.Name);
 
             if (IsImageFile(filePath))
             {
@@ -312,7 +312,7 @@ namespace MediaControlDistributionCenter.Views
 
             var configContent = JsonConvert.SerializeObject(configModel);
 
-            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, configModel.Name);
+            var mediaResourcePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, configModel.Program.Name);
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
@@ -783,6 +783,26 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SelectedType = tag;
             manageViewModel.SearchString = null;
             manageViewModel.RefreshMedias();
+        }
+
+        private void SelectDevicesAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var mediaDevicesViewModel = checkbox.DataContext as MediaDevicesViewModel;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in mediaDevicesViewModel.Devices)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in mediaDevicesViewModel.Devices)
+                {
+                    item.IsSelected = false;
+                }
+            }
         }
     }
 

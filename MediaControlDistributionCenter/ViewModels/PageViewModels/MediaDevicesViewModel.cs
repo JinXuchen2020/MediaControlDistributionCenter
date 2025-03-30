@@ -22,6 +22,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private ProgramViewModel currentMedia;
 
         [ObservableProperty]
+        private bool isCover;
+
+        [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
@@ -38,11 +41,13 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override void LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var playbackRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var publishedSNCode = playbackRecords.Select(c=>c.MonitorSnCode).ToList();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var result = new DeviceViewModel();
-                result.Binding(c);
+                result.Binding(c, publishedSNCode.Contains(c.SnCode));
                 return result;
             }));
         }
@@ -56,9 +61,15 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (item.IsSelected)
                 {
                     var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
-                    if (existRecord == null) 
+                    if (existRecord == null || IsCover) 
                     {
                         item.ConnectCommand.Execute(communication);
+                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        {
+                            ErrorMessage = item.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            continue;
+                        }
                         string filePath = $"{CurrentMedia.Name}.zip";
                         item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                         if (!string.IsNullOrEmpty(item.ErrorMessage))
@@ -99,7 +110,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         await playbackRecordService.DeleteById(existRecord.Id);
                     }
-                }                
+                }
             }
         }
     }

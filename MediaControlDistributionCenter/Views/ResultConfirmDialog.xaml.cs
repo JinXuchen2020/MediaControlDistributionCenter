@@ -84,7 +84,7 @@ namespace MediaControlDistributionCenter.Views
             var userAccount = ((sender as TextBlock).DataContext as string)!;
             var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
             loginViewModel.InputAccount = userAccount;
-            MaterialDesignThemes.Wpf.DialogHost.Close(null);
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.LoginDialogHostId);
 
         }
     }

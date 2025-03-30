@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels"
+             xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -709,6 +710,9 @@
                                             Background="Transparent" 
                                             ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
                                         >
+                                            <DataGrid.Resources>
+                                                <CustomControls:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                            </DataGrid.Resources>
                                             <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Width="60"
                                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
@@ -716,7 +720,7 @@
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
                                                     <DataGridCheckBoxColumn.Header>
-                                                        <CheckBox />
+                                                        <CheckBox DataContext="{Binding Data, Source={StaticResource proxy}}" Unchecked="SelectDevicesAll_Click" Checked="SelectDevicesAll_Click" />
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
                                                 <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
@@ -759,6 +763,7 @@
                                     <StackPanel VerticalAlignment="Center" Margin="20,12,0,12" Orientation="Horizontal" HorizontalAlignment="Left">
                                         <TextBlock  FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
                                         <TextBlock  FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
+                                        <CheckBox Margin="30,0,0,0" FontSize="14" VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_114}" IsChecked="{Binding IsCover, Converter={StaticResource IsEditingValueConverter}}" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />

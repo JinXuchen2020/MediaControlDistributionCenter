@@ -24,18 +24,6 @@ namespace MediaControlDistributionCenter.ViewModels
     public partial class MediaConfigViewModel : ObservableObject
     {
         [ObservableProperty]
-        private long id;
-
-        [ObservableProperty]
-        private string name;
-
-        [ObservableProperty]
-        private double width;
-
-        [ObservableProperty]
-        private double height;
-
-        [ObservableProperty]
         private double left;
 
         [ObservableProperty]
@@ -45,37 +33,28 @@ namespace MediaControlDistributionCenter.ViewModels
         private double ratio;
 
         [ObservableProperty]
-        private string userAccount;
+        private ProgramViewModel program;
 
         [ObservableProperty]
         private ObservableCollection<MediaPageViewModel> pages;
 
         public MediaConfigViewModel(MediaConfig config)
-        {
-            id = config.Id;
-            name = config.Name;
-            width = config.Width;
-            height = config.Height;
+        {            
             left = config.Left;
             top = config.Top;
             ratio = config.Ratio;
-            userAccount = config.UserAccount;
-            pages = new ObservableCollection<MediaPageViewModel>(config.Pages.OrderBy(c => c.Order).Select(c => new MediaPageViewModel(c, config.UserAccount, config.Ratio)));
+            pages = new ObservableCollection<MediaPageViewModel>(config.Pages.OrderBy(c => c.Order).Select(c => new MediaPageViewModel(c, config.Program.UserAccount, config.Ratio)));
         }
 
         public MediaConfig ToModel()
         {
             return new MediaConfig
             {
-                Id = Id,
-                Name = Name,
-                Width = Width,
-                Height = Height,
                 Left = Left,
                 Top = Top,
                 Ratio = Ratio,
-                UserAccount = UserAccount,
-                Pages = Pages.Where(c => !c.IsDeleted).Select(c => c.ToModel(UserAccount, Ratio)).ToList()
+                Program = Program.ToModel(),
+                Pages = Pages.Where(c => !c.IsDeleted).Select(c => c.ToModel(Program.UserId, Ratio)).ToList()
             };
         }
 

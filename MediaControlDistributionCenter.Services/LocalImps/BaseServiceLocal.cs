@@ -81,7 +81,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
         public virtual async Task<ResultResponse<bool>> Save(DTO data)
         {
             var modelData = data.ToModel();
-            if (modelData.Id != 0 && SQLite.QueryTable<Model>().First(c=>c.Id == modelData.Id) != null)
+            if (modelData.Id != 0 && SQLite.QueryTable<Model>().First(c => c.Id == modelData.Id) != null)
             {
                 var result = SQLite.UpdateTable(modelData);
                 return await Task.FromResult(new ResultResponse<bool>
