@@ -146,11 +146,13 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect()
         {
+            //await ConnectTest();
             if (IsSyncing)
             {
                 return;
             }
-
+            SyncUsers = new ObservableCollection<string>();
+            IsSyncing = true;
             communication.Connect(SelectedIpAddress, "5001");
             int count = 1;
             while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -164,7 +166,6 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             else
             {
-                IsSyncing = true;
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
@@ -188,7 +189,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                         {
                                             respone = await programService.Save(program);
                                             if (respone.Code == 200)
-                                            { 
+                                            {
                                             }
                                         }
                                     }
@@ -211,6 +212,87 @@ namespace MediaControlDistributionCenter.ViewModels
                     ErrorMessage = $"{CommunicationCmd.CmdSyncUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 }
             }
+
+            var dialog = new ResultConfirmDialog(this);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+            IsSyncing = false;
+        }
+
+        private async Task ConnectTest()
+        {
+            if (IsSyncing)
+            {
+                return;
+            }
+
+            //communication.Connect(SelectedIpAddress, "5001");
+            //int count = 1;
+            //while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+            //{
+            //    Thread.Sleep(500);
+            //    count--;
+            //}
+            //if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            //{
+            //    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
+            //}
+            //else
+            //{
+                IsSyncing = true;
+            SyncUsers = new ObservableCollection<string>();
+            int count = 3;
+            while (true && count > 0 )
+            {
+                Thread.Sleep(500);
+                count--;
+            }
+            //string path = CommunicationCmd.CmdSyncUser + "Login";
+            //bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            //if (result)
+            //{
+            string syncUserResult = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "数据.txt"));
+                    var syncUsers = JsonConvert.DeserializeObject<UsersSync>(syncUserResult);
+                    if (syncUsers != null)
+                    {
+                        foreach (var item in syncUsers.Users)
+                        {
+                            var respone = await userService.Save(item.User);
+                            if (respone.Code == 200)
+                            {
+                                if (item.Monitor != null)
+                                {
+                                    respone = await monitorService.Save(item.Monitor.Monitor);
+                                    if (respone.Code == 200)
+                                    {
+                                        ConnectedDevice = new DeviceViewModel();
+                                        ConnectedDevice.Binding(item.Monitor.Monitor);
+                                        foreach (var program in item.Monitor.Programs)
+                                        {
+                                            respone = await programService.Save(program);
+                                            if (respone.Code == 200)
+                                            {
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (item.User.Role != RoleType.Admin.ToString().ToLower())
+                                {
+                                    this.SyncUsers.Add(item.User.Account);
+                                }
+                            }
+                        }
+                    }
+
+                    this.IsSync = true;
+                    RefreshLogo();
+                    IsSyncing = false;
+                //}
+                //else
+                //{
+                //    ErrorMessage = $"{CommunicationCmd.CmdSyncUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                //}
+            //}
 
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);

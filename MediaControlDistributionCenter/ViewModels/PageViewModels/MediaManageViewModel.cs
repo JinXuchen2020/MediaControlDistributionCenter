@@ -159,7 +159,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     if (ConnectionMode.Mode == "Local")
                     {
                         var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                        loginViewModel.ConnectedDevice?.DeleteProgramCommand.Execute(viewModel);
+                        loginViewModel.ConnectedDevice!.DeleteProgramCommand.Execute(viewModel);
                     }
                     else
                     {

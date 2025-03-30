@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -81,10 +82,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void loginUser_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.LoginDialogHostId);
             var userAccount = ((sender as TextBlock).DataContext as string)!;
             var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
             loginViewModel.InputAccount = userAccount;
-            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.LoginDialogHostId);
 
         }
     }

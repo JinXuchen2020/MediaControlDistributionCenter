@@ -81,9 +81,10 @@ namespace MediaControlDistributionCenter.Services.LocalImps
         public virtual async Task<ResultResponse<bool>> Save(DTO data)
         {
             var modelData = data.ToModel();
+            bool result = false;
             if (modelData.Id != 0 && SQLite.QueryTable<Model>().First(c => c.Id == modelData.Id) != null)
             {
-                var result = SQLite.UpdateTable(modelData);
+                result = SQLite.UpdateTable(modelData);
                 return await Task.FromResult(new ResultResponse<bool>
                 {
                     Code = 200,
@@ -93,12 +94,20 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             }
             else
             {
-                var result = SQLite.InserTable(modelData);
+                if (modelData.Id != 0)
+                {
+                    result = SQLite.DbClient.Insertable(modelData).OffIdentity().ExecuteCommand() > 0;
+                }
+                else
+                {
+                    var returnId = SQLite.InserTable(modelData);
+                    result = returnId != -1;
+                }
                 return await Task.FromResult(new ResultResponse<bool>
                 {
                     Code = 200,
                     Message = "Ok",
-                    Data = result != -1
+                    Data = result
                 });
             }
         }

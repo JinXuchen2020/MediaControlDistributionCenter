@@ -184,17 +184,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Connect(Communication client)
         {
-            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            if (connectionMode.Mode == "Local")
+            if (ConnectionMode.Mode == "Local" && IsConnected())
             {
                 this.client = client;
                 StatusText = GetStatus();
                 return;
-            }
-
-            if (connectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-            {
-               client.Disconnect();
             }
 
             var ipAddress = NetworkTool.GetGatewayIp();
@@ -204,15 +198,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (ConnectionMode.Mode == "Remote" && IsConnected() && ipAddress != client.IpAddr)
+            {
+               client.Disconnect();
+            }
+
             client.Connect(ipAddress, "5001");
             int count = 1;
-            while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+            while (!IsConnected() && count > 0)
             {
                 Thread.Sleep(500);
                 count--;
             }
 
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (!IsConnected())
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
                 return;
@@ -237,10 +236,15 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SendUser(UsersSync users)
         {
-            if (client == null || client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            if (client == null)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
+            }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
             }
 
             var userInfo = users;
@@ -263,6 +267,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             var userInfo = new { user.Account, user.Password, user.Role };
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
@@ -282,6 +291,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -299,6 +314,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -316,6 +337,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -333,6 +360,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdTime + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -350,6 +383,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdTimeGPS + value.ToString();
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -383,6 +422,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             var model = program.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
@@ -402,6 +447,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             var model = program.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdDeleteProgram + syncString;
@@ -421,6 +472,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
+
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
             var syncObj = new FileSync
             {
@@ -453,17 +510,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (!IsConnected())
+            {
+                await Connect(client);
+            }
+
             string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
             {
                 var syncResult = JsonConvert.DeserializeObject<IList<DeviceControlDto>>(client.SyncDeviceControlResult);
-                if (syncResult != null)
+                if (syncResult == null)
                 {
-                    foreach (var item in syncResult)
-                    {
-                        await deviceControlService.Save(item);
-                    }
+                    ErrorMessage = $"{CommunicationCmd.CmdSyncDeviceControl} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                    return;
+                }
+
+                foreach (var item in syncResult)
+                {
+                    await deviceControlService.Save(item);
                 }
             }
             else

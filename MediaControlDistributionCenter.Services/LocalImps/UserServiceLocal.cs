@@ -144,32 +144,6 @@ namespace MediaControlDistributionCenter.Services.LocalImps
                     Data = result
                 });
             }
-        }
-
-        public override async Task<ResultResponse<bool>> Save(UserDto data)
-        {
-            var modelData = data.ToModel();
-            var existData = SQLite.QueryTable<User>().First(c => c.Account == modelData.Account);
-            if (existData != null && existData.Id != 0)
-            {
-                var result = SQLite.UpdateTable(modelData);
-                return await Task.FromResult(new ResultResponse<bool>
-                {
-                    Code = 200,
-                    Message = "Ok",
-                    Data = result
-                });
-            }
-            else
-            {
-                var result = SQLite.InserTable(modelData);
-                return await Task.FromResult(new ResultResponse<bool>
-                {
-                    Code = 200,
-                    Message = "Ok",
-                    Data = result != -1
-                });
-            }
-        }
+        }        
     }
 }

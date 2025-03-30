@@ -143,6 +143,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
                         {
                             SyncDeviceControlResult = data[2];
+                            Log.Information(SyncDeviceControlResult);
                         }
                     }
                     catch (Exception ex)

@@ -55,6 +55,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task Publish()
         {
+            this.PublishDevices.Clear();
             foreach (var item in Devices)
             {
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };

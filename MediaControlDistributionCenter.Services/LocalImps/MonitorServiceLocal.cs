@@ -14,7 +14,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             Expression result = MakeExpression(request);
             var finalExp = Expression.Lambda<Func<Monitor, bool>>(result, p);
             var results = SQLite.QueryTable<Monitor>()
-                    .InnerJoin<User>((c, u) => c.UserAccount == u.Account)
+                    .LeftJoin<User>((c, u) => c.UserAccount == u.Account)
                     .LeftJoin<MonitorGroup>((c, u, dg) => c.GroupId == dg.Id && c.UserAccount == dg.UserAccount)
                     .Where(finalExp)
                     .Select<MonitorDto>()

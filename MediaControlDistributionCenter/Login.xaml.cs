@@ -158,7 +158,13 @@ namespace MediaControlDistributionCenter
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.ConnectCommand.Execute(null);
+            this.Dispatcher.Invoke(async () =>
+            {
+                if (!viewModel.IsSyncing)
+                {
+                    await viewModel.ConnectCommand.ExecuteAsync(null);
+                }
+            });
         }
     }
 }

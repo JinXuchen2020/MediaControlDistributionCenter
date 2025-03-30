@@ -34,6 +34,12 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel = deviceControlViewModel;
             manageViewModel.LoadData();
             DataContext = manageViewModel;
+
+            this.Loaded += DeviceControlContent_Loaded;
+        }
+
+        private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
+        {
             InitPage("Brightness");
         }
 

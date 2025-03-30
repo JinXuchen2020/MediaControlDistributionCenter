@@ -15,6 +15,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? errorMessage;
 
+        [ObservableProperty]
+        private ConnectionMode connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+
         protected static T GetService<T>() where T : class
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
