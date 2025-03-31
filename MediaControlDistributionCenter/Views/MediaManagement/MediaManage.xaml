@@ -395,11 +395,11 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <!--<Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" MouseDown="btnDeleteAll_MouseDown" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>
-                            </Border>
+                            </Border>-->
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
@@ -506,9 +506,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <Button Content="{Binding RackingBtnContent}" Foreground="White" Name="btnRacking" Click="btnRacking_Click" Margin="3" Height="28" />
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Background="{Binding Status, Converter={StaticResource SelectedValueConverter}, ConverterParameter=2}" IsEnabled="{Binding Status, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=1;2}" Content="{Binding RackingBtnContent}" Foreground="White" Name="btnRacking" Click="btnRacking_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Background="#30479C" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

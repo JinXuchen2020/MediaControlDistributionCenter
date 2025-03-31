@@ -462,6 +462,33 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task ChangeProgram(ProgramViewModel program)
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (!IsConnected())
+            {
+                Log.Debug($"Device:{Name} need to connected again!");
+                await Connect(client);
+            }
+
+            var model = program.ToModel();
+            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string path = CommunicationCmd.CmdChangeProgram + syncString;
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdChangeProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+        }
+
+        [RelayCommand]
         private async Task DeleteProgram(ProgramViewModel program)
         {
             if (client == null)

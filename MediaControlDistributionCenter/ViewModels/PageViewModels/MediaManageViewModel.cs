@@ -74,13 +74,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return result;
             }));
 
-            if (ConnectionMode.Mode == "Local" && !isSynced)
-            {
-                var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                loginViewModel.ConnectedDevice!.SyncProgramsCommand.Execute(null);
-                isSynced = true;
-            }
-
             var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
             this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
@@ -90,6 +83,16 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
         }
 
+        public async Task SyncPrograms()
+        {
+            if (ConnectionMode.Mode == "Local" && !isSynced)
+            {
+                var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+                await loginViewModel.ConnectedDevice!.SyncProgramsCommand.ExecuteAsync(null);
+                isSynced = true;
+            }
+        }
+
         public ProgramViewModel CreateProgram()
         {
             var resultModel = new ProgramDto
@@ -97,7 +100,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = $"{FindResource("LanguageKey_Code_Program_Tooltip_100")}{DateTime.Now.ToString("yyyyMMddhhmmss")}",
                 MediaType = "PROGRAM",
                 UserAccount = CurrentUser.Account,
-                Status = 1,
+                Status = 0,
+                Size = 0,
                 Resolution = "256*192",                
             };
 
@@ -159,75 +163,68 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ChangeMediaStatus(ProgramViewModel viewModel)
         {
-            if (viewModel.Status < 2)
+            if (viewModel.Status == 1)
             {
-                if (viewModel.Status != 0)
-                {
-                    viewModel.Status = 0;
-                }
-                else
-                {
-                    viewModel.Status = 1;
-                }
+                viewModel.Status = 2;
             }
             else
             {
-                if (viewModel.Status == 2)
+                viewModel.Status = 1;
+            }
+
+            var playbackRecordService = GetService<IPlaybackRecordService>();
+            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var deviceService = GetService<IMonitorService>();
+            foreach (var playbackRecord in playRecords)
+            {
+                if (ConnectionMode.Mode == "Local")
                 {
-                    viewModel.Status = 3;
+                    var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
+                    if (playbackRecord.MonitorSnCode == loginViewModel.ConnectedDevice!.SNumber)
+                    {
+                        await loginViewModel.ConnectedDevice!.ChangeProgramCommand.ExecuteAsync(viewModel);
+                        if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice!.ErrorMessage))
+                        {
+                            ErrorMessage = loginViewModel.ConnectedDevice!.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
+                        }
+                        break;
+                    }
                 }
                 else
                 {
-                    viewModel.Status = 2;
+                    var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                    if (device != null)
+                    {
+                        var deviceViewModel = new DeviceViewModel();
+                        deviceViewModel.Binding(device);
+                        var client = App.ServicesProvider.GetRequiredService<Communication>();
+                        await deviceViewModel.ConnectCommand.ExecuteAsync(client);
+                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
+                        {
+                            ErrorMessage = deviceViewModel.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
+                        }
+                        await deviceViewModel.ChangeProgramCommand.ExecuteAsync(viewModel);
+                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
+                        {
+                            ErrorMessage = deviceViewModel.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            return;
+                        }
+                    }
                 }
             }
 
-            if (viewModel.Status >= 2)
+            if (viewModel.Status == 1)
             {
-                var playbackRecordService = GetService<IPlaybackRecordService>();
-                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
-                var deviceService = GetService<IMonitorService>();
-                foreach (var playbackRecord in playRecords)
+                var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = viewModel.Type })).Data?.ToList() ?? new List<ProgramDto>();
+                foreach (var media in shelfMedias)
                 {
-                    if (ConnectionMode.Mode == "Local")
-                    {
-                        var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                        if (playbackRecord.MonitorSnCode == loginViewModel.ConnectedDevice!.SNumber)
-                        {
-                            await loginViewModel.ConnectedDevice!.SendProgramCommand.ExecuteAsync(viewModel.ToModel());
-                            if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice!.ErrorMessage))
-                            {
-                                ErrorMessage = loginViewModel.ConnectedDevice!.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                return;
-                            }
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                        if (device != null)
-                        {
-                            var deviceViewModel = new DeviceViewModel();
-                            deviceViewModel.Binding(device);
-                            var client = App.ServicesProvider.GetRequiredService<Communication>();
-                            await deviceViewModel.ConnectCommand.ExecuteAsync(client);
-                            if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                            {
-                                ErrorMessage = deviceViewModel.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                return;
-                            }
-                            await deviceViewModel.SendProgramCommand.ExecuteAsync(viewModel);
-                            if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                            {
-                                ErrorMessage = deviceViewModel.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                return;
-                            }
-                        }
-                    }
+                    media.Status = 2;
+                    await programService.Save(media);
                 }
             }
 
@@ -251,7 +248,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
                     if (playbackRecord.MonitorSnCode == loginViewModel.ConnectedDevice!.SNumber)
                     {
-                        await loginViewModel.ConnectedDevice!.DeleteProgramCommand.ExecuteAsync(viewModel.ToModel());
+                        await loginViewModel.ConnectedDevice!.DeleteProgramCommand.ExecuteAsync(viewModel);
                         if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice!.ErrorMessage))
                         {
                             ErrorMessage = loginViewModel.ConnectedDevice!.ErrorMessage;

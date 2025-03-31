@@ -52,8 +52,9 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             Image result = new()
             {
                 Source = GetBitmap(source),
-                Width = viewModel.Width,
-                Height = viewModel.Height,
+                Width = Math.Min(viewModel.Width, MainCanvas.Width),
+                Height = Math.Min(viewModel.Height, MainCanvas.Height),
+                Stretch = Stretch.Fill
             };
 
             result.Unloaded += (sender, e) =>
@@ -76,10 +77,11 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             MediaElement result = new()
             {
                 Source = new Uri(source),
-                Width = viewModel.Width,
-                Height = viewModel.Height,
+                Width = Math.Min(viewModel.Width, MainCanvas.Width),
+                Height = Math.Min(viewModel.Height, MainCanvas.Height),
                 LoadedBehavior = MediaState.Manual,
                 UnloadedBehavior = MediaState.Stop,
+                Stretch = Stretch.Fill
             };
 
             Canvas.SetLeft(result, 0);

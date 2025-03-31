@@ -437,7 +437,7 @@ namespace MediaControlDistributionCenter.Views
                 Id = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() + 1 : 1,
                 Order = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Order).Max() + 1 : 1,
                 PlayCount = 1,
-                Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() } },
+                Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
                 Components = new List<BaseComponent>()
             }, manageViewModel.CurrentUser.Account);
 

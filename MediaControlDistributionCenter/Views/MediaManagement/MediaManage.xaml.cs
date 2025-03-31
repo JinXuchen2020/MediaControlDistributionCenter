@@ -38,11 +38,20 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             }
 
             manageViewModel = mediaManageViewModel;
-
-            manageViewModel.LoadData();
             DataContext = manageViewModel;
 
+            this.Loaded += MediaManage_Loaded;
+
             InitializeComponent();
+        }
+
+        private void MediaManage_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.SyncPrograms();
+                manageViewModel.LoadData();
+            });
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)

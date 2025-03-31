@@ -95,7 +95,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
             }
-            else if (connectionMode.Mode == "Local" && !this.SyncUsers.Contains(request.Account))
+            else if (connectionMode.Mode == "Local" && (!this.SyncUsers.Contains(request.Account) || request.Account == "admin"))
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
             }
@@ -186,6 +186,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                     {
                                         ConnectedDevice = new DeviceViewModel();
                                         ConnectedDevice.Binding(item.Monitor.Monitor);
+                                        ConnectedDevice.ConnectCommand.Execute(communication);
                                         Log.Debug($"Current Connected Device is {ConnectedDevice.Name}");
                                         //foreach (var program in item.Monitor.Programs)
                                         //{

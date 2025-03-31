@@ -117,8 +117,9 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 IsRunningLoaded = true;
 
-                if (sender is MediaElement mediaElement && Timeline < TotalTimeline)
+                if (sender is MediaElement mediaElement && Timeline < mediaElement.NaturalDuration.TimeSpan.TotalSeconds)
                 {
+                    TotalTimeline = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                     InitializeTimer(mediaElement);
                 }
             };
@@ -144,7 +145,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 result.Stop();
                 result.Source = null;
-                if (Timeline < TotalTimeline)
+                if (sender is MediaElement mediaElement && Timeline < TotalTimeline)
                 {
                     _timer?.Stop();
                     _timer = null;

@@ -102,7 +102,13 @@ namespace MediaControlDistributionCenter.ViewModels
                             if (response.Code == 200)
                             {
                                 this.PublishDevices.Add(item);
-                                CurrentMedia.Status = 2;
+                                var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<ProgramDto>();
+                                foreach (var media in shelfMedias)
+                                {
+                                    media.Status = 2;
+                                    await programService.Save(media);
+                                }
+                                CurrentMedia.Status = 1;
                                 await programService.Save(CurrentMedia.ToModel());
                             }
                         }

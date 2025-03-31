@@ -110,6 +110,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdSendProgram = "CMD|SendProgram|";
 
         /// <summary>
+        /// 发送节目基础信息到机顶盒上
+        /// </summary>
+        public readonly static string CmdChangeProgram = "CMD|ChangeProgram|";
+
+        /// <summary>
         ///从机顶盒上删除节目基础信息
         /// </summary>
         public readonly static string CmdDeleteProgram = "CMD|DeleteProgram|";
