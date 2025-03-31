@@ -21,9 +21,9 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 {
     public class UserServiceLocal : BaseServiceLocal<User, UserDto>, IUserService
     {
-        public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request)
+        public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request, bool isSearch = false)
         {
-            Expression result = MakeExpression(request);
+            Expression result = MakeExpression(request, isSearch);
 
             Expression joinUserGroup = Expression.Constant(true);
             ParameterExpression g = Expression.Parameter(typeof(UserGroup), "g");

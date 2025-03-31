@@ -7,9 +7,9 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 {
     public class MediaServiceLocal : BaseServiceLocal<Media, MediaDto>, IMediaService
     {
-        public override async Task<ResultResponse<IEnumerable<MediaDto>>> GetAll(MediaDto? request)
+        public override async Task<ResultResponse<IEnumerable<MediaDto>>> GetAll(MediaDto? request, bool isSearch = false)
         {
-            Expression result = MakeExpression(request);
+            Expression result = MakeExpression(request, isSearch);
             var finalExp = Expression.Lambda<Func<Media, bool>>(result, p);
             var results = SQLite.QueryTable<Media>()
                     .LeftJoin<MediaGroup>((c, dg) => c.GroupId == dg.Id)

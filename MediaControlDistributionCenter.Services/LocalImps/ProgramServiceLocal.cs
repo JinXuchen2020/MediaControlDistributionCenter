@@ -7,9 +7,9 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 {
     public class ProgramServiceLocal : BaseServiceLocal<Program, ProgramDto>, IProgramService
     {
-        public override async Task<ResultResponse<IEnumerable<ProgramDto>>> GetAll(ProgramDto? request)
+        public override async Task<ResultResponse<IEnumerable<ProgramDto>>> GetAll(ProgramDto? request, bool isSearch = false)
         {
-            Expression result = MakeExpression(request);
+            Expression result = MakeExpression(request, isSearch);
 
             var finalExp = Expression.Lambda<Func<Program, bool>>(result, p);
             var results = await SQLite.QueryTable<Program>()

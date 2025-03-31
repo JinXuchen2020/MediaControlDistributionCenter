@@ -18,7 +18,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
         }
 
-        public async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request)
+        public async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
         {
             var parameters = GetQueryByInput(request);
             var queryString = await GetQueryString(parameters);

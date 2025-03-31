@@ -294,7 +294,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 query.AdminUserGroupId = groupId;
             }
-            var results = userService.GetAll(query).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var results = userService.GetAll(query, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
             this.Users = new ObservableCollection<UserViewModel>(results.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new UserViewModel();

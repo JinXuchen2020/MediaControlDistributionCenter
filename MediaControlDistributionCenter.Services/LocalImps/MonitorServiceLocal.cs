@@ -9,9 +9,9 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 {
     public class MonitorServiceLocal : BaseServiceLocal<Monitor, MonitorDto>, IMonitorService
     {
-        public override async Task<ResultResponse<IEnumerable<MonitorDto>>> GetAll(MonitorDto? request)
+        public override async Task<ResultResponse<IEnumerable<MonitorDto>>> GetAll(MonitorDto? request, bool isSearch = false)
         {
-            Expression result = MakeExpression(request);
+            Expression result = MakeExpression(request, isSearch);
             var finalExp = Expression.Lambda<Func<Monitor, bool>>(result, p);
             var results = SQLite.QueryTable<Monitor>()
                     .LeftJoin<User>((c, u) => c.UserAccount == u.Account)

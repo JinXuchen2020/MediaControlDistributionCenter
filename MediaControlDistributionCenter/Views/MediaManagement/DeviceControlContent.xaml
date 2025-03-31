@@ -360,7 +360,6 @@
                                     <Grid Margin="19,0">
                                         <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                                         <DataGrid
-                                            x:Name="dgTimeControls"
                                             AutoGenerateColumns="false" 
                                             CanUserAddRows="False"  
                                             FontSize="14" 

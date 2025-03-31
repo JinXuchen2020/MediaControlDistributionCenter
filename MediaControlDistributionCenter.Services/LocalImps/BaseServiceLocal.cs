@@ -12,7 +12,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
     {
         protected ParameterExpression p = Expression.Parameter(typeof(Model), "c");
 
-        public virtual async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request)
+        public virtual async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
         {
             var expression = MakeExpression(request);
             var results = await SQLite.QueryTable<Model>()
@@ -134,7 +134,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             });
         }
 
-        protected virtual Expression MakeExpression(DTO? request)
+        protected virtual Expression MakeExpression(DTO? request, bool isSearch = false)
         {
             Expression result = Expression.Constant(true);
             if (request != null)
@@ -149,10 +149,21 @@ namespace MediaControlDistributionCenter.Services.LocalImps
                         var memberInfo = typeof(Model).GetMember(property.Name).FirstOrDefault() as PropertyInfo;
                         if (memberInfo != null)
                         {
-                            var leftExpression = Expression.MakeMemberAccess(p, memberInfo);
-                            var rightExpression = Expression.Convert(Expression.Constant(value), memberInfo.PropertyType);
-                            var binaryExp = Expression.Equal(leftExpression, rightExpression);
-                            result = Expression.AndAlso(result, binaryExp);
+                            if ((memberInfo.Name == "Name" || memberInfo.Name == "Account") && isSearch)
+                            {
+                                var leftExpression = Expression.MakeMemberAccess(p, memberInfo);
+                                var searchExpression = Expression.Constant(value, typeof(string));
+                                var containsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)]);
+                                var callExpression = Expression.Call(leftExpression, containsMethod!, searchExpression);
+                                result = Expression.AndAlso(result, callExpression);
+                            }
+                            else
+                            {
+                                var leftExpression = Expression.MakeMemberAccess(p, memberInfo);
+                                var rightExpression = Expression.Convert(Expression.Constant(value), memberInfo.PropertyType);
+                                var binaryExp = Expression.Equal(leftExpression, rightExpression);
+                                result = Expression.AndAlso(result, binaryExp);
+                            }
                         }
                     }
                 }

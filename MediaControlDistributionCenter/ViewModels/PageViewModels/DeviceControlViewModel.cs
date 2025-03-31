@@ -80,6 +80,23 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
         }
 
+        public void GetDeviceTimeControls()
+        {
+            if (CurrentDevice == null)
+            {
+                return;
+            }
+
+            var results = deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" }).GetAwaiter().GetResult().Data?.ToList() ?? new List<DeviceControlDto>();
+            DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c =>
+            {
+                var viewModel = new DeviceTimeControlViewModel();
+                viewModel.Binding(c);
+                viewModel.SetGridColumnName();
+                return viewModel;
+            }));
+        }
+
         [RelayCommand]
         private async Task ShowDialog(ObservableObject content)
         {
@@ -124,6 +141,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                 await ShowConfirmDialogCommand.ExecuteAsync(null);
                                 return;
                             }
+
+                            GetDeviceTimeControls();
                         }
                     }
                 }
@@ -197,7 +216,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var response = await deviceControlService.Save(viewModel.ToModel());
                 if (response.Code == 200)
                 {
-                    await GetDeviceTimeControls();
+                    GetDeviceTimeControls();
                 }
             }
         }
@@ -294,31 +313,13 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task GetDeviceTimeControls()
-        {
-            if (CurrentDevice == null)
-            {
-                return;
-            }
-
-            var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
-            DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c=>
-            {
-                var viewModel = new DeviceTimeControlViewModel();
-                viewModel.Binding(c);
-                viewModel.SetGridColumnName();
-                return viewModel;
-            }));
-        }
-
-        [RelayCommand]
         private async Task DeleteBatch()
         {
             var selectedIds = DeviceTimeControls.Where(c => c.IsSelected).Select(c => c.Id).ToList();
             var response = await deviceControlService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
-                await GetDeviceTimeControls();
+                GetDeviceTimeControls();
             }
         }
 
@@ -354,7 +355,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                await GetDeviceTimeControls();
+                GetDeviceTimeControls();
                 CloseDialog();
             }
         }
@@ -362,7 +363,7 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var viewModel = new DeviceViewModel();

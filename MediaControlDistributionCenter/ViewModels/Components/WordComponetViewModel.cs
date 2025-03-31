@@ -240,7 +240,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             docImage.StreamSource = stream;
                             docImage.CacheOption = BitmapCacheOption.OnLoad;
                             docImage.EndInit();
-                            result = new Image { Source = docImage, Stretch = Stretch.Fill };
+                            result = new Image { Source = docImage, Width = Width, Height = Height, Stretch = Stretch.Fill };
                             pptDocument.Dispose();
                             stream.Dispose();
                         }

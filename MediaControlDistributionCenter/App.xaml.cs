@@ -33,6 +33,8 @@ namespace MediaControlDistributionCenter
 
             var services = new ServiceCollection();
 
+            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXxdcXRRRGBYVUR2XkRWYUA=");
+
             var connectionMode = new ConnectionMode();
             configuration.Bind("ConnectionMode", connectionMode);
             connectionMode.Mode = "Remote";

@@ -303,7 +303,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             var snDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
 
             nameDevices.AddRange(snDevices);

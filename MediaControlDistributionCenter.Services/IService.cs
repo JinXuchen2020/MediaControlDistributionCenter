@@ -9,7 +9,7 @@ namespace MediaControlDistributionCenter.Services
 {
     public interface IService<Model, DTO>
     {
-        public Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request);
+        public Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false);
 
         public Task<ResultResponse<IEnumerable<DTO>>> GetPageAll(int pageSize, int page, DTO? request);
 

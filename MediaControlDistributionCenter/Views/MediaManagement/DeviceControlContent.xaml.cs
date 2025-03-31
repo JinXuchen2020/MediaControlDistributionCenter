@@ -3,6 +3,7 @@ using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -47,6 +48,7 @@ namespace MediaControlDistributionCenter.Views
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
         {
             InitPage("Brightness");
+            manageViewModel.GetDeviceTimeControls();
         }
 
         public void InitPage(string fun)
@@ -106,13 +108,14 @@ namespace MediaControlDistributionCenter.Views
                     this.Dispatcher.Invoke(async () => 
                     {
                         await manageViewModel.ConnectDeviceCommand.ExecuteAsync(null);
-                        RefreshData();
+                        manageViewModel.GetDeviceTimeControls();
                     });
                 }
             }
             else
             {
                 manageViewModel.CurrentDevice = null;
+                manageViewModel.DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>();
             }
         }
 
@@ -150,7 +153,6 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
             manageViewModel.SaveTimeControlCommand.Execute(viewModel);
-            dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
         }
 
         private void btnDeleteTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -166,7 +168,6 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.BeginInvoke(async () => 
             {
                 await manageViewModel.DeleteBatchCommand.ExecuteAsync(null);
-                dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
             });
         }
 
@@ -181,18 +182,6 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel.ExecuteScheduleControlCommand.Execute(null);
-        }
-
-        private void RefreshData()
-        {
-            if (manageViewModel.CurrentDevice != null)
-            {
-                this.Dispatcher.Invoke(async () =>
-                {
-                    await manageViewModel.GetDeviceTimeControlsCommand.ExecuteAsync(null);
-                    dgTimeControls.ItemsSource = manageViewModel.DeviceTimeControls;
-                });
-            }
         }
 
         private void UpdatePageContent(string commandType)
@@ -241,7 +230,7 @@ namespace MediaControlDistributionCenter.Views
             }
 
             dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
-            RefreshData();
+            manageViewModel.GetDeviceTimeControls();
         }
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)

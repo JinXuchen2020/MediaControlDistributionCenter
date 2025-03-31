@@ -189,7 +189,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new MediaViewModel();
