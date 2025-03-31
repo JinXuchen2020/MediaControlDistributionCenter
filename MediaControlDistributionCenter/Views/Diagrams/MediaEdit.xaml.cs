@@ -540,6 +540,46 @@ namespace MediaControlDistributionCenter.Views
             }
         }
 
+        private void btnMediaUpOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            var currentMedia = manageViewModel.SelectedPage.Components.First(c => c.IsSelected);
+            if (manageViewModel.SelectedPage.Components.Count > 1)
+            {
+                var prePage = manageViewModel.SelectedPage.Components.OrderByDescending(c => c.ZIndex).FirstOrDefault(c => c.ZIndex < currentMedia.ZIndex);
+                if (prePage != null)
+                {
+                    var currentOrder = currentMedia.ZIndex;
+                    currentMedia.ZIndex = prePage.ZIndex;
+                    prePage.ZIndex = currentOrder;
+                }
+
+                manageViewModel.SelectedPage.Components = new ObservableCollection<BaseComponentViewModel>(manageViewModel.SelectedPage.Components.OrderBy(c => c.ZIndex).ToList());
+                manageViewModel.DisposeCommand.Execute(null);
+                LoadCanvasComponents(manageViewModel);
+            }
+        }
+
+        private void btnMediaDownOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var manageViewModel = (DataContext as MediaEditViewModel)!;
+            var currentMedia = manageViewModel.SelectedPage.Components.First(c => c.IsSelected);
+            if (manageViewModel.SelectedPage.Components.Count > 1)
+            {
+                var nextPage = manageViewModel.SelectedPage.Components.FirstOrDefault(c => c.ZIndex > currentMedia.ZIndex);
+                if (nextPage != null)
+                {
+                    var currentOrder = currentMedia.ZIndex;
+                    currentMedia.ZIndex = nextPage.ZIndex;
+                    nextPage.ZIndex = currentOrder;
+                }
+
+                manageViewModel.SelectedPage.Components = new ObservableCollection<BaseComponentViewModel>(manageViewModel.SelectedPage.Components.OrderBy(c => c.ZIndex).ToList());
+                manageViewModel.DisposeCommand.Execute(null);
+                LoadCanvasComponents(manageViewModel);
+            }
+        }
+
         private void SwitchComponent(BaseComponentViewModel viewModel)
         {
             if(manageViewModel.SelectedComponent != null)

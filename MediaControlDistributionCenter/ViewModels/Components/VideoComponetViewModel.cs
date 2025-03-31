@@ -50,7 +50,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Id = id,
                 Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_103")}{id}",
-                ZIndex = 1,
+                ZIndex = id,
                 PlayMode = "fullscreen",
                 Type = MediaType.Video,
                 PlayCount = 1,

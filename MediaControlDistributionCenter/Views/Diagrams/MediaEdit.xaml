@@ -1022,10 +1022,10 @@
                                         <!--<Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="ContentSave" Foreground="LightGray"  Width="22" Height="22"/>
                                         </Button>-->
-                                        <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                        <Button Click="btnMediaUpOrder_Click" Width="22" Height="22" Margin="15,0,0,0" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="ArrowUp" Foreground="LightGray"  Width="22" Height="22"/>
                                         </Button>
-                                        <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                        <Button Click="btnMediaDownOrder_Click" Width="22" Height="22" Margin="15,0,0,0" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                             <materialDesign:PackIcon Kind="ArrowDown" Foreground="LightGray"  Width="22" Height="22"/>
                                         </Button>
                                         <Button Width="22" Height="22" Margin="15,0,0,0" Padding="0" Click="btnComponentDelete_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">

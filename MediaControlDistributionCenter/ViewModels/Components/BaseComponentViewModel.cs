@@ -388,6 +388,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (IsFile && !string.IsNullOrEmpty(Source) && FrameworkElement != null)
             {
                 DisposeContent();
+                FrameworkElement = null;
             }
         }
 

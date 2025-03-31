@@ -116,7 +116,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Id = id,
                 Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_105")}{id}",
-                ZIndex = 1,
+                ZIndex = id,
                 Type = MediaType.Text,
                 Source = $"{FindResource("LanguageKey_Code_HelloWorld")}",
                 PlayCount = 1,

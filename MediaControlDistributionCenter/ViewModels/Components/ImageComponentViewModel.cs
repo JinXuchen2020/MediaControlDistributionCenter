@@ -73,7 +73,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Id = id,
                 Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Tooltip_104")}{id}",
-                ZIndex = 1,
+                ZIndex = id,
                 Type = MediaType.Image,
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
