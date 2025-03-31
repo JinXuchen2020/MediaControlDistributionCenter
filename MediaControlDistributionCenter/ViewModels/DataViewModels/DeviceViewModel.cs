@@ -225,7 +225,6 @@ namespace MediaControlDistributionCenter.ViewModels
             StatusText = GetStatus();
             Log.Debug($"Device:{Name} connected success!");
             await Task.CompletedTask;
-
         }
 
         [RelayCommand]
@@ -563,6 +562,55 @@ namespace MediaControlDistributionCenter.ViewModels
             else
             {
                 ErrorMessage = $"{CommunicationCmd.CmdSyncDeviceControl} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncPrograms()
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (!IsConnected())
+            {
+                Log.Debug($"Device:{Name} need to connected again!");
+                await Connect(client);
+            }
+
+            string path = CommunicationCmd.CmdSyncProgram + "List";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (result)
+            {
+                var syncResult = JsonConvert.DeserializeObject<IList<ProgramDto>>(client.SyncProgramResult);
+                if (syncResult == null)
+                {
+                    ErrorMessage = $"{CommunicationCmd.CmdSyncProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                    return;
+                }
+
+                var programService = GetService<IProgramService>();
+                var playRecordService = GetService<IPlaybackRecordService>();
+                foreach (var item in syncResult)
+                {
+                    await programService.Save(item);
+                    var model = new PlaybackRecordDto { MediaName = item.Name, MediaType = item.MediaType, MonitorSnCode = SNumber };
+                    var existRecord = (await playRecordService.GetAll(model)).Data?.FirstOrDefault();
+                    if (existRecord == null)
+                    {
+                        var response = await playRecordService.Save(model);
+                        if (response.Code == 200)
+                        {
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
             }
         }
 

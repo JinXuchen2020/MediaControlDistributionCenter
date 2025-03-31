@@ -54,8 +54,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayMode = "fullscreen",
                 Type = MediaType.Video,
                 PlayCount = 1,
-                Timeline = 5,
-                PlayDuration = "00:00:05",
+                Timeline = 0,
+                PlayDuration = "00:00:00",
             }, userAccount);
         }
 
@@ -174,9 +174,11 @@ namespace MediaControlDistributionCenter.ViewModels
             if (FrameworkElement == null)
             {
                 var video = (sender as MediaElement)!;
-                if (video.NaturalDuration.HasTimeSpan)
+                if (Timeline == 0 && video.NaturalDuration.HasTimeSpan)
                 {
                     TotalTimeline = video.NaturalDuration.TimeSpan.TotalSeconds;
+                    Timeline = TotalTimeline;
+                    PlayDuration = TimeSpan.FromSeconds(Timeline).ToString();
                 }
 
                 video.Position = TimeSpan.FromSeconds(1);

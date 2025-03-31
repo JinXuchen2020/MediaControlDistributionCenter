@@ -40,7 +40,7 @@
                     <TextBlock Foreground="White" VerticalAlignment="Center" Margin="10,0,10,0" FontSize ="14" Text="{Binding CurrentMedia.Name}" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_ProgramEdit_PublishSuccess}" />
                 </StackPanel>
-                <Border Grid.Row="2" Margin="10" Width="500" BorderThickness="0" Background="#16171D">
+                <Border Grid.Row="2" Margin="10" Width="600" BorderThickness="0" Background="#16171D">
                     <Grid>
                         <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                         <DataGrid 

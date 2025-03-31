@@ -931,7 +931,7 @@
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_107}"/>
                         </StackPanel>
                     </Border>
-                    <Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
+                    <!--<Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Rss" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-rss.png" Width="30" Height="30"/>
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_108}"/>
@@ -948,7 +948,7 @@
                             <Image Source="/Assets/svg-colortext.png" Width="30" Height="30"/>
                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_110}"/>
                         </StackPanel>
-                    </Border>
+                    </Border>-->
                     <!--<Border Width="60" Height="60" CornerRadius="5" Background="Transparent">
                         <StackPanel VerticalAlignment="Center" Tag="Hdmi" Cursor="Hand" MouseDown="CreateComponent_MouseDown">
                             <Image Source="/Assets/svg-hdmi.png" Width="30" Height="30"/>

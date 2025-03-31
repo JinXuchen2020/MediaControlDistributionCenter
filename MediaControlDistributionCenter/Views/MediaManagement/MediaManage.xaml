@@ -437,7 +437,7 @@
                                     </Style>
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Width="60"
+                                    <DataGridCheckBoxColumn Width="50"
                                         Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
                                         ElementStyle="{StaticResource LeftAlignedCheckBoxStyle}"
                                         IsReadOnly="False"
@@ -459,6 +459,11 @@
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Group}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_101}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="1.5*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Resolution}">

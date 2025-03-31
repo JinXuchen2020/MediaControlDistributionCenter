@@ -113,19 +113,8 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var newMediaModel = new ProgramDto
-            {
-                Name =  $"{FindResource("LanguageKey_Code_Program_Tooltip_100")}{DateTime.Now.ToString("yyyyMMddhhmmss")}",
-                MediaType = "PROGRAM",
-                UserAccount = manageViewModel.CurrentUser.Account,
-                Status = 1,
-                Resolution = "256*192",
-                CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User"),
-            };
-
-            var newViewModel = new ProgramViewModel();
-            newViewModel.Binding(newMediaModel);
-
+            var newViewModel = manageViewModel.CreateProgram();
+            newViewModel.CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User");
             manageViewModel.ShowDialogCommand.Execute(newViewModel);
         }
 
@@ -218,6 +207,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 if (viewModel.PublishDevices.Count > 0)
                 {
                     manageViewModel.CloseDialogCommand.Execute(null);
+                    manageViewModel.LoadData();
                     viewModel.ShowConfirmDialogCommand.Execute(null);
                 }
             });

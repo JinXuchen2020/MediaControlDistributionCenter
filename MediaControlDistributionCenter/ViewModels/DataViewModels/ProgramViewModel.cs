@@ -50,6 +50,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private int status;
 
         [ObservableProperty]
+        private string statusText;
+
+        [ObservableProperty]
         private long? groupId;
 
         [ObservableProperty]
@@ -111,11 +114,12 @@ namespace MediaControlDistributionCenter.ViewModels
             LastUpdatedTime = model.LastUpdatedTime;
             CreatedSource = model.CreatedSource;
             Status = model.Status;
+            StatusText = GetStatus();
             GroupId = model.GroupId;
             UserId = model.UserAccount;
             IsSelected = isSelected;
             Group = model.ProgramGroupName ?? FindResource("LanguageKey_Code_NoGroup");
-            RackingBtnContent = model.Status == 1 ? FindResource("LanguageKey_Code_OffShelf") : FindResource("LanguageKey_Code_OnShelf");
+            RackingBtnContent = model.Status == 0 || model.Status == 3 ? FindResource("LanguageKey_Code_OnShelf") : FindResource("LanguageKey_Code_OffShelf");
             PlayCountPerHour = model.PlayCountPerHour;
             IsHasValidity = model.IsHasValidity;
             ValidStartDate = string.IsNullOrEmpty(model.ValidStartDate) ? null : DateTime.Parse(model.ValidStartDate);
@@ -144,6 +148,27 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
             return new(erroMessage);
+        }
+
+        public string GetStatus()
+        {
+            var result = string.Empty;
+            switch (Status)
+            {
+                case 0:
+                    result = FindResource("LanguageKey_Code_Program_Tooltip_115");
+                    break;
+                case 1:
+                    result = FindResource("LanguageKey_Code_Program_Tooltip_116");
+                    break;
+                case 2:
+                    result = FindResource("LanguageKey_Code_Program_Tooltip_117");
+                    break;
+                case 3:
+                    result = FindResource("LanguageKey_Code_Program_Tooltip_118");
+                    break;
+            }
+            return result;
         }
     }
 }

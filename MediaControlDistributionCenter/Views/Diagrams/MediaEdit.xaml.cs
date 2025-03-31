@@ -370,24 +370,13 @@ namespace MediaControlDistributionCenter.Views
 
                 var screenCount = viewModel.Devices.Select(c => c.IsSelected).Count();
                 manageViewModel.CurrentMedia.ScreensCount = screenCount;
-                manageViewModel.SaveCommand.Execute(null);
+                await manageViewModel.SaveCommand.ExecuteAsync(null);
 
                 if (viewModel.PublishDevices.Count > 0)
                 {
                     manageViewModel.CloseDialogCommand.Execute(null);
 
                     viewModel.ShowConfirmDialogCommand.Execute(null);
-
-                    //if (manageViewModel.ShowNavigation)
-                    //{
-                    //    var content = new MediaManage(manageViewModel.CurrentUser, true);
-                    //    (App.Current.MainWindow as MainWindow).GoCotent(content, 2);
-                    //}
-                    //else
-                    //{
-                    //    var userControllers = new UserControllers(manageViewModel.CurrentUser!);
-                    //    (App.Current.MainWindow as MainWindow).GoCotent(userControllers, 2);
-                    //}
                 }
             });
         }

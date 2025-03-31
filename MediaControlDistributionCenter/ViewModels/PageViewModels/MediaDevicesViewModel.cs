@@ -28,12 +28,14 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
+        private readonly IProgramService programService;
         private readonly IPlaybackRecordService playbackRecordService;
         private readonly Communication communication;
 
         public MediaDevicesViewModel(Communication communication) 
         {
             this.monitorService = GetService<IMonitorService>();
+            this.programService = GetService<IProgramService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
             this.communication = communication;
@@ -100,6 +102,8 @@ namespace MediaControlDistributionCenter.ViewModels
                             if (response.Code == 200)
                             {
                                 this.PublishDevices.Add(item);
+                                CurrentMedia.Status = 2;
+                                await programService.Save(CurrentMedia.ToModel());
                             }
                         }
                     }

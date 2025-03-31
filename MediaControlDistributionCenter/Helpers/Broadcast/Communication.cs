@@ -29,6 +29,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncDeviceControlResult { get; private set; }
 
+        public string SyncProgramResult { get; private set; }
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
@@ -144,6 +146,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         {
                             SyncDeviceControlResult = data[2];
                             Log.Information(SyncDeviceControlResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncProgram.Split("|")[1]))
+                        {
+                            SyncProgramResult = data[2];
+                            Log.Information(SyncProgramResult);
                         }
                     }
                     catch (Exception ex)

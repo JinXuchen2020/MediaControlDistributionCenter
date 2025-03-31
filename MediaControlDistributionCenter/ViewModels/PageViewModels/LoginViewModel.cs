@@ -187,13 +187,13 @@ namespace MediaControlDistributionCenter.ViewModels
                                         ConnectedDevice = new DeviceViewModel();
                                         ConnectedDevice.Binding(item.Monitor.Monitor);
                                         Log.Debug($"Current Connected Device is {ConnectedDevice.Name}");
-                                        foreach (var program in item.Monitor.Programs)
-                                        {
-                                            respone = await programService.Save(program);
-                                            if (respone.Code == 200)
-                                            {
-                                            }
-                                        }
+                                        //foreach (var program in item.Monitor.Programs)
+                                        //{
+                                        //    respone = await programService.Save(program);
+                                        //    if (respone.Code == 200)
+                                        //    {
+                                        //    }
+                                        //}
                                     }
                                 }
 
