@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace MediaControlDistributionCenter.Services.LocalImps
 {
-    public class BaseServiceLocal<Model, DTO> : IService<Model, DTO> where Model : BaseModel, new() where DTO : class, IMappingProfile<Model>
+    public class BaseServiceLocal<Model, DTO> : IService<Model, DTO> where Model : BaseModel, new() where DTO : BaseDto, IMappingProfile<Model>
     {
         protected ParameterExpression p = Expression.Parameter(typeof(Model), "c");
 
@@ -96,12 +96,13 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             {
                 if (modelData.Id != 0)
                 {
-                    result = SQLite.DbClient.Insertable(modelData).OffIdentity().ExecuteCommand() > 0;
+                    data.Id = SQLite.DbClient.Insertable(modelData).OffIdentity().ExecuteReturnIdentity();
+                    result = true;
                 }
                 else
                 {
-                    var returnId = SQLite.InserTable(modelData);
-                    result = returnId != -1;
+                    data.Id = SQLite.InserTable(modelData);
+                    result = true;
                 }
                 return await Task.FromResult(new ResultResponse<bool>
                 {

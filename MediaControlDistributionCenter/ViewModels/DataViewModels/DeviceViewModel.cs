@@ -211,6 +211,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
                 client.Disconnect();
+                Log.Debug($"Device with IP:{client.IpAddr} disconnected!");
             }
 
             IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
@@ -353,6 +354,31 @@ namespace MediaControlDistributionCenter.ViewModels
             if (!result)
             {
                 ErrorMessage = $"{CommunicationCmd.CmdVerifyUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+        }
+
+        [RelayCommand]
+        private async Task VerifySnCode()
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (!IsConnected())
+            {
+                Log.Debug($"Device:{Name} need to connected again!");
+                await Connect(client);
+            }
+
+            string path = CommunicationCmd.CmdVerifySnCode + SNumber;
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdVerifySnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
         }

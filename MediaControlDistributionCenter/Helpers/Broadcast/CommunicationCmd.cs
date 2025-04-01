@@ -90,6 +90,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdVerifyUser = "CMD|VerifyUser|";
 
         /// <summary>
+        /// 发送用户信息并验证，返回机顶盒上现有配置文件 
+        /// 参数：用户的账号与密码
+        /// </summary>
+        public readonly static string CmdVerifySnCode = "CMD|VerifySnCode|";
+
+        /// <summary>
         /// 返回机顶盒上现有用户信息        
         /// </summary>
         public readonly static string CmdSyncUser = "CMD|SyncUser|";

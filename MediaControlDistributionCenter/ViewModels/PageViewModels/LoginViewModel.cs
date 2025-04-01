@@ -49,7 +49,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<string> syncUsers;
 
         [ObservableProperty]
-        private string selectedIpAddress;
+        private string? selectedIpAddress;
 
         [ObservableProperty]
         private DeviceViewModel? connectedDevice;
@@ -77,7 +77,7 @@ namespace MediaControlDistributionCenter.ViewModels
             currentUser = new UserViewModel();
             this.connectionMode = connectionMode;
             this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
-            selectedIpAddress = ipAddresses.First();
+            selectedIpAddress = ipAddresses.FirstOrDefault();
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
             RefreshLogo();

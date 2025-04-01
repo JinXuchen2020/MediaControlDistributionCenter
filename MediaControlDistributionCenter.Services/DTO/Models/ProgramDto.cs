@@ -10,14 +10,8 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class ProgramDto : IMappingProfile<Program>
+    public class ProgramDto : BaseDto, IMappingProfile<Program>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
         /// <summary>
         /// 媒体名字
         /// </summary>

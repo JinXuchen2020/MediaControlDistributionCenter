@@ -5,14 +5,8 @@ using Monitor = MediaControlDistributionCenter.Data.Entity.Monitor;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class MonitorDto : IMappingProfile<Monitor>
+    public class MonitorDto : BaseDto, IMappingProfile<Monitor>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
         /// <summary>
         /// 显示器名称
         /// </summary>

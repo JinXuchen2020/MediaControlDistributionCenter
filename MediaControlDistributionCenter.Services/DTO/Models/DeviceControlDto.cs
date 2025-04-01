@@ -10,14 +10,8 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class DeviceControlDto : IMappingProfile<DeviceControl>
+    public class DeviceControlDto : BaseDto, IMappingProfile<DeviceControl>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
         /// <summary>
         /// 控制类型（BRIGHTNESS: 亮度, VOLUME: 音量, RESTART: 重启）
         /// </summary>

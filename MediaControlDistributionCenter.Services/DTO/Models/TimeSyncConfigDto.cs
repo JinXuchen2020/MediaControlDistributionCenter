@@ -9,14 +9,8 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class TimeSyncConfigDto : IMappingProfile<TimeSyncConfig>
+    public class TimeSyncConfigDto : BaseDto, IMappingProfile<TimeSyncConfig>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
         /// <summary>
         /// 设备id
         /// </summary>

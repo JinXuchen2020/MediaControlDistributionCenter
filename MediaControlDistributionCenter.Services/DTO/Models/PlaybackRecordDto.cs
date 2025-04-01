@@ -9,14 +9,8 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class PlaybackRecordDto : IMappingProfile<PlaybackRecord>
+    public class PlaybackRecordDto : BaseDto, IMappingProfile<PlaybackRecord>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
         /// <summary>
         /// 当前播放媒体名称
         /// </summary>

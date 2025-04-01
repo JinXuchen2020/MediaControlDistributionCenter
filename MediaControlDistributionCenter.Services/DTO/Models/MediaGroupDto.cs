@@ -9,11 +9,8 @@ using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class MediaGroupDto : IMappingProfile<MediaGroup>
+    public class MediaGroupDto : BaseDto, IMappingProfile<MediaGroup>
     {
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 

@@ -126,12 +126,23 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (CurrentDevice.IsConnected())
                     {
+                        await CurrentDevice.VerifySnCodeCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            CurrentDevice.DisconnectCommand.Execute(null);
+                            return;
+                        }
+
                         await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             CurrentDevice.ErrorMessage = null;
+                            CurrentDevice.DisconnectCommand.Execute(null);
                             return;
                         }
 
@@ -182,48 +193,47 @@ namespace MediaControlDistributionCenter.ViewModels
                     UserAccount = CurrentUser.Account,
                 };
 
-                modelList.Add(viewModel.ToModel());
-                var modelString = JsonConvert.SerializeObject(modelList);
-                switch (CommandType)
-                {
-                    case "Brightness":
-                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            return;
-                        }
-                        CurrentDevice.Brightness = viewModel.Value;
-                        break;
-                    case "Volume":
-                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            return;
-                        }
-                        CurrentDevice.Volume = viewModel.Value;
-                        break;
-                    case "Restart":
-                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            return;
-                        }
-                        break;
-                }
-
-                var response = await deviceControlService.Save(viewModel.ToModel());
+                var model = viewModel.ToModel();
+                var response = await deviceControlService.Save(model);
                 if (response.Code == 200)
                 {
-                    GetDeviceTimeControls();
+                    modelList.Add(model);
+                    var modelString = JsonConvert.SerializeObject(modelList);
+                    switch (CommandType)
+                    {
+                        case "Brightness":
+                            await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
+                                return;
+                            }
+                            CurrentDevice.Brightness = viewModel.Value;
+                            break;
+                        case "Volume":
+                            await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
+                                return;
+                            }
+                            CurrentDevice.Volume = viewModel.Value;
+                            break;
+                        case "Restart":
+                            await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
+                                return;
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -288,42 +298,45 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new TimeSyncConfigDto()
                 {
                     DeviceId = CurrentDevice.DeviceId,
-                    Timezone = timeZone.DisplayName,
+                    Timezone = timeZone.Id,
                     CurrentDate = timeZoneDateTime.ToString(),
                     SyncMode = CommandTypeColumnName,
                     UserAccount = CurrentUser.Account
                 };
-
+                
                 switch (CommandTypeColumnName)
                 {
                     case "manual":
-                        model.Timezone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue).DisplayName;
+                        model.Timezone = CommandRTValue;
                         model.CurrentDate = TimeZoneInfo.ConvertTime(timeZoneDateTime, TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue)).ToString();
-                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        var response = await timeSyncConfigService.Save(model);
+                        if (response.Code == 200)
                         {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            return;
+                            await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
+                                return;
+                            }
                         }
                         break;
                     case "gps":
                         await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        response = await timeSyncConfigService.Save(model);
+                        if (response.Code == 200)
                         {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            return;
+                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                            {
+                                ErrorMessage = CurrentDevice.ErrorMessage;
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
+                                return;
+                            }
                         }
                         break;
-                }
-
-                var response = await timeSyncConfigService.Save(model);
-                if (response.Code == 200)
-                {
-                }
+                }                
             }
         }
 

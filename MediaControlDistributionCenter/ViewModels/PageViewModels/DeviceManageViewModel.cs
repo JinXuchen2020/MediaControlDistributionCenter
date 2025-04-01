@@ -238,17 +238,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (viewModel.IsConnected())
                     {
-                        await viewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
-                        SelectedDevice = viewModel;
-
+                        await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
                         if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                         {
-                            ErrorMessage = SelectedDevice.ErrorMessage;
+                            ErrorMessage = viewModel.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            SelectedDevice.ErrorMessage = null;
+                            viewModel.ErrorMessage = null;
+                            viewModel.DisconnectCommand.Execute(null);
+                            return;
+                        }
+                        await viewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        {
+                            ErrorMessage = viewModel.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            viewModel.ErrorMessage = null;
                         }
                         else
                         {
+                            SelectedDevice = viewModel;
                             if (viewModel.IsSendUserCompleted)
                             {
                                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); // "烧录用户信息成功";

@@ -12,11 +12,8 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
     /// <summary>
     /// UserDTO
     /// </summary>
-    public class UserDto : IMappingProfile<User>
+    public class UserDto : BaseDto, IMappingProfile<User>
     {
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
         /// <summary>
         /// 账号
         /// </summary>

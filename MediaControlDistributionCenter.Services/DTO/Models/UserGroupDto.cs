@@ -12,11 +12,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MediaControlDistributionCenter.Services.DTO.Models
 {
-    public class UserGroupDto : IMappingProfile<UserGroup>
+    public class UserGroupDto : BaseDto, IMappingProfile<UserGroup>
     {
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
