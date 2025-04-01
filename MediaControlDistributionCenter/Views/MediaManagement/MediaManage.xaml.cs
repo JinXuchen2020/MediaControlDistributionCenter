@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 using System.IO;
@@ -206,22 +207,6 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             
         }
 
-        private void btnPublishSave_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = ((sender as Button).DataContext as MediaDevicesViewModel)!;
-            this.Dispatcher.Invoke(async () =>
-            {
-                await viewModel.PublishCommand.ExecuteAsync(null);
-
-                if (viewModel.PublishDevices.Count > 0)
-                {
-                    manageViewModel.CloseDialogCommand.Execute(null);
-                    manageViewModel.LoadData();
-                    viewModel.ShowConfirmDialogCommand.Execute(null);
-                }
-            });
-        }
-
         private void btnPublish_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var selectedMedias = manageViewModel.Medias.Where(c => c.IsSelected);
@@ -240,12 +225,12 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 return;
             }
 
-            if (selectedMedias.Any(c => c.Status == 0))
-            {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_110");
-                manageViewModel.ShowConfirmDialogCommand.Execute(null);
-                return;
-            }
+            //if (selectedMedias.Any(c => c.Status == 0))
+            //{
+            //    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Program_Tooltip_110");
+            //    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+            //    return;
+            //}
 
             var selectedMedia = selectedMedias.First();
 
@@ -256,9 +241,9 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
             viewModel.CurrentMedia = selectedMedia;
-            viewModel.LoadData();
             selectedMedia.IsSelected = false;
-            manageViewModel.ShowDialogCommand.Execute(viewModel);
+            var dialogBox = serviceProvider.GetRequiredService<MediaPublishDialog>();
+            manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
         }
 
         private void btnMediaSave_Click(object sender, RoutedEventArgs e)
@@ -339,24 +324,24 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             }
         }
 
-        private void SelectDevicesAll_Click(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var mediaDevicesViewModel = checkbox.DataContext as MediaDevicesViewModel;
-            if (checkbox.IsChecked.GetValueOrDefault())
-            {
-                foreach (var item in mediaDevicesViewModel.Devices)
-                {
-                    item.IsSelected = true;
-                }
-            }
-            else
-            {
-                foreach (var item in mediaDevicesViewModel.Devices)
-                {
-                    item.IsSelected = false;
-                }
-            }
-        }
+        //private void SelectDevicesAll_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var checkbox = (CheckBox)sender;
+        //    var mediaDevicesViewModel = checkbox.DataContext as MediaDevicesViewModel;
+        //    if (checkbox.IsChecked.GetValueOrDefault())
+        //    {
+        //        foreach (var item in mediaDevicesViewModel.Devices)
+        //        {
+        //            item.IsSelected = true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        foreach (var item in mediaDevicesViewModel.Devices)
+        //        {
+        //            item.IsSelected = false;
+        //        }
+        //    }
+        //}
     }
 }

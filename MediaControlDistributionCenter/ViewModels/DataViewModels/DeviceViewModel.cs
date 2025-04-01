@@ -12,6 +12,7 @@ using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Windows;
@@ -112,6 +113,18 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? uploadResult;
 
+        [ObservableProperty]
+        private bool isSendUserCompleted;
+
+        [ObservableProperty]
+        private bool isReconnect;
+
+        [ObservableProperty]
+        private ObservableCollection<string> ipAddresses;
+
+        [ObservableProperty]
+        private string selectedIpAddress;
+
         private Communication? client;
 
         public DeviceViewModel()
@@ -195,25 +208,53 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var ipAddress = NetworkTool.GetGatewayIp();
-            if (string.IsNullOrEmpty(ipAddress))
+            if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
-                return;
+                client.Disconnect();
             }
 
-            if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected && ipAddress != client.IpAddr)
+            IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
+            foreach (var address in IpAddresses)
             {
-               client.Disconnect();
+                client.Connect(address, "5001");
+                int count = 1;
+                while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                {
+                    Thread.Sleep(500);
+                    count--;
+                }
+
+                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+                {
+                    SelectedIpAddress = address;
+                    break;
+                }
             }
 
-            client.Connect(ipAddress, "5001");
-            int count = 1;
-            while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-            {
-                Thread.Sleep(500);
-                count--;
-            }
+            //IsReconnect = true;
+            //IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
+
+            //await ShowConfirmDialog();
+            //IsReconnect = false;
+
+            //if (string.IsNullOrEmpty(SelectedIpAddress))
+            //{
+            //    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
+            //    return;
+            //}
+
+            //if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected && SelectedIpAddress != client.IpAddr)
+            //{
+            //   client.Disconnect();
+            //}
+
+            //client.Connect(SelectedIpAddress, "5001");
+            //int count = 1;
+            //while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+            //{
+            //    Thread.Sleep(500);
+            //    count--;
+            //}
 
             if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
@@ -223,7 +264,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             this.client = client;
             StatusText = GetStatus();
-            Log.Debug($"Device:{Name} connected success!");
+            Log.Debug($"Device:{Name} with IP {SelectedIpAddress} connected success!");
             await Task.CompletedTask;
         }
 
@@ -240,7 +281,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SendUser(UsersSync users)
+        private async Task SendUser()
         {
             if (client == null)
             {
@@ -255,7 +296,28 @@ namespace MediaControlDistributionCenter.ViewModels
                 await Connect(client);
             }
 
-            var userInfo = users;
+            var userInfo = new UsersSync();
+            var users = new List<UserSync>();
+            var userService = GetService<IUserService>();
+            var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+            if (adminUser != null)
+            {
+                users.Add(new UserSync(adminUser, null));
+            }
+
+            var currentUser = userService.GetAll(new UserDto { Account = UserId }).GetAwaiter().GetResult().Data?.FirstOrDefault()!;
+            if (!string.IsNullOrEmpty(currentUser.AgentAccount))
+            {
+                var agentUser = userService.GetAll(new UserDto { Account = currentUser.AgentAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (agentUser != null)
+                {
+                    users.Add(new UserSync(agentUser, null));
+                }
+            }
+
+            users.Add(new UserSync(currentUser, new MonitorSync(this.ToModel(), null)));
+            userInfo.Users = users;
+
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdSendUser + userInfoString;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -264,6 +326,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = $"{CommunicationCmd.CmdSendUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
                 return;
             }
+
+            IsSendUserCompleted = true;
         }
 
         [RelayCommand]
@@ -369,7 +433,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task TimeSync(DateTime value)
+        private async Task TimeSync(string value)
         {
             if (client == null)
             {
@@ -384,7 +448,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 await Connect(client);
             }
 
-            string path = CommunicationCmd.CmdTime + value.ToString();
+            string path = CommunicationCmd.CmdTime + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
@@ -394,7 +458,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task TimeGPSSync(DateTime value)
+        private async Task TimeGPSSync(string value)
         {
             if (client == null)
             {
@@ -409,7 +473,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 await Connect(client);
             }
 
-            string path = CommunicationCmd.CmdTimeGPS + value.ToString();
+            string path = CommunicationCmd.CmdTimeGPS + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {

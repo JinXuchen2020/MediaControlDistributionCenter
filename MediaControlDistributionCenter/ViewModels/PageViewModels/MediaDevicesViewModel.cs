@@ -50,8 +50,21 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var result = new DeviceViewModel();
                 result.Binding(c, publishedSNCode.Contains(c.SnCode));
+                if (ConnectionMode.Mode == "Local")
+                {
+                    result.ConnectCommand.Execute(communication);
+                }
                 return result;
             }));
+        }
+
+        [RelayCommand]
+        private async Task Save()
+        {
+            var response = await programService.Save(CurrentMedia.ToModel());
+            if (response.Code == 200)
+            {
+            }
         }
 
         [RelayCommand]

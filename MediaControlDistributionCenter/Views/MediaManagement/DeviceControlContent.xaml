@@ -227,19 +227,34 @@
                                 SelectionChanged="DataGrid_SelectionChanged"
                                 ItemsSource="{Binding Devices}"
                             >
+                                <DataGrid.Resources>
+                                    <Style x:Key="LeftAlignedTextBlockStyle" TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Binding="{Binding Id}" Visibility ="Collapsed" Header="id"  />
-                                    <DataGridTextColumn Width="1*" Binding="{Binding Name}">
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding Name}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Width="1*" Binding="{Binding StatusText}">
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <!--<DataGridTextColumn Width="1*" Binding="{Binding Type}" Header="类型" />-->
+                                    <DataGridTemplateColumn Width="100" >
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="{DynamicResource LanguageKey_Code_Connect}" Foreground="White" Click="btnConnect_Click" Margin="3" Height="28" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

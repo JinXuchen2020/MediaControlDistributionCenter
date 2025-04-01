@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq.Expressions;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -114,6 +115,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ShowDialog(ObservableObject content)
         {
             await MaterialDesignThemes.Wpf.DialogHost.Show(content, DialogHostId);
+        }
+
+        [RelayCommand]
+        private async Task ShowDialogContent(UserControl dialogContent)
+        {
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialogContent, Constants.DialogHostId);
         }
 
         [RelayCommand]

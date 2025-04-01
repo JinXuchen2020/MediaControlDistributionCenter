@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -48,6 +49,14 @@ namespace MediaControlDistributionCenter.Views
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
         {
             InitPage("Brightness");
+            if (manageViewModel.ConnectionMode.Mode == "Local")
+            {
+                var communication = App.ServicesProvider.GetRequiredService<Communication>();
+                foreach (var device in manageViewModel.Devices)
+                {
+                    device.ConnectCommand.Execute(communication);
+                }
+            }
             manageViewModel.GetDeviceTimeControls();
         }
 
@@ -103,14 +112,7 @@ namespace MediaControlDistributionCenter.Views
                     return;
                 }
                 manageViewModel.CurrentDevice = viewModel;
-                if (manageViewModel.CurrentDevice != null)
-                {
-                    this.Dispatcher.Invoke(async () => 
-                    {
-                        await manageViewModel.ConnectDeviceCommand.ExecuteAsync(null);
-                        manageViewModel.GetDeviceTimeControls();
-                    });
-                }
+                manageViewModel.GetDeviceTimeControls();
             }
             else
             {
@@ -495,6 +497,12 @@ namespace MediaControlDistributionCenter.Views
                 viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
                 button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
+        }
+
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            manageViewModel.ConnectDeviceCommand.Execute(null);
         }
     }
 }

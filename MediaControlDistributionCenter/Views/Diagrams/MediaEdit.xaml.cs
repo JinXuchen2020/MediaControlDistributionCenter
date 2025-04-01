@@ -357,28 +357,8 @@ namespace MediaControlDistributionCenter.Views
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
             viewModel.CurrentMedia = manageViewModel.CurrentMedia;
-            viewModel.LoadData();
-            manageViewModel.ShowDialogCommand.Execute(viewModel);
-        }
-
-        private void btnPublishSave_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = ((sender as Button).DataContext as MediaDevicesViewModel)!;
-            this.Dispatcher.Invoke(async () =>
-            {
-                await viewModel.PublishCommand.ExecuteAsync(null);
-
-                var screenCount = viewModel.Devices.Select(c => c.IsSelected).Count();
-                manageViewModel.CurrentMedia.ScreensCount = screenCount;
-                await manageViewModel.SaveCommand.ExecuteAsync(null);
-
-                if (viewModel.PublishDevices.Count > 0)
-                {
-                    manageViewModel.CloseDialogCommand.Execute(null);
-
-                    viewModel.ShowConfirmDialogCommand.Execute(null);
-                }
-            });
+            var dialogBox = serviceProvider.GetRequiredService<MediaPublishDialog>();
+            manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
         }
 
         private void SelectDay_Click(object sender, RoutedEventArgs e)
@@ -814,26 +794,6 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SelectedType = tag;
             manageViewModel.SearchString = null;
             manageViewModel.RefreshMedias();
-        }
-
-        private void SelectDevicesAll_Click(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var mediaDevicesViewModel = checkbox.DataContext as MediaDevicesViewModel;
-            if (checkbox.IsChecked.GetValueOrDefault())
-            {
-                foreach (var item in mediaDevicesViewModel.Devices)
-                {
-                    item.IsSelected = true;
-                }
-            }
-            else
-            {
-                foreach (var item in mediaDevicesViewModel.Devices)
-                {
-                    item.IsSelected = false;
-                }
-            }
         }
     }
 

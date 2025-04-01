@@ -68,9 +68,9 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnExecuteSendUser(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = App.ServicesProvider.GetRequiredService<DeviceManageViewModel>();
-            manageViewModel.SendUserToDeviceCommand.Execute(null);
-            manageViewModel.CloseDialogCommand.Execute(null);
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            viewModel.SendUserCommand.Execute(null);
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
         }
 
         private void btnExecuteDelete(object sender, RoutedEventArgs e)
@@ -109,6 +109,8 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
                 case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected():
                     return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsReconnect:
+                    return (DataTemplate)dialogBox.FindResource("SelectIPAddress");
                 case var o when (o is LoginViewModel loginViewModel && string.IsNullOrEmpty(loginViewModel.ErrorMessage) && loginViewModel.IsSync):
                     return (DataTemplate)dialogBox.FindResource("SyncUserResult");
                 case var o when (o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage)):

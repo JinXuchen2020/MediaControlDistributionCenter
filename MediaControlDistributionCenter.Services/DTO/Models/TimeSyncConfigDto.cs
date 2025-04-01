@@ -35,6 +35,9 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
         public string Timezone { get; set; }
 
+        [JsonProperty("currentDate", NullValueHandling = NullValueHandling.Ignore)]
+        public string CurrentDate { get; set; }
+
         /// <summary>
         /// 所属用户账号
         /// </summary>

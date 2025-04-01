@@ -226,68 +226,39 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
             await viewModel.ConnectCommand.ExecuteAsync(communication);
-            if (!string.IsNullOrEmpty(viewModel?.ErrorMessage))
+            if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
             {
                 ErrorMessage = viewModel.ErrorMessage;
                 await ShowConfirmDialogCommand.ExecuteAsync(null);
+                viewModel.ErrorMessage = null;
             }
             else
             {
                 if (ConnectionMode.Mode == "Remote")
                 {
-                    viewModel?.ShowConfirmDialogCommand.Execute(null);
                     if (viewModel.IsConnected())
                     {
+                        await viewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
                         SelectedDevice = viewModel;
+
+                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        {
+                            ErrorMessage = SelectedDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            SelectedDevice.ErrorMessage = null;
+                        }
+                        else
+                        {
+                            if (viewModel.IsSendUserCompleted)
+                            {
+                                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); // "烧录用户信息成功";
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                viewModel.IsSendUserCompleted = false;
+                            }
+                        }
                     }
                 }
             }
-        }
-
-        [RelayCommand]
-        private async Task SendUserToDevice()
-        {
-            if (SelectedDevice == null)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
-
-            var result = new UsersSync();
-            var users = new List<UserSync>();
-            var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-            if (adminUser != null)
-            {
-                users.Add(new UserSync(adminUser, null));
-            }
-
-            if (!string.IsNullOrEmpty(CurrentUser.AgentId))
-            {
-                var agentUser = userService.GetAll(new UserDto { Account = CurrentUser.AgentId }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                if (agentUser != null)
-                {
-                    users.Add(new UserSync(agentUser, null));
-                }
-            }
-
-            var programs = new List<ProgramDto>();
-            var publishRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SelectedDevice.SNumber}).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
-            
-            foreach (var record in publishRecords) 
-            {
-                var program = programService.GetAll(new ProgramDto { Name = record.MediaName}).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                if (program != null) 
-                {
-                    programs.Add(program);
-                }
-            }
-
-            users.Add(new UserSync(CurrentUser.ToModel(), new MonitorSync(SelectedDevice!.ToModel(), programs)));
-            result.Users = users;
-
-            await SelectedDevice.SendUserCommand.ExecuteAsync(result);
-
         }
 
         [RelayCommand]

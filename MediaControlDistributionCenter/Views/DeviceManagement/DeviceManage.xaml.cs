@@ -23,6 +23,8 @@ using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Helpers.Broadcast;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -51,9 +53,22 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
 
+            this.Loaded += DeviceManage_Loaded;
             this.Unloaded += DeviceManage_Unloaded;
 
             InitializeComponent();
+        }
+
+        private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (manageViewModel.ConnectionMode.Mode == "Local")
+            {
+                var communication = App.ServicesProvider.GetRequiredService<Communication>();
+                foreach (var device in manageViewModel.Devices)
+                {
+                    device.ConnectCommand.Execute(communication);
+                }
+            }
         }
 
         private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)

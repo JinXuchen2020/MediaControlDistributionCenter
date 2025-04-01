@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Aspose.Words;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
@@ -119,6 +120,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     ErrorMessage = CurrentDevice.ErrorMessage;
                     await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    CurrentDevice.ErrorMessage = null;
                 }
                 else
                 {
@@ -129,6 +131,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
 
@@ -139,6 +142,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 ErrorMessage = CurrentDevice.ErrorMessage;
                                 await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                CurrentDevice.ErrorMessage = null;
                                 return;
                             }
 
@@ -188,6 +192,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         CurrentDevice.Brightness = viewModel.Value;
@@ -198,6 +203,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         CurrentDevice.Volume = viewModel.Value;
@@ -208,6 +214,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -237,6 +244,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -246,6 +254,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -255,6 +264,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -274,36 +284,41 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var timeZoneDateTime = DateTime.Now;
                 var timeZone = TimeZoneInfo.Local;
-                switch (CommandTypeColumnName)
-                {
-                    case "manual":
-                        timeZone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue);
-                        timeZoneDateTime = TimeZoneInfo.ConvertTime(timeZoneDateTime, timeZone);
-                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(timeZoneDateTime);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                        break;
-                    case "gps":
-                        await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(timeZoneDateTime);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                        break;
-                }
+
                 var model = new TimeSyncConfigDto()
                 {
                     DeviceId = CurrentDevice.DeviceId,
                     Timezone = timeZone.DisplayName,
+                    CurrentDate = timeZoneDateTime.ToString(),
                     SyncMode = CommandTypeColumnName,
                     UserAccount = CurrentUser.Account
                 };
+
+                switch (CommandTypeColumnName)
+                {
+                    case "manual":
+                        model.Timezone = TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue).DisplayName;
+                        model.CurrentDate = TimeZoneInfo.ConvertTime(timeZoneDateTime, TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue)).ToString();
+                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        break;
+                    case "gps":
+                        await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        break;
+                }
 
                 var response = await timeSyncConfigService.Save(model);
                 if (response.Code == 200)

@@ -27,7 +27,7 @@ namespace MediaControlDistributionCenter.Views
 
             services.AddTransient<UserSettingsContent>();
 
-            services.AddTransient<UserChangeGroupDialog>();
+            services.AddTransient<MediaPublishDialog>();
 
             services.AddTransient<UserControllers>();
 

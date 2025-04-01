@@ -101,6 +101,22 @@
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="SelectIPAddress" DataType="{x:Type viewmodels:DeviceViewModel}">
+            <StackPanel>
+                <!--<StackPanel Orientation="Horizontal" Margin="10" >
+            <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Device_DialogTitle}" />
+            <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Margin="10,0,10,0" Text="{Binding Name}" />
+            <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_124}" />
+        </StackPanel>-->
+                <StackPanel Orientation="Horizontal" Margin="10" >
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_127}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Width="320" Height="40">
+                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
+                    <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Key="SyncUserResult" DataType="{x:Type viewmodels:LoginViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >

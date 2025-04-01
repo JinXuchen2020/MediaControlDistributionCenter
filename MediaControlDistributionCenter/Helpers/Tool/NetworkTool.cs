@@ -30,20 +30,24 @@ namespace MediaControlDistributionCenter.Helpers.Tool
             return addrs;
         }
 
-        public static string GetGatewayIp()
+        public static List<string> GetGatewayIp()
         {
+            var result = new List<string>();
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (networkInterface.OperationalStatus == OperationalStatus.Up)
                 {
-                    var gatewayAddress = networkInterface.GetIPProperties().GatewayAddresses.FirstOrDefault();
-                    if (gatewayAddress != null && gatewayAddress.Address != null)
+                    var gatewayAddress = networkInterface.GetIPProperties().GatewayAddresses;
+                    if (gatewayAddress != null)
                     {
-                        return gatewayAddress.Address.ToString();
+                        foreach (var address in gatewayAddress)
+                        {
+                            result.Add(address.Address.ToString());                            
+                        }
                     }
                 }
             }
-            return null;
+            return result;
         }
     }
 }

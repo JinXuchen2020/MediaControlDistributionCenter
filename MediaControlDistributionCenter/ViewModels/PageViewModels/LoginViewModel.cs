@@ -76,7 +76,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = GetService<IProgramService>();
             currentUser = new UserViewModel();
             this.connectionMode = connectionMode;
-            this.ipAddresses = new ObservableCollection<string>(new List<string> { NetworkTool.GetGatewayIp() });
+            this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
             selectedIpAddress = ipAddresses.First();
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
@@ -153,24 +153,50 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             SyncUsers = new ObservableCollection<string>();
             IsSyncing = true;
-            communication.Connect(SelectedIpAddress, "5001");
-            int count = 1;
-            while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+            if (!string.IsNullOrEmpty(SelectedIpAddress))
             {
-                Thread.Sleep(500);
-                count--;
+                communication.Connect(SelectedIpAddress, "5001");
+                int count = 1;
+                while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                {
+                    Thread.Sleep(500);
+                    count--;
+                }
             }
+
+            if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                foreach (var address in IpAddresses)
+                {
+                    communication.Connect(address, "5001");
+                    int count = 1;
+                    while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                    {
+                        Thread.Sleep(500);
+                        count--;
+                    }
+
+                    if (communication.netClient.State == Helpers.SocketClient.SocketState.Connected)
+                    {
+                        SelectedIpAddress = address;
+                        break;
+                    }
+                }
+            }
+
             if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
             }
             else
             {
-                Log.Debug("Connect Device successfully in login page!");
+
+                Log.Debug($"Device with IP {SelectedIpAddress} is connected!");
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
                 {
+                    Log.Debug($"Current user info in Device is {communication.SyncUserResult}");
                     var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
                     if (syncUsers != null)
                     {

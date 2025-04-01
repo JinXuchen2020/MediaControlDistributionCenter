@@ -77,11 +77,48 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (ConnectionMode.Mode == "Local")
                 {
                     var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                    loginViewModel.ConnectedDevice?.ShowConfirmDialogCommand.Execute(null);
+                    if (loginViewModel.ConnectedDevice != null && loginViewModel.ConnectedDevice.IsConnected())
+                    {
+                        await loginViewModel.ConnectedDevice.ShowConfirmDialogCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice.ErrorMessage))
+                        {
+                            ErrorMessage = loginViewModel.ConnectedDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            loginViewModel.ConnectedDevice.ErrorMessage = null;
+                        }
+                        else
+                        {
+                            if (loginViewModel.ConnectedDevice.IsSendUserCompleted)
+                            {
+                                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); // "烧录用户信息成功";
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                loginViewModel.ConnectedDevice.IsSendUserCompleted = false;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    deviceManageViewModel.SelectedDevice?.ShowConfirmDialogCommand.Execute(null);
+                    if (deviceManageViewModel.SelectedDevice != null && deviceManageViewModel.SelectedDevice.IsConnected())
+                    {
+                        await deviceManageViewModel.SelectedDevice.ShowConfirmDialogCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(deviceManageViewModel.SelectedDevice.ErrorMessage))
+                        {
+                            ErrorMessage = deviceManageViewModel.SelectedDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            deviceManageViewModel.SelectedDevice.ErrorMessage = null;
+                        }
+                        else
+                        {
+                            if (deviceManageViewModel.SelectedDevice.IsSendUserCompleted)
+                            {
+                                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); // "烧录用户信息成功";
+                                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                                deviceManageViewModel.SelectedDevice.IsSendUserCompleted = false;
+                            }
+                        }
+
+                    }
                 }
             }
         }
