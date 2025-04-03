@@ -96,6 +96,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdVerifySnCode = "CMD|VerifySnCode|";
 
         /// <summary>
+        /// 发送用户信息并验证，返回机顶盒上现有配置文件 
+        /// 参数：用户的账号与密码
+        /// </summary>
+        public readonly static string CmdSyncSnCode = "CMD|SyncSnCode|";
+
+        /// <summary>
         /// 返回机顶盒上现有用户信息        
         /// </summary>
         public readonly static string CmdSyncUser = "CMD|SyncUser|";
@@ -129,6 +135,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// 返回机顶盒上发布的节目列表        
         /// </summary>
         public readonly static string CmdSyncProgram = "CMD|SyncProgram|";
+
+        /// <summary>
+        ///从机顶盒上删除节目基础信息
+        /// </summary>
+        public readonly static string CmdEnableMonitor = "CMD|EnableMonitor|";
 
     }
 }

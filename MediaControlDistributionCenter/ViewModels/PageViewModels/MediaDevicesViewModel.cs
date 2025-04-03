@@ -49,11 +49,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var result = new DeviceViewModel();
-                result.Binding(c, publishedSNCode.Contains(c.SnCode));
-                if (ConnectionMode.Mode == "Local")
+                result.Binding(c);
+                if (ConnectedDevice != null && result.SNumber == ConnectedDevice.SNumber)
                 {
                     result.ConnectCommand.Execute(communication);
+                    result.IsSelected = publishedSNCode.Contains(c.SnCode);
                 }
+
+                result.GetPrograms();
                 return result;
             }));
         }
@@ -76,15 +79,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
-                    if (existRecord == null || IsCover) 
+                    if (ConnectedDevice != null && ConnectedDevice.SNumber == item.SNumber && item.MediaNames != CurrentMedia.Name)
                     {
-                        item.ConnectCommand.Execute(communication);
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
+                        var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
+                        if (existRecord != null) 
                         {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            continue;
+
                         }
                         string filePath = $"{CurrentMedia.Name}.zip";
                         item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
@@ -129,10 +129,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
-                    if (existRecord != null)
+                    if (item.IsConnected)
                     {
-                        await playbackRecordService.DeleteById(existRecord.Id);
+                        var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
+                        if (existRecord != null)
+                        {
+                            await playbackRecordService.DeleteById(existRecord.Id);
+                        }
                     }
                 }
             }

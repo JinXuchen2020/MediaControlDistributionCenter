@@ -1,30 +1,10 @@
-﻿using MediaControlDistributionCenter.Data.Entity;
-using MediaControlDistributionCenter.Data;
+﻿using MaterialDesignThemes.Wpf;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
-using MediaControlDistributionCenter.Views.UserManagement;
-using MaterialDesignThemes.Wpf;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
-using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
-using MediaControlDistributionCenter.Services.DTO.Models;
-using MediaControlDistributionCenter.Helpers.Broadcast;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -34,6 +14,8 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     public partial class DeviceManage : UserControl
     {
         private readonly DeviceManageViewModel manageViewModel;
+
+        public event EventHandler ConnectedDeviceChanged;
 
         public DeviceManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, DeviceManageViewModel deviceManageViewModel)
         {
@@ -61,14 +43,16 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.ConnectionMode.Mode == "Local")
-            {
-                var communication = App.ServicesProvider.GetRequiredService<Communication>();
-                foreach (var device in manageViewModel.Devices)
-                {
-                    device.ConnectCommand.Execute(communication);
-                }
-            }
+            //manageViewModel.DetectConnectedDeviceCommand.Execute(null);
+            //ConnectedDeviceChanged?.Invoke(sender, null);
+            //if (manageViewModel.ConnectionMode.Mode == "Local")
+            //{
+            //    var communication = App.ServicesProvider.GetRequiredService<Communication>();
+            //    foreach (var device in manageViewModel.Devices)
+            //    {
+            //        device.ConnectCommand.Execute(communication);
+            //    }
+            //}
         }
 
         private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)
@@ -105,8 +89,13 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            if (viewModel.Enabled == 0)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Monitor_Tooltip_133");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
@@ -180,13 +169,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             manageViewModel.CloseDialogCommand.Execute(null);
         }
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            var manageViewModel = (DataContext as DeviceManageViewModel)!;
-            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            manageViewModel.ConnectDeviceCommand.Execute(viewModel);
-        }
-
         private void SelectAll_Click(object sender, RoutedEventArgs e)
         {
             var checkbox = (CheckBox)sender;
@@ -238,6 +220,37 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             }
 
             manageViewModel.LoadData();
+        }
+
+        private void btnDetectConnectedDevice(object sender, MouseButtonEventArgs e)
+        {
+            if (manageViewModel.IsSearching)
+            {
+                return;
+            }
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.IsSearching = true;
+                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+                ConnectedDeviceChanged?.Invoke(sender, null);
+                manageViewModel.IsSearching = false;
+            });
+        }
+
+        private void btnActivate_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    await manageViewModel.ActivateDeviceCommand.ExecuteAsync(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
         }
     }
 }

@@ -23,13 +23,17 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 接收到的命令列表
         /// </summary>
-        List<string> ReceiveOverCmdStr = new List<string>();
+        public List<string> ReceiveOverCmdStr { get; private set; }
 
         public string SyncUserResult { get; private set; }
 
         public string SyncDeviceControlResult { get; private set; }
 
         public string SyncProgramResult { get; private set; }
+
+        public string VerifySnCodeResult { get; private set; }
+
+        public string SyncSnCodeResult { get; private set; }
 
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
@@ -45,6 +49,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpUserPwd = ftpServer._userPwd;
             Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             netClient.ErrorReceived += NetClient_ErrorReceived;
+            ReceiveOverCmdStr = new List<string>();
         }
 
         private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
@@ -152,6 +157,18 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         {
                             SyncProgramResult = data[2];
                             Log.Information(SyncProgramResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdVerifySnCode.Split("|")[1]))
+                        {
+                            VerifySnCodeResult = data[2];
+                            Log.Information(VerifySnCodeResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncSnCode.Split("|")[1]))
+                        {
+                            SyncSnCodeResult = data[2];
+                            Log.Information(SyncSnCodeResult);
                         }
                     }
                     catch (Exception ex)

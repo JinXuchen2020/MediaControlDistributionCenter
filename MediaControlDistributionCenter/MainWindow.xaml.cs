@@ -213,13 +213,17 @@ namespace MediaControlDistributionCenter
                     GoContent(serviceProvider.GetRequiredService<Dashboard>(), 1);
                     break;
                 case "UserManagement":
-                    GoContent(serviceProvider.GetRequiredService<UserManage>(), 2);
+                    var content = serviceProvider.GetRequiredService<UserManage>();
+                    content.ConnectedDeviceChanged += OnChildDataContextChanged;
+                    GoContent(content, 2);
                     break;
                 case "MediaManagement":
                     GoContent(serviceProvider.GetRequiredService<MediaManage>(), 2);
                     break;
                 case "DeviceManagement":
-                    GoContent(serviceProvider.GetRequiredService<DeviceManage>(), 3);
+                    var deviceContent = serviceProvider.GetRequiredService<DeviceManage>();
+                    deviceContent.ConnectedDeviceChanged += OnChildDataContextChanged;
+                    GoContent(deviceContent, 3);
                     break;
                 case "MediaStore":
                     GoContent(serviceProvider.GetRequiredService<MediaContent>(), 3);
@@ -233,6 +237,12 @@ namespace MediaControlDistributionCenter
                     GoContent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
                     break;
             }
+        }
+
+        private void OnChildDataContextChanged(object? sender, EventArgs e)
+        {
+            var mainViewModel = App.ServicesProvider.GetService<MainViewModel>();
+            this.DataContext = mainViewModel;
         }
 
         public void GoContent(UserControl contet,int menuIndex)

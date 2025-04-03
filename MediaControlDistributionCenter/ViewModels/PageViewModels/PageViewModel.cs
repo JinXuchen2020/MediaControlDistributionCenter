@@ -2,11 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Net;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -16,7 +19,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private ConnectionMode connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
         
         [ObservableProperty]
-        private bool isDeviceConnected = App.ServicesProvider.GetRequiredService<Communication>().netClient.IsConnected;
+        private static bool isDeviceConnected = App.ServicesProvider.GetRequiredService<Communication>().netClient.IsConnected;
 
         [ObservableProperty]
         private string? errorMessage;
@@ -26,6 +29,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool? canDelete;
+
+        [ObservableProperty]
+        private static DeviceViewModel? connectedDevice;
 
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
 
@@ -87,6 +93,60 @@ namespace MediaControlDistributionCenter.ViewModels
             else if (!languagePropertyCache[parentType].Contains(propertyName))
             {
                 languagePropertyCache[parentType].Add(propertyName);
+            }
+        }
+
+        protected async Task DetectCommunication(string userAccount)
+        {
+            var client = App.ServicesProvider.GetRequiredService<Communication>();
+            if (ConnectedDevice != null && ConnectedDevice.UserId == userAccount && ConnectedDevice.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            {
+                return;
+            }
+
+            var ipAddress = NetworkTool.GetGatewayIp();
+            foreach (var address in ipAddress)
+            {
+                client.Connect(address, "5001");
+                int count = 10;
+                while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                {
+                    Thread.Sleep(500);
+                    count--;
+                }
+
+                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+                {
+                    break;
+                }
+            }
+
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                ConnectedDevice = null;
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncSnCode + "Connect";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                return;
+            }
+
+            var snCode = client.SyncSnCodeResult ?? string.Empty;
+
+            var monitorService = GetService<IMonitorService>();
+            var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode, UserAccount = userAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+            if (connectedDevice != null)
+            {
+                ConnectedDevice = new DeviceViewModel();
+                ConnectedDevice.Binding(connectedDevice);
+                ConnectedDevice.ConnectCommand.Execute(client);
             }
         }
 

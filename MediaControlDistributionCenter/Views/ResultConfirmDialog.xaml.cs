@@ -38,7 +38,7 @@ namespace MediaControlDistributionCenter.Views
                 case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
-                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected():
+                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected:
                     btnConfirm.Visibility = Visibility.Collapsed;
                     break;
                 case var o when o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage):
@@ -101,16 +101,16 @@ namespace MediaControlDistributionCenter.Views
                     return (DataTemplate)dialogBox.FindResource("UserRegisterSuccess");
                 case var o when o is ProgramViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentSave");
-                case var o when (o is PageViewModel viewModel && viewModel.CanDelete.HasValue):
+                case var o when (o is PageViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.CanDelete.HasValue):
                     return (DataTemplate)dialogBox.FindResource("DeleteExecution");
                 case var o when o is MediaDevicesViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):
                     return (DataTemplate)dialogBox.FindResource("MediaContentPublish");
                 case var o when o is DeviceTimeControlViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage):                    
                     return (DataTemplate)dialogBox.FindResource("ScheduleControlExecution");
-                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected():
-                    return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
-                case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsReconnect:
-                    return (DataTemplate)dialogBox.FindResource("SelectIPAddress");
+                //case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsConnected:
+                //    return (DataTemplate)dialogBox.FindResource("ScheduleSendUserExecution");
+                //case var o when o is DeviceViewModel viewModel && string.IsNullOrEmpty(viewModel.ErrorMessage) && viewModel.IsReconnect:
+                //    return (DataTemplate)dialogBox.FindResource("SelectIPAddress");
                 case var o when (o is LoginViewModel loginViewModel && string.IsNullOrEmpty(loginViewModel.ErrorMessage) && loginViewModel.IsSync):
                     return (DataTemplate)dialogBox.FindResource("SyncUserResult");
                 case var o when (o is PageViewModel viewModel && !string.IsNullOrEmpty(viewModel.ErrorMessage)):

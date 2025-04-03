@@ -61,9 +61,14 @@
     <sys:String x:Key="LanguageKey_Code_Start">开始</sys:String>
     <sys:String x:Key="LanguageKey_Code_End">结束</sys:String>
     <sys:String x:Key="LanguageKey_Code_Connect">连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Activate">激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upgrade">升级</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Online">在线</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Offline">离线</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Offline">未激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Connected">已连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Disconnected">未连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Offline">未激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Enable">启用</sys:String>
     <sys:String x:Key="LanguageKey_Code_Disable">停用</sys:String>
     <sys:String x:Key="LanguageKey_Code_Apply">应用</sys:String>
@@ -109,6 +114,7 @@
     <sys:String x:Key="LanguageKey_Code_DeleteConfirm">是否确认？</sys:String>
     <sys:String x:Key="LanguageKey_Code_Preview">预览</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upload">上传</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Refresh">设备刷新</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
@@ -122,6 +128,7 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">剩余机器容量</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
     
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
@@ -223,8 +230,15 @@
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_124">连接成功！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_125">是否录入当前用户？</sys:String>
     <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_126">不可用显示器</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_127">烧录用户信息成功</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_128">可连接以下IP地址:</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_127">可连接以下IP地址:</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_128">设备激活成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_129">设备升级成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_130">设备启用成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_131">设备停用成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_132">连接状态</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_133">当前设备已停用！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Monitor_Tooltip_134">搜索连接显示器</sys:String>
+
 
 
     <sys:String x:Key="LanguageKey_Code_Control_Device">设备控制</sys:String>
@@ -266,6 +280,7 @@
     <sys:String x:Key="LanguageKey_Code_Setting_Tooltip_101">请填写新密码！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_Tooltip_102">两次密码输入不一致！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_Tooltip_103">密码修改成功！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Setting_Tooltip_104">用户信息更新成功！</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Page">页面</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Media">媒体</sys:String>

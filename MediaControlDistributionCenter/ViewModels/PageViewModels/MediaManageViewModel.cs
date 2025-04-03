@@ -86,10 +86,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public async Task SyncPrograms()
         {
-            if (ConnectionMode.Mode == "Local" && !isSynced)
+            if (ConnectionMode.Mode == "Local" && ConnectedDevice != null && !isSynced)
             {
-                var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                await loginViewModel.ConnectedDevice!.SyncProgramsCommand.ExecuteAsync(null);
+                await ConnectedDevice.SyncProgramsCommand.ExecuteAsync(null);
                 isSynced = true;
             }
         }
@@ -180,19 +179,18 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             var playbackRecordService = GetService<IPlaybackRecordService>();
-            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             var deviceService = GetService<IMonitorService>();
+            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var playbackRecord in playRecords)
             {
-                if (ConnectionMode.Mode == "Local")
+                if (ConnectedDevice != null)
                 {
-                    var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                    if (playbackRecord.MonitorSnCode == loginViewModel.ConnectedDevice!.SNumber)
+                    if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
                     {
-                        await loginViewModel.ConnectedDevice!.ChangeProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice!.ErrorMessage))
+                        await ConnectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
+                        if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
                         {
-                            ErrorMessage = loginViewModel.ConnectedDevice!.ErrorMessage;
+                            ErrorMessage = ConnectedDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
@@ -202,26 +200,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 else
                 {
                     var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    if (device != null)
-                    {
-                        var deviceViewModel = new DeviceViewModel();
-                        deviceViewModel.Binding(device);
-                        var client = App.ServicesProvider.GetRequiredService<Communication>();
-                        await deviceViewModel.ConnectCommand.ExecuteAsync(client);
-                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                        {
-                            ErrorMessage = deviceViewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                        await deviceViewModel.ChangeProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                        {
-                            ErrorMessage = deviceViewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                    }
+                    // 如果设备在线，发送网络版命令                    
                 }
             }
 
@@ -250,49 +229,27 @@ namespace MediaControlDistributionCenter.ViewModels
             var deviceService = GetService<IMonitorService>();
             foreach (var playbackRecord in playRecords)
             {
-                if (ConnectionMode.Mode == "Local")
+                if (ConnectedDevice != null)
                 {
-                    var loginViewModel = App.ServicesProvider.GetRequiredService<LoginViewModel>();
-                    if (playbackRecord.MonitorSnCode == loginViewModel.ConnectedDevice!.SNumber)
+                    if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
                     {
-                        await loginViewModel.ConnectedDevice!.DeleteProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(loginViewModel.ConnectedDevice!.ErrorMessage))
+                        await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(viewModel);
+                        if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
                         {
-                            ErrorMessage = loginViewModel.ConnectedDevice!.ErrorMessage;
+                            ErrorMessage = ConnectedDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             return;
                         }
-
-                        await playbackRecordService.DeleteById(playbackRecord.Id);
                         break;
                     }
                 }
                 else
                 {
                     var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    if (device != null)
-                    {
-                        var deviceViewModel = new DeviceViewModel();
-                        deviceViewModel.Binding(device);
-                        var client = App.ServicesProvider.GetRequiredService<Communication>();
-                        await deviceViewModel.ConnectCommand.ExecuteAsync(client);
-                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                        {
-                            ErrorMessage = deviceViewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                        await deviceViewModel.SendProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(deviceViewModel.ErrorMessage))
-                        {
-                            ErrorMessage = deviceViewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                    }
-
-                    await playbackRecordService.DeleteById(playbackRecord.Id);
+                    // 如果设备在线，发送网络版命令                    
                 }
+
+                await playbackRecordService.DeleteById(playbackRecord.Id);
             }
 
             fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.UserId, viewModel.Name));

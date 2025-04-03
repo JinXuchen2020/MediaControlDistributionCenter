@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 显示器状态（OFFLINE: 离线, ONLINE: 在线）
         /// </summary>
         [JsonProperty("status")]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 显示器启用状态（0: 禁用, 1: 启用）
@@ -131,8 +131,9 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
             {
                 Id = (int)Id,
                 Name = Name,
-                SnCode = SnCode,
+                SnCode = SnCode,                
                 Enabled = Enabled,
+                Status = Status,
                 UserAccount = UserAccount,
                 ContactName = ContactName,
                 ContactPhone = ContactPhone,

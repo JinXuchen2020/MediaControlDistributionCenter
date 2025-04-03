@@ -36,6 +36,9 @@ namespace MediaControlDistributionCenter.Data.Entity
         [Required]
         public int Enabled { get; set; } = 1;
 
+        [Required]
+        public int Status { get; set; }
+
         /// <summary>
         /// 所属用户账号
         /// </summary>

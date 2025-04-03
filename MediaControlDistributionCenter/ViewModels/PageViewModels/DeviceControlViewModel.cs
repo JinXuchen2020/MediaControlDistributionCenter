@@ -52,6 +52,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? commandRTValue;
 
+        private bool isSynced;
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
         private readonly ITimeSyncConfigService timeSyncConfigService;
@@ -77,14 +78,38 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var viewModel = new DeviceViewModel();
                 viewModel.Binding(c);
+                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                {
+                    viewModel.ConnectCommand.Execute(communication);
+                    CurrentDevice = viewModel;
+                }
                 return viewModel;
             }));
+        }
+
+        public async Task SyncDeviceTimeControls()
+        {
+            if (ConnectionMode.Mode == "Local" && CurrentDevice != null && !isSynced)
+            {
+                await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
+                if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                {
+                    ErrorMessage = CurrentDevice.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    CurrentDevice.ErrorMessage = null;
+                    return;
+                }
+
+                GetDeviceTimeControls();
+                isSynced = true;
+            }
         }
 
         public void GetDeviceTimeControls()
         {
             if (CurrentDevice == null)
             {
+                DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>();
                 return;
             }
 
@@ -111,66 +136,14 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ConnectDevice()
+        private async Task DetectConnectedDevice()
         {
-            if (CurrentDevice != null)
-            {                
-                await CurrentDevice.ConnectCommand.ExecuteAsync(communication);
-                if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                {
-                    ErrorMessage = CurrentDevice.ErrorMessage;
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                    CurrentDevice.ErrorMessage = null;
-                }
-                else
-                {
-                    if (CurrentDevice.IsConnected())
-                    {
-                        await CurrentDevice.VerifySnCodeCommand.ExecuteAsync(null);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            CurrentDevice.DisconnectCommand.Execute(null);
-                            return;
-                        }
-
-                        await CurrentDevice.VerifyUserCommand.ExecuteAsync(CurrentUser);
-                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                        {
-                            ErrorMessage = CurrentDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            CurrentDevice.ErrorMessage = null;
-                            CurrentDevice.DisconnectCommand.Execute(null);
-                            return;
-                        }
-
-                        if (ConnectionMode.Mode == "Local" && (DeviceTimeControls == null || DeviceTimeControls.Count == 0))
-                        {
-                            await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
-
-                            GetDeviceTimeControls();
-                        }
-                    }
-                }
-            }
-        }
-
-        [RelayCommand]
-        private void DisconnectDevice()
-        {
-            if (CurrentDevice != null)
+            await DetectCommunication(CurrentUser.Account);
+            if(CurrentDevice?.SNumber != ConnectedDevice?.SNumber)
             {
-                CurrentDevice.DisconnectCommand.Execute(null);
+                isSynced = false;
             }
+            LoadData();
         }
 
         [RelayCommand]
@@ -278,11 +251,6 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
-                }
-
-                foreach (var deviceControl in modelList)
-                {
-                    await deviceControlService.Save(deviceControl);
                 }
             }
         }
@@ -396,6 +364,10 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var viewModel = new DeviceViewModel();
                 viewModel.Binding(c);
+                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                {
+                    viewModel.ConnectCommand.Execute(communication);
+                }
                 return viewModel;
             }));
 

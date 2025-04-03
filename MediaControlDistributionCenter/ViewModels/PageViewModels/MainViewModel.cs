@@ -9,9 +9,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private UserViewModel currentUser;
 
         [ObservableProperty]
-        private DeviceViewModel? connectedDevice;
-
-        [ObservableProperty]
         private string connectionString;
 
         [ObservableProperty]
@@ -20,7 +17,6 @@ namespace MediaControlDistributionCenter.ViewModels
         public MainViewModel(LoginViewModel loginViewModel, Communication communication)
         {
             currentUser = loginViewModel.CurrentUser;
-            connectedDevice = loginViewModel.ConnectedDevice;
             connectionString = ConnectionMode.Mode == "Local" ? FindResource("LanguageKey_Code_Device_Tooltip_103") : FindResource("LanguageKey_Code_Device_Tooltip_104");
             deviceConnString = communication.netClient.IsConnected ? FindResource("LanguageKey_Code_Device_Tooltip_105") : FindResource("LanguageKey_Code_Device_Tooltip_106");
             RegisterLanguageProperty(this.GetType(), nameof(ConnectionString));

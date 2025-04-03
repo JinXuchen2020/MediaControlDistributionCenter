@@ -13,7 +13,7 @@
         <local:ConfirmDialogDataTemplateSelector x:Key="ConfirmDialogDataTemplateSelector"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <DataTemplate x:Key="UserRegisterSuccess" DataType="{x:Type viewmodels:UserViewModel}">
-            <StackPanel>
+            <StackPanel Width="400">
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Width="80" Foreground="White" Text="{DynamicResource LanguageKey_Code_LoginAccount}" />
                     <TextBlock Width="250" Foreground="White" Text="{Binding Account}" />
@@ -25,7 +25,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="MediaContentSave" DataType="{x:Type viewmodels:MediaViewModel}">
-            <StackPanel>
+            <StackPanel Width="400">
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" Margin="5,0,5,0" FontSize ="14" Text="{Binding Name}" />
@@ -86,7 +86,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ScheduleSendUserExecution" DataType="{x:Type viewmodels:DeviceViewModel}">
-            <StackPanel>
+            <StackPanel Width="400">
                 <!--<StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Device_DialogTitle}" />
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Margin="10,0,10,0" Text="{Binding Name}" />
@@ -101,13 +101,13 @@
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="SelectIPAddress" DataType="{x:Type viewmodels:DeviceViewModel}">
+        <!--<DataTemplate x:Key="SelectIPAddress" DataType="{x:Type viewmodels:DeviceViewModel}">
             <StackPanel>
-                <!--<StackPanel Orientation="Horizontal" Margin="10" >
+                --><!--<StackPanel Orientation="Horizontal" Margin="10" >
             <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Device_DialogTitle}" />
             <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Margin="10,0,10,0" Text="{Binding Name}" />
             <TextBlock Foreground="White" VerticalAlignment="Center" FontSize ="16" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_124}" />
-        </StackPanel>-->
+        </StackPanel>--><!--
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_Monitor_Tooltip_127}" />
                 </StackPanel>
@@ -116,7 +116,7 @@
                     <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
                 </StackPanel>
             </StackPanel>
-        </DataTemplate>
+        </DataTemplate>-->
         <DataTemplate x:Key="SyncUserResult" DataType="{x:Type viewmodels:LoginViewModel}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10" >
@@ -151,14 +151,14 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ManageErrorResult" DataType="{x:Type viewmodels:PageViewModel}">
-            <StackPanel>
+            <StackPanel Width="400">
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text ="{Binding ErrorMessage}" />
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DeleteExecution" DataType="{x:Type viewmodels:PageViewModel}">
-            <StackPanel>
+            <StackPanel Width="400">
                 <StackPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize = "14" Text ="{DynamicResource LanguageKey_Code_DeleteConfirm}" />
                 </StackPanel>
@@ -170,7 +170,7 @@
         </DataTemplate>
     </UserControl.Resources>
     <DockPanel LastChildFill="False" Background="#2A3255">
-        <Grid HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top"  Width="400">
+        <Grid HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="2" />

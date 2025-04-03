@@ -43,21 +43,17 @@ namespace MediaControlDistributionCenter.Views
 
         private void DeviceControlContent_Unloaded(object sender, RoutedEventArgs e)
         {
-            dgDevices.SelectedItem = null;
+            //dgDevices.SelectedItem = null;
         }
 
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
         {
             InitPage("Brightness");
-            if (manageViewModel.ConnectionMode.Mode == "Local")
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
+            this.Dispatcher.Invoke(async () =>
             {
-                var communication = App.ServicesProvider.GetRequiredService<Communication>();
-                foreach (var device in manageViewModel.Devices)
-                {
-                    device.ConnectCommand.Execute(communication);
-                }
-            }
-            manageViewModel.GetDeviceTimeControls();
+                await manageViewModel.SyncDeviceTimeControls();
+            });
         }
 
         public void InitPage(string fun)
@@ -100,25 +96,6 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel.ExecuteRealTimeControlCommand.Execute(null);
-        }
-
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var viewModel = ((sender as DataGrid).SelectedItem as DeviceViewModel);
-            if (viewModel != null)
-            {
-                if (manageViewModel.CurrentDevice != null && manageViewModel.CurrentDevice.Id == viewModel.Id)
-                {
-                    return;
-                }
-                manageViewModel.CurrentDevice = viewModel;
-                manageViewModel.GetDeviceTimeControls();
-            }
-            else
-            {
-                manageViewModel.CurrentDevice = null;
-                manageViewModel.DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>();
-            }
         }
 
         private void btnAddTimeControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -167,9 +144,16 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            this.Dispatcher.BeginInvoke(async () => 
+            this.Dispatcher.Invoke(async () =>
             {
-                await manageViewModel.DeleteBatchCommand.ExecuteAsync(null);
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    await manageViewModel.DeleteBatchCommand.ExecuteAsync(null);
+                }
+
+                manageViewModel.CanDelete = null;
             });
         }
 
@@ -231,7 +215,7 @@ namespace MediaControlDistributionCenter.Views
                     break;
             }
 
-            dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
+            //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
             manageViewModel.GetDeviceTimeControls();
         }
 
@@ -499,10 +483,23 @@ namespace MediaControlDistributionCenter.Views
             }
         }
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
-            manageViewModel.ConnectDeviceCommand.Execute(null);
+            manageViewModel.SearchCommand.Execute(null);
+        }
+
+        private void btnDetectConnectedDevice(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
+            this.Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.SyncDeviceTimeControls();
+            });
+        }
+
+        private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            manageViewModel.GetDeviceTimeControls();
         }
     }
 }

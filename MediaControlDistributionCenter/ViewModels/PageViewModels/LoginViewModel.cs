@@ -52,9 +52,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private string? selectedIpAddress;
 
         [ObservableProperty]
-        private DeviceViewModel? connectedDevice;
-
-        [ObservableProperty]
         public BitmapImage logoThumbnail;
 
         [ObservableProperty]

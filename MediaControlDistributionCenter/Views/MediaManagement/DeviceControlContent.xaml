@@ -198,11 +198,15 @@
                                 Width="32" Height="32"
                                 Padding="0"
                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                ToolTip="MaterialDesignIconButton" Command="{Binding SearchCommand}">
+                                ToolTip="MaterialDesignIconButton" Click="btnSearch_Click" Command="{Binding SearchCommand}">
                                 <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
                             </Button>
                         </StackPanel>
-
+                        <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock MouseDown="btnDetectConnectedDevice" VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Refresh}" />
+                            </StackPanel>
+                        </Border>
                         <!--<Button Background="Transparent" BorderBrush="#404870" Padding="0">
                             <StackPanel Orientation="Horizontal">
                                 <Image Width="12" Height="12" Margin="4,7" Source="/Assets/6.png" HorizontalAlignment="Left"/>
@@ -222,9 +226,9 @@
                                 IsReadOnly="True" 
                                 SelectionMode="Single" 
                                 FrozenColumnCount="1"
-                                Name="dgDevices"
                                 Background="Transparent" 
-                                SelectionChanged="DataGrid_SelectionChanged"
+                                SelectedItem="{Binding CurrentDevice}"
+                                SelectionChanged="DevicesDataGrid_SelectionChanged"
                                 ItemsSource="{Binding Devices}"
                             >
                                 <DataGrid.Resources>
@@ -240,18 +244,17 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
-                                        <DataGridTextColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
-                                        </DataGridTextColumn.Header>
-                                    </DataGridTextColumn>
-                                    <DataGridTemplateColumn Width="100" >
+                                    <DataGridTemplateColumn Width="1*">
                                         <DataGridTemplateColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_132}" />
                                         </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="{DynamicResource LanguageKey_Code_Connect}" Foreground="White" Click="btnConnect_Click" Margin="3" Height="28" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                                                    <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter} , ConverterParameter=false}"/>
+                                                    <TextBlock VerticalAlignment="Center" Text="{Binding ConnectedText}" />
+                                                </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

@@ -78,11 +78,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         [Required]
-        private string startDate;
+        private DateTime startDate;
 
         [ObservableProperty]
         [Required]
-        private string endDate;
+        private DateTime endDate;
 
         [ObservableProperty]
         [Required]
@@ -117,7 +117,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isSendUserCompleted;
 
         [ObservableProperty]
-        private bool isReconnect;
+        private bool isConnected;
+
+        [ObservableProperty]
+        private string connectedText;
 
         [ObservableProperty]
         private ObservableCollection<string> ipAddresses;
@@ -138,14 +141,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 Id = Id,
                 Name = Name,
                 SnCode = SNumber,
-                Status = StatusText,
+                Status = Status,
                 GroupId = GroupId,
                 UserAccount = UserId,
                 Enabled = Enabled,
                 Width = Width,
                 Height = Height,
-                ValidStart = StartDate,
-                ValidEnd = EndDate,
+                ValidStart = StartDate.ToString("yyyy-MM-dd"),
+                ValidEnd = EndDate.ToString("yyyy-MM-dd"),
                 ContactName = ContactName,
                 ContactPhone = ContactNumber,
                 Brightness = Brightness,
@@ -162,7 +165,7 @@ namespace MediaControlDistributionCenter.ViewModels
             SNumber = model.SnCode;
             Resolution = $"{model.Width}*{model.Height}";
             LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-            Status = model.Status == "ONLINE" ? 1 : 0;
+            Status = model.Status;
             GroupId = model.GroupId;
             UserId = model.UserAccount;
             OwnerName = model.UserName;
@@ -170,11 +173,12 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSelected = isSelected;
             Enabled = model.Enabled;
             StatusText = GetStatus();
+            ConnectedText = GetConnectedStatus();
             EnableBtnContent = model.Enabled ==  0 ? FindResource("LanguageKey_Code_Enable") : FindResource("LanguageKey_Code_Disable");
             Width = model.Width;
             Height = model.Height;
-            StartDate = model.ValidStart;
-            EndDate = model.ValidEnd;
+            StartDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidStart);
+            EndDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidEnd);
             ContactName = model.ContactName;
             ContactNumber = model.ContactPhone;
             Brightness = model.Brightness;
@@ -187,10 +191,30 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string GetStatus()
         {
-            return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
+            return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : Status == 1 ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
-        public bool IsConnected()
+        public string GetConnectedStatus()
+        {
+            return IsConnected ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
+        }
+
+        public void GetPrograms()
+        {
+            var playbackRecordService = GetService<IPlaybackRecordService>();
+            var programService = GetService<IProgramService>();
+            var playRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            foreach (var record in playRecords) 
+            {
+                var program = programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if(program != null)
+                {
+                    MediaNames = program.Name;
+                }
+            }
+        }
+
+        public bool IsRealTimeConnected()
         {
             return client != null && client.netClient.State == Helpers.SocketClient.SocketState.Connected ? true : false;
         }
@@ -199,73 +223,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Connect(Communication client)
         {
             Log.Debug($"Socket status:{client.netClient.State}!");
-            if (ConnectionMode.Mode == "Local" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-            {
-                Log.Debug($"Device:{Name} has connected!");
-                this.client = client;
-                StatusText = GetStatus();
-                Log.Debug($"Device:{Name} setting comopleted!");
-                return;
-            }
-
-            if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-            {
-                client.Disconnect();
-                Log.Debug($"Device with IP:{client.IpAddr} disconnected!");
-            }
-
-            IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
-            foreach (var address in IpAddresses)
-            {
-                client.Connect(address, "5001");
-                int count = 1;
-                while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                {
-                    Thread.Sleep(500);
-                    count--;
-                }
-
-                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-                {
-                    SelectedIpAddress = address;
-                    break;
-                }
-            }
-
-            //IsReconnect = true;
-            //IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
-
-            //await ShowConfirmDialog();
-            //IsReconnect = false;
-
-            //if (string.IsNullOrEmpty(SelectedIpAddress))
-            //{
-            //    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
-            //    return;
-            //}
-
-            //if (ConnectionMode.Mode == "Remote" && client.netClient.State == Helpers.SocketClient.SocketState.Connected && SelectedIpAddress != client.IpAddr)
-            //{
-            //   client.Disconnect();
-            //}
-
-            //client.Connect(SelectedIpAddress, "5001");
-            //int count = 1;
-            //while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-            //{
-            //    Thread.Sleep(500);
-            //    count--;
-            //}
-
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
-                return;
-            }
 
             this.client = client;
             StatusText = GetStatus();
-            Log.Debug($"Device:{Name} with IP {SelectedIpAddress} connected success!");
+            IsConnected = true;
+            SelectedIpAddress = client.IpAddr;
+            ConnectedText = GetConnectedStatus();
             await Task.CompletedTask;
         }
 
@@ -279,6 +242,8 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             StatusText = GetStatus();
+            IsConnected = false;
+            ConnectedText = GetConnectedStatus();
         }
 
         [RelayCommand]
@@ -289,12 +254,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             var userInfo = new UsersSync();
@@ -341,12 +300,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             var userInfo = new { user.Account, user.Password, user.Role };
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
@@ -368,17 +321,17 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             string path = CommunicationCmd.CmdVerifySnCode + SNumber;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
                 ErrorMessage = $"{CommunicationCmd.CmdVerifySnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+
+            if (client.VerifySnCodeResult == "fail")
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdVerifySnCode} {FindResource("LanguageKey_Code_Device_Tooltip_108")}";
                 return;
             }
         }
@@ -391,12 +344,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             string path = CommunicationCmd.CmdBrightness + value;
@@ -418,12 +365,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             string path = CommunicationCmd.CmdVolume + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -441,12 +382,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             string path = CommunicationCmd.CmdReStart + value;
@@ -468,12 +403,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             string path = CommunicationCmd.CmdTime + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -491,12 +420,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             string path = CommunicationCmd.CmdTimeGPS + value;
@@ -534,12 +457,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             var model = program.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
@@ -561,12 +478,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             var model = program.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdChangeProgram + syncString;
@@ -579,7 +490,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteProgram(ProgramViewModel program)
+        private async Task EnableMonitor()
         {
             if (client == null)
             {
@@ -588,10 +499,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
+            var model = this.ToModel();
+            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string path = CommunicationCmd.CmdEnableMonitor + syncString;
+            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
             {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
+                ErrorMessage = $"{CommunicationCmd.CmdEnableMonitor} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteProgram(ProgramViewModel program)
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
             }
 
             var model = program.ToModel();
@@ -613,12 +539,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
@@ -654,12 +574,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
-            }
-
             string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -690,12 +604,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
-            }
-
-            if (!IsConnected())
-            {
-                Log.Debug($"Device:{Name} need to connected again!");
-                await Connect(client);
             }
 
             string path = CommunicationCmd.CmdSyncProgram + "List";

@@ -22,8 +22,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserViewModel LoginUser { get; set; }
 
-        public DeviceViewModel? SelectedDevice { get; set; }
-
         public DeviceGroupViewModel? SelectedGroup { get; set; }
 
         public bool ShowNavigation { get; set; }
@@ -36,14 +34,14 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<DeviceViewModel> devices;
 
-        //[ObservableProperty]
-        //private ObservableCollection<DeviceViewModel> disabledDevices;
-
         [ObservableProperty]
         private long? selectedGroupId;
 
         [ObservableProperty]
         private int selectDisabled = 1;
+
+        [ObservableProperty]
+        private bool isSearching;
 
         private readonly IMonitorService monitorService;
         private readonly IMonitorGroupService monitorGroupService;
@@ -87,16 +85,15 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);
+
+                if (ConnectedDevice != null && result.SNumber == ConnectedDevice.SNumber)
+                {
+                    result.ConnectCommand.Execute(communication);
+                }
+
+                result.GetPrograms();
                 return result;
             }));
-
-            //var disabledDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId, Enabled = 0 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            //this.DisabledDevices = new ObservableCollection<DeviceViewModel>(disabledDevices.OrderByDescending(c => c.Id).Select(c =>
-            //{
-            //    var result = new DeviceViewModel();
-            //    result.Binding(c);
-            //    return result;
-            //}));
         }
 
         [RelayCommand]
@@ -117,7 +114,7 @@ namespace MediaControlDistributionCenter.ViewModels
             viewModel.UserId = CurrentUser.Account;
             viewModel.OwnerName = userService.GetAll(new UserDto { Account = CurrentUser.Account }).GetAwaiter().GetResult().Data!.First().Company;
             viewModel.DeviceId = "";
-            viewModel.Status = 1;
+            viewModel.Status = 0;
             viewModel.Enabled = 1;
 
             return viewModel;
@@ -136,6 +133,26 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 LoadData();
                 CloseDialog();
+            }
+        }
+
+        [RelayCommand]
+        private async Task ChangeGroup()
+        {
+            var selectedItems = Devices.Where(c => c.IsSelected);
+
+            foreach (var item in selectedItems)
+            {
+                item.GroupId = SelectedGroupId;
+
+                item.IsSelected = false;
+                var response = await monitorService.Save(item.ToModel());
+                if (response.Code == 200)
+                {
+                    SelectedGroupId = null;
+                    LoadData();
+                    CloseDialog();
+                }
             }
         }
 
@@ -175,29 +192,83 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task EnableDevice(DeviceViewModel viewModel)
         {
-            var response = await monitorService.EnableById(viewModel.Id, viewModel.Enabled == 1);
-            if (response.Code == 200)
+            if (ConnectionMode.Mode == "Remote" && viewModel.IsConnected)
             {
-                LoadData();
+                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    viewModel.DisconnectCommand.Execute(null);
+                    return;
+                }
+
+                viewModel.EnableMonitorCommand.Execute(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    return;
+                }
+
+                if (viewModel.Enabled == 1)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_130");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                }
+
+                if (viewModel.Enabled == 0)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_131");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                }
+
+                var response = await monitorService.EnableById(viewModel.Id, viewModel.Enabled == 1);
+                if (response.Code == 200)
+                {
+                    LoadData();
+                }
             }
         }
 
         [RelayCommand]
-        private async Task ChangeGroup()
+        private async Task ActivateDevice(DeviceViewModel viewModel)
         {
-            var selectedItems = Devices.Where(c => c.IsSelected);
-
-            foreach (var item in selectedItems)
+            if (ConnectionMode.Mode == "Remote" && viewModel.IsConnected)
             {
-                item.GroupId = SelectedGroupId;
+                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    viewModel.DisconnectCommand.Execute(null);
+                    return;
+                }
 
-                item.IsSelected = false;
-                var response = await monitorService.Save(item.ToModel());
+                viewModel.Status = 1;
+                viewModel.SendUserCommand.Execute(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    return;
+                }
+
+                if (viewModel.IsSendUserCompleted)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); 
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.IsSendUserCompleted = false;
+                }
+
+                var response = await monitorService.Save(viewModel.ToModel());
                 if (response.Code == 200)
                 {
-                    SelectedGroupId = null;
                     LoadData();
-                    CloseDialog();
                 }
             }
         }
@@ -210,6 +281,36 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 return;
             }
+
+            if (ConnectionMode.Mode == "Remote" && viewModel.Id != 0 && viewModel.IsConnected)
+            {
+                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    viewModel.DisconnectCommand.Execute(null);
+                    return;
+                }
+
+                viewModel.SendUserCommand.Execute(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    return;
+                }
+
+                if (viewModel.IsSendUserCompleted)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_129"); 
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.IsSendUserCompleted = false;
+                }
+            }
+
             var response = await monitorService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
@@ -219,63 +320,10 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ConnectDevice(DeviceViewModel viewModel)
+        private async Task DetectConnectedDevice()
         {
-            if (SelectedDevice != null && SelectedDevice.Id == viewModel.Id)
-            {
-                return;
-            }
-            await viewModel.ConnectCommand.ExecuteAsync(communication);
-            if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-            {
-                ErrorMessage = viewModel.ErrorMessage;
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                viewModel.ErrorMessage = null;
-            }
-            else
-            {
-                if (ConnectionMode.Mode == "Remote")
-                {
-                    if (viewModel.IsConnected())
-                    {
-                        await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                        {
-                            ErrorMessage = viewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            viewModel.ErrorMessage = null;
-                            viewModel.DisconnectCommand.Execute(null);
-                            return;
-                        }
-                        await viewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
-                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                        {
-                            ErrorMessage = viewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            viewModel.ErrorMessage = null;
-                        }
-                        else
-                        {
-                            SelectedDevice = viewModel;
-                            if (viewModel.IsSendUserCompleted)
-                            {
-                                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_128"); // "烧录用户信息成功";
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                viewModel.IsSendUserCompleted = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        [RelayCommand]
-        private void DisconnectDevice()
-        {
-            if (SelectedDevice != null)
-            {
-                SelectedDevice.DisconnectCommand.Execute(null);
-            }
+            await DetectCommunication(CurrentUser.Account);
+            LoadData();
         }
 
         protected override async Task SearchContent()
@@ -290,6 +338,10 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var viewModel = new DeviceViewModel();
                 viewModel.Binding(c);
+                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                {
+                    viewModel.ConnectCommand.Execute(communication);
+                }
                 return viewModel;
             }));
 

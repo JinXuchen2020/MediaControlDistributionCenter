@@ -42,14 +42,14 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaPublishDialog_Loaded(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.ConnectionMode.Mode == "Local")
-            {
-                var communication = App.ServicesProvider.GetRequiredService<Communication>();
-                foreach (var device in manageViewModel.Devices)
-                {
-                    device.ConnectCommand.Execute(communication);
-                }
-            }
+            //if (manageViewModel.ConnectionMode.Mode == "Local")
+            //{
+            //    var communication = App.ServicesProvider.GetRequiredService<Communication>();
+            //    foreach (var device in manageViewModel.Devices)
+            //    {
+            //        device.ConnectCommand.Execute(communication);
+            //    }
+            //}
         }
 
         private void btnPublishSave_Click(object sender, RoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 await manageViewModel.PublishCommand.ExecuteAsync(null);
 
-                var screenCount = manageViewModel.Devices.Select(c => c.IsSelected).Count();
+                var screenCount = manageViewModel.Devices.Where(c => c.IsSelected).Count();
                 manageViewModel.CurrentMedia.ScreensCount = screenCount;
                 await manageViewModel.SaveCommand.ExecuteAsync(null);
 
@@ -77,7 +77,10 @@ namespace MediaControlDistributionCenter.Views
             {
                 foreach (var item in manageViewModel.Devices)
                 {
-                    item.IsSelected = true;
+                    if (item.IsConnected)
+                    {
+                        item.IsSelected = true;
+                    }
                 }
             }
             else
