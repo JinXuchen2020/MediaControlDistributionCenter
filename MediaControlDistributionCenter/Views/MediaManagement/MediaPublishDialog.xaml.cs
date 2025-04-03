@@ -42,6 +42,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaPublishDialog_Loaded(object sender, RoutedEventArgs e)
         {
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
             //if (manageViewModel.ConnectionMode.Mode == "Local")
             //{
             //    var communication = App.ServicesProvider.GetRequiredService<Communication>();

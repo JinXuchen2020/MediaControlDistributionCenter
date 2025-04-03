@@ -116,6 +116,8 @@ namespace MediaControlDistributionCenter.ViewModels
             viewModel.DeviceId = "";
             viewModel.Status = 0;
             viewModel.Enabled = 1;
+            viewModel.StartDate = DateTime.Now;
+            viewModel.EndDate = DateTime.Now;
 
             return viewModel;
         }

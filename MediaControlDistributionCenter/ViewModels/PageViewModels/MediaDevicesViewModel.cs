@@ -71,6 +71,13 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task DetectConnectedDevice()
+        {
+            await DetectCommunication(CurrentMedia.UserId);
+            LoadData();
+        }
+
+        [RelayCommand]
         private async Task Publish()
         {
             this.PublishDevices.Clear();
@@ -86,6 +93,14 @@ namespace MediaControlDistributionCenter.ViewModels
                         continue;
                     }
 
+                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        ErrorMessage = item.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        continue;
+                    }
+
                     string filePath = $"{CurrentMedia.Name}.zip";
                     item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
@@ -94,13 +109,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
                         continue;
                     }
-                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        continue;
-                    }
+
                     await item.SyncFileSyncCommand.ExecuteAsync(filePath);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
