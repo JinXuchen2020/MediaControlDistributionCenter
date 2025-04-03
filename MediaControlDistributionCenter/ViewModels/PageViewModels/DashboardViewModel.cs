@@ -1,8 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BitMiracle.LibTiff.Classic;
+using CommunityToolkit.Mvvm.ComponentModel;
+using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using SqlSugar;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -17,9 +20,19 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<ProgramViewModel> medias;
 
+        [ObservableProperty]
+        private int totalDeviceCount;
+
+        [ObservableProperty]
+        private int connectedDeviceCount;
+
+        [ObservableProperty]
+        private int disconnectedDeviceCount;
+
         private readonly IMonitorService monitorService;
         private readonly IProgramService programService;
         private readonly IUserService userService;
+        private readonly Communication communication;
 
         public UserViewModel CurrentUser { get; set; }
 
@@ -27,12 +40,13 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public ProgramViewModel? SelectedMedia { get; set; }
 
-        public DashboardViewModel(LoginViewModel loginViewModel)
+        public DashboardViewModel(LoginViewModel loginViewModel, Communication communication)
         {
             CurrentUser = loginViewModel.CurrentUser;
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
             this.userService = GetService<IUserService>();
+            this.communication = communication;
         }
 
         public override void LoadData()
@@ -41,12 +55,23 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "admin":
                     var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(5).Select(c =>
+                    var deviceViewModels = deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
+                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        {
+                            viewModel.ConnectCommand.Execute(communication);
+                        }
+
+                        viewModel.GetPrograms();
                         return viewModel;
-                    }));
+                    });
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(5));
+
+                    TotalDeviceCount = deviceResponse.Count();
+                    ConnectedDeviceCount = deviceViewModels.Where(c => c.IsConnected).Count();
+                    DisconnectedDeviceCount = TotalDeviceCount - ConnectedDeviceCount;
 
                     var userResponse = userService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
                     Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
@@ -60,12 +85,23 @@ namespace MediaControlDistributionCenter.ViewModels
                     break;
                 case "agent":
                     deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(5).Select(c =>
+                    deviceViewModels = deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
+                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        {
+                            viewModel.ConnectCommand.Execute(communication);
+                        }
+
+                        viewModel.GetPrograms();
                         return viewModel;
-                    }));
+                    });
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(5));
+
+                    TotalDeviceCount = deviceResponse.Count();
+                    ConnectedDeviceCount = deviceViewModels.Where(c => c.IsConnected).Count();
+                    DisconnectedDeviceCount = TotalDeviceCount - ConnectedDeviceCount;
 
                     userResponse = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
                     Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
@@ -79,12 +115,23 @@ namespace MediaControlDistributionCenter.ViewModels
                     break;
                 case "user":
                     deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    Devices = new ObservableCollection<DeviceViewModel>(deviceResponse.OrderByDescending(c => c.Id).Take(4).Select(c =>
+                    deviceViewModels = deviceResponse.Select(c =>
                     {
                         var viewModel = new DeviceViewModel();
                         viewModel.Binding(c);
+                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        {
+                            viewModel.ConnectCommand.Execute(communication);
+                        }
+
+                        viewModel.GetPrograms();
                         return viewModel;
-                    }));
+                    });
+                    Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(4));
+
+                    TotalDeviceCount = deviceResponse.Count();
+                    ConnectedDeviceCount = deviceViewModels.Where(c => c.IsConnected).Count();
+                    DisconnectedDeviceCount = TotalDeviceCount - ConnectedDeviceCount;
 
                     Users = new ObservableCollection<UserViewModel>();
 

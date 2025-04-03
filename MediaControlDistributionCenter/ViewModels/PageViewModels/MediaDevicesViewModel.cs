@@ -79,51 +79,50 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    if (ConnectedDevice != null && ConnectedDevice.SNumber == item.SNumber && item.MediaNames != CurrentMedia.Name)
+                    if (ConnectedDevice != null && ConnectedDevice.SNumber == item.SNumber && item.MediaNames == CurrentMedia.Name)
                     {
-                        var existRecord = (await playbackRecordService.GetAll(model)).Data?.FirstOrDefault();
-                        if (existRecord != null) 
-                        {
+                        ErrorMessage = FindResource("LanguageKey_Code_Program_Tooltip_118");
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        continue;
+                    }
 
-                        }
-                        string filePath = $"{CurrentMedia.Name}.zip";
-                        item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            continue;
-                        }
-                        await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            continue;
-                        }
-                        await item.SyncFileSyncCommand.ExecuteAsync(filePath);
-                        if (!string.IsNullOrEmpty(item.ErrorMessage))
-                        {
-                            ErrorMessage = item.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            continue;
-                        }
+                    string filePath = $"{CurrentMedia.Name}.zip";
+                    item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        ErrorMessage = item.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        continue;
+                    }
+                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        ErrorMessage = item.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        continue;
+                    }
+                    await item.SyncFileSyncCommand.ExecuteAsync(filePath);
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        ErrorMessage = item.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        continue;
+                    }
 
-                        if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
+                    if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
+                    {
+                        var response = await playbackRecordService.Save(model);
+                        if (response.Code == 200)
                         {
-                            var response = await playbackRecordService.Save(model);
-                            if (response.Code == 200)
+                            this.PublishDevices.Add(item);
+                            var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<ProgramDto>();
+                            foreach (var media in shelfMedias)
                             {
-                                this.PublishDevices.Add(item);
-                                var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<ProgramDto>();
-                                foreach (var media in shelfMedias)
-                                {
-                                    media.Status = 2;
-                                    await programService.Save(media);
-                                }
-                                CurrentMedia.Status = 1;
-                                await programService.Save(CurrentMedia.ToModel());
+                                media.Status = 2;
+                                await programService.Save(media);
                             }
+                            CurrentMedia.Status = 1;
+                            await programService.Save(CurrentMedia.ToModel());
                         }
                     }
                 }

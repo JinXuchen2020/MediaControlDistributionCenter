@@ -198,6 +198,7 @@
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_115">未发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布已上架</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_117">已发布未上架</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_118">此设备正在播放当前节目！</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Management_Device">设备管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Create">新增显示器</sys:String>

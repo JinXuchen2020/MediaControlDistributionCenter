@@ -164,8 +164,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Source="/Assets/assets-0016.png" Width="32" Height="32" Stretch="Fill"/>
-                                        <Image Source="/Assets/assets-0017.png" Width="32" Height="32" Visibility="Collapsed" Stretch="Fill"/>
+                                        <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                                        <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter} , ConverterParameter=false}"/>
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                     </StackPanel>
                                 </DataTemplate>
@@ -210,7 +210,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#617FF4"/>
                     <TextBlock  Foreground="#617FF4" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
-                    <TextBlock x:Name="allDeviceCount" Foreground="#617FF4" Text="5"/>
+                    <TextBlock x:Name="allDeviceCount" Foreground="#617FF4" Text="{Binding TotalDeviceCount}"/>
                 </StackPanel>
             </Border>
             <Border CornerRadius="15"
@@ -220,8 +220,8 @@
                     Padding="5,3,5,3">
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#75D46C"/>
-                    <TextBlock  Foreground="#75D46C" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
-                    <TextBlock x:Name="onlineCount"  Foreground="#75D46C" Text="3"/>
+                    <TextBlock  Foreground="#75D46C" Text="{DynamicResource LanguageKey_Code_Connected}"/>
+                    <TextBlock x:Name="onlineCount"  Foreground="#75D46C" Text="{Binding ConnectedDeviceCount}"/>
                 </StackPanel>
             </Border>
             <Border CornerRadius="15"
@@ -231,8 +231,8 @@
                     Padding="5,3,5,3">
                 <StackPanel Orientation="Horizontal">
                     <Border Width="23" Height="23" CornerRadius="50" Background="#9B9C9F"/>
-                    <TextBlock  Foreground="#9B9C9F" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_112}"/>
-                    <TextBlock x:Name="offlineCount" Foreground="#9B9C9F" Text="2"/>
+                    <TextBlock  Foreground="#9B9C9F" Text="{DynamicResource LanguageKey_Code_Disconnected}"/>
+                    <TextBlock x:Name="offlineCount" Foreground="#9B9C9F" Text="{Binding DisconnectedDeviceCount}"/>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -318,7 +318,7 @@
                                 <Image Width="130" Height="100" Source="/Assets/windows-fill.png"/>
                                 <StackPanel Margin="0,5,0,0" VerticalAlignment="Center" >
                                     <TextBlock Margin="0,0,10,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
-                                    <TextBlock FontSize="12" Foreground="White" VerticalAlignment="Center" Text="{Binding StatusText}"/>
+                                    <TextBlock FontSize="12" Foreground="White" VerticalAlignment="Center" Text="{Binding ConnectedText}"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
