@@ -93,7 +93,8 @@ namespace MediaControlDistributionCenter.ViewModels
                         continue;
                     }
 
-                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                    string filePath = $"{CurrentMedia.Name}.zip";
+                    item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         ErrorMessage = item.ErrorMessage;
@@ -101,8 +102,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         continue;
                     }
 
-                    string filePath = $"{CurrentMedia.Name}.zip";
-                    item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
+                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         ErrorMessage = item.ErrorMessage;

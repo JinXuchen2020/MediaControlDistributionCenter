@@ -43,8 +43,8 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
         {
-            //manageViewModel.DetectConnectedDeviceCommand.Execute(null);
-            //ConnectedDeviceChanged?.Invoke(sender, null);
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
+            ConnectedDeviceChanged?.Invoke(sender, null);
             //if (manageViewModel.ConnectionMode.Mode == "Local")
             //{
             //    var communication = App.ServicesProvider.GetRequiredService<Communication>();
