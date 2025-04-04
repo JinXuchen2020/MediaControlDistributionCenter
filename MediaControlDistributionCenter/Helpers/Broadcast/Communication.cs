@@ -92,10 +92,15 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             }
             else
             {
+                Log.Information($"Socket connection disconnected, need to reconnect!");
+
                 Thread thread = new Thread(() =>
                 {
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
+
+                    Log.Information($"Socket connection reconnected!");
+                    Log.Information($"Send Heart:{path}!");
                     netClient.Send(utf8Bytes);
                 });
 

@@ -11,6 +11,7 @@ using System.Net.NetworkInformation;
 using MediaControlDistributionCenter.Helpers.Tool;
 using System.Collections;
 using System.IO.Pipes;
+using Serilog;
 
 namespace MediaControlDistributionCenter.Helpers.FTP.Server
 {
@@ -283,6 +284,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             // 此时利用委托在创建ListView的线程上调用
 
             //打印日志信息
+            Log.Information(str);
         }
 
         // 初始化数据连接

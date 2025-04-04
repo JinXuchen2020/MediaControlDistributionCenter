@@ -147,6 +147,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ConnectedDevice = new DeviceViewModel();
                 ConnectedDevice.Binding(connectedDevice);
                 ConnectedDevice.ConnectCommand.Execute(client);
+                client.StartHeart();
             }
         }
 

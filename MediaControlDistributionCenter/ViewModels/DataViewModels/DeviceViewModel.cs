@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
+using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
@@ -542,12 +543,13 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
+            var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
             var syncObj = new FileSync
             {
-                HostName = client.Heart.FtpIp,
-                ServerPort = int.Parse(client.Heart.FtpPort),
-                UserName = client.Heart.FtpUserName,
-                Password = client.Heart.FtpUserPwd,
+                HostName = ftpServer._Ip,
+                ServerPort = int.Parse(ftpServer._port),
+                UserName = ftpServer._userName,
+                Password = ftpServer._userPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };

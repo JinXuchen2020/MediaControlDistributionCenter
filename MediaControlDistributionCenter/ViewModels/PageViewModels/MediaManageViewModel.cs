@@ -187,6 +187,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
                     {
+                        await DetectCommunication(CurrentUser.Account);
                         await ConnectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
                         if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
                         {
@@ -233,6 +234,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
                     {
+                        await DetectCommunication(CurrentUser.Account);
                         await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(viewModel);
                         if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
                         {

@@ -119,12 +119,13 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 CurrentUser.Binding(userResult);
                                 IsLogin = true;
-                                if (ConnectionMode.Mode == "Local")
-                                {
-                                    communication.StartHeart();
-                                }
                             }
                         }
+                    }
+
+                    if (ConnectionMode.Mode == "Local")
+                    {
+                        communication.StartHeart();
                     }
                 }
                 else
