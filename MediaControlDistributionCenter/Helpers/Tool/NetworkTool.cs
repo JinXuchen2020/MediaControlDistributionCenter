@@ -16,17 +16,13 @@ namespace MediaControlDistributionCenter.Helpers.Tool
             foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
             {
                 // 过滤掉虚拟网络接口和不启用的接口
-                if (ni.OperationalStatus == OperationalStatus.Up)
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet && ni.OperationalStatus == OperationalStatus.Up)
                 {
-                    var ipPro = ni.GetIPProperties();
-                    if (!ipPro.IsDynamicDnsEnabled)
+                    foreach (var ip in ni.GetIPProperties().UnicastAddresses)
                     {
-                        foreach (var ip in ipPro.UnicastAddresses)
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                            {
-                                addresses.Add(ip.Address.ToString());
-                            }
+                            addresses.Add(ip.Address.ToString());
                         }
                     }
                 }
