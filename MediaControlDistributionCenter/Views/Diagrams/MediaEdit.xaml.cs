@@ -12,6 +12,7 @@ using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using SkiaSharp;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -412,11 +413,13 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageAdd_Click(object sender, RoutedEventArgs e)
         {
+            var maxId = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() : 0;
             var viewModel = new MediaPageViewModel(new MediaPage
             {
-                Id = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() + 1 : 1,
-                Order = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Order).Max() + 1 : 1,
+                Id = maxId + 1,
+                Order = maxId + 1,
                 PlayCount = 1,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
                 Components = new List<BaseComponent>()
             }, manageViewModel.CurrentUser.Account);
@@ -652,6 +655,8 @@ namespace MediaControlDistributionCenter.Views
                 if (viewModel.IsFile)
                 {
                     MainCanvas.Children.Remove(viewModel.FrameworkElement);
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(viewModel.FrameworkElement, MainCanvas);
                     viewModel.FrameworkElement = null;
                     manageViewModel.SelectedElement = null;
                     viewModel.Source = null;
@@ -724,7 +729,7 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    manageViewModel.CaptureCommand.Execute(MainCanvas);
+                    manageViewModel?.CaptureCommand.Execute(MainCanvas);
                 }
             }
         }

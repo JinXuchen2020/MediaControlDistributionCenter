@@ -61,6 +61,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         /// <summary>
         /// 直接控制 对时配置 
+        /// 参数：UTF+8  时区信息    复杂的NTP信息 射频信息 GPS信息 对时
+        /// </summary>
+        public readonly static string CmdSyncTime = "CMD|SyncTime|";
+
+        /// <summary>
+        /// 直接控制 对时配置 
         /// 参数：UTF+8  时区信息    GPS信息 对时
         /// </summary>
         public readonly static string CmdTimeGPS = "CMD|TimeGPS|";

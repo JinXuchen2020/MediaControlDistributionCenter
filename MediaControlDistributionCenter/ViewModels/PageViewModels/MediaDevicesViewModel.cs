@@ -99,14 +99,17 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
+                    CurrentMedia.Status = 1;
                     await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
@@ -115,6 +118,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
@@ -130,7 +134,6 @@ namespace MediaControlDistributionCenter.ViewModels
                                 media.Status = 2;
                                 await programService.Save(media);
                             }
-                            CurrentMedia.Status = 1;
                             await programService.Save(CurrentMedia.ToModel());
                         }
                     }

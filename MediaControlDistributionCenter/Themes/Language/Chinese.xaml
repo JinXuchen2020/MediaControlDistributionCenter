@@ -270,6 +270,8 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_125">立即重启后,播放器将在20s左右完成重启,在此期间,播放器会处于离线状态.请在播放器重新上线后,再进行其他操作。</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_128">当前时间</sys:String>
+
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_OldPassword">原密码</sys:String>
@@ -385,6 +387,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_194">正文</sys:String>    
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_195">文档格式文件只能上传到文档组件！</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_196">每页时长(s)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_197">无</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 

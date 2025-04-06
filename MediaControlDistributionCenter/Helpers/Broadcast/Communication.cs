@@ -35,6 +35,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncSnCodeResult { get; private set; }
 
+        public string SyncTimeResult { get; private set; }
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
@@ -49,12 +51,18 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpUserPwd = ftpServer._userPwd;
             Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             netClient.ErrorReceived += NetClient_ErrorReceived;
+            netClient.Traced += NetClient_Traced;
             ReceiveOverCmdStr = new List<string>();
+        }
+
+        private void NetClient_Traced(object? sender, NetSockTracedInfoEventArgs e)
+        {
+            Log.Error($"Socket Error: {e.TraceName}, Error Message: {e.Message}");
         }
 
         private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
         {
-            Log.Error($"Socket Error: {e.Function}, Error Message: {e.Exception.Message}");
+            Log.Error($"Socket Error: {e.Function}, Error Message: {e.Exception?.Message}");
         }
 
         /// <summary>
@@ -174,6 +182,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         {
                             SyncSnCodeResult = data[2];
                             Log.Information(SyncSnCodeResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
+                        {
+                            SyncTimeResult = data[2];
+                            Log.Information(SyncTimeResult);
                         }
                     }
                     catch (Exception ex)

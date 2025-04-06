@@ -86,6 +86,11 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 new ComponentEffect()
                 {
+                    Key = "Empty",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_197"),
+                },
+                new ComponentEffect()
+                {
                     Key = "ExtendRight",
                     Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_154"),
                     Action = FadeIn
@@ -551,43 +556,44 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Border result = new Border
             {
-                BorderThickness = new Thickness(2),
+                BorderThickness = new Thickness(4),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C")),
                 Width = Width,
                 Height = Height,
                 DataContext = this,
             };
 
-            var rectangle = new System.Windows.Shapes.Rectangle
-            {
-                StrokeDashArray = new DoubleCollection([4, 2]),
-                Stroke = Brushes.Gray,
-                StrokeThickness = 2,
-            };
+            //var rectangle = new System.Windows.Shapes.Rectangle
+            //{
+            //    StrokeDashArray = new DoubleCollection([4, 2]),
+            //    Stroke = Brushes.Gray,
+            //    StrokeThickness = 2,
+            //};
 
-            var binding = new Binding("Width")
-            {
-                RelativeSource = new RelativeSource
-                {
-                    AncestorType = typeof(Border)
-                }
-            };
+            //var binding = new Binding("Width")
+            //{
+            //    RelativeSource = new RelativeSource
+            //    {
+            //        AncestorType = typeof(Border)
+            //    }
+            //};
 
-            rectangle.SetBinding(System.Windows.Shapes.Rectangle.WidthProperty, binding);
-            var heightBinding = new Binding("Height")
-            {
-                RelativeSource = new RelativeSource
-                {
-                    AncestorType = typeof(Border)
-                }
-            };
+            //rectangle.SetBinding(System.Windows.Shapes.Rectangle.WidthProperty, binding);
+            //var heightBinding = new Binding("Height")
+            //{
+            //    RelativeSource = new RelativeSource
+            //    {
+            //        AncestorType = typeof(Border)
+            //    }
+            //};
 
-            rectangle.SetBinding(System.Windows.Shapes.Rectangle.HeightProperty, heightBinding);
+            //rectangle.SetBinding(System.Windows.Shapes.Rectangle.HeightProperty, heightBinding);
 
-            VisualBrush borderBrush = new VisualBrush()
-            {
-                Visual = rectangle
-            };
-            result.BorderBrush = borderBrush;
+            //VisualBrush borderBrush = new VisualBrush()
+            //{
+            //    Visual = rectangle
+            //};
+            //result.BorderBrush = borderBrush;
 
             return result;
         }

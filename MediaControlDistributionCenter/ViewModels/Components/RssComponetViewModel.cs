@@ -134,7 +134,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = "about:blank",
                 Interval = 10,
                 PlayMode = "pageTurning",
-                ComponentEffect = "FadeIn",
+                ComponentEffect = "Empty",
                 EffectDuration = 1000,
                 Direction = "rollingLeft",
                 RollingSpeed = 3,
@@ -227,7 +227,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
             {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+                var effect = Effects.Find(c => c.Key == ComponentEffectKey);
+                if (effect != null && effect.Action != null)
+                {
+                    effect.Action(RunningElement);
+                }
             }
         }
 
@@ -249,10 +253,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var newContent = LoadRssFeed().GetAwaiter().GetResult();
             if (newContent != null)
             {
-
                 var mainCanvas = FindCanvasParent(target);
                 mainCanvas.Children.Remove(target);
                 mainCanvas.Children.Add(newContent);
+                EffectExecution();
             }
         }
 
@@ -430,18 +434,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool isSelected;
-
-        //public RssContentViewModel(RssContent content)
-        //{
-        //    fieldName = content.FieldName;
-        //    fontFamily = content.FontFamily;
-        //    fontSize = content.FontSize;
-        //    fontColor = content.FontColor;
-        //    isBold = content.IsBold;
-        //    isItalic = content.IsItalic;
-        //    isUnderline = content.IsUnderline;
-        //    isSelected = false;
-        //}
 
         public RssContent ToModel()
         {

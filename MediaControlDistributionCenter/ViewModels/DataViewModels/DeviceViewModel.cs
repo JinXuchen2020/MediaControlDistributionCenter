@@ -129,6 +129,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string selectedIpAddress;
 
+        [ObservableProperty]
+        private string? currentTime;
+
         private Communication? client;
 
         public DeviceViewModel()
@@ -414,6 +417,27 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task SyncCurrentTime()
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncTime + "Current";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncTime} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+
+            CurrentTime = client.SyncTimeResult;
+        }
+
+        [RelayCommand]
         private async Task TimeGPSSync(string value)
         {
             if (client == null)
@@ -547,14 +571,14 @@ namespace MediaControlDistributionCenter.ViewModels
             var syncObj = new FileSync
             {
                 HostName = ftpServer._Ip,
-                ServerPort = int.Parse(ftpServer._port),
+                ServerPort = ftpServer._port,
                 UserName = ftpServer._userName,
                 Password = ftpServer._userPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };
-            string fielSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
-            string path = CommunicationCmd.CmdSyncFile + fielSyncString;
+            string fileSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
+            string path = CommunicationCmd.CmdSyncFile + fileSyncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result) 
             {

@@ -1011,8 +1011,9 @@
                         materialDesign:ColorZoneAssist.Background="#16171D"
                         materialDesign:ColorZoneAssist.Foreground="White"
                         SelectionChanged="LeftTab_SelectionChanged"
+                        SelectedIndex="1"
                         materialDesign:ColorZoneAssist.Mode="Custom">
-                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Media}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Media}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=true}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -1063,7 +1064,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Page}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Page}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=false}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -1270,7 +1271,7 @@
             <Border Grid.Row="2" Grid.Column="2" BorderThickness="2,0,0,0" BorderBrush="#40476F" Background="#16171D">
                 <Grid Grid.Row="2" Grid.Column="2">
                     <Border Width="auto" Background="#16171D"/>
-                    <TabControl Width="auto" Height="auto" Cursor="Hand"
+                    <TabControl Width="auto" Height="auto" Cursor="Hand" SelectedIndex="1"
                     materialDesign:ColorZoneAssist.Background="#16171D"
                     materialDesign:ColorZoneAssist.Foreground="White"
                     materialDesign:ColorZoneAssist.Mode="Custom">

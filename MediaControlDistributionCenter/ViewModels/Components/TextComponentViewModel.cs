@@ -122,7 +122,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 PlayMode = "pageTurning",
-                ComponentEffect = "FadeIn",
+                ComponentEffect = "Empty",
                 EffectDuration = 1000,
                 Direction = "rollingLeft",
                 Timeline = 5,
@@ -252,11 +252,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 IsRunningLoaded = true;
                 if (sender is RichTextBox richTextBox)
                 {
-                    if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(richTextBox);
-                    }
-
+                    RunningElement = richTextBox;
                     InitializeTimer(richTextBox);
                 }                
             };
@@ -286,7 +282,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
             {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+                var effect = Effects.Find(c => c.Key == ComponentEffectKey);
+                if (effect != null && effect.Action != null)
+                {
+                    effect.Action(RunningElement);
+                }
             }
         }
 
@@ -373,11 +373,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (currentPlayCount < PlayCount)
             {
-                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                {
-                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
-                }
-
+                EffectExecution();
                 currentPlayCount++;
             }
             else

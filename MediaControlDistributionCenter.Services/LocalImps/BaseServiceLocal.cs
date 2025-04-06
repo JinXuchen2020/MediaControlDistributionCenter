@@ -126,7 +126,12 @@ namespace MediaControlDistributionCenter.Services.LocalImps
 
         public async Task<ResultResponse<bool>> DeleteBatch(IList<long> ids)
         {
-            var result = SQLite.DeleteByIds<Model>(ids.Select(c => (object)c).ToList());
+            var result = 0;
+            if (ids.Count > 0)
+            {
+                result = SQLite.DeleteByIds<Model>(ids.Select(c => (object)c).ToList());
+            }
+
             return await Task.FromResult(new ResultResponse<bool>
             {
                 Code = 200,

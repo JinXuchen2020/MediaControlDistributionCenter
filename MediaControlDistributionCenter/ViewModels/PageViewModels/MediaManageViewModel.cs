@@ -193,6 +193,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = ConnectedDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            ConnectedDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -240,6 +241,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = ConnectedDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            ConnectedDevice.ErrorMessage = null;
                             return;
                         }
                         break;

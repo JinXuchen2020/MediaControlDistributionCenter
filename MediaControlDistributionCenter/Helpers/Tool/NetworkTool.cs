@@ -12,22 +12,26 @@ namespace MediaControlDistributionCenter.Helpers.Tool
 
         public static List<string> GetLocalIPv4Address()
         {
-            List<string> addrs = new List<string>();
+            List<string> addresses = new();
             foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
             {
                 // 过滤掉虚拟网络接口和不启用的接口
                 if (ni.OperationalStatus == OperationalStatus.Up)
                 {
-                    foreach (var ip in ni.GetIPProperties().UnicastAddresses)
+                    var ipPro = ni.GetIPProperties();
+                    if (!ipPro.IsDynamicDnsEnabled)
                     {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        foreach (var ip in ipPro.UnicastAddresses)
                         {
-                            addrs.Add(ip.Address.ToString());
+                            if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                            {
+                                addresses.Add(ip.Address.ToString());
+                            }
                         }
                     }
                 }
             }
-            return addrs;
+            return addresses;
         }
 
         public static List<string> GetGatewayIp()

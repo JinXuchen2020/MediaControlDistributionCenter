@@ -215,6 +215,11 @@ namespace MediaControlDistributionCenter.Views
                     break;
             }
 
+            if (commandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+            }
+
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
             manageViewModel.GetDeviceTimeControls();
         }

@@ -78,7 +78,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 Timeline = 5,
-                ComponentEffect = "FadeIn",
+                ComponentEffect = "Empty",
                 EffectDuration = 1000
             }, userAccount);
         }
@@ -153,7 +153,11 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (ComponentEffectKey != null)
             {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+                var effect = Effects.Find(c => c.Key == ComponentEffectKey);
+                if(effect != null && effect.Action != null)
+                {
+                    effect.Action(RunningElement);
+                }
             }
         }
 
@@ -282,10 +286,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (currentPlayCount < PlayCount)
             {
-                if (ComponentEffect != null)
-                {
-                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
-                }
+                EffectExecution();
                 currentPlayCount++;
             }
             else

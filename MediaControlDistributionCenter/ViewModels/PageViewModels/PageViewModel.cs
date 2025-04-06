@@ -147,7 +147,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 ConnectedDevice = new DeviceViewModel();
                 ConnectedDevice.Binding(connectedDevice);
                 ConnectedDevice.ConnectCommand.Execute(client);
-                client.StartHeart();
+                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+                {
+                    client.StartHeart();
+                }
             }
         }
 
