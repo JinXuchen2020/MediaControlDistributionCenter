@@ -30,6 +30,26 @@ namespace MediaControlDistributionCenter.Helpers.Tool
             return addresses;
         }
 
+        public static List<string> GetLocalIPv4Address(string gatewayAddress)
+        {
+            List<string> addresses = new();
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                // 过滤掉虚拟网络接口和不启用的接口
+                if (ni.GetIPProperties().GatewayAddresses.Any(c=>c.Address.ToString() == gatewayAddress) && ni.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach (var ip in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            addresses.Add(ip.Address.ToString());
+                        }
+                    }
+                }
+            }
+            return addresses;
+        }
+
         public static List<string> GetGatewayIp()
         {
             var result = new List<string>();

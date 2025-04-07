@@ -23,6 +23,13 @@ namespace MediaControlDistributionCenter.Views
             InitializeComponent();
 
             DataContext = dashboardViewModel;
+
+            this.Loaded += Dashboard_Loaded;
+        }
+
+        private void Dashboard_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

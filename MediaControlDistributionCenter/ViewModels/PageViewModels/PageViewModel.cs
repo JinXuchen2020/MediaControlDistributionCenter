@@ -111,7 +111,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 int count = 10;
                 while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
                 {
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     count--;
                 }
 
@@ -123,8 +123,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_117");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
                 ConnectedDevice = null;
                 return;
             }
@@ -141,16 +139,13 @@ namespace MediaControlDistributionCenter.ViewModels
             var snCode = client.SyncSnCodeResult ?? string.Empty;
 
             var monitorService = GetService<IMonitorService>();
-            var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode, UserAccount = userAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+            var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
             if (connectedDevice != null)
             {
                 ConnectedDevice = new DeviceViewModel();
                 ConnectedDevice.Binding(connectedDevice);
                 ConnectedDevice.ConnectCommand.Execute(client);
-                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-                {
-                    client.StartHeart();
-                }
+                client.StartHeart();
             }
         }
 

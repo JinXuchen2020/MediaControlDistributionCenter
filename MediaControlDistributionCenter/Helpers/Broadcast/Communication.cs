@@ -1,6 +1,7 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
+using MediaControlDistributionCenter.Helpers.Tool;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -43,9 +44,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public string IpAddr; //Ip地址
         public string Port; //端口
 
+        private readonly FtpServer ftpServer;
+
         public Communication(FtpServer ftpServer)
         {
-            Heart.FtpIp = ftpServer._Ip;
+            this.ftpServer = ftpServer;
             Heart.FtpPort = ftpServer._port;
             Heart.FtpUserName = ftpServer._userName;
             Heart.FtpUserPwd = ftpServer._userPwd;
@@ -57,7 +60,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         private void NetClient_Traced(object? sender, NetSockTracedInfoEventArgs e)
         {
-            Log.Error($"Socket Error: {e.TraceName}, Error Message: {e.Message}");
+            Log.Error($"Socket Traced: {e.TraceName}, Error Message: {e.Message}");
         }
 
         private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
@@ -70,6 +73,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public void StartHeart()
         {
+            StartFtpServer();
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
             int interval = 5000; // 5000毫秒即5秒 
@@ -89,6 +93,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <param name="e"></param>
         private void _heartbeatTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
+            Heart.FtpIp = ftpServer._Ip;
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
 
@@ -127,7 +132,19 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
             netClient.Connect(iPEnd);
             netClient.ReceiveCompleted += NetClient_ReceiveCompleted;
-        }        
+        }
+
+        public void StartFtpServer()
+        {
+            var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
+            if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
+            {
+                ftpServer._Ip = ipAddresses[0];
+            }
+
+            ftpServer.FtpServerStop();
+            ftpServer.FtpServerStart();
+        }
 
         /// <summary>
         /// 断开与 播控盒链接
