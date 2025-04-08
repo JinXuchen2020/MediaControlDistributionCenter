@@ -83,6 +83,14 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaEdit_Loaded(object sender, RoutedEventArgs e)
         {
+            MainCanvas.MouseLeftButtonDown += (sender, e) =>
+            {
+                if (e.Source == sender && manageViewModel.SelectedElement != null)
+                {
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                }
+            };
             LoadCanvasComponents(manageViewModel);
         }
 
@@ -309,6 +317,13 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
+            SaveContent();
+
+            manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
+        }
+
+        private void SaveContent()
+        {
             manageViewModel.CaptureCommand.Execute(MainCanvas);
 
             var configModel = manageViewModel.MediaConfig.ToModel();
@@ -319,9 +334,7 @@ namespace MediaControlDistributionCenter.Views
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
-            manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
-
-            foreach(var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
+            foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
             {
                 fileService.DeleteResourcePath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name));
             }
@@ -329,7 +342,7 @@ namespace MediaControlDistributionCenter.Views
             foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.Components.Any(c => c.IsDeleted)))
             {
                 var deleteCompos = deletePage.Components.Where(c => c.IsDeleted);
-                foreach (var compo in deleteCompos) 
+                foreach (var compo in deleteCompos)
                 {
                     var componentPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name, compo.Name);
                     fileService.DeleteResourcePath(componentPath);
@@ -339,14 +352,8 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
+            SaveContent();
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name);
-
-            if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
-            {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_151");
-                manageViewModel.ShowConfirmDialogCommand.Execute(null);
-                return;
-            }
 
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
             fileService.CreatZip(sourceDic, desZipFilePath);
@@ -429,20 +436,26 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaPageViewModel)!;
-            viewModel.SubmitCommand.Execute(null);
-            if (!viewModel.HasErrors)
+            var maxId = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() : 0;
+            var viewModel = new MediaPageViewModel(new MediaPage
             {
-                if (manageViewModel.SelectedPage != null)
-                {
-                    manageViewModel.SelectedPage.IsSelected = false;
-                }
-                manageViewModel.SelectedPage = viewModel;
-                viewModel.IsSelected = true;
-                manageViewModel.MediaConfig.Pages.Add(viewModel);
-                manageViewModel.CloseDialogCommand.Execute(null);
-                LoadCanvasComponents(manageViewModel);
+                Id = maxId + 1,
+                Order = maxId + 1,
+                PlayCount = 1,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
+                Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
+                Components = new List<BaseComponent>()
+            }, manageViewModel.CurrentUser.Account);
+
+            if (manageViewModel.SelectedPage != null)
+            {
+                manageViewModel.SelectedPage.IsSelected = false;
             }
+            manageViewModel.SelectedPage = viewModel;
+            viewModel.IsSelected = true;
+            manageViewModel.MediaConfig.Pages.Add(viewModel);
+            LoadCanvasComponents(manageViewModel);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
@@ -503,7 +516,12 @@ namespace MediaControlDistributionCenter.Views
         private void SelectComponent_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var viewModel = ((sender as DockPanel).DataContext as BaseComponentViewModel)!;
-            manageViewModel.SelectedElement = null;
+            if (manageViewModel.SelectedElement != null)
+            {
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                manageViewModel.SelectedElement = null;
+            }
             SwitchComponent(viewModel);
         }
 
@@ -517,6 +535,8 @@ namespace MediaControlDistributionCenter.Views
                 if (currentCom.FrameworkElement != null)
                 {
                     MainCanvas.Children.Remove(currentCom.FrameworkElement);
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(currentCom.FrameworkElement, MainCanvas);
                 }
                 manageViewModel.SelectedComponent = null;
                 manageViewModel.SelectedElement = null;

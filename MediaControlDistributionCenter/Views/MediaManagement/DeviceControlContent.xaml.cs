@@ -191,13 +191,14 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.CommandTypeHint = "请输入亮度";
                     manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
                     manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_119");
+                    manageViewModel.CommandRTValue = manageViewModel.CurrentDevice?.Brightness?.ToString();
                     break;
                 case "Volume":
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
                     manageViewModel.CommandTypeHint = "请输入音量";
                     manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
                     manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
-
+                    manageViewModel.CommandRTValue = manageViewModel.CurrentDevice?.Volume?.ToString();
                     break;
                 case "TimeSync":
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_121");

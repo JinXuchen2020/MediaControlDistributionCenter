@@ -60,7 +60,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         private void NetClient_Traced(object? sender, NetSockTracedInfoEventArgs e)
         {
-            Log.Error($"Socket Traced: {e.TraceName}, Error Message: {e.Message}");
+            Log.Information($"Socket Traced: {e.TraceName}, Message: {e.Message}");
         }
 
         private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
@@ -140,10 +140,17 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
             {
                 ftpServer._Ip = ipAddresses[0];
+
+                if (ftpServer.IsStarted)
+                {
+                    ftpServer.FtpServerStop();
+                }
             }
 
-            ftpServer.FtpServerStop();
-            ftpServer.FtpServerStart();
+            if (!ftpServer.IsStarted)
+            {
+                ftpServer.FtpServerStart();
+            }
         }
 
         /// <summary>

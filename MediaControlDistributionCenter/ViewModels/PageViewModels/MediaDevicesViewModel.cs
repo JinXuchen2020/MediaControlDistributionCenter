@@ -86,7 +86,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    if (ConnectedDevice != null && ConnectedDevice.SNumber == item.SNumber && item.MediaNames == CurrentMedia.Name)
+                    if (ConnectedDevice == null || ConnectedDevice.SNumber != item.SNumber)
                     {
                         ErrorMessage = FindResource("LanguageKey_Code_Program_Tooltip_118");
                         await ShowConfirmDialogCommand.ExecuteAsync(null);

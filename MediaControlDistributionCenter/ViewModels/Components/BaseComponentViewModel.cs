@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Views.CustomControls;
+using SkiaSharp;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -432,8 +433,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 isDragging = true;
                 startPoint = e.GetPosition(canvas);
                 selectedElement.CaptureMouse(); // 捕获鼠标
-                manageViewModel.SelectedElement = null;
-                if (manageViewModel.SelectedComponent!= null)
+                var resizableControl = new ResizableControl();
+                if(manageViewModel.SelectedElement != null)
+                {
+                    resizableControl.ClearResizable(manageViewModel.SelectedElement, canvas);
+                    manageViewModel.SelectedElement = null;
+                }
+
+                if (manageViewModel.SelectedComponent != null)
                 {
                     manageViewModel.SelectedComponent.IsSelected = false;
                 }
@@ -441,7 +448,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 manageViewModel.SelectedComponent = viewModel;
                 manageViewModel.SelectedComponent.IsSelected = true;
                 manageViewModel.SelectedElement = selectedElement;
-                var resizableControl = new ResizableControl();
                 resizableControl.MakeResizable(selectedElement, canvas);
             }
         }

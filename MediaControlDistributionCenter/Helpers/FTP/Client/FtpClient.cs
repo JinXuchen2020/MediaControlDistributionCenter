@@ -19,6 +19,10 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
         public FtpClient(FtpServer ftpServer) 
         {
             this.ftpServer = ftpServer;
+            if (!ftpServer.IsStarted)
+            {
+                ftpServer.FtpServerStart();
+            }
         }
 
         public async Task<bool> UploadFileToFtpServer(string filePath, string fileName = "")

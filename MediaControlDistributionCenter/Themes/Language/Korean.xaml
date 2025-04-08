@@ -126,7 +126,7 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">剩余机器容量</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">已用机器容量</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
     
 

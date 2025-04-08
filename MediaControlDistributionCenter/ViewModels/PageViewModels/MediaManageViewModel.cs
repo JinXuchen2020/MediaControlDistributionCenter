@@ -303,19 +303,24 @@ namespace MediaControlDistributionCenter.ViewModels
                                 if (config != null)
                                 {
                                     config.Program = viewModel.ToModel();
-                                    config.Pages.ForEach(page => page.Components.ForEach(c =>
+                                    config.Pages.ForEach(page => 
                                     {
-                                        switch (c.Type)
+                                        page.ThumbnailFilePath = page.ThumbnailFilePath.Replace(dbModel.Name, viewModel.Name);
+                                        page.Components.ForEach(c =>
                                         {
-                                            case Models.MediaType.Image:
-                                            case Models.MediaType.Video:
-                                            case MediaType.Word:
-                                                c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }));
+                                            switch (c.Type)
+                                            {
+                                                case Models.MediaType.Image:
+                                                case Models.MediaType.Video:
+                                                case MediaType.Word:
+                                                    c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        });
+
+                                    });
                                     var configContent = JsonConvert.SerializeObject(config);
 
                                     var mediaResourcePath = Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name);

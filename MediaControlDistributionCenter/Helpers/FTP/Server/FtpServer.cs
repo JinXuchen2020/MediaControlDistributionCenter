@@ -30,6 +30,8 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
         public string _userName = "admin";
         public string _userPwd = "admin";
 
+        public bool IsStarted { get; private set; }
+
         public FtpServer(FtpConnection connection)
         {
             // 设置默认的主目录
@@ -90,6 +92,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 myTcpListener.Stop();
                 myTcpListener = null;
                 listenThread.Abort();
+                IsStarted = false;
                 // "启动";
             }
         }
@@ -101,6 +104,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 listenThread = new Thread(ListenClientConnect);
                 listenThread.IsBackground = true;
                 listenThread.Start();
+                IsStarted = true;
             }
         }
 
