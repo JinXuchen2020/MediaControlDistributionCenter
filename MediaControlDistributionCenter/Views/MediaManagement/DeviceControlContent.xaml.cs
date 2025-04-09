@@ -219,6 +219,7 @@ namespace MediaControlDistributionCenter.Views
             if (commandType == "TimeSync" && manageViewModel.CurrentDevice != null)
             {
                 manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+                manageViewModel.RefreshTimeZone();
             }
 
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
@@ -234,7 +235,12 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            manageViewModel.CommandRTValue = null;
+            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+
+                manageViewModel.RefreshTimeZone();
+            }
         }
 
         private void btnTimeSyncConfirm_Click(object sender, RoutedEventArgs e)
@@ -505,7 +511,28 @@ namespace MediaControlDistributionCenter.Views
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+
+                manageViewModel.RefreshTimeZone();
+            }
             manageViewModel.GetDeviceTimeControls();
+        }
+
+        private void btnPublish_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            viewModel.IsSelected = true;
+            manageViewModel.ExecuteScheduleControlCommand.Execute(null);
+            viewModel.IsSelected = false;
+        }
+
+        private void btnTimeControlEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            viewModel.SetGridColumnName();
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
     }
 }

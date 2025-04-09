@@ -91,7 +91,7 @@ namespace MediaControlDistributionCenter
         /// <summary>
         /// 当前语言
         /// </summary>
-        private Language language = Language.Chinese;
+        private Language language = Language.Korean;
 
         public Language Language
         {

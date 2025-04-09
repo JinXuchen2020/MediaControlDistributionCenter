@@ -35,7 +35,7 @@
                     <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Center" PlacementMode="BottomAndAlignCentres" PopupMode="Click">
                         <materialDesign:PopupBox.ToggleContent>
                             <Border CornerRadius="2" Padding="10" Width="100" BorderBrush="White" BorderThickness="1">
-                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_KO}" Foreground="White"/>
+                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Foreground="White"/>
                             </Border>
                         </materialDesign:PopupBox.ToggleContent>
                         <ListView Width="100">

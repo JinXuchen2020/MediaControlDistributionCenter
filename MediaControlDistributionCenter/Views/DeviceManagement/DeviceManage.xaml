@@ -264,7 +264,7 @@
                             <Image Width="24" Height="24"  Source="/Assets/assets-0009.png" HorizontalAlignment="Left" Margin="0,0,10,0"/>
                             <TextBlock FontSize="20" VerticalAlignment="Center" Height="24" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" Foreground="White"/>
                         </StackPanel>
-                        <StackPanel Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
+                        <StackPanel  DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="{Binding ConnectionMode.Mode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Remote}">
                             <Button x:Name="btnGroupAdd" Visibility="{Binding LoginUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Width="20" Height="20" VerticalAlignment="Center" Click="btnGroupAdd_Click" DockPanel.Dock="Right" Background="#2A3255" Padding="0" BorderBrush="#404870">
                                 <Image Width="20" Height="20"  Source="/Assets/7.png" HorizontalAlignment="Left"/>
                             </Button>
@@ -396,11 +396,11 @@
                                     </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Width="1*">
                                         <DataGridTemplateColumn.Header>
-                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_103}" />
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_107}" />
                                         </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding MediaNames}" TextWrapping="Wrap"></TextBlock>
+                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding EndDate, StringFormat=yyyy-MM-dd}" TextWrapping="Wrap"></TextBlock>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

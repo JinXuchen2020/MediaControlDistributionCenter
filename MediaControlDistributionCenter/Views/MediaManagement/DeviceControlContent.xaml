@@ -8,7 +8,6 @@
       xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
       xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
       xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"  
-      Height="1024" Width="1440"
     >
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -291,7 +290,7 @@
                     </Grid>
                 </StackPanel>
 
-                <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,10,0" Background="#16171D">
+                <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,0,0" Background="#16171D">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="81"></RowDefinition>
                         <RowDefinition ></RowDefinition>
@@ -311,20 +310,21 @@
 
                     <Grid Grid.Row="1" >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="320"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <StackPanel>
+                            <StackPanel HorizontalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Margin="19,32"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_104}" />
-                                    <StackPanel Orientation="Horizontal" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
-                                        <TextBlock  VerticalAlignment="Center" FontSize="14" Margin="100,0,0,0" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_128}" />
-                                        <TextBlock  VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0" Foreground="White" Text="{Binding CurrentDevice.CurrentTime}" />
-                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0, 20" Orientation="Horizontal" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
+                                    <TextBlock Margin="38,5,0,0" Width="100" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_128}" />
+                                    <DatePicker Width="228" VerticalAlignment="Center" Margin="8,0,0,0" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding CurrentDevice.CurrentTime}" />
+                                    <materialDesign:TimePicker Width="228" Is24Hours="True" WithSeconds="True" VerticalAlignment="Center" Margin="8,0,0,0" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedTime="{Binding CurrentDevice.CurrentTime}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Margin="38,5,48,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{Binding CommandTypeName}" />
+                                    <TextBlock Margin="38,5,0,0" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{Binding CommandTypeName}" />
                                     <StackPanel Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
                                         <StackPanel Orientation="Horizontal">
                                             <Slider VerticalAlignment="Center" Value="{Binding CommandRTValue, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="400" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
@@ -350,7 +350,7 @@
                                     </StackPanel>
 
                                     <StackPanel Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
-                                        <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Padding="12,0,0,0" Height="32" Width="464" Background="#2A3255"  ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="Id" SelectedValue="{Binding CommandRTValue}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+                                        <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Padding="5" Height="32" Width="464" Background="#2A3255"  ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="Id" SelectedValue="{Binding CommandRTValue}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
                                         <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                                             <TextBlock Grid.Row="2" Margin="0,0,19,0" FontSize="16" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_106}" />
                                             <StackPanel Height="32"  VerticalAlignment="Center" Orientation="Horizontal">
@@ -363,7 +363,7 @@
                                         <StackPanel>
                                             <TextBlock Margin="0,13" Foreground="White" HorizontalAlignment="Left" Opacity="0.6" FontSize="14" TextWrapping="Wrap" Width="480" Text="{Binding CommandTypeDesciption}" />
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,43,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,43,0,0">
                                             <Button x:Name="btnTimeSyncConfirm" Click="btnTimeSyncConfirm_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Apply}" />
                                             <Button x:Name="btnTimeSyncReset" Click="btnTimeSyncReset_Click" Margin="32,0,0,0" Background="Transparent" BorderThickness="1"  BorderBrush="#404870" Foreground="White" Content="{DynamicResource LanguageKey_Code_Reset}"/>
                                         </StackPanel>
@@ -447,15 +447,19 @@
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>-->
                                                     
-                                                <!--<DataGridTemplateColumn Header="操作"  Width="80" >
+                                                <DataGridTemplateColumn Width="160" >
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                                    </DataGridTemplateColumn.Header>
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                                <Button Content="执行" FontSize="12" Foreground="White" Click="btnPublish_Click" Height="24" Width="60" />
+                                                                <Button Content="{DynamicResource LanguageKey_Code_Edit}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnTimeControlEdit_Click" Height="24" Width="60" />
+                                                                <Button Content="{DynamicResource LanguageKey_Code_Media_Send}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnPublish_Click" Height="24" Width="60" />
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>-->
+                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>

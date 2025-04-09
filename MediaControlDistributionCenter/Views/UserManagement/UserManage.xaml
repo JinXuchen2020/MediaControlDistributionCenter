@@ -9,7 +9,7 @@
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.UserManagement" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             Height="1024" Width="1440">
+             >
     <UserControl.Resources>
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
@@ -173,7 +173,7 @@
                 <ContentControl Content="{Binding}" />
             </DataTemplate>
         </materialDesign:DialogHost.DialogContentTemplate>
-        <StackPanel>
+        <StackPanel Background="#16171D">
             <!--界面导航-->
             <StackPanel Orientation="Horizontal" Margin="10,16,0,16">
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_Management}" />

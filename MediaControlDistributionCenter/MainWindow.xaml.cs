@@ -23,6 +23,10 @@ namespace MediaControlDistributionCenter
 
         private readonly IServiceProvider serviceProvider;
 
+        private Point startPoint;
+        private bool isResizing;
+
+
         public MainWindow(MainViewModel mainViewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
@@ -245,6 +249,34 @@ namespace MediaControlDistributionCenter
             this.DataContext = mainViewModel;
         }
 
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source == sender && e.ChangedButton == MouseButton.Left)
+            {
+                startPoint = e.GetPosition(this);
+                isResizing = true;
+            }
+        }
+
+        private void Border_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source == sender && e.ChangedButton == MouseButton.Left)
+            {
+                isResizing = false;
+            }
+        }
+
+        private void Border_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Source == sender && isResizing)
+            {
+                Point currentPoint = e.GetPosition(this);
+                this.Width += currentPoint.X - startPoint.X;
+                this.Height += currentPoint.Y - startPoint.Y;
+                startPoint = currentPoint;
+            }
+        }
+
         public void GoContent(UserControl contet,int menuIndex)
         {
             MainContentControl.Content = contet;
@@ -322,6 +354,23 @@ namespace MediaControlDistributionCenter
                 }
             }
             
+        }
+
+        private void MinButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+        }
+
+        private void MaxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current.MainWindow.WindowState == WindowState.Maximized)
+            {
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+            }
+            else
+            {
+                Application.Current.MainWindow.WindowState = WindowState.Maximized;
+            }
         }
     }
 }

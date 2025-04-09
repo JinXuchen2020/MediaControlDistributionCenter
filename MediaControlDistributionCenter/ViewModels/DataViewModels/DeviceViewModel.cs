@@ -130,7 +130,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private string selectedIpAddress;
 
         [ObservableProperty]
-        private string? currentTime;
+        private DateTime currentTime;
 
         private Communication? client;
 
@@ -423,6 +423,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                CurrentTime = DateTime.Now;
                 return;
             }
 
@@ -434,7 +435,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            CurrentTime = client.SyncTimeResult;
+            CurrentTime = string.IsNullOrEmpty(client.SyncTimeResult) ? DateTime.Now : DateTime.Parse(client.SyncTimeResult);
         }
 
         [RelayCommand]

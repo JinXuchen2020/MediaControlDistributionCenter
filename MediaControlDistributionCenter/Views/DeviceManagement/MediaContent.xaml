@@ -198,7 +198,7 @@
                 <ContentControl Content="{Binding}" />
             </DataTemplate>
         </materialDesign:DialogHost.DialogContentTemplate>
-        <StackPanel>
+        <StackPanel Background="#16171D">
             <!--界面导航-->
             <StackPanel Orientation="Horizontal" Margin="10,16,0,16">
                 <TextBlock Foreground="White" Opacity="0.7" FontSize="14" Text="{DynamicResource LanguageKey_Code_MediaStore}" />
