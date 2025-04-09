@@ -131,7 +131,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<ProgramDto>();
                             foreach (var media in shelfMedias)
                             {
-                                media.Status = 2;
+                                media.Status = 0;
                                 await programService.Save(media);
                             }
                             await programService.Save(CurrentMedia.ToModel());

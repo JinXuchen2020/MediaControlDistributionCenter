@@ -324,13 +324,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = component.Name;
             ZIndex = component.ZIndex;
             Type = component.Type.ToString();
-            Left = component.Left * ratio;
-            Top = component.Top * ratio;
-            Width = component.Width * ratio;
-            Height = component.Height * ratio;
+            Left = component.Left;
+            Top = component.Top;
+            Width = component.Width;
+            Height = component.Height;
             timeline = component.Timeline;
             playCount = component.PlayCount;
             playDuration = component.PlayDuration;
+            Ratio = ratio;
 
             switch (component.Type)
             {
@@ -443,6 +444,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (manageViewModel.SelectedComponent != null)
                 {
                     manageViewModel.SelectedComponent.IsSelected = false;
+                    manageViewModel.SelectedComponent = null;
                 }
                 var viewModel = selectedElement.DataContext as BaseComponentViewModel;
                 manageViewModel.SelectedComponent = viewModel;
@@ -532,7 +534,7 @@ namespace MediaControlDistributionCenter.ViewModels
             return (string)LanguageTool.Instance.FindResource(key);
         }
 
-        protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null)
+        protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null, object? converterParameter = null)
         {
             var binding = new Binding(path)
             {
@@ -543,6 +545,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (converter != null)
             {
                 binding.Converter = converter;
+                binding.ConverterParameter = converterParameter;
             }
 
             if (element is FrameworkContentElement contentElement)

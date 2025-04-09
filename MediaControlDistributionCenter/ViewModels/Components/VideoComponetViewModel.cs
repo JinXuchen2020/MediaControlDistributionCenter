@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -67,10 +68,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source == null ? string.Empty : Source.Replace(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayMode = PlayMode,
@@ -84,8 +85,8 @@ namespace MediaControlDistributionCenter.ViewModels
             MediaElement video = new()
             {
                 Source = new Uri(Source!),
-                Width = Width,
-                Height = Height,
+                Width = Width * Ratio,
+                Height = Height * Ratio,
                 LoadedBehavior = MediaState.Manual,
                 UnloadedBehavior = MediaState.Stop,
             };
@@ -117,9 +118,8 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 IsRunningLoaded = true;
 
-                if (sender is MediaElement mediaElement && Timeline < mediaElement.NaturalDuration.TimeSpan.TotalSeconds)
+                if (sender is MediaElement mediaElement)
                 {
-                    TotalTimeline = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                     InitializeTimer(mediaElement);
                 }
             };
@@ -145,7 +145,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 result.Stop();
                 result.Source = null;
-                if (sender is MediaElement mediaElement && Timeline < TotalTimeline)
+                if (sender is MediaElement mediaElement)
                 {
                     _timer?.Stop();
                     _timer = null;
@@ -175,11 +175,15 @@ namespace MediaControlDistributionCenter.ViewModels
             if (FrameworkElement == null)
             {
                 var video = (sender as MediaElement)!;
-                if (Timeline == 0 && video.NaturalDuration.HasTimeSpan)
+                if (Timeline == 0)
+                {
+                    Timeline = video.NaturalDuration.TimeSpan.TotalSeconds;
+                    TotalTimeline = Timeline;
+                    PlayDuration = TimeSpan.FromSeconds(Timeline).ToString();
+                }
+                else 
                 {
                     TotalTimeline = video.NaturalDuration.TimeSpan.TotalSeconds;
-                    Timeline = TotalTimeline;
-                    PlayDuration = TimeSpan.FromSeconds(Timeline).ToString();
                 }
 
                 video.Position = TimeSpan.FromSeconds(1);
@@ -196,11 +200,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 Border result = CreateBorder();
                 result.Child = image;
 
-                CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
-                CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+                var converter = new ToMultipleConverter();
+                CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+                CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
-                Canvas.SetLeft(result, Left);
-                Canvas.SetTop(result, Top);
+                Canvas.SetLeft(result, Left * Ratio);
+                Canvas.SetTop(result, Top * Ratio);
                 Canvas.SetZIndex(result, ZIndex);
 
                 // 添加鼠标事件处理
@@ -228,31 +233,31 @@ namespace MediaControlDistributionCenter.ViewModels
                 throw new InvalidOperationException("MediaElement没有加载媒体源。");
             }
 
-            return VideoScreenCapture.CaptureFrame(Source!, 1);
+            //return VideoScreenCapture.CaptureFrame(Source!, 1);
 
-            //return mediaElement.Dispatcher.Invoke<BitmapSource>(() =>
-            //{
-            //    // 创建一个RenderTargetBitmap
-            //    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-            //        (int)mediaElement.ActualWidth,
-            //        (int)mediaElement.ActualHeight,
-            //        96, 96,
-            //        PixelFormats.Pbgra32);
-            //    mediaElement.Measure(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight));
-            //    mediaElement.Arrange(new Rect(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight)));
+            return mediaElement.Dispatcher.Invoke<BitmapSource>(() =>
+            {
+                // 创建一个RenderTargetBitmap
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+                    (int)mediaElement.ActualWidth,
+                    (int)mediaElement.ActualHeight,
+                    96, 96,
+                    PixelFormats.Pbgra32);
+                mediaElement.Measure(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight));
+                mediaElement.Arrange(new Rect(new Size(mediaElement.ActualWidth, mediaElement.ActualHeight)));
 
-            //    // 将MediaElement绘制到RenderTargetBitmap
-            //    renderTargetBitmap.Render(mediaElement);
-            //    return renderTargetBitmap;
+                // 将MediaElement绘制到RenderTargetBitmap
+                renderTargetBitmap.Render(mediaElement);
+                return renderTargetBitmap;
 
-            //    //// 保存位图为PNG文件
-            //    //PngBitmapEncoder png = new PngBitmapEncoder();
-            //    //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-            //    //using (Stream stream = File.Create("screenshot.png"))
-            //    //{
-            //    //    png.Save(stream);
-            //    //}
-            //});
+                //// 保存位图为PNG文件
+                //PngBitmapEncoder png = new PngBitmapEncoder();
+                //png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                //using (Stream stream = File.Create("screenshot.png"))
+                //{
+                //    png.Save(stream);
+                //}
+            });
         }
 
         private void InitializeTimer(MediaElement target)
@@ -273,7 +278,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 target.Position = TimeSpan.Zero;
                 target.Play();
-                InitializeTimer(target);
+                //InitializeTimer(target);
                 currentPlayCount++;
             }
             else

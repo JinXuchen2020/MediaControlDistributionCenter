@@ -44,6 +44,7 @@ namespace MediaControlDistributionCenter.Views
         private IFileService fileService;
         private readonly IServiceProvider serviceProvider;
         private readonly MediaEditViewModel manageViewModel;
+        private bool isEditing;
         
         public MediaEdit(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
@@ -405,16 +406,21 @@ namespace MediaControlDistributionCenter.Views
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
+            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !isEditing)
             {
+                isEditing = true;
                 double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
-                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
-                Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
-                Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top);
+                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft) / manageViewModel.SelectedComponent.Ratio;
+                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop) / manageViewModel.SelectedComponent.Ratio;
+                Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio);
+                Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio);
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
+                isEditing = false;
             }
         }
 

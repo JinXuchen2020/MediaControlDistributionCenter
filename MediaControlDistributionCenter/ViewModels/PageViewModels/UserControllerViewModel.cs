@@ -14,6 +14,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserControllerViewModel()
         {
+            RegisterLanguageProperty(this.GetType(), nameof(CurrentPageName));
         }
 
         public void SetValues(string tabName, string pageName)

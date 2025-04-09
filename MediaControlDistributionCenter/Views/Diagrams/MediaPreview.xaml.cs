@@ -26,6 +26,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private double _ratio;
 
+        private double _oldRatio;
+
         private int currentPlayCount = 0;
 
         private MediaPageViewModel CurrentPage;
@@ -37,6 +39,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             DataContext = viewModel;
 
             InitializeTimer();
+
+            _oldRatio = viewModel.MediaConfig.Ratio;
 
             MainCanvas.Width = Width;
             MainCanvas.Height = Height;
@@ -116,7 +120,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             foreach (var component in CurrentPage.Components.Where(c => !c.IsDeleted))
             {
                 if (component == null) continue;
-                component.Ratio = _ratio;
+                component.Ratio = _oldRatio * _ratio;
                 switch (component.Type)
                 {
                     case "Image":
@@ -159,6 +163,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         colorTextComponent!.DrawRunningContentCommand.Execute(MainCanvas);
                         break;
                 }
+
+                component.Ratio = _oldRatio;
             }
 
             this.Dispatcher.Invoke(async () =>

@@ -77,7 +77,7 @@
                            Height="20"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
-                        <TextBlock Foreground="#A0A3A8" FontSize="20"
+                        <TextBlock Foreground="#A0A3A8" FontSize="14"
                                    VerticalAlignment="Center"
                                    Text="{DynamicResource LanguageKey_Code_SystemFeature1}"/>
                         <Image Source="/Assets/assets-0003.png"
@@ -87,7 +87,7 @@
                            Opacity="5"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
-                        <TextBlock Foreground="#A0A3A8"  FontSize="20"
+                        <TextBlock Foreground="#A0A3A8"  FontSize="14"
                                    VerticalAlignment="Center"
                                    Text="{DynamicResource LanguageKey_Code_SystemFeature2}"/>
 
@@ -98,14 +98,14 @@
                            Margin="10,0,0,0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
-                        <TextBlock Foreground="#A0A3A8" FontSize="20" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_SystemFeature3}"/>
+                        <TextBlock Foreground="#A0A3A8" FontSize="14" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_SystemFeature3}"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
 
             <StackPanel x:Name="spSlogan" Visibility="Collapsed" Orientation="Horizontal" Margin="165,875,10,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
-                <TextBlock Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"/>
-                <TextBlock TextWrapping="Wrap" Margin="10, 0,0,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Text="{Binding Slogan}" Opacity="0.7"/>
+                <TextBlock Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" Text="{DynamicResource LanguageKey_Code_LoginSlogan}" Opacity="0.7"/>
+                <TextBlock TextWrapping="Wrap" Margin="10, 0,0,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" Text="{Binding Slogan}" Opacity="0.7"/>
             </StackPanel>
             <Grid Grid.Column="1" Grid.Row="1" Visibility="Visible">
                 <Grid.RowDefinitions>
@@ -123,7 +123,7 @@
                     Background="#131A32"
                     CornerRadius="5" Width="551" Height="727" >
                     <Grid>
-                        <Label  Margin="113,145,0,0" VerticalAlignment="Top" FontSize="28" HorizontalAlignment="Left" Content="{DynamicResource LanguageKey_Code_LoginTitle}" />
+                        <Label  Margin="113,145,0,0" VerticalAlignment="Top" FontSize="26" HorizontalAlignment="Left" Content="{DynamicResource LanguageKey_Code_LoginTitle}" />
                         <StackPanel Margin="0,265,0,0" VerticalAlignment="Top">
                             <TextBox x:Name="txtLoginId" BorderBrush="White" Text="{Binding InputAccount}"
                                  FontSize="18" Foreground="White" Width="300" Height="60" 

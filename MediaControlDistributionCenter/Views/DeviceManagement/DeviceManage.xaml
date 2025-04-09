@@ -110,7 +110,7 @@
 
                                 <StackPanel Grid.Row="3" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Center" Width="80" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
+                                        <TextBlock VerticalAlignment="Center" Width="100" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_100}" />
                                         <TextBox  VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Name}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -130,7 +130,7 @@
 
                                 <StackPanel Grid.Row="6" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Width}" />
+                                        <TextBlock Width="100" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Width}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding Width}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:TextFieldAssist.SuffixText="px" />
                                     </StackPanel>
                                 </StackPanel>
@@ -148,7 +148,7 @@
 
                                 <StackPanel Grid.Row="8" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Start}" />
+                                        <TextBlock Width="100" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Start}" />
                                         <DatePicker Width="250" VerticalAlignment="Center" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding StartDate}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -168,7 +168,7 @@
 
                                 <StackPanel Grid.Row="11" Margin="10">
                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                                        <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_109}" />
+                                        <TextBlock Width="100" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_109}" />
                                         <TextBox VerticalAlignment="Center" Width="250" Height="32" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" Text="{Binding ContactName}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -409,23 +409,22 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTemplateColumn Width="230" Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}" >
+                                    <DataGridTemplateColumn Width="160" Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}" >
                                         <DataGridTemplateColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
                                         </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel>
-                                                    <StackPanel Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=0}" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                    <StackPanel Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=0}" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
                                                         <Button IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{DynamicResource LanguageKey_Code_Activate}" Background="#30479C" Foreground="White" Click="btnActivate_Click" Margin="3" Height="28" />
                                                         <Button Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Click="btnDelete_Click" Margin="3" Height="28" />
                                                     </StackPanel>
-                                                    <StackPanel Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                    <StackPanel Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
                                                         <Button IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{DynamicResource LanguageKey_Code_Upgrade}" Background="#30479C" Foreground="White" Click="btnEdit_Click" Margin="3" Height="28" />
                                                         <Button IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{Binding EnableBtnContent}" Background="#30479C" Foreground="White" Name="btnDelete" Click="btnEnable_Click" Margin="3" Height="28" />
                                                         <Button Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Click="btnDelete_Click" Margin="3" Height="28" />
                                                     </StackPanel>
-
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

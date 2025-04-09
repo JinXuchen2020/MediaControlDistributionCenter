@@ -65,6 +65,7 @@
     <sys:String x:Key="LanguageKey_Code_Upgrade">升级</sys:String>
     <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Offline">未激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Invalid">已过期</sys:String>
     <sys:String x:Key="LanguageKey_Code_Connected">已连接</sys:String>
     <sys:String x:Key="LanguageKey_Code_Disconnected">未连接</sys:String>
     <sys:String x:Key="LanguageKey_Code_Enable">启用</sys:String>
@@ -125,8 +126,9 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">已用机器容量</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">可用机器容量</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">设备已过期!</sys:String>
     
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
@@ -194,7 +196,7 @@
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_113">节目名称已存在！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">强制发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_115">未发布</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布已上架</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_117">已发布未上架</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_118">此设备正在播放当前节目！</sys:String>
 

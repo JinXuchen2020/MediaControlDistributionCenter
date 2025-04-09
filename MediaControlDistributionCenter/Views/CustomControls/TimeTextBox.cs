@@ -52,30 +52,33 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                     }
                     else
                     {
-                        int hours = int.Parse(match.Groups["hour"].Value);
-                        int minutes = match.Groups["minute"].Success ? int.Parse(match.Groups["minute"].Value) : 0;
-                        int seconds = match.Groups["second"].Success ? int.Parse(match.Groups["second"].Value) : 0;
-
-                        // 确保小时、分钟和秒都在有效范围内
-                        hours = textBox.Is24Hour ? Math.Min(hours, 23) : hours;
-                        minutes = Math.Min(minutes, 59);
-                        seconds = Math.Min(seconds, 59);
-
-                        var totalSeconds = hours * 3600 + minutes * 60 + seconds;
-                        if (textBox.MaxTimeline > 0)
+                        if (newValue != "00:00:00")
                         {
-                            totalSeconds = Math.Min(totalSeconds, textBox.MaxTimeline);
-                            seconds = totalSeconds % 60;
-                            minutes = (totalSeconds / 60) % 60;
-                            hours = totalSeconds / 60 / 60;
-                            if (textBox.Is24Hour && hours > 23)
-                            {
-                                hours = 23;
-                            }
-                        }
+                            int hours = int.Parse(match.Groups["hour"].Value);
+                            int minutes = match.Groups["minute"].Success ? int.Parse(match.Groups["minute"].Value) : 0;
+                            int seconds = match.Groups["second"].Success ? int.Parse(match.Groups["second"].Value) : 0;
 
-                        textBox.SetCurrentValue(TimelineProperty, totalSeconds);
-                        textBox.SetCurrentValue(TextProperty, $"{hours:D2}:{minutes:D2}:{seconds:D2}");
+                            // 确保小时、分钟和秒都在有效范围内
+                            hours = textBox.Is24Hour ? Math.Min(hours, 23) : hours;
+                            minutes = Math.Min(minutes, 59);
+                            seconds = Math.Min(seconds, 59);
+
+                            var totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                            if (textBox.MaxTimeline > 0)
+                            {
+                                totalSeconds = Math.Min(totalSeconds, textBox.MaxTimeline);
+                                seconds = totalSeconds % 60;
+                                minutes = (totalSeconds / 60) % 60;
+                                hours = totalSeconds / 60 / 60;
+                                if (textBox.Is24Hour && hours > 23)
+                                {
+                                    hours = 23;
+                                }
+                            }
+
+                            textBox.SetCurrentValue(TimelineProperty, totalSeconds);
+                            textBox.SetCurrentValue(TextProperty, $"{hours:D2}:{minutes:D2}:{seconds:D2}");
+                        }
                     }
                 }
             }));

@@ -103,6 +103,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? storagePercentage;
 
         [ObservableProperty]
+        private double? usedStoragePercentage;
+
+        [ObservableProperty]
         private string deviceId;
 
         [ObservableProperty]
@@ -189,13 +192,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Volume = model.Volume;
             DeviceId = model.DeviceId;
             StoragePercentage = model.StoragePercentage;
+            UsedStoragePercentage = 100 - model.StoragePercentage;
             MediaNames = string.Empty;
             MediaIds = new List<int>();
         }
 
         public string GetStatus()
         {
-            return this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : Status == 1 ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
+            return EndDate < DateTime.Now ? FindResource("LanguageKey_Code_Invalid") : this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : Status == 1 ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
         public string GetConnectedStatus()
@@ -260,6 +264,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             var userInfo = new UsersSync();
             var users = new List<UserSync>();
             var userService = GetService<IUserService>();
@@ -304,6 +315,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             var userInfo = new { user.Account, user.Password, user.Role };
             var userInfoString = JsonConvert.SerializeObject(userInfo);
             string path = CommunicationCmd.CmdVerifyUser + userInfoString;
@@ -322,6 +340,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -350,6 +375,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             string path = CommunicationCmd.CmdBrightness + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -366,6 +398,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -388,6 +427,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             string path = CommunicationCmd.CmdReStart + value;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -404,6 +450,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -427,6 +480,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             string path = CommunicationCmd.CmdSyncTime + "Current";
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
@@ -445,6 +505,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -483,6 +550,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             var model = program.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
@@ -501,6 +575,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -525,6 +606,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             var model = this.ToModel();
             string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdEnableMonitor + syncString;
@@ -537,7 +625,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteProgram(ProgramViewModel program)
+        private async Task DeleteProgram(string value)
         {
             if (client == null)
             {
@@ -546,9 +634,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var model = program.ToModel();
-            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
-            string path = CommunicationCmd.CmdDeleteProgram + syncString;
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdDeleteProgram + value;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
@@ -564,6 +657,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
@@ -601,6 +701,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
             string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
@@ -630,6 +737,13 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
                 return;
             }
 
