@@ -117,10 +117,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source,
                 Timeline = Timeline,
                 Background = Background.ToString(),
@@ -203,11 +203,12 @@ namespace MediaControlDistributionCenter.ViewModels
             CreateBinding(result, TextBlock.FontWeightProperty, nameof(FontWeight));
             CreateBinding(result, TextBlock.TextDecorationsProperty, nameof(TextDecoration));
 
-            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));
+            var converter = new ToMultipleConverter();
+            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
-            Canvas.SetLeft(border, Left);
-            Canvas.SetTop(border, Top);
+            Canvas.SetLeft(border, Left * Ratio);
+            Canvas.SetTop(border, Top * Ratio);
             Canvas.SetZIndex(border, ZIndex);
 
             // 添加鼠标事件处理

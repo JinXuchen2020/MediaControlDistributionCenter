@@ -20,6 +20,8 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
         private static Dictionary<FrameworkElement, List<Thumb>> _elementToThumbMap = new Dictionary<FrameworkElement, List<Thumb>>();
 
+        public static bool IsDragging { get; private set; }
+
         public void MakeResizable(FrameworkElement control, Canvas canvas)
         {
             _canvas = canvas;
@@ -87,7 +89,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
             thumb.DragDelta += (s, e) =>
             {
-                System.Threading.Thread.Sleep(50);
+                IsDragging = true;
                 var deltaX = e.HorizontalChange;
                 var deltaY = e.VerticalChange;
 
@@ -103,54 +105,22 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                     case ResizeDirection.TopLeft:
                         newWidth = Math.Max(control.Width - deltaX, 10);
                         newHeight = Math.Max(control.Height - deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newLeft = Math.Max(newLeft + (control.Width - newWidth), 0);
                         newTop = Math.Max(newTop + (control.Height - newHeight), 0);                        
                         break;
                     case ResizeDirection.TopRight:
                         newWidth = Math.Max(control.Width + deltaX, 10);
                         newHeight = Math.Max(control.Height - deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newTop = Math.Max(newTop + (control.Height - newHeight), 0);
                         break;
                     case ResizeDirection.BottomLeft:
                         newWidth = Math.Max(control.Width - deltaX, 10);
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newLeft = Math.Max(newLeft + (control.Width - newWidth), 0);
                         break;
                     case ResizeDirection.BottomRight:
                         newWidth = Math.Max(control.Width + deltaX, 10);
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         break;
                     case ResizeDirection.Left:
                         newWidth = Math.Max(control.Width - deltaX, 10);
@@ -165,21 +135,23 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                         break;
                     case ResizeDirection.Bottom:
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        break;                 
+                        break;
                 }
 
+                var viewModel = (BaseComponentViewModel)control.DataContext;
                 control.Width = Math.Min(newWidth, _canvas.Width - newLeft);
                 control.Height = Math.Min(newHeight, _canvas.Height - newTop);
                 Canvas.SetLeft(control, newLeft);
                 Canvas.SetTop(control, newTop);
-                ((BaseComponentViewModel)control.DataContext).Left = newLeft;
-                ((BaseComponentViewModel)control.DataContext).Top = newTop;
+                viewModel.Left = newLeft / viewModel.Ratio;
+                viewModel.Top = newTop / viewModel.Ratio;
                 UpdateThumbPositions(control);
             };
 
             thumb.DragCompleted += (sender, e) =>
             {
                 UpdateThumbPositions(control);
+                IsDragging = false;
             };
 
             if(_elementToThumbMap.ContainsKey(control))

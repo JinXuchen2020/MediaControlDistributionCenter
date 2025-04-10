@@ -2,6 +2,7 @@
 //using Aspose.Words.Saving;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -80,10 +81,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
@@ -101,11 +102,12 @@ namespace MediaControlDistributionCenter.ViewModels
             Border border = CreateBorder();
             border.Child = result;
 
-            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));
+            var converter = new ToMultipleConverter();
+            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
-            Canvas.SetLeft(border, Left);
-            Canvas.SetTop(border, Top);
+            Canvas.SetLeft(border, Left * Ratio);
+            Canvas.SetTop(border, Top * Ratio);
             Canvas.SetZIndex(border, ZIndex);
 
             // 添加鼠标事件处理
@@ -186,9 +188,9 @@ namespace MediaControlDistributionCenter.ViewModels
                         var pdfDocument = PdfDocument.Load(Source);
                         if (page <= pdfDocument.PageCount)
                         {
-                            var image = pdfDocument.Render(page - 1, 229, 329, true);
+                            var image = pdfDocument.Render(page - 1, (float)(Width * Ratio), (float)(Height * Ratio), true);
                             var bitmapImage = BitmapSourceFromImage(image);
-                            var imageControl = new Image { Source = bitmapImage, Width = Width, Height = Height, Stretch = Stretch.Fill };
+                            var imageControl = new Image { Source = bitmapImage, Width = Width * Ratio, Height = Height * Ratio, Stretch = Stretch.Fill };
                             result = imageControl;
                         }
                         break;
@@ -205,7 +207,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                 docImage.StreamSource = stream;
                                 docImage.CacheOption = BitmapCacheOption.OnLoad;
                                 docImage.EndInit();
-                                result = new Image { Source = docImage, Width = Width, Height = Height,  Stretch = Stretch.Fill, };
+                                result = new Image { Source = docImage, Width = Width * Ratio, Height = Height * Ratio,  Stretch = Stretch.Fill, };
                                 docDocument.Dispose();
                                 stream.Dispose();
                             }
@@ -240,7 +242,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             docImage.StreamSource = stream;
                             docImage.CacheOption = BitmapCacheOption.OnLoad;
                             docImage.EndInit();
-                            result = new Image { Source = docImage, Width = Width, Height = Height, Stretch = Stretch.Fill };
+                            result = new Image { Source = docImage, Width = Width * Ratio, Height = Height * Ratio, Stretch = Stretch.Fill };
                             pptDocument.Dispose();
                             stream.Dispose();
                         }

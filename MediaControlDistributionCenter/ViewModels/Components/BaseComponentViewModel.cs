@@ -73,7 +73,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isDeleted;
 
-        private bool isDragging = false;
+        public bool IsDragging { get; private set; }
+
         private Point startPoint;
         private FrameworkElement selectedElement;
 
@@ -431,7 +432,6 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var canvas = FindCanvasParent(selectedElement);
                 var manageViewModel = (canvas.DataContext as MediaEditViewModel)!;
-                isDragging = true;
                 startPoint = e.GetPosition(canvas);
                 selectedElement.CaptureMouse(); // 捕获鼠标
                 var resizableControl = new ResizableControl();
@@ -457,10 +457,10 @@ namespace MediaControlDistributionCenter.ViewModels
         // 图片鼠标左键释放时触发
         protected void Element_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (isDragging && e.ChangedButton == MouseButton.Left)
+            if (IsDragging && e.ChangedButton == MouseButton.Left)
             {
                 selectedElement.ReleaseMouseCapture(); // 释放鼠标
-                isDragging = false;
+                IsDragging = false;
                 selectedElement = null;
             }
         }
@@ -468,8 +468,9 @@ namespace MediaControlDistributionCenter.ViewModels
         // 图片鼠标移动时触发
         protected void Element_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging && selectedElement != null && e.LeftButton == MouseButtonState.Pressed)
+            if (selectedElement != null && e.LeftButton == MouseButtonState.Pressed)
             {
+                IsDragging = true;
                 var canvas = FindCanvasParent(selectedElement);
                 Point currentPoint = e.GetPosition(canvas);
                 double offsetX = currentPoint.X - startPoint.X;
@@ -492,8 +493,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 resizableControl.MakeResizable(selectedElement, canvas);
 
-                Left = newLeft;
-                Top = newTop;
+                Left = newLeft / Ratio;
+                Top = newTop / Ratio;
 
                 startPoint = currentPoint;
             }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -54,10 +55,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source == null ? string.Empty : Source.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 Timeline = Timeline,
                 PlayCount = PlayCount,
@@ -94,12 +95,13 @@ namespace MediaControlDistributionCenter.ViewModels
             Border result = CreateBorder();
             result.Child = image;
 
-            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+            var converter = new ToMultipleConverter();
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
 
-            Canvas.SetLeft(result, Left);
-            Canvas.SetTop(result, Top);
+            Canvas.SetLeft(result, Left * Ratio);
+            Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
 
             // 添加鼠标事件处理

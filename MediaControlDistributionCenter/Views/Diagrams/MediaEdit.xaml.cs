@@ -44,7 +44,6 @@ namespace MediaControlDistributionCenter.Views
         private IFileService fileService;
         private readonly IServiceProvider serviceProvider;
         private readonly MediaEditViewModel manageViewModel;
-        private bool isEditing;
         
         public MediaEdit(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
         {
@@ -242,8 +241,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = (currentComponent as ImageComponentViewModel)!;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300;
-                viewModel.Height = 200;
+                viewModel.Width = 300 / viewModel.Ratio;
+                viewModel.Height = 200 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -270,8 +269,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300;
-                viewModel.Height = 200;
+                viewModel.Width = 300 / viewModel.Ratio;
+                viewModel.Height = 200 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -298,8 +297,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 229;
-                viewModel.Height = 329;
+                viewModel.Width = 229 / viewModel.Ratio;
+                viewModel.Height = 329 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -406,21 +405,19 @@ namespace MediaControlDistributionCenter.Views
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !isEditing)
+            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !ResizableControl.IsDragging)
             {
-                isEditing = true;
                 double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft) / manageViewModel.SelectedComponent.Ratio;
-                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop) / manageViewModel.SelectedComponent.Ratio;
+                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
+                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
                 Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio);
                 Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio);
                 var resizableControl = new ResizableControl();
                 resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
                 resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
-                isEditing = false;
             }
         }
 
@@ -648,6 +645,7 @@ namespace MediaControlDistributionCenter.Views
 
                 if (manageViewModel.SelectedComponent != null)
                 {
+                    manageViewModel.SelectedComponent.Ratio = manageViewModel.MediaConfig.Ratio;
                     manageViewModel.SelectedComponent.IsSelected = true;
                     if (!manageViewModel.SelectedComponent.IsFile)
                     {
