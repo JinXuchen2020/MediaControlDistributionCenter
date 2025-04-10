@@ -99,7 +99,9 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override MediaType Type => MediaType.Video;
 
-        public string PlayMode { get; set; }       
+        public string PlayMode { get; set; }
+
+        public bool IsClip { get; set; }
     }
 
     public class ImageComponent : BaseComponent

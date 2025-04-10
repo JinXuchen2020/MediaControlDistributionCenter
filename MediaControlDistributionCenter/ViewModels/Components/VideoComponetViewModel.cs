@@ -76,7 +76,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 Timeline = Timeline,
                 PlayMode = PlayMode,
                 PlayCount = PlayCount,
-                PlayDuration = PlayDuration
+                PlayDuration = PlayDuration,
+                IsClip = Timeline != TotalTimeline
             };
         }
 
