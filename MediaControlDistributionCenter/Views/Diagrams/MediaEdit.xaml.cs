@@ -447,7 +447,7 @@ namespace MediaControlDistributionCenter.Views
                 Type = "normal",
                 PlayCount = 1,
                 PlayGap = 10,
-                AdPlayMode = "continuous",
+                AdPlayMode = "perday",
                 Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
                 Components = new List<BaseComponent>()
@@ -594,11 +594,14 @@ namespace MediaControlDistributionCenter.Views
             if(manageViewModel.SelectedComponent != null)
             {
                 manageViewModel.SelectedComponent.IsSelected = false;
+                manageViewModel.SelectedComponent = null;
             }
 
             manageViewModel.SelectedComponent = viewModel;
             manageViewModel.SelectedComponent.IsSelected = true;
             manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            var resizableControl = new ResizableControl();
+            resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
         }
 
         private void PlayModeChanged_Click(object sender, RoutedEventArgs e)

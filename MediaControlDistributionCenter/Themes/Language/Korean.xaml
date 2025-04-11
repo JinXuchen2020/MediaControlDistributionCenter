@@ -113,6 +113,7 @@
 <sys:String x:Key="LanguageKey_Code_Preview">프리뷰</sys:String>
 <sys:String x:Key="LanguageKey_Code_Upload">업로드</sys:String>
 <sys:String x:Key="LanguageKey_Code_Refresh">장치 새로 고침</sys:String>
+<sys:String x:Key="LanguageKey_Code_Normal">常规</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">결과</sys:String>
 <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">세트탑 박스 정보가 동기화되지 않음!</sys:String>
@@ -387,8 +388,17 @@
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_195">문서 파일은 문서 컴포넌트에만 업로드할 수 있습니다!</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_196">페이지당 시간(s)</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_197">없음</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_198">广告控制</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_199">广告次数</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_200">播放间隔(s)</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_201">连续</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_202">间隔</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">随机</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">一天</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">一小时</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">类型</sys:String>
 
-  <sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
+<sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
 
 <sys:String x:Key="LanguageKey_Code_MediaStore">미디어 라이브러리</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_BigIcon">대형 아이콘</sys:String>

@@ -137,7 +137,7 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override FrameworkElement DrawingRunningContent()
         {
             currentPlayPage = 1;
-            var result = CapturePage(currentPlayPage);
+            var result = CapturePage(currentPlayPage, true);
             if (result != null)
             {
                 IsRunningLoaded = false;
@@ -176,7 +176,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        private Image? CapturePage(int page)
+        private Image? CapturePage(int page, bool isRunning = false)
         {
             Image? result = null;
             if (!string.IsNullOrEmpty(Source))
@@ -190,7 +190,12 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             var image = pdfDocument.Render(page - 1, (float)(Width * Ratio), (float)(Height * Ratio), true);
                             var bitmapImage = BitmapSourceFromImage(image);
-                            var imageControl = new Image { Source = bitmapImage, Width = Width * Ratio, Height = Height * Ratio, Stretch = Stretch.Fill };
+                            var imageControl = new Image { Source = bitmapImage, Stretch = Stretch.Fill };
+                            if (isRunning)
+                            {
+                                imageControl.Width = Width * Ratio;
+                                imageControl.Height = Height * Ratio;
+                            }
                             result = imageControl;
                         }
                         break;
@@ -207,7 +212,12 @@ namespace MediaControlDistributionCenter.ViewModels
                                 docImage.StreamSource = stream;
                                 docImage.CacheOption = BitmapCacheOption.OnLoad;
                                 docImage.EndInit();
-                                result = new Image { Source = docImage, Width = Width * Ratio, Height = Height * Ratio,  Stretch = Stretch.Fill, };
+                                result = new Image { Source = docImage, Stretch = Stretch.Fill, };
+                                if (isRunning)
+                                {
+                                    result.Width = Width * Ratio;
+                                    result.Height = Height * Ratio;
+                                }
                                 docDocument.Dispose();
                                 stream.Dispose();
                             }
@@ -242,7 +252,12 @@ namespace MediaControlDistributionCenter.ViewModels
                             docImage.StreamSource = stream;
                             docImage.CacheOption = BitmapCacheOption.OnLoad;
                             docImage.EndInit();
-                            result = new Image { Source = docImage, Width = Width * Ratio, Height = Height * Ratio, Stretch = Stretch.Fill };
+                            result = new Image { Source = docImage, Stretch = Stretch.Fill };
+                            if (isRunning)
+                            {
+                                result.Width = Width * Ratio;
+                                result.Height = Height * Ratio;
+                            }
                             pptDocument.Dispose();
                             stream.Dispose();
                         }

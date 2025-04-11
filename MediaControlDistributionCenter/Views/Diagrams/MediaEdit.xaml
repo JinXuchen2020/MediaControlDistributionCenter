@@ -1288,14 +1288,14 @@
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Name}" Width="80" VerticalAlignment="Center"/>
                                                         <TextBox Text="{Binding SelectedPage.Name}" BorderBrush="#404870" BorderThickness="1" Width="150" Padding="5" Height="28" VerticalAlignment="Center"/>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_103}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_206}" Width="80"  Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Normal}" Tag="normal" Click="PageTypeChanged_Click" IsChecked="{Binding SelectedPage.Type, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=normal}" />
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_AD}" Tag="ad" Margin="25,0,0,0" Click="PageTypeChanged_Click" IsChecked="{Binding SelectedPage.Type, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=ad}" />
                                                         </StackPanel>
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal" Height="40">
+                                                    <StackPanel Orientation="Horizontal" Height="40" Margin="0,10,0,0">
                                                         <CheckBox IsChecked="{Binding SelectedPage.IsHasValidity}" VerticalAlignment="Center"/>
                                                         <TextBlock Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_142}" Width="80" Padding="5" VerticalAlignment="Center"/>
                                                     </StackPanel>
@@ -1328,20 +1328,22 @@
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
                                                         <StackPanel Orientation="Horizontal" Height="40">
-                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_131}" Width="80" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_199}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayCount, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Height="40">
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_200}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayGap, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
-                                                        <WrapPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_204}" Tag="perday" Margin="0,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perday}" />
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_205}" Tag="perhour" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perhour}" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_201}" Tag="continuous" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=continuous}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_202}" Tag="gap" Margin="50,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=gap}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_203}" Tag="random" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=random}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_204}" Tag="perday" Margin="50,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perday}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_205}" Tag="perhour" Margin="50,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perhour}" />
-                                                        </WrapPanel>
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_202}" Tag="gap" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=gap}" />
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_203}" Tag="random" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=random}" />
+                                                        </StackPanel>
                                                     </StackPanel>
                                                 </Border>
                                             </Expander>

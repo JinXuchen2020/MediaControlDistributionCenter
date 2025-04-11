@@ -271,13 +271,13 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="4" Margin="10" Grid.ColumnSpan="2">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                        <!--<StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="110" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_103}" />
                                             <ComboBox materialDesign:HintAssist.Hint="{Binding Type}" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" SelectedValue="{Binding Type}" SelectedValuePath="Tag" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
                                                 <ComboBoxItem Content="{DynamicResource LanguageKey_Code_Program}" Tag="PROGRAM"  />
                                                 <ComboBoxItem Content="{DynamicResource LanguageKey_Code_AD}" Tag="AD"/>
                                             </ComboBox>
-                                        </StackPanel>
+                                        </StackPanel>-->
                                         <StackPanel Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=AD}">
                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                 <TextBlock Width="130" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_112}" />

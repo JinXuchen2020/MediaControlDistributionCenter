@@ -399,6 +399,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">随机</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">一天</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">一小时</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">类型</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
