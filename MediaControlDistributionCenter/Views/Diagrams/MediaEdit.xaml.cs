@@ -444,7 +444,10 @@ namespace MediaControlDistributionCenter.Views
             {
                 Id = maxId + 1,
                 Order = maxId + 1,
+                Type = "normal",
                 PlayCount = 1,
+                PlayGap = 10,
+                AdPlayMode = "continuous",
                 Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
                 Components = new List<BaseComponent>()
@@ -617,6 +620,25 @@ namespace MediaControlDistributionCenter.Views
 
                 }
             }
+        }
+
+        private void PageTypeChanged_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                manageViewModel.SelectedPage.Type = radioButton.Tag?.ToString();
+            }
+        }
+
+        private void AdPlayModeChanged_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                manageViewModel.SelectedPage.AdPlayMode = radioButton.Tag?.ToString();
+            }
+
         }
 
         private void CreateComponent_MouseDown(object sender, MouseButtonEventArgs e)

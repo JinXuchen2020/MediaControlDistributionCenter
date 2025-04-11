@@ -33,6 +33,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string Name { get; set; }
 
+        public string Type { get; set; }
+
         public int Order { get; set; }
 
         public string ThumbnailFilePath { get; set; }
@@ -44,6 +46,10 @@ namespace MediaControlDistributionCenter.ViewModels
         public DateTime? ValidEndDate { get; set; }
 
         public int PlayCount { get; set; }
+
+        public int PlayGap { get; set; }
+
+        public string AdPlayMode { get; set; }
 
         public List<Scheduler> Schedulers{ get; set; }
 

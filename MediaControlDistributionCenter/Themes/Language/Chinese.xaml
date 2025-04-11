@@ -114,6 +114,7 @@
     <sys:String x:Key="LanguageKey_Code_Preview">预览</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upload">上传</sys:String>
     <sys:String x:Key="LanguageKey_Code_Refresh">设备刷新</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Normal">常规</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
@@ -390,6 +391,15 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_195">文档格式文件只能上传到文档组件！</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_196">每页时长(s)</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_197">无</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_198">广告控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_199">广告次数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_200">播放间隔(s)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_201">连续</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_202">间隔</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">随机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">一天</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">一小时</sys:String>
+
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 

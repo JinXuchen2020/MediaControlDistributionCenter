@@ -68,14 +68,16 @@ namespace MediaControlDistributionCenter.ViewModels
         }
     }
 
-    public partial class MediaPageViewModel : ObservableValidator
+    public partial class MediaPageViewModel : ObservableObject
     {
         [ObservableProperty]
         private int id;
 
         [ObservableProperty]
-        [Required]
         private string name;
+
+        [ObservableProperty]
+        private string type;
 
         [ObservableProperty]
         private int order;
@@ -96,7 +98,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private int playCount;
 
         [ObservableProperty]
-        private string effect;
+        private int playGap;
+
+        [ObservableProperty]
+        private string adPlayMode;
 
         [ObservableProperty]
         private bool isSelected;
@@ -117,11 +122,14 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             id = mediaPage.Id;
             name = mediaPage.Name;
+            type = mediaPage.Type;
             order = mediaPage.Order;
             isHasValidity = mediaPage.IsHasValidity;
             validStartDate = mediaPage.ValidStartDate;
             validEndDate = mediaPage.ValidEndDate;
             playCount = mediaPage.PlayCount;
+            playGap = mediaPage.PlayGap;
+            adPlayMode = mediaPage.AdPlayMode;
             thumbnailFilePath = mediaPage.ThumbnailFilePath;
             thumbnail = GetBitmap(string.IsNullOrEmpty(mediaPage.ThumbnailFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, mediaPage.ThumbnailFilePath));
             schedulers = new ObservableCollection<SchedulerViewModel>(mediaPage.Schedulers.Select(c => new SchedulerViewModel(c.Id, c.StartTime, c.EndTime, c.ScheduleDays)));
@@ -170,21 +178,18 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Id = Id,
                 Name = Name,
+                Type = Type,
                 Order = Order,
                 ThumbnailFilePath = ThumbnailFilePath == null ? string.Empty : ThumbnailFilePath.Replace(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
                 IsHasValidity = IsHasValidity,
                 ValidStartDate = ValidStartDate,
                 ValidEndDate = ValidEndDate,
                 PlayCount = PlayCount,
+                PlayGap = PlayGap,
+                AdPlayMode = AdPlayMode,
                 Schedulers = Schedulers.Select(c => c.ToModel()).ToList(),
                 Components = Components.Where(c => !c.IsDeleted).Select(c => c!.ToModel(userAccount, ratio)).ToList()
             };
-        }
-
-        [RelayCommand]
-        protected void Submit()
-        {
-            ValidateAllProperties();
         }
 
         [RelayCommand]
