@@ -274,6 +274,9 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_128">当前时间</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">开机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">关机</sys:String>
 
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>
@@ -393,12 +396,12 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_197">无</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_198">广告控制</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_199">广告次数</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_200">播放间隔(s)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_200">播放遍数</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_201">连续</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_202">间隔</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">随机</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">一天</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">一小时</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">每天</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">每小时</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">类型</sys:String>
 
 

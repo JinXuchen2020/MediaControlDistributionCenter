@@ -244,7 +244,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var modelString = JsonConvert.SerializeObject(modelList);
                 switch (viewModels[0].Type)
                 {
-                    case "Brightness":                        
+                    case "Brightness":
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
@@ -274,7 +274,24 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
+                    case "Power":
+                        await CurrentDevice.ChangePowerCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        break;
                 }
+
+                foreach (var model in modelList)
+                {
+                    await deviceControlService.Save(model);
+                }
+
+                GetDeviceTimeControls();
             }
         }
 

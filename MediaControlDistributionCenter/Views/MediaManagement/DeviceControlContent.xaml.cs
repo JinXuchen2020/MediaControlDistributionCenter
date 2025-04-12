@@ -118,6 +118,7 @@ namespace MediaControlDistributionCenter.Views
                 Type = manageViewModel.CommandType,
                 RepeatMode = "day",
                 ExecuteMethod = "SCHEDULED",
+                ExecuteTime = "00:00:00",
                 Status = 0,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
@@ -334,6 +335,7 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     Brightness.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
                     //TimeSyncPara.Visibility = System.Windows.Visibility.Collapsed;
@@ -346,6 +348,7 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     Volume.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
 
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -360,6 +363,7 @@ namespace MediaControlDistributionCenter.Views
                     Brightness.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     TimeSync.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
 
                     //界面切換 
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -374,6 +378,21 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Brightness.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
+
+                    //界面切換
+                    //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
+                    //TimeSyncPara.Visibility = System.Windows.Visibility.Collapsed;
+                    //BrightnessPara.Visibility = System.Windows.Visibility.Collapsed;
+                    //RestartPara.Visibility = System.Windows.Visibility.Visible;
+
+                    break;
+                case "Power":
+                    Volume.Background = new SolidColorBrush(Colors.Transparent);
+                    TimeSync.Background = new SolidColorBrush(Colors.Transparent);
+                    Brightness.Background = new SolidColorBrush(Colors.Transparent);
+                    Restart.Background = new SolidColorBrush(Colors.Transparent);
+                    Power.Background = new SolidColorBrush(HexToColor("#30479C"));
 
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -522,10 +541,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
-            viewModel.IsSelected = true;
             manageViewModel.ExecuteScheduleControlCommand.Execute(null);
-            viewModel.IsSelected = false;
         }
 
         private void btnTimeControlEdit_Click(object sender, RoutedEventArgs e)

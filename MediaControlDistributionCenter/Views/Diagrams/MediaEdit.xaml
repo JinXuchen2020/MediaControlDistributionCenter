@@ -1327,7 +1327,11 @@
                                             <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_198}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
-                                                        <StackPanel Orientation="Horizontal" Height="40">
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_204}" Tag="perday" Margin="0,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perday}" />
+                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_205}" Tag="perhour" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perhour}" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Height="40" Margin="0,10,0,0">
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_199}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayCount, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
@@ -1335,15 +1339,11 @@
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_200}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayGap, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_204}" Tag="perday" Margin="0,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perday}" />
-                                                            <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_205}" Tag="perhour" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perhour}" />
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
+                                                        <!--<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_201}" Tag="continuous" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=continuous}" />
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_202}" Tag="gap" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=gap}" />
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_203}" Tag="random" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=random}" />
-                                                        </StackPanel>
+                                                        </StackPanel>-->
                                                     </StackPanel>
                                                 </Border>
                                             </Expander>

@@ -264,12 +264,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (EndDate < DateTime.Now)
-            {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
+            //if (EndDate < DateTime.Now)
+            //{
+            //    Log.Debug($"Device:{Name} is not valid");
+            //    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+            //    return;
+            //}
 
             var userInfo = new UsersSync();
             var users = new List<UserSync>();
@@ -444,6 +444,32 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task ChangePower(string value)
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdScreen + value;
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdScreen} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+        }
+
+        [RelayCommand]
         private async Task TimeSync(string value)
         {
             if (client == null)
@@ -496,6 +522,64 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             CurrentTime = string.IsNullOrEmpty(client.SyncTimeResult) ? DateTime.Now : DateTime.Parse(client.SyncTimeResult);
+        }
+
+        [RelayCommand]
+        private async Task SyncBrightness()
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                CurrentTime = DateTime.Now;
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncBrightness + "Current";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+
+            Brightness = string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
+        }
+
+        [RelayCommand]
+        private async Task SyncVolume()
+        {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                CurrentTime = DateTime.Now;
+                return;
+            }
+
+            if (EndDate < DateTime.Now)
+            {
+                Log.Debug($"Device:{Name} is not valid");
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
+                return;
+            }
+
+            string path = CommunicationCmd.CmdSyncVolume + "Current";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncVolume} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
+
+            Volume = string.IsNullOrEmpty(client.SyncVolumeResult) ? 1 : double.Parse(client.SyncVolumeResult);
         }
 
         [RelayCommand]

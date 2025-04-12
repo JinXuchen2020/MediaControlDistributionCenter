@@ -38,6 +38,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncTimeResult { get; private set; }
 
+        public string SyncBrightnessResult { get; private set; }
+
+        public string SyncVolumeResult { get; private set; }
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息

@@ -24,21 +24,31 @@ namespace MediaControlDistributionCenter.Views.Diagrams
     {
         private DispatcherTimer _timer;
 
+        private DispatcherTimer _adtimer;
+
         private double _ratio;
 
         private double _oldRatio;
 
         private int currentPlayCount = 0;
 
+        private int adPlayCount = 0;
+
+        private int adPlayGap = 0;
+
         private MediaPageViewModel CurrentPage;
+
+        private MediaPageViewModel? AdPage;
 
         public MediaPreview(MediaEditViewModel viewModel)
         {
             InitializeComponent();
-            CurrentPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted);
+            CurrentPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted && c.Type == "normal");
+            AdPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => !c.IsDeleted && c.Type == "ad");
             DataContext = viewModel;
 
             InitializeTimer();
+            InitializeAdTimer();
 
             _oldRatio = viewModel.MediaConfig.Ratio;
 
@@ -57,7 +67,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void MediaPreview_Loaded(object sender, RoutedEventArgs e)
         {            
-            LoadCanvasComponents();
+            LoadCanvasComponents(CurrentPage);
         }
 
         private void MediaPreview_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -66,7 +76,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             MainCanvas.Height = (sender as Window).Width; 
             _ratio = MainCanvas.Width / 768;
 
-            LoadCanvasComponents();
+            LoadCanvasComponents(CurrentPage);
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -93,31 +103,94 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             var viewModel = (MediaEditViewModel)DataContext;
             if (currentPlayCount < CurrentPage.PlayCount)
             {
-                LoadCanvasComponents();
+                LoadCanvasComponents(CurrentPage);
                 InitializeTimer();
             }
             else
             {
                 currentPlayCount = 0;
-                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > CurrentPage.Order && !c.IsDeleted);
+                var nextPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => c.Order > CurrentPage.Order && !c.IsDeleted && c.Type == "normal");
                 if (nextPage == null)
                 {
-                    nextPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted);
+                    nextPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted && c.Type == "normal");
                 }
 
                 CurrentPage = nextPage;
-                LoadCanvasComponents();
+                LoadCanvasComponents(CurrentPage);
                 InitializeTimer();
             }
         }
 
-        private void LoadCanvasComponents()
+        private async void InitializeAdTimer()
+        {
+            if (_adtimer != null)
+            {
+                _adtimer.Stop();
+            }
+
+            if (AdPage != null)
+            {
+                var pageTimeline = AdPage.Components.Count == 0 ? 5 : CurrentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                int delayTime = 0;
+                if (AdPage.AdPlayMode == "perday")
+                {
+                    delayTime = 24 * 60 / AdPage.PlayCount;
+                }
+
+                if (AdPage.AdPlayMode == "perhour")
+                {
+                    delayTime = 60 / AdPage.PlayCount;
+                }
+
+                delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayGap;
+                await Task.Delay(delayTime * 1000);
+                _adtimer = new DispatcherTimer();
+                _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
+                _timer.Tick += AdTimer_Tick;
+                _timer.Start();
+                adPlayCount++;
+            }
+        }
+
+        private void AdTimer_Tick(object? sender, EventArgs e)
+        {
+            if(AdPage == null)
+            {
+                return;
+            }
+            var viewModel = (MediaEditViewModel)DataContext;
+            if (adPlayGap < AdPage.PlayGap)
+            {
+                LoadCanvasComponents(AdPage);
+                adPlayGap++;
+            }
+            else
+            {
+                adPlayGap = 0;
+                if(adPlayCount < AdPage.PlayCount)
+                {
+                    InitializeAdTimer();
+                }
+
+                var nextPage = viewModel.MediaConfig.Pages.OrderByDescending(c=>c.Order).FirstOrDefault(c => c.Order < AdPage.Order && !c.IsDeleted && c.Type == "normal");
+                if (nextPage == null)
+                {
+                    nextPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted && c.Type == "normal");
+                }
+
+                CurrentPage = nextPage;
+                LoadCanvasComponents(CurrentPage);
+                InitializeTimer();
+            }
+        }
+
+        private void LoadCanvasComponents(MediaPageViewModel mediaPage)
         {
             LoadingOverlay.Visibility = Visibility.Visible;
             MainCanvas.Visibility = Visibility.Collapsed;
             MainCanvas.Children.Clear();
             var effectComponents = new List<BaseComponentViewModel>();
-            foreach (var component in CurrentPage.Components.Where(c => !c.IsDeleted))
+            foreach (var component in mediaPage.Components.Where(c => !c.IsDeleted))
             {
                 if (component == null) continue;
                 component.Ratio = _oldRatio * _ratio;
@@ -169,7 +242,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             this.Dispatcher.Invoke(async () =>
             {
-                while (CurrentPage.Components.Where(c => !c.IsDeleted).Any(c => !c.IsRunningLoaded))
+                while (mediaPage.Components.Where(c => !c.IsDeleted).Any(c => !c.IsRunningLoaded))
                 {
                     await Task.Delay(1000);
                 }
@@ -177,7 +250,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 MainCanvas.Visibility = Visibility.Visible;
 
-                foreach (var component in CurrentPage.Components.Where(c => !c.IsDeleted))
+                foreach (var component in mediaPage.Components.Where(c => !c.IsDeleted))
                 {
                     component.EffectExecution();                    
                 }
@@ -187,7 +260,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void DisposeCanvasComponents()
         {
             MainCanvas.Children.Clear();
-            _timer.Stop();
+            _timer?.Stop();
+            _adtimer?.Stop();
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)

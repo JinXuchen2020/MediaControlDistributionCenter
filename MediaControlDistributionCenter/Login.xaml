@@ -155,7 +155,7 @@
                                   Click="btnLogin_Click"
                                   materialDesign:ThemeAssist.Theme="Light"/>
 
-                            <StackPanel Visibility="Collapsed" x:Name="spAddress" Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Width="320" Height="40">
+                            <StackPanel Visibility="Collapsed" x:Name="spAddress" Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Height="40">
                                 <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
                                 <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
                                 <Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
