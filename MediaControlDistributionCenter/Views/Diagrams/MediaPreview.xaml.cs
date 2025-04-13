@@ -134,21 +134,21 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 int delayTime = 0;
                 if (AdPage.AdPlayMode == "perday")
                 {
-                    delayTime = 24 * 60 / AdPage.PlayCount;
+                    delayTime = 24 * 60 / AdPage.PlayGap;
                 }
 
                 if (AdPage.AdPlayMode == "perhour")
                 {
-                    delayTime = 60 / AdPage.PlayCount;
+                    delayTime = 60 / AdPage.PlayGap;
                 }
 
-                delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayGap;
+                delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayCount;
                 await Task.Delay(delayTime * 1000);
                 _adtimer = new DispatcherTimer();
                 _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
                 _timer.Tick += AdTimer_Tick;
                 _timer.Start();
-                adPlayCount++;
+                adPlayGap++;
             }
         }
 
@@ -159,15 +159,15 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 return;
             }
             var viewModel = (MediaEditViewModel)DataContext;
-            if (adPlayGap < AdPage.PlayGap)
+            if (adPlayCount < AdPage.PlayCount)
             {
                 LoadCanvasComponents(AdPage);
-                adPlayGap++;
+                adPlayCount++;
             }
             else
             {
-                adPlayGap = 0;
-                if(adPlayCount < AdPage.PlayCount)
+                adPlayCount = 0;
+                if(adPlayGap < AdPage.PlayGap)
                 {
                     InitializeAdTimer();
                 }

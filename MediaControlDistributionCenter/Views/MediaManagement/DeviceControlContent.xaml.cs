@@ -550,5 +550,24 @@ namespace MediaControlDistributionCenter.Views
             viewModel.SetGridColumnName();
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in manageViewModel.DeviceTimeControls)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in manageViewModel.DeviceTimeControls)
+                {
+                    item.IsSelected = false;
+                }
+            }
+        }
     }
 }

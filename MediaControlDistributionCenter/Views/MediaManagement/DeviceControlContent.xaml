@@ -13,7 +13,8 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:SplitStringConverter x:Key="SplitStringConverter" />
-        <converters:SelectedValueConverter x:Key="SelectedValueConverter" /> 
+        <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
+        <converters:PercentageConverter x:Key="PercentageConverter" />
     </UserControl.Resources>
     <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}">
         <materialDesign:DialogHost.DialogContentTemplate>
@@ -311,7 +312,7 @@
                 <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,0,0" Background="#16171D">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="81"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid Grid.RowSpan="2">
                         <Grid.RowDefinitions>
@@ -328,11 +329,11 @@
 
                     <Grid Grid.Row="1" >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="370"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume;TimeSync;Restart}">
-                            <StackPanel HorizontalAlignment="Center" Width="600">
+                            <StackPanel HorizontalAlignment="Center" Width="600" Height="Auto" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Margin="19,32"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_104}" />
                                 </StackPanel>
@@ -391,7 +392,7 @@
                                 </DockPanel>
                             </StackPanel>
                         </Grid>
-                        <Grid Grid.Row="0" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Power}">
+                        <Grid Grid.Row="0" Height="Auto" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Power}">
                             <StackPanel>
                                 <TextBlock Margin="19,12"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_111}" />
                                 <StackPanel >
@@ -407,7 +408,7 @@
 
                                     </DockPanel>
 
-                                    <Grid Margin="19,0" Height="200">
+                                    <Grid Margin="19,0" ClipToBounds="False" Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.45}" >
                                         <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                                         <DataGrid
                                             AutoGenerateColumns="false" 
@@ -415,7 +416,8 @@
                                             FontSize="14" 
                                             IsReadOnly="True" 
                                             SelectionMode="Single" 
-                                            FrozenColumnCount="1" 
+                                            FrozenColumnCount="1"
+                                            Margin="0,0,0,10"
                                             Background="Transparent" 
                                             ItemsSource="{Binding DeviceTimeControls, UpdateSourceTrigger=PropertyChanged}"
                                         >
@@ -432,7 +434,7 @@
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
                                                     <DataGridCheckBoxColumn.Header>
-                                                        <CheckBox HorizontalAlignment="Center" />
+                                                        <CheckBox Unchecked="SelectAll_Click" Checked="SelectAll_Click"/>
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
                                                 <DataGridTemplateColumn Width="60">

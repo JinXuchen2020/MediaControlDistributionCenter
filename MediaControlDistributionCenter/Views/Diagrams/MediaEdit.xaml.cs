@@ -411,10 +411,14 @@ namespace MediaControlDistributionCenter.Views
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
-                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
-                Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio);
-                Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio);
+                double actualLeft = manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio;
+                double actualTop = manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio;
+                actualLeft = Math.Min(Math.Max(minLeft, actualLeft), maxLeft);
+                actualTop = Math.Min(Math.Max(minTop, actualTop), maxTop);
+                Canvas.SetLeft(manageViewModel.SelectedElement, actualLeft);
+                Canvas.SetTop(manageViewModel.SelectedElement, actualTop);
+                manageViewModel.SelectedComponent.Left = actualLeft / manageViewModel.SelectedComponent.Ratio;
+                manageViewModel.SelectedComponent.Top = actualTop / manageViewModel.SelectedComponent.Ratio;
                 var resizableControl = new ResizableControl();
                 resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
                 resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
