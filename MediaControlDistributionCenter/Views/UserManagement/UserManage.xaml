@@ -94,7 +94,7 @@
                                         <StackPanel Orientation="Horizontal" Margin="10">
                                             <TextBlock Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
                                             <!--<TextBox Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Password}" />-->
-                                            <PasswordBox Foreground="White" Width="250" Padding="5" Height="32" Style="{StaticResource MaterialDesignRevealPasswordBox}" PasswordChar="{Binding Password}" BorderBrush="#404870" Background="#2A3255" BorderThickness="1"
+                                            <PasswordBox Foreground="White" Width="250" Padding="5" Height="32" materialDesign:PasswordBoxAssist.Password="{Binding Password}" Style="{StaticResource MaterialDesignRevealPasswordBox}" BorderBrush="#404870" Background="#2A3255" BorderThickness="1"
                                                 materialDesign:TextFieldAssist.PrefixText=""
                                                 materialDesign:TextFieldAssist.HasClearButton="True"
                                                 materialDesign:TextFieldAssist.PrefixTextVisibility="WhenFocusedOrNonEmpty"
