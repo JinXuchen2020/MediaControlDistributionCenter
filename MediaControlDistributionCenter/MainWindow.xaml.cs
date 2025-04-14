@@ -70,7 +70,9 @@ namespace MediaControlDistributionCenter
 
             DataContext = mainViewModel;
 
-            MainContentControl.Content = serviceProvider.GetRequiredService<Dashboard>();
+            var dashboard = serviceProvider.GetRequiredService<Dashboard>();
+            dashboard.ConnectedDeviceChanged += OnChildDataContextChanged;
+            GoContent(dashboard, 1);
             //menus = new List<MenuItem>()
             //{
             //    new MenuItem
@@ -214,7 +216,9 @@ namespace MediaControlDistributionCenter
             switch (eleName)
             {
                 case "Dashboard":
-                    GoContent(serviceProvider.GetRequiredService<Dashboard>(), 1);
+                    var dashboard = serviceProvider.GetRequiredService<Dashboard>();
+                    dashboard.ConnectedDeviceChanged += OnChildDataContextChanged;
+                    GoContent(dashboard, 1);
                     break;
                 case "UserManagement":
                     var content = serviceProvider.GetRequiredService<UserManage>();
@@ -246,6 +250,7 @@ namespace MediaControlDistributionCenter
         private void OnChildDataContextChanged(object? sender, EventArgs e)
         {
             var mainViewModel = App.ServicesProvider.GetService<MainViewModel>();
+            mainViewModel.IsConnected = mainViewModel.ConnectedDevice?.IsConnected ?? false;
             this.DataContext = mainViewModel;
         }
 

@@ -312,7 +312,7 @@
                 <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,0,0" Background="#16171D">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="81"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid Grid.RowSpan="2">
                         <Grid.RowDefinitions>
@@ -340,8 +340,11 @@
                                 <DockPanel Margin="0,0,0,20" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
                                     <TextBlock Margin="38,5,0,0" DockPanel.Dock="Left" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_128}" />
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                                        <DatePicker Width="228" VerticalAlignment="Center" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding CurrentDevice.CurrentTime}" />
-                                        <materialDesign:TimePicker Width="228" Is24Hours="True" WithSeconds="True" VerticalAlignment="Center" Margin="8,0,0,0" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedTime="{Binding CurrentDevice.CurrentTime}" />
+                                        <DatePicker Width="200" VerticalAlignment="Center" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding CurrentDevice.CurrentTime}" />
+                                        <materialDesign:TimePicker Width="200" Is24Hours="True" WithSeconds="True" VerticalAlignment="Center" Margin="8,0,0,0" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedTime="{Binding CurrentDevice.CurrentTime}" />
+                                        <Button Click="btnTimeRefresh_Click" Background="#393C45" Margin="5,0,0,0" BorderBrush="#393C45" Width="20" Height="20" Padding="0" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="MaterialDesignIconButton">
+                                            <materialDesign:PackIcon Kind="Refresh" Foreground="#8A94A5"  Width="20" Height="20"/>
+                                        </Button>
                                     </StackPanel>
                                 </DockPanel>
                                 <DockPanel>

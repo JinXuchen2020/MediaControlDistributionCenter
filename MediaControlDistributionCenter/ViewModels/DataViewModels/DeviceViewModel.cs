@@ -543,14 +543,14 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             string path = CommunicationCmd.CmdSyncBrightness + "Current";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
+            //bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            //if (!result)
+            //{
+            //    ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+            //    return;
+            //}
 
-            Brightness = string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
+            Brightness = 50;// string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
         }
 
         [RelayCommand]

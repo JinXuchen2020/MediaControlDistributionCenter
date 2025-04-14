@@ -130,8 +130,8 @@
                         HorizontalAlignment="Left"
                         Background="#060606">
                         <StackPanel Orientation="Horizontal">
-                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
-                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding DeviceConnString, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
                     </Border>

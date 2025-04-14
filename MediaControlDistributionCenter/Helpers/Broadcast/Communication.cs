@@ -217,6 +217,18 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                             SyncTimeResult = data[2];
                             Log.Information(SyncTimeResult);
                         }
+
+                        if (data[1].Contains(CommunicationCmd.CmdBrightness.Split("|")[1]))
+                        {
+                            SyncBrightnessResult = data[2];
+                            Log.Information(SyncBrightnessResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncVolume.Split("|")[1]))
+                        {
+                            SyncVolumeResult = data[2];
+                            Log.Information(SyncVolumeResult);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -305,6 +317,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     }
                 }
             }
+
+            Log.Information($"Task: {CmdArr[1]} is completed!");
             return true;  // 如果成功完成计算
         }
 

@@ -14,6 +14,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string deviceConnString;
 
+        [ObservableProperty]
+        private bool isConnected = false;
+
         public MainViewModel(LoginViewModel loginViewModel, Communication communication)
         {
             currentUser = loginViewModel.CurrentUser;

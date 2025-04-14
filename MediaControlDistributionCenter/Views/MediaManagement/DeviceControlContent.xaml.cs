@@ -43,7 +43,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void DeviceControlContent_Unloaded(object sender, RoutedEventArgs e)
         {
-            //dgDevices.SelectedItem = null;
+            manageViewModel.CurrentDevice = null;
         }
 
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
@@ -219,10 +219,21 @@ namespace MediaControlDistributionCenter.Views
 
             if (commandType == "TimeSync" && manageViewModel.CurrentDevice != null)
             {
-                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                    {
+                        manageViewModel.CurrentDevice.ErrorMessage = null;
+                    }
+                });
                 manageViewModel.RefreshTimeZone();
             }
 
+            this.Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+            });
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
             manageViewModel.GetDeviceTimeControls();
         }
@@ -238,8 +249,14 @@ namespace MediaControlDistributionCenter.Views
 
             if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
             {
-                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
-
+                this.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                    {
+                        manageViewModel.CurrentDevice.ErrorMessage = null;
+                    }
+                });
                 manageViewModel.RefreshTimeZone();
             }
         }
@@ -532,20 +549,22 @@ namespace MediaControlDistributionCenter.Views
         {
             if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
             {
-                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
-
+                this.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                    {
+                        manageViewModel.CurrentDevice.ErrorMessage = null;
+                    }
+                });
                 manageViewModel.RefreshTimeZone();
             }
 
-            if (manageViewModel.CommandType == "Brightness" && manageViewModel.CurrentDevice != null)
+            this.Dispatcher.Invoke(async () =>
             {
-                manageViewModel.CurrentDevice.SyncBrightnessCommand.Execute(null);
-            }
+                await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+            });
 
-            if (manageViewModel.CommandType == "Volume" && manageViewModel.CurrentDevice != null)
-            {
-                manageViewModel.CurrentDevice.SyncVolumeCommand.Execute(null);
-            }
             manageViewModel.GetDeviceTimeControls();
         }
 
@@ -577,6 +596,22 @@ namespace MediaControlDistributionCenter.Views
                 {
                     item.IsSelected = false;
                 }
+            }
+        }
+
+        private void btnTimeRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                this.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                    {
+                        manageViewModel.CurrentDevice.ErrorMessage = null;
+                    }
+                });
+                manageViewModel.RefreshTimeZone();
             }
         }
     }

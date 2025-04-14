@@ -349,6 +349,38 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task ExecuteRealTimeControlSync()
+        {
+            if (CommandType == "Brightness" && CurrentDevice != null)
+            {
+                CurrentDevice.SyncBrightnessCommand.Execute(null);
+                if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                {
+                    ErrorMessage = CurrentDevice.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    CurrentDevice.ErrorMessage = null;
+                    return;
+                }
+
+                CommandRTValue = CurrentDevice.Brightness.ToString();
+            }
+
+            if (CommandType == "Volume" && CurrentDevice != null)
+            {
+                CurrentDevice.SyncVolumeCommand.Execute(null);
+                if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                {
+                    ErrorMessage = CurrentDevice.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    CurrentDevice.ErrorMessage = null;
+                    return;
+                }
+
+                CommandRTValue = CurrentDevice.Volume.ToString();
+            }
+        }
+
+        [RelayCommand]
         private async Task DeleteBatch()
         {
             var selectedIds = DeviceTimeControls.Where(c => c.IsSelected).Select(c => c.Id).ToList();
