@@ -82,6 +82,8 @@ namespace MediaControlDistributionCenter.ViewModels
             this.MediaConfig = new MediaConfigViewModel(config);
             this.MediaConfig.Program = CurrentMedia;
 
+            Canvas.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * Canvas.Width;
+
             SelectedPage = this.MediaConfig.Pages.FirstOrDefault();
             if (SelectedPage != null)
             {

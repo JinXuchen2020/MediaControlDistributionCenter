@@ -536,6 +536,16 @@ namespace MediaControlDistributionCenter.Views
 
                 manageViewModel.RefreshTimeZone();
             }
+
+            if (manageViewModel.CommandType == "Brightness" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncBrightnessCommand.Execute(null);
+            }
+
+            if (manageViewModel.CommandType == "Volume" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncVolumeCommand.Execute(null);
+            }
             manageViewModel.GetDeviceTimeControls();
         }
 
