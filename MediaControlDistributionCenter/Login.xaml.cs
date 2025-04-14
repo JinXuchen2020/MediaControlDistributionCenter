@@ -29,6 +29,26 @@ namespace MediaControlDistributionCenter
             this.serviceProvider = serviceProvider;
             InitializeComponent();
             DataContext = viewModel;
+
+            switch (LanguageTool.Instance.Language)
+            {
+                case MediaControlDistributionCenter.Language.Chinese:
+                    SysLanguage.Text = FindResource("LanguageKey_Code_ZH").ToString();
+                    Log.Debug("zh_CN");
+                    break;
+                case MediaControlDistributionCenter.Language.English:
+                    SysLanguage.Text = FindResource("LanguageKey_Code_EN").ToString();
+                    Log.Debug("en_US");
+                    break;
+                case MediaControlDistributionCenter.Language.Japanese:
+                    SysLanguage.Text = FindResource("LanguageKey_Code_JP").ToString();
+                    Log.Debug("ja_JP");
+                    break;
+                case MediaControlDistributionCenter.Language.Korean:
+                    SysLanguage.Text = FindResource("LanguageKey_Code_KO").ToString();
+                    Log.Debug("ko_KR");
+                    break;
+            }
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)

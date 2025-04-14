@@ -88,10 +88,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source,
                 Timeline = Timeline,
                 Background = Background.ToString(),
@@ -122,7 +122,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 PlayCount = 1,
                 PlayDuration = "00:00:05",
                 PlayMode = "pageTurning",
-                ComponentEffect = "FadeIn",
+                ComponentEffect = "Empty",
                 EffectDuration = 1000,
                 Direction = "rollingLeft",
                 Timeline = 5,
@@ -140,8 +140,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             RichTextBox result = new()
             {
-                Width = Width,
-                Height = Height,
+                Width = Width * Ratio,
+                Height = Height * Ratio,
                 AllowDrop = true,
                 BorderThickness = new Thickness(2),
                 BorderBrush = new SolidColorBrush(Colors.White),
@@ -162,12 +162,13 @@ namespace MediaControlDistributionCenter.ViewModels
             result.Document.Blocks.Clear();
             result.Document.Blocks.Add(paragraph);
 
-            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height));
+            var converter = new ToMultipleConverter();
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
             CreateBinding(result, TextBlock.FontSizeProperty, nameof(TextSize));
 
-            Canvas.SetLeft(result, Left);
-            Canvas.SetTop(result, Top);
+            Canvas.SetLeft(result, Left * Ratio);
+            Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
 
             // 添加鼠标事件处理
@@ -252,11 +253,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 IsRunningLoaded = true;
                 if (sender is RichTextBox richTextBox)
                 {
-                    if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                    {
-                        Effects.Find(c => c.Key == ComponentEffectKey)?.Action(richTextBox);
-                    }
-
+                    RunningElement = richTextBox;
                     InitializeTimer(richTextBox);
                 }                
             };
@@ -286,7 +283,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
             {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+                var effect = Effects.Find(c => c.Key == ComponentEffectKey);
+                if (effect != null && effect.Action != null)
+                {
+                    effect.Action(RunningElement);
+                }
             }
         }
 
@@ -373,11 +374,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (currentPlayCount < PlayCount)
             {
-                if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
-                {
-                    Effects.Find(c => c.Key == ComponentEffectKey)?.Action(target);
-                }
-
+                EffectExecution();
                 currentPlayCount++;
             }
             else

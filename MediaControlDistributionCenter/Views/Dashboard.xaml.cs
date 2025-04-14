@@ -1,4 +1,5 @@
-﻿using MediaControlDistributionCenter.ViewModels;
+﻿using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
@@ -23,13 +24,20 @@ namespace MediaControlDistributionCenter.Views
             InitializeComponent();
 
             DataContext = dashboardViewModel;
+
+            this.Loaded += Dashboard_Loaded;
+        }
+
+        private void Dashboard_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             TextBlock tx = sender as TextBlock;
 
-            var userViewModel = manageViewModel.Users.FirstOrDefault();
+            var userViewModel = manageViewModel.Users.FirstOrDefault(c =>c.Role == RoleType.User.ToString().ToLower());
 
 
             if (manageViewModel.CurrentUser.Role == "user")
@@ -55,8 +63,8 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnToMediaManage_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var userViewModel = manageViewModel.Users.FirstOrDefault();
-            if(manageViewModel.CurrentUser.Role == "user")
+            var userViewModel = manageViewModel.Users.FirstOrDefault(c => c.Role == RoleType.User.ToString().ToLower());
+            if (manageViewModel.CurrentUser.Role == "user")
             {
                 var content = serviceProvider.GetRequiredService<MediaManage>();
                 (App.Current.MainWindow as MainWindow).GoContent(content, 2);

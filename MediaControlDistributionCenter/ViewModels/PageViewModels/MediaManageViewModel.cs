@@ -1,6 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Aspose.Words;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Models;
@@ -193,6 +195,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             ErrorMessage = ConnectedDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            ConnectedDevice.ErrorMessage = null;
                             return;
                         }
                         break;
@@ -223,55 +226,50 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteMedia(ProgramViewModel viewModel)
+        private async Task DeleteMedia()
         {
+            var selectedItems = Medias.Where(c => c.IsSelected).ToList();
             var playbackRecordService = GetService<IPlaybackRecordService>();
-            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
-            var deviceService = GetService<IMonitorService>();
-            foreach (var playbackRecord in playRecords)
+            var publishedPrograms = new List<ProgramDto>();
+            if (ConnectedDevice != null)
             {
-                if (ConnectedDevice != null)
+                foreach (var selectedItem in selectedItems)
                 {
-                    if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
+                    var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name, MonitorSnCode = ConnectedDevice.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                    if (playRecords.Count > 0)
                     {
-                        await DetectCommunication(CurrentUser.Account);
-                        await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
-                        {
-                            ErrorMessage = ConnectedDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            return;
-                        }
-                        break;
+                        publishedPrograms.Add(selectedItem.ToModel());
                     }
                 }
-                else
-                {
-                    var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    // 如果设备在线，发送网络版命令                    
-                }
 
-                await playbackRecordService.DeleteById(playbackRecord.Id);
+                if (publishedPrograms.Count > 0)
+                {
+                    var modelString = JsonConvert.SerializeObject(publishedPrograms);
+                    await DetectCommunication(CurrentUser.Account);
+                    await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
+                    if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
+                    {
+                        ErrorMessage = ConnectedDevice.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        ConnectedDevice.ErrorMessage = null;
+                        return;
+                    }
+                }
             }
 
-            fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.UserId, viewModel.Name));
-            var response = await programService.DeleteById(viewModel.Id);
-            if (response.Code == 200)
+            foreach (var selectedItem in selectedItems)
+            {
+                var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                await playbackRecordService.DeleteBatch(playRecords.Select(c => c.Id).ToList());
+
+                fileService.DeleteResourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, selectedItem.UserId, selectedItem.Name));
+            }
+
+            var response = await programService.DeleteBatch(selectedItems.Select(c => c.Id).ToList());
+            if (response.Code == 200) 
             {
                 LoadData();
             }
-        }
-
-        [RelayCommand]
-        private async Task DeleteMedias()
-        {
-            var selectedItems = Medias.Where(c => c.IsSelected).ToList();
-            foreach (var selectedItem in selectedItems) 
-            {
-                await DeleteMedia(selectedItem);
-            }
-
-            LoadData();
         }
 
         [RelayCommand]
@@ -301,19 +299,24 @@ namespace MediaControlDistributionCenter.ViewModels
                                 if (config != null)
                                 {
                                     config.Program = viewModel.ToModel();
-                                    config.Pages.ForEach(page => page.Components.ForEach(c =>
+                                    config.Pages.ForEach(page => 
                                     {
-                                        switch (c.Type)
+                                        page.ThumbnailFilePath = page.ThumbnailFilePath.Replace(dbModel.Name, viewModel.Name);
+                                        page.Components.ForEach(c =>
                                         {
-                                            case Models.MediaType.Image:
-                                            case Models.MediaType.Video:
-                                            case MediaType.Word:
-                                                c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }));
+                                            switch (c.Type)
+                                            {
+                                                case Models.MediaType.Image:
+                                                case Models.MediaType.Video:
+                                                case MediaType.Word:
+                                                    c.Source = c.Source.Replace(dbModel.Name, viewModel.Name);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        });
+
+                                    });
                                     var configContent = JsonConvert.SerializeObject(config);
 
                                     var mediaResourcePath = Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, dbModel.Name);

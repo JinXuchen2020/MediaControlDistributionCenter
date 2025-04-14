@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace MediaControlDistributionCenter.Views.CustomControls
 {
@@ -18,6 +19,8 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         private ResizeDirection _resizeDirection;
 
         private static Dictionary<FrameworkElement, List<Thumb>> _elementToThumbMap = new Dictionary<FrameworkElement, List<Thumb>>();
+
+        public static bool IsDragging { get; private set; }
 
         public void MakeResizable(FrameworkElement control, Canvas canvas)
         {
@@ -51,13 +54,32 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
         private void CreateResizeArea(FrameworkElement control, ResizeDirection direction)
         {
-            var thumb = new Thumb
+            var thumb = new CircularThumb()
             {
-                Width = 10,
-                Height = 10,
-                Background = Brushes.Transparent,
-                Tag = direction
+                Width = 20,
+                Height = 20,
+                Tag = direction,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D8E8FF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#404870")),
+                BorderThickness = new Thickness(1)
             };
+
+            switch (direction)
+            {
+                case ResizeDirection.TopLeft:
+                case ResizeDirection.TopRight:
+                case ResizeDirection.BottomLeft:
+                case ResizeDirection.BottomRight:
+                    thumb.CornerRadius = new CornerRadius(16);
+                    break;
+                case ResizeDirection.Left:
+                case ResizeDirection.Right:
+                case ResizeDirection.Top:
+                case ResizeDirection.Bottom:
+                    thumb.CornerRadius = new CornerRadius(10);
+                    break;
+            }
+
 
             _canvas.Children.Add(thumb);
             thumb.DragStarted += (s, e) =>
@@ -67,7 +89,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
             thumb.DragDelta += (s, e) =>
             {
-                System.Threading.Thread.Sleep(50);
+                IsDragging = true;
                 var deltaX = e.HorizontalChange;
                 var deltaY = e.VerticalChange;
 
@@ -83,54 +105,22 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                     case ResizeDirection.TopLeft:
                         newWidth = Math.Max(control.Width - deltaX, 10);
                         newHeight = Math.Max(control.Height - deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newLeft = Math.Max(newLeft + (control.Width - newWidth), 0);
                         newTop = Math.Max(newTop + (control.Height - newHeight), 0);                        
                         break;
                     case ResizeDirection.TopRight:
                         newWidth = Math.Max(control.Width + deltaX, 10);
                         newHeight = Math.Max(control.Height - deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newTop = Math.Max(newTop + (control.Height - newHeight), 0);
                         break;
                     case ResizeDirection.BottomLeft:
                         newWidth = Math.Max(control.Width - deltaX, 10);
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         newLeft = Math.Max(newLeft + (control.Width - newWidth), 0);
                         break;
                     case ResizeDirection.BottomRight:
                         newWidth = Math.Max(control.Width + deltaX, 10);
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        if (Math.Abs(deltaX) > Math.Abs(deltaY))
-                        {
-                            newHeight = newWidth / ratio;
-                        }
-                        else
-                        {
-                            newWidth = newHeight * ratio;
-                        }
                         break;
                     case ResizeDirection.Left:
                         newWidth = Math.Max(control.Width - deltaX, 10);
@@ -145,17 +135,25 @@ namespace MediaControlDistributionCenter.Views.CustomControls
                         break;
                     case ResizeDirection.Bottom:
                         newHeight = Math.Max(control.Height + deltaY, 10);
-                        break;                 
+                        break;
                 }
 
+                var viewModel = (BaseComponentViewModel)control.DataContext;
                 control.Width = Math.Min(newWidth, _canvas.Width - newLeft);
                 control.Height = Math.Min(newHeight, _canvas.Height - newTop);
                 Canvas.SetLeft(control, newLeft);
                 Canvas.SetTop(control, newTop);
-                ((BaseComponentViewModel)control.DataContext).Left = newLeft;
-                ((BaseComponentViewModel)control.DataContext).Top = newTop;
+                viewModel.Left = newLeft / viewModel.Ratio;
+                viewModel.Top = newTop / viewModel.Ratio;
                 UpdateThumbPositions(control);
             };
+
+            thumb.DragCompleted += (sender, e) =>
+            {
+                UpdateThumbPositions(control);
+                IsDragging = false;
+            };
+
             if(_elementToThumbMap.ContainsKey(control))
             {
                 _elementToThumbMap[control].Add(thumb);
@@ -173,59 +171,63 @@ namespace MediaControlDistributionCenter.Views.CustomControls
             var zIndex = Canvas.GetZIndex(control);
             var width = control.ActualWidth;
             var height = control.ActualHeight;
-            var offsetX = (control.Width - width)/2;
-            var offsetY = (control.Height - height)/ 2;
 
             if (_elementToThumbMap.ContainsKey(control))
             {
                 foreach (var thumb in _elementToThumbMap[control])
                 {
+                    var offsetX = thumb.Width / 2;
+                    var offsetY = thumb.Height / 2;
                     var direction = thumb.Tag;
                     switch (direction)
                     {
                         case ResizeDirection.TopLeft:
                             thumb.Cursor = Cursors.SizeNWSE;
-                            Canvas.SetLeft(thumb, conLeft + offsetX);
-                            Canvas.SetTop(thumb, conTop + offsetY);
+                            Canvas.SetLeft(thumb, conLeft - offsetX + 2);
+                            Canvas.SetTop(thumb, conTop - offsetY + 2);
                             break;
                         case ResizeDirection.TopRight:
                             thumb.Cursor = Cursors.SizeNESW;
-                            Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
-                            Canvas.SetTop(thumb, conTop + offsetY);
+                            Canvas.SetLeft(thumb, conLeft + width - offsetX - 2);
+                            Canvas.SetTop(thumb, conTop - offsetY + 2);
                             break;
                         case ResizeDirection.BottomLeft:
                             thumb.Cursor = Cursors.SizeNESW;
-                            Canvas.SetLeft(thumb, conLeft + offsetX);
-                            Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
+                            Canvas.SetLeft(thumb, conLeft - offsetX + 2);
+                            Canvas.SetTop(thumb, conTop + height - offsetY - 2);
                             break;
                         case ResizeDirection.BottomRight:
                             thumb.Cursor = Cursors.SizeNWSE;
-                            Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
-                            Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
+                            Canvas.SetLeft(thumb, conLeft + width - offsetX - 2);
+                            Canvas.SetTop(thumb, conTop + height - offsetY - 2);
                             break;
                         case ResizeDirection.Left:
                             thumb.Cursor = Cursors.SizeWE;
                             thumb.Height = 40;
-                            Canvas.SetLeft(thumb, conLeft + offsetX);
-                            Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
+                            offsetY = thumb.Height / 2;
+                            Canvas.SetLeft(thumb, conLeft - offsetX + 2);
+                            Canvas.SetTop(thumb, conTop + height / 2 - offsetY);
                             break;
                         case ResizeDirection.Right:
                             thumb.Cursor = Cursors.SizeWE;
                             thumb.Height = 40;
-                            Canvas.SetLeft(thumb, conLeft + width + offsetX - thumb.Width);
-                            Canvas.SetTop(thumb, conTop + height / 2 + offsetY);
+                            offsetY = thumb.Height / 2;
+                            Canvas.SetLeft(thumb, conLeft + width - offsetX - 2);
+                            Canvas.SetTop(thumb, conTop + height / 2 - offsetY);
                             break;
                         case ResizeDirection.Top:
                             thumb.Cursor = Cursors.SizeNS;
                             thumb.Width = 40;
-                            Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX);
-                            Canvas.SetTop(thumb, conTop + offsetY);
+                            offsetX = thumb.Width / 2;
+                            Canvas.SetLeft(thumb, conLeft + width / 2 - offsetX);
+                            Canvas.SetTop(thumb, conTop - offsetY + 2);
                             break;
                         case ResizeDirection.Bottom:
                             thumb.Cursor = Cursors.SizeNS;
                             thumb.Width = 40;
-                            Canvas.SetLeft(thumb, conLeft + width / 2 + offsetX - thumb.Width);
-                            Canvas.SetTop(thumb, conTop + height + offsetY - thumb.Height);
+                            offsetX = thumb.Width / 2;
+                            Canvas.SetLeft(thumb, conLeft + width / 2 - offsetX);
+                            Canvas.SetTop(thumb, conTop + height - offsetY - 2);
                             break;
                     }
 

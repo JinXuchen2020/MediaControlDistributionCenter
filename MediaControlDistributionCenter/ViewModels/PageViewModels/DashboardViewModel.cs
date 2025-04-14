@@ -1,5 +1,6 @@
 ﻿using BitMiracle.LibTiff.Classic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -144,6 +145,13 @@ namespace MediaControlDistributionCenter.ViewModels
                     }));
                     break;
             }
+        }
+
+        [RelayCommand]
+        private async Task DetectConnectedDevice()
+        {
+            await DetectCommunication(CurrentUser.Account);
+            LoadData();
         }
     }
 }

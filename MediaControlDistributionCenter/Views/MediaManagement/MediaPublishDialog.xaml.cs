@@ -4,6 +4,8 @@ using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.Views.MediaManagement;
+using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -28,14 +30,16 @@ namespace MediaControlDistributionCenter.Views
     public partial class MediaPublishDialog : UserControl
     {
         private readonly MediaDevicesViewModel manageViewModel;
+        private readonly DashboardViewModel dashboardViewModel;
 
-        public MediaPublishDialog(MediaDevicesViewModel viewModel)
+        public MediaPublishDialog(DashboardViewModel dashboardViewModel, MediaDevicesViewModel viewModel)
         {
             InitializeComponent();
 
             DataContext = viewModel;
             manageViewModel = viewModel;
             manageViewModel.LoadData();
+            this.dashboardViewModel = dashboardViewModel;
 
             this.Loaded += MediaPublishDialog_Loaded;
         }
@@ -67,6 +71,17 @@ namespace MediaControlDistributionCenter.Views
                 {
                     MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
                     manageViewModel.ShowConfirmDialogCommand.Execute(null);
+
+                    if (dashboardViewModel.CurrentUser.Role == "user")
+                    {
+                        var content = App.ServicesProvider.GetRequiredService<MediaManage>();
+                        (App.Current.MainWindow as MainWindow).GoContent(content, 2);
+                    }
+                    else
+                    {
+                        var content = App.ServicesProvider.GetRequiredService<UserControllers>();
+                        (App.Current.MainWindow as MainWindow).GoContent(content, 2);
+                    }
                 }
             });
         }

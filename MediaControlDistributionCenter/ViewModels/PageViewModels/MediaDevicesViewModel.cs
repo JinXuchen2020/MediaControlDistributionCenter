@@ -86,7 +86,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    if (ConnectedDevice != null && ConnectedDevice.SNumber == item.SNumber && item.MediaNames == CurrentMedia.Name)
+                    if (ConnectedDevice == null || ConnectedDevice.SNumber != item.SNumber)
                     {
                         ErrorMessage = FindResource("LanguageKey_Code_Program_Tooltip_118");
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
@@ -99,14 +99,17 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
+                    CurrentMedia.Status = 1;
                     await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
@@ -115,6 +118,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         ErrorMessage = item.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
                         continue;
                     }
 
@@ -127,10 +131,9 @@ namespace MediaControlDistributionCenter.ViewModels
                             var shelfMedias = (await programService.GetAll(new ProgramDto { Status = 1, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<ProgramDto>();
                             foreach (var media in shelfMedias)
                             {
-                                media.Status = 2;
+                                media.Status = 0;
                                 await programService.Save(media);
                             }
-                            CurrentMedia.Status = 1;
                             await programService.Save(CurrentMedia.ToModel());
                         }
                     }

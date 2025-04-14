@@ -99,7 +99,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             manageViewModel.ShowDialogCommand.Execute(viewModel);
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        private void btnEnable_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
             if(viewModel.Enabled == 0)
@@ -247,6 +247,23 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                 if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
                 {
                     await manageViewModel.ActivateDeviceCommand.ExecuteAsync(viewModel);
+                }
+
+                manageViewModel.CanDelete = null;
+            });
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceViewModel)!;
+            this.Dispatcher.Invoke(async () =>
+            {
+                manageViewModel.CanDelete = false;
+                await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
+                {
+                    manageViewModel.DeleteDeviceCommand.Execute(viewModel);
                 }
 
                 manageViewModel.CanDelete = null;

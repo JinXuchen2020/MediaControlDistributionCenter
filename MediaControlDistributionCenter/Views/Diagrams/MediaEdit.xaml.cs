@@ -12,6 +12,7 @@ using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using SkiaSharp;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -82,6 +83,14 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaEdit_Loaded(object sender, RoutedEventArgs e)
         {
+            MainCanvas.MouseLeftButtonDown += (sender, e) =>
+            {
+                if (e.Source == sender && manageViewModel.SelectedElement != null)
+                {
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                }
+            };
             LoadCanvasComponents(manageViewModel);
         }
 
@@ -232,8 +241,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = (currentComponent as ImageComponentViewModel)!;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300;
-                viewModel.Height = 200;
+                viewModel.Width = 300 / viewModel.Ratio;
+                viewModel.Height = 200 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -260,8 +269,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300;
-                viewModel.Height = 200;
+                viewModel.Width = 300 / viewModel.Ratio;
+                viewModel.Height = 200 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -288,8 +297,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 229;
-                viewModel.Height = 329;
+                viewModel.Width = 229 / viewModel.Ratio;
+                viewModel.Height = 329 / viewModel.Ratio;
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -308,6 +317,13 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
+            SaveContent();
+
+            manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
+        }
+
+        private void SaveContent()
+        {
             manageViewModel.CaptureCommand.Execute(MainCanvas);
 
             var configModel = manageViewModel.MediaConfig.ToModel();
@@ -318,9 +334,7 @@ namespace MediaControlDistributionCenter.Views
 
             fileService.SaveFileContent(mediaResourcePath, Helpers.Constants.ConfigFileName, configContent);
 
-            manageViewModel.CurrentMedia.ShowConfirmDialogCommand.Execute(null);
-
-            foreach(var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
+            foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.IsDeleted))
             {
                 fileService.DeleteResourcePath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name));
             }
@@ -328,7 +342,7 @@ namespace MediaControlDistributionCenter.Views
             foreach (var deletePage in manageViewModel.MediaConfig.Pages.Where(c => c.Components.Any(c => c.IsDeleted)))
             {
                 var deleteCompos = deletePage.Components.Where(c => c.IsDeleted);
-                foreach (var compo in deleteCompos) 
+                foreach (var compo in deleteCompos)
                 {
                     var componentPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, deletePage.Name, compo.Name);
                     fileService.DeleteResourcePath(componentPath);
@@ -338,14 +352,8 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
+            SaveContent();
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name);
-
-            if(!File.Exists(System.IO.Path.Combine(sourceDic, Helpers.Constants.ConfigFileName)))
-            {
-                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_151");
-                manageViewModel.ShowConfirmDialogCommand.Execute(null);
-                return;
-            }
 
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
             fileService.CreatZip(sourceDic, desZipFilePath);
@@ -397,26 +405,35 @@ namespace MediaControlDistributionCenter.Views
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null)
+            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !ResizableControl.IsDragging)
             {
                 double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                manageViewModel.SelectedComponent.Left = Math.Min(Math.Max(minLeft, manageViewModel.SelectedComponent.Left), maxLeft);
-                manageViewModel.SelectedComponent.Top = Math.Min(Math.Max(minTop, manageViewModel.SelectedComponent.Top), maxTop);
-                Canvas.SetLeft(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Left);
-                Canvas.SetTop(manageViewModel.SelectedElement, manageViewModel.SelectedComponent.Top);
+                double actualLeft = manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio;
+                double actualTop = manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio;
+                actualLeft = Math.Min(Math.Max(minLeft, actualLeft), maxLeft);
+                actualTop = Math.Min(Math.Max(minTop, actualTop), maxTop);
+                Canvas.SetLeft(manageViewModel.SelectedElement, actualLeft);
+                Canvas.SetTop(manageViewModel.SelectedElement, actualTop);
+                manageViewModel.SelectedComponent.Left = actualLeft / manageViewModel.SelectedComponent.Ratio;
+                manageViewModel.SelectedComponent.Top = actualTop / manageViewModel.SelectedComponent.Ratio;
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
             }
         }
 
         private void btnPageAdd_Click(object sender, RoutedEventArgs e)
         {
+            var maxId = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() : 0;
             var viewModel = new MediaPageViewModel(new MediaPage
             {
-                Id = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() + 1 : 1,
-                Order = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Order).Max() + 1 : 1,
+                Id = maxId + 1,
+                Order = maxId + 1,
                 PlayCount = 1,
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
                 Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
                 Components = new List<BaseComponent>()
             }, manageViewModel.CurrentUser.Account);
@@ -426,20 +443,29 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageSave_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = ((sender as Button).DataContext as MediaPageViewModel)!;
-            viewModel.SubmitCommand.Execute(null);
-            if (!viewModel.HasErrors)
+            var maxId = manageViewModel.MediaConfig.Pages.Count > 0 ? manageViewModel.MediaConfig.Pages.Select(c => c.Id).Max() : 0;
+            var viewModel = new MediaPageViewModel(new MediaPage
             {
-                if (manageViewModel.SelectedPage != null)
-                {
-                    manageViewModel.SelectedPage.IsSelected = false;
-                }
-                manageViewModel.SelectedPage = viewModel;
-                viewModel.IsSelected = true;
-                manageViewModel.MediaConfig.Pages.Add(viewModel);
-                manageViewModel.CloseDialogCommand.Execute(null);
-                LoadCanvasComponents(manageViewModel);
+                Id = maxId + 1,
+                Order = maxId + 1,
+                Type = "normal",
+                PlayCount = 1,
+                PlayGap = 10,
+                AdPlayMode = "perday",
+                Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{maxId + 1}",
+                Schedulers = new List<Scheduler> { new Scheduler { Id = 1, ScheduleDays = new List<int>() { 1, 2, 3, 4, 5, 6, 7 } } },
+                Components = new List<BaseComponent>()
+            }, manageViewModel.CurrentUser.Account);
+
+            if (manageViewModel.SelectedPage != null)
+            {
+                manageViewModel.SelectedPage.IsSelected = false;
             }
+            manageViewModel.SelectedPage = viewModel;
+            viewModel.IsSelected = true;
+            manageViewModel.MediaConfig.Pages.Add(viewModel);
+            LoadCanvasComponents(manageViewModel);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
@@ -500,7 +526,12 @@ namespace MediaControlDistributionCenter.Views
         private void SelectComponent_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var viewModel = ((sender as DockPanel).DataContext as BaseComponentViewModel)!;
-            manageViewModel.SelectedElement = null;
+            if (manageViewModel.SelectedElement != null)
+            {
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                manageViewModel.SelectedElement = null;
+            }
             SwitchComponent(viewModel);
         }
 
@@ -514,6 +545,8 @@ namespace MediaControlDistributionCenter.Views
                 if (currentCom.FrameworkElement != null)
                 {
                     MainCanvas.Children.Remove(currentCom.FrameworkElement);
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(currentCom.FrameworkElement, MainCanvas);
                 }
                 manageViewModel.SelectedComponent = null;
                 manageViewModel.SelectedElement = null;
@@ -565,11 +598,14 @@ namespace MediaControlDistributionCenter.Views
             if(manageViewModel.SelectedComponent != null)
             {
                 manageViewModel.SelectedComponent.IsSelected = false;
+                manageViewModel.SelectedComponent = null;
             }
 
             manageViewModel.SelectedComponent = viewModel;
             manageViewModel.SelectedComponent.IsSelected = true;
             manageViewModel.SelectedElement = viewModel.FrameworkElement;
+            var resizableControl = new ResizableControl();
+            resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
         }
 
         private void PlayModeChanged_Click(object sender, RoutedEventArgs e)
@@ -591,6 +627,25 @@ namespace MediaControlDistributionCenter.Views
 
                 }
             }
+        }
+
+        private void PageTypeChanged_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                manageViewModel.SelectedPage.Type = radioButton.Tag?.ToString();
+            }
+        }
+
+        private void AdPlayModeChanged_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.IsChecked.HasValue && radioButton.IsChecked.Value)
+            {
+                manageViewModel.SelectedPage.AdPlayMode = radioButton.Tag?.ToString();
+            }
+
         }
 
         private void CreateComponent_MouseDown(object sender, MouseButtonEventArgs e)
@@ -619,6 +674,7 @@ namespace MediaControlDistributionCenter.Views
 
                 if (manageViewModel.SelectedComponent != null)
                 {
+                    manageViewModel.SelectedComponent.Ratio = manageViewModel.MediaConfig.Ratio;
                     manageViewModel.SelectedComponent.IsSelected = true;
                     if (!manageViewModel.SelectedComponent.IsFile)
                     {
@@ -652,6 +708,8 @@ namespace MediaControlDistributionCenter.Views
                 if (viewModel.IsFile)
                 {
                     MainCanvas.Children.Remove(viewModel.FrameworkElement);
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(viewModel.FrameworkElement, MainCanvas);
                     viewModel.FrameworkElement = null;
                     manageViewModel.SelectedElement = null;
                     viewModel.Source = null;
@@ -724,7 +782,7 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    manageViewModel.CaptureCommand.Execute(MainCanvas);
+                    manageViewModel?.CaptureCommand.Execute(MainCanvas);
                 }
             }
         }

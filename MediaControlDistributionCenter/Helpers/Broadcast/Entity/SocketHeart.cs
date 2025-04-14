@@ -10,7 +10,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
     {
         //桌面端维护
         public string FtpIp { get; set; } //同步文件服务IP
-        public string FtpPort { get; set; }//同步文件服务端口
+        public int FtpPort { get; set; }//同步文件服务端口
         public string FtpUserName { get; set; }//同步文件服务用户名
         public string FtpUserPwd { get; set; } //同步文件服务密码
         public string Time { get; set; } //用于记录数据的时间

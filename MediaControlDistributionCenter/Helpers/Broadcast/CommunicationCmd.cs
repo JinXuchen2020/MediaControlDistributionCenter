@@ -61,6 +61,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         /// <summary>
         /// 直接控制 对时配置 
+        /// 参数：UTF+8  时区信息    复杂的NTP信息 射频信息 GPS信息 对时
+        /// </summary>
+        public readonly static string CmdSyncTime = "CMD|SyncTime|";
+
+        /// <summary>
+        /// 直接控制 对时配置 
         /// 参数：UTF+8  时区信息    GPS信息 对时
         /// </summary>
         public readonly static string CmdTimeGPS = "CMD|TimeGPS|";
@@ -110,6 +116,16 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// 返回机顶盒上设备控制记录        
         /// </summary>
         public readonly static string CmdSyncDeviceControl = "CMD|SyncDeviceControl|";
+
+        /// <summary>
+        /// 返回机顶盒上设备控制记录        
+        /// </summary>
+        public readonly static string CmdSyncBrightness = "CMD|SyncBrightness|";
+
+        /// <summary>
+        /// 返回机顶盒上设备控制记录        
+        /// </summary>
+        public readonly static string CmdSyncVolume = "CMD|SyncVolume|";
 
         /// <summary>
         /// 发送用户信息到机顶盒上

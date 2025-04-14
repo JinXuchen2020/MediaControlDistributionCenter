@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Views.CustomControls;
+using SkiaSharp;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isDeleted;
 
-        private bool isDragging = false;
+        public bool IsDragging { get; private set; }
+
         private Point startPoint;
         private FrameworkElement selectedElement;
 
@@ -84,6 +86,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public List<ComponentEffect> Effects => new List<ComponentEffect>
             {
+                new ComponentEffect()
+                {
+                    Key = "Empty",
+                    Name = FindResource("LanguageKey_Code_ProgramEdit_Tooltip_197"),
+                },
                 new ComponentEffect()
                 {
                     Key = "ExtendRight",
@@ -318,13 +325,14 @@ namespace MediaControlDistributionCenter.ViewModels
             Name = component.Name;
             ZIndex = component.ZIndex;
             Type = component.Type.ToString();
-            Left = component.Left * ratio;
-            Top = component.Top * ratio;
-            Width = component.Width * ratio;
-            Height = component.Height * ratio;
+            Left = component.Left;
+            Top = component.Top;
+            Width = component.Width;
+            Height = component.Height;
             timeline = component.Timeline;
             playCount = component.PlayCount;
             playDuration = component.PlayDuration;
+            Ratio = ratio;
 
             switch (component.Type)
             {
@@ -424,19 +432,24 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 var canvas = FindCanvasParent(selectedElement);
                 var manageViewModel = (canvas.DataContext as MediaEditViewModel)!;
-                isDragging = true;
                 startPoint = e.GetPosition(canvas);
                 selectedElement.CaptureMouse(); // 捕获鼠标
-                manageViewModel.SelectedElement = null;
-                if (manageViewModel.SelectedComponent!= null)
+                var resizableControl = new ResizableControl();
+                if(manageViewModel.SelectedElement != null)
+                {
+                    resizableControl.ClearResizable(manageViewModel.SelectedElement, canvas);
+                    manageViewModel.SelectedElement = null;
+                }
+
+                if (manageViewModel.SelectedComponent != null)
                 {
                     manageViewModel.SelectedComponent.IsSelected = false;
+                    manageViewModel.SelectedComponent = null;
                 }
                 var viewModel = selectedElement.DataContext as BaseComponentViewModel;
                 manageViewModel.SelectedComponent = viewModel;
                 manageViewModel.SelectedComponent.IsSelected = true;
                 manageViewModel.SelectedElement = selectedElement;
-                var resizableControl = new ResizableControl();
                 resizableControl.MakeResizable(selectedElement, canvas);
             }
         }
@@ -444,10 +457,10 @@ namespace MediaControlDistributionCenter.ViewModels
         // 图片鼠标左键释放时触发
         protected void Element_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (isDragging && e.ChangedButton == MouseButton.Left)
+            if (IsDragging && e.ChangedButton == MouseButton.Left)
             {
                 selectedElement.ReleaseMouseCapture(); // 释放鼠标
-                isDragging = false;
+                IsDragging = false;
                 selectedElement = null;
             }
         }
@@ -455,8 +468,9 @@ namespace MediaControlDistributionCenter.ViewModels
         // 图片鼠标移动时触发
         protected void Element_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging && selectedElement != null && e.LeftButton == MouseButtonState.Pressed)
+            if (selectedElement != null && e.LeftButton == MouseButtonState.Pressed)
             {
+                IsDragging = true;
                 var canvas = FindCanvasParent(selectedElement);
                 Point currentPoint = e.GetPosition(canvas);
                 double offsetX = currentPoint.X - startPoint.X;
@@ -479,8 +493,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 resizableControl.MakeResizable(selectedElement, canvas);
 
-                Left = newLeft;
-                Top = newTop;
+                Left = newLeft / Ratio;
+                Top = newTop / Ratio;
 
                 startPoint = currentPoint;
             }
@@ -521,7 +535,7 @@ namespace MediaControlDistributionCenter.ViewModels
             return (string)LanguageTool.Instance.FindResource(key);
         }
 
-        protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null)
+        protected void CreateBinding(DependencyObject element, DependencyProperty dp, string path,  IValueConverter? converter = null, object? converterParameter = null)
         {
             var binding = new Binding(path)
             {
@@ -532,6 +546,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (converter != null)
             {
                 binding.Converter = converter;
+                binding.ConverterParameter = converterParameter;
             }
 
             if (element is FrameworkContentElement contentElement)
@@ -551,43 +566,44 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Border result = new Border
             {
-                BorderThickness = new Thickness(2),
+                BorderThickness = new Thickness(4),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C")),
                 Width = Width,
                 Height = Height,
                 DataContext = this,
             };
 
-            var rectangle = new System.Windows.Shapes.Rectangle
-            {
-                StrokeDashArray = new DoubleCollection([4, 2]),
-                Stroke = Brushes.Gray,
-                StrokeThickness = 2,
-            };
+            //var rectangle = new System.Windows.Shapes.Rectangle
+            //{
+            //    StrokeDashArray = new DoubleCollection([4, 2]),
+            //    Stroke = Brushes.Gray,
+            //    StrokeThickness = 2,
+            //};
 
-            var binding = new Binding("Width")
-            {
-                RelativeSource = new RelativeSource
-                {
-                    AncestorType = typeof(Border)
-                }
-            };
+            //var binding = new Binding("Width")
+            //{
+            //    RelativeSource = new RelativeSource
+            //    {
+            //        AncestorType = typeof(Border)
+            //    }
+            //};
 
-            rectangle.SetBinding(System.Windows.Shapes.Rectangle.WidthProperty, binding);
-            var heightBinding = new Binding("Height")
-            {
-                RelativeSource = new RelativeSource
-                {
-                    AncestorType = typeof(Border)
-                }
-            };
+            //rectangle.SetBinding(System.Windows.Shapes.Rectangle.WidthProperty, binding);
+            //var heightBinding = new Binding("Height")
+            //{
+            //    RelativeSource = new RelativeSource
+            //    {
+            //        AncestorType = typeof(Border)
+            //    }
+            //};
 
-            rectangle.SetBinding(System.Windows.Shapes.Rectangle.HeightProperty, heightBinding);
+            //rectangle.SetBinding(System.Windows.Shapes.Rectangle.HeightProperty, heightBinding);
 
-            VisualBrush borderBrush = new VisualBrush()
-            {
-                Visual = rectangle
-            };
-            result.BorderBrush = borderBrush;
+            //VisualBrush borderBrush = new VisualBrush()
+            //{
+            //    Visual = rectangle
+            //};
+            //result.BorderBrush = borderBrush;
 
             return result;
         }

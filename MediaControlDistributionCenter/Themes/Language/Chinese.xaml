@@ -65,6 +65,7 @@
     <sys:String x:Key="LanguageKey_Code_Upgrade">升级</sys:String>
     <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Offline">未激活</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Invalid">已过期</sys:String>
     <sys:String x:Key="LanguageKey_Code_Connected">已连接</sys:String>
     <sys:String x:Key="LanguageKey_Code_Disconnected">未连接</sys:String>
     <sys:String x:Key="LanguageKey_Code_Enable">启用</sys:String>
@@ -113,6 +114,7 @@
     <sys:String x:Key="LanguageKey_Code_Preview">预览</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upload">上传</sys:String>
     <sys:String x:Key="LanguageKey_Code_Refresh">设备刷新</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Normal">常规</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
@@ -125,8 +127,9 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_104">网络—远程网络</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_105">机器连接---正常</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_106">机器连接---未连接</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">剩余机器容量</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">可用机器容量</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">设备已过期!</sys:String>
     
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
@@ -194,7 +197,7 @@
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_113">节目名称已存在！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">强制发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_115">未发布</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布已上架</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_117">已发布未上架</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_118">此设备正在播放当前节目！</sys:String>
 
@@ -270,6 +273,11 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_125">立即重启后,播放器将在20s左右完成重启,在此期间,播放器会处于离线状态.请在播放器重新上线后,再进行其他操作。</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_128">当前时间</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">开机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">关机</sys:String>
+
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>
     <sys:String x:Key="LanguageKey_Code_Setting_OldPassword">原密码</sys:String>
@@ -385,6 +393,17 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_194">正文</sys:String>    
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_195">文档格式文件只能上传到文档组件！</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_196">每页时长(s)</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_197">无</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_198">广告控制</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_199">广告次数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_200">播放遍数</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_201">连续</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_202">间隔</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">随机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">每天</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">每小时</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">类型</sys:String>
+
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
 

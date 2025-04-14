@@ -8,12 +8,13 @@
       xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
       xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
       xmlns:LocalCore="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"  
-      Height="1024" Width="1440"
     >
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
+        <converters:SplitStringConverter x:Key="SplitStringConverter" />
         <converters:SelectedValueConverter x:Key="SelectedValueConverter" />
+        <converters:PercentageConverter x:Key="PercentageConverter" />
     </UserControl.Resources>
     <materialDesign:DialogHost Identifier="RootDialogHostId" Margin="{Binding PageMargin}">
         <materialDesign:DialogHost.DialogContentTemplate>
@@ -81,7 +82,7 @@
                                                 <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Wednesday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Wednesday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
                                                 <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Thursday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Thursday}"  materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
                                                 <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Friday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Friday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
-                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Saturday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Saturday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />                                                
+                                                <Button Background="#1D1E23" Width="60" Height="30" Padding="0" Margin="0,0,10,0" Tag="Saturday" Click="SelectWeekDay_Click" Content="{DynamicResource LanguageKey_Code_Saturday}" materialDesign:ButtonAssist.CornerRadius="2" Foreground="White" BorderBrush="Gray" />
                                             </StackPanel>
                                             <StackPanel Margin="100,10,0,0" Orientation="Horizontal" Visibility="{Binding RepeatMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=month}">
                                                 <ItemsControl ItemsSource="{Binding MonthDays}">
@@ -113,10 +114,21 @@
                                             </WrapPanel>
                                         </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Margin="10">
-                                        <StackPanel Orientation="Horizontal">
+                                    <StackPanel Margin="10" Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume;TimeSync}">
+                                        <StackPanel Orientation="Horizontal" >
                                             <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
                                             <LocalCore:TimeTextBox Is24Hour="True"  Text="{Binding ExecuteTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="32" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Margin="10" Orientation="Horizontal" Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Power}">
+                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" FontSize="12" Width="40" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_130}" />
+                                            <LocalCore:TimeTextBox Is24Hour="True" Text="{Binding ExecuteTime, Converter={StaticResource SplitStringConverter}, ConverterParameter=0, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="32" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                            <TextBlock VerticalAlignment="Center" FontSize="12" Width="40" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_131}" />
+                                            <LocalCore:TimeTextBox Is24Hour="True" Text="{Binding ExecuteTime, Converter={StaticResource SplitStringConverter}, ConverterParameter=1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="32" />
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Row="5" Margin="10">
@@ -161,7 +173,7 @@
             <Grid Background="#0F0F10" Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="274"></ColumnDefinition>
-                    <ColumnDefinition Width="396"></ColumnDefinition>
+                    <ColumnDefinition Width="415"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <StackPanel Background="#1D1E23">
@@ -187,6 +199,12 @@
                         <StackPanel Margin="20,0,10,0" Height="44" HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center">
                             <Image Width="31" Height="28"  Source="/Assets/4.png" Stretch="Uniform"/>
                             <TextBlock  VerticalAlignment="Center" Margin="13,0,0,0" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_103}" />
+                        </StackPanel>
+                    </Border>
+                    <Border  Cursor="Hand" Margin="0,20,0,0" MouseLeftButtonDown="Menu_MouseLeftButtonDown" x:Name="Power" Tag="Power"  >
+                        <StackPanel Margin="20,0,10,0" Height="44" HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Power" VerticalAlignment="Center" Foreground="White"  Width="31" Height="28"/>
+                            <TextBlock  VerticalAlignment="Center" Margin="13,0,0,0" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_129}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -216,7 +234,7 @@
                     </StackPanel>
 
                     <!--结果表格-->
-                    <Border Grid.Row="1" Height="830" BorderThickness="0,2,0,0" Background="#16171D" Margin="17,0,35,0">
+                    <Border Grid.Row="1" Height="830" BorderThickness="0,2,0,0" Background="#16171D" Margin="17,0,17,0">
                         <Grid>
                             <Border Background="#1A1E30" Height="40" VerticalAlignment="Top"/>
                             <DataGrid 
@@ -291,15 +309,15 @@
                     </Grid>
                 </StackPanel>
 
-                <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,10,0" Background="#16171D">
+                <Grid x:Name="BrightnessPara" Grid.Column="2" Margin="0,0,0,0" Background="#16171D">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="81"></RowDefinition>
-                        <RowDefinition ></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid Grid.RowSpan="2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="81"></RowDefinition>
-                            <RowDefinition ></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Border Grid.RowSpan="2" Margin="0,5,0,0" HorizontalAlignment="Left" BorderThickness="0.5" BorderBrush="#404870"></Border>
                         <Border Margin="0,0,5,0" VerticalAlignment="Bottom" BorderThickness="0.5" BorderBrush="#404870"></Border>
@@ -311,15 +329,24 @@
 
                     <Grid Grid.Row="1" >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="320"></RowDefinition>
-                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <StackPanel>
-                                <TextBlock Margin="19,32"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_104}" />
+                        <Grid Grid.Row="0" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume;TimeSync;Restart}">
+                            <StackPanel HorizontalAlignment="Center" Width="600" Height="Auto" >
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Margin="38,5,48,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{Binding CommandTypeName}" />
-                                    <StackPanel Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
+                                    <TextBlock Margin="19,32"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_104}" />
+                                </StackPanel>
+                                <DockPanel Margin="0,0,0,20" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
+                                    <TextBlock Margin="38,5,0,0" DockPanel.Dock="Left" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_128}" />
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                                        <DatePicker Width="228" VerticalAlignment="Center" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedDate="{Binding CurrentDevice.CurrentTime}" />
+                                        <materialDesign:TimePicker Width="228" Is24Hours="True" WithSeconds="True" VerticalAlignment="Center" Margin="8,0,0,0" Height="32" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedTime="{Binding CurrentDevice.CurrentTime}" />
+                                    </StackPanel>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBlock Margin="38,5,0,0" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" Foreground="White" Text="{Binding CommandTypeName}" />
+                                    <StackPanel DockPanel.Dock="Right" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
                                         <StackPanel Orientation="Horizontal">
                                             <Slider VerticalAlignment="Center" Value="{Binding CommandRTValue, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="400" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
                                             <TextBox 
@@ -337,15 +364,15 @@
                                         <Button Content="{DynamicResource LanguageKey_Code_Apply}" Background="#30479C" Foreground="White" BorderThickness="0" Width="60" Height="30" FontSize="14" Margin="0,32,0,0" Click="Brightness_Click" />
                                     </StackPanel>
 
-                                    <StackPanel Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Restart}">
-                                        <TextBlock Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Foreground="White" Text="{Binding CommandTypeHint}" Width="550" TextWrapping="Wrap" />
-                                        <TextBlock Margin="10,32,10,10" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Foreground="White" Text="{Binding CommandTypeDesciption}" Width="500" TextWrapping="Wrap" Opacity="0.6" />
+                                    <StackPanel DockPanel.Dock="Right" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Restart}">
+                                        <TextBlock Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="14" Foreground="White" Text="{Binding CommandTypeHint}" Width="500" TextWrapping="Wrap" />
+                                        <TextBlock Margin="10,32,10,10" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="14" Foreground="White" Text="{Binding CommandTypeDesciption}" Width="500" TextWrapping="Wrap" Opacity="0.6" />
                                         <Button Content="{DynamicResource LanguageKey_Code_Control_Tooltip_105}" Background="#30479C" Foreground="White" BorderThickness="0" Width="120" Height="30" FontSize="14" Margin="0,32,0,0" Click="Restart_Click" />
                                     </StackPanel>
 
-                                    <StackPanel Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
-                                        <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Padding="12,0,0,0" Height="32" Width="464" Background="#2A3255"  ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="Id" SelectedValue="{Binding CommandRTValue}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
-                                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                    <StackPanel DockPanel.Dock="Right" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=TimeSync}">
+                                        <ComboBox materialDesign:HintAssist.Hint="{Binding CommandTypeHint}" Padding="5" Height="32" Width="464" Background="#2A3255"  ItemsSource="{Binding TimeZoneInfos}" SelectedValuePath="Id" SelectedValue="{Binding CommandRTValue}"  BorderBrush="#404870" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Left">
                                             <TextBlock Grid.Row="2" Margin="0,0,19,0" FontSize="16" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_106}" />
                                             <StackPanel Height="32"  VerticalAlignment="Center" Orientation="Horizontal">
                                                 <RadioButton Click="ChangeTimeSyncMode_Click" IsChecked="{Binding CommandTypeColumnName, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=manual}" Content="{DynamicResource LanguageKey_Code_Control_Tooltip_107}" Tag="manual" Foreground="White" Margin="0,0,8,0" />
@@ -357,11 +384,130 @@
                                         <StackPanel>
                                             <TextBlock Margin="0,13" Foreground="White" HorizontalAlignment="Left" Opacity="0.6" FontSize="14" TextWrapping="Wrap" Width="480" Text="{Binding CommandTypeDesciption}" />
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,43,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">
                                             <Button x:Name="btnTimeSyncConfirm" Click="btnTimeSyncConfirm_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Apply}" />
                                             <Button x:Name="btnTimeSyncReset" Click="btnTimeSyncReset_Click" Margin="32,0,0,0" Background="Transparent" BorderThickness="1"  BorderBrush="#404870" Foreground="White" Content="{DynamicResource LanguageKey_Code_Reset}"/>
                                         </StackPanel>
                                     </StackPanel>
+                                </DockPanel>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Row="0" Height="Auto" Visibility="{Binding CommandType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Power}">
+                            <StackPanel>
+                                <TextBlock Margin="19,12"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_111}" />
+                                <StackPanel >
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="19,12,0,12">
+                                            <Image Cursor="Hand" MouseDown="btnAddTimeControl_MouseDown" Width="32" Height="32" Source="/Assets/7.png" Margin="0,0,16,0" HorizontalAlignment="Left"/>
+                                            <!--<Image Width="32" Height="32" Source="/Assets/8.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>-->
+                                            <Image MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
+                                        </StackPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,20,0" >
+                                            <Button Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
+                                        </StackPanel>
+
+                                    </DockPanel>
+
+                                    <Grid Margin="19,0" ClipToBounds="False" Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.45}" >
+                                        <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
+                                        <DataGrid
+                                            AutoGenerateColumns="false" 
+                                            CanUserAddRows="False"  
+                                            FontSize="14" 
+                                            IsReadOnly="True" 
+                                            SelectionMode="Single" 
+                                            FrozenColumnCount="1"
+                                            Margin="0,0,0,10"
+                                            Background="Transparent" 
+                                            ItemsSource="{Binding DeviceTimeControls, UpdateSourceTrigger=PropertyChanged}"
+                                        >
+                                            <DataGrid.Resources>
+                                                <CustomControls:BindingProxy x:Key="proxy" Data="{Binding CommandType}" />
+                                                <Style x:Key="LeftAlignedTextBlockStyle" TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGrid.Resources>
+                                            <DataGrid.Columns>
+                                                <DataGridCheckBoxColumn Width="48"
+                                                    Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"                                                                        
+                                                    IsReadOnly="False"
+                                                    CanUserSort="False">
+                                                    <DataGridCheckBoxColumn.Header>
+                                                        <CheckBox Unchecked="SelectAll_Click" Checked="SelectAll_Click"/>
+                                                    </DataGridCheckBoxColumn.Header>
+                                                </DataGridCheckBoxColumn>
+                                                <DataGridTemplateColumn Width="60">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}"/>
+                                                                <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter} , ConverterParameter=0}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTextColumn Width="1*" Binding="{Binding Value}" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
+                                                    <DataGridTextColumn.Header>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_119}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness}" />
+
+                                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_120}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Volume}" />
+                                                        </StackPanel>
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ExecuteTime}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding RepeatMode}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_114}" />
+                                                    </DataGridTextColumn.Header>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="180" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ValidPeriod}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_115}" />
+                                                    </DataGridTextColumn.Header>
+                                                    <!--<DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding ValidPeriod}"/>
+                                <Setter Property="ToolTip">
+                                    <Setter.Value>
+                                        <ToolTip>
+                                            <TextBlock Text="{Binding ValidPeriod}" FontSize="14" Foreground="Black"/>
+                                        </ToolTip>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>-->
+                                                </DataGridTextColumn>
+                                                <!--<DataGridTextColumn Width="1*" Binding="{Binding StatusText}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_116}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>-->
+
+                                                <DataGridTemplateColumn Width="100" >
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                                <Button Content="{DynamicResource LanguageKey_Code_Edit}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnTimeControlEdit_Click" Height="24" Width="60" />
+                                                                <!--<Button Content="{DynamicResource LanguageKey_Code_Media_Send}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnPublish_Click" Height="24" Width="60" />-->
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -369,13 +515,19 @@
                             <StackPanel>
                                 <TextBlock Margin="19,12"  VerticalAlignment="Center" FontSize="20" Foreground="White" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_111}" />
                                 <StackPanel >
-                                    <StackPanel Orientation="Horizontal" Margin="19,12,0,12">
-                                        <Image Cursor="Hand" x:Name="btnAddTimeControl" MouseDown="btnAddTimeControl_MouseDown" Width="32" Height="32" Source="/Assets/7.png" Margin="0,0,16,0" HorizontalAlignment="Left"/>
-                                        <Image Width="32" Height="32" Source="/Assets/8.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
-                                        <Image Width="32" Height="32" Source="/Assets/13.png" MouseDown="btnPublish_MouseDown" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>
-                                        <Image x:Name="btnDeleteTimeControl" MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
-                                    </StackPanel>
-                                    <Grid Margin="19,0">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="19,12,0,12" Cursor="">
+                                            <Image Cursor="Hand" x:Name="btnAddTimeControl" MouseDown="btnAddTimeControl_MouseDown" Width="32" Height="32" Source="/Assets/7.png" Margin="0,0,16,0" HorizontalAlignment="Left"/>
+                                            <!--<Image Width="32" Height="32" Source="/Assets/8.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left"/>-->
+                                            <Image x:Name="btnDeleteTimeControl" MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
+                                        </StackPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,20,0" >
+                                            <Button Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
+                                        </StackPanel>
+
+                                    </DockPanel>
+
+                                    <Grid Margin="19,0" Height="200">
                                         <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                                         <DataGrid
                                             AutoGenerateColumns="false" 
@@ -389,9 +541,13 @@
                                         >
                                             <DataGrid.Resources>
                                                 <CustomControls:BindingProxy x:Key="proxy" Data="{Binding CommandType}" />
+                                                <Style x:Key="LeftAlignedTextBlockStyle" TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                </Style>
                                             </DataGrid.Resources>
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn Width="60"
+                                                <DataGridCheckBoxColumn Width="48"
                                                     Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"                                                                        
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
@@ -399,7 +555,20 @@
                                                         <CheckBox HorizontalAlignment="Center" />
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
-                                                <DataGridTextColumn Width="1*" Binding="{Binding Value}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
+                                                <DataGridTemplateColumn Width="60">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}"/>
+                                                                <Image Width="28" Height="28" VerticalAlignment="Center" Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter} , ConverterParameter=0}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTextColumn Width="1*" Binding="{Binding Value}" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness;Volume}">
                                                     <DataGridTextColumn.Header>
                                                         <StackPanel>
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_119}" Visibility="{Binding Data,Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness}" />
@@ -408,17 +577,17 @@
                                                         </StackPanel>
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>
-                                                <DataGridTextColumn Width="1*" Binding="{Binding ExecuteTime}">
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ExecuteTime}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_112}" />
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>
-                                                <DataGridTextColumn Width="1*" Binding="{Binding ExecuteMethod}">
+                                                <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding RepeatMode}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_114}" />
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>
-                                                <DataGridTextColumn Width="200" Binding="{Binding ValidPeriod}">
+                                                <DataGridTextColumn Width="180" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding ValidPeriod}">
                                                     <DataGridTextColumn.Header>
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_115}" />
                                                     </DataGridTextColumn.Header>
@@ -440,16 +609,20 @@
                                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Control_Tooltip_116}" />
                                                     </DataGridTextColumn.Header>
                                                 </DataGridTextColumn>-->
-                                                    
-                                                <!--<DataGridTemplateColumn Header="操作"  Width="80" >
+
+                                                <DataGridTemplateColumn Width="100" >
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}" />
+                                                    </DataGridTemplateColumn.Header>
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                                <Button Content="执行" FontSize="12" Foreground="White" Click="btnPublish_Click" Height="24" Width="60" />
+                                                                <Button Content="{DynamicResource LanguageKey_Code_Edit}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnTimeControlEdit_Click" Height="24" Width="60" />
+                                                                <!--<Button Content="{DynamicResource LanguageKey_Code_Media_Send}" FontSize="12" Background="#30479C" Foreground="White" Margin="3" Click="btnPublish_Click" Height="24" Width="60" />-->
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>-->
+                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
@@ -461,5 +634,5 @@
             </Grid>
 
         </StackPanel>
-    </materialDesign:DialogHost>    
+    </materialDesign:DialogHost>
 </LocalCore:FrameControl>

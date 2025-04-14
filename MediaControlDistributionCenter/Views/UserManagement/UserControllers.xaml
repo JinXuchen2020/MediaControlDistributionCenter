@@ -59,7 +59,7 @@
             <Grid Height="2">
                 <Border Width="auto" Background="#40476F"/>
             </Grid>
-            <Grid Height="Auto" Background="#16171D" Margin="0,10,0,0">
+            <Grid Height="Auto" Background="#16171D" Margin="0,0,0,0">
                 <Border Background="#16171D"/>
                 <ContentControl x:Name="TabContentControl"   />
             </Grid>

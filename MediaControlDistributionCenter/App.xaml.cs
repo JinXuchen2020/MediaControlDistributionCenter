@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
@@ -40,10 +41,13 @@ namespace MediaControlDistributionCenter
             connectionMode.Mode = "Remote";
             services.AddSingleton(connectionMode);
 
-            FtpServer server = new FtpServer();
-            services.AddSingleton(server);
-            services.AddSingleton(new FtpClient(server));
-            services.AddSingleton(new Communication(server));
+            var ftpConnection = new FtpConnection();
+            configuration.Bind("FtpConnection", ftpConnection);
+            services.AddSingleton(ftpConnection);
+
+            services.AddSingleton<FtpServer>();
+            services.AddSingleton<FtpClient>();
+            services.AddSingleton<Communication>();
 
             services.AddLocalServices();
             services.AddRemoteServices();

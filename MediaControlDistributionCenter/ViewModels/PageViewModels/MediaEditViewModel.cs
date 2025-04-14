@@ -82,6 +82,8 @@ namespace MediaControlDistributionCenter.ViewModels
             this.MediaConfig = new MediaConfigViewModel(config);
             this.MediaConfig.Program = CurrentMedia;
 
+            Canvas.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * Canvas.Width;
+
             SelectedPage = this.MediaConfig.Pages.FirstOrDefault();
             if (SelectedPage != null)
             {
@@ -142,44 +144,44 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "Text":
                     var textComponent = (component as TextComponentViewModel)!;
-                    textComponent.Width = 300;
-                    textComponent.Height = 200;
+                    textComponent.Width = 300 / component.Ratio;
+                    textComponent.Height = 200 / component.Ratio;
                     textComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Web":
                     var webComponent = (component as WebComponentViewModel)!;
-                    webComponent.Width = 220;
-                    webComponent.Height = 220;
+                    webComponent.Width = 220 / component.Ratio;
+                    webComponent.Height = 220 / component.Ratio;
                     webComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Stream":
                     var streamComponent = (component as StreamComponentViewModel)!;
-                    streamComponent.Width = 220;
-                    streamComponent.Height = 220;
+                    streamComponent.Width = 220 / component.Ratio;
+                    streamComponent.Height = 220 / component.Ratio;
                     streamComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Hdmi":
                     var hdmiComponent = (component as HdmiComponentViewModel)!;
-                    hdmiComponent.Width = 241;
-                    hdmiComponent.Height = 160;
+                    hdmiComponent.Width = 241 / component.Ratio;
+                    hdmiComponent.Height = 160 / component.Ratio;
                     hdmiComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Rss":
                     var rssComponent = (component as RssComponentViewModel)!;
-                    rssComponent.Width = 200;
-                    rssComponent.Height = 200;
+                    rssComponent.Width = 200 / component.Ratio;
+                    rssComponent.Height = 200 / component.Ratio;
                     rssComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Word":
                     var wordComponent = (component as WordComponentViewModel)!;
-                    wordComponent.Width = 229;
-                    wordComponent.Height = 329;
+                    wordComponent.Width = 229 / component.Ratio;
+                    wordComponent.Height = 329 / component.Ratio;
                     wordComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "ColorText":
                     var colorTextComponent = (component as ColorTextComponentViewModel)!;
-                    colorTextComponent.Width = 300;
-                    colorTextComponent.Height = 200;
+                    colorTextComponent.Width = 300 / component.Ratio;
+                    colorTextComponent.Height = 200 / component.Ratio;
                     colorTextComponent.DrawContentCommand.Execute(canvas);
                     break;
             }

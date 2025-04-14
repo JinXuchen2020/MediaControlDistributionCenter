@@ -12,12 +12,12 @@ using MediaControlDistributionCenter.Helpers.Tool;
 using System.Collections;
 using System.IO.Pipes;
 using Serilog;
+using MediaControlDistributionCenter.Models;
 
 namespace MediaControlDistributionCenter.Helpers.FTP.Server
 {
     public class FtpServer
     {
-
         TcpListener myTcpListener = null;
         private Thread listenThread;
 
@@ -25,15 +25,17 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
         Dictionary<string, string> users;
 
         public string _Ip;
-        public string _port;
+        public int _port;
         public string _mainPath;
         public string _userName = "admin";
         public string _userPwd = "admin";
-        public FtpServer(string ipAddr = "", string mainPath = "", string port = "9938", string userName = "admin", string userPwd = "admin")
-        {
 
+        public bool IsStarted { get; private set; }
+
+        public FtpServer(FtpConnection connection)
+        {
             // 设置默认的主目录
-            if (string.IsNullOrEmpty(mainPath))
+            if (string.IsNullOrEmpty(connection.BasePath))
             {
                 // 获取程序运行目录
                 string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "NetWorkData");
@@ -53,12 +55,12 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             }
             else
             {
-                _mainPath = mainPath;
+                _mainPath = connection.BasePath;
             }
 
-            if (string.IsNullOrEmpty(ipAddr))
+            if (string.IsNullOrEmpty(connection.IpAddress))
             {
-               List<string> addrs= NetworkTool.GetLocalIPv4Address();
+               List<string> addrs = NetworkTool.GetLocalIPv4Address();
                 if (addrs.Count > 0)
                 {
                     _Ip = addrs[0];
@@ -67,25 +69,19 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 {
                     _Ip = "127.0.0.1";
                 }
-
-                //IPAddress[] ips = Dns.GetHostAddresses("");
-
-
-
-                //_Ip = ips[1].ToString();
             }
             else
             {
-                _Ip = ipAddr;
+                _Ip = connection.IpAddress;
             }
 
 
             // 初始化用户名和密码
-            _userName = userName;
-            _userPwd = userPwd;
+            _userName = connection.UserName;
+            _userPwd = connection.UserPassword;
             users = new Dictionary<string, string>();
             users.Add(_userName, _userPwd);
-            _port = port;
+            _port = connection.Port;
         }
 
         // 启动服务器
@@ -96,6 +92,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 myTcpListener.Stop();
                 myTcpListener = null;
                 listenThread.Abort();
+                IsStarted = false;
                 // "启动";
             }
         }
@@ -107,13 +104,14 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 listenThread = new Thread(ListenClientConnect);
                 listenThread.IsBackground = true;
                 listenThread.Start();
+                IsStarted = true;
             }
         }
 
         // 监听端口，处理客户端连接
         private void ListenClientConnect()
         {
-            myTcpListener = new TcpListener(IPAddress.Parse(_Ip), int.Parse(_port));
+            myTcpListener = new TcpListener(IPAddress.Parse(_Ip), _port);
             // 开始监听传入的请求
             myTcpListener.Start();
             AddInfo("启动FTP服务成功！");
@@ -126,7 +124,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                     TcpClient tcpClient = myTcpListener.AcceptTcpClient();
                     AddInfo(string.Format("客户端（{0}）与本机（{1}）建立Ftp连接", tcpClient.Client.RemoteEndPoint, myTcpListener.LocalEndpoint));
                     User user = new User();
-                    user.remoteEndPoint = new IPEndPoint(IPAddress.Parse(_Ip), int.Parse(_port));
+                    user.remoteEndPoint = new IPEndPoint(IPAddress.Parse(_Ip), _port);
                     user.commandSession = new UserSeesion(tcpClient);
                     user.workDir = _mainPath;
                     Thread t = new Thread(UserProcessing);

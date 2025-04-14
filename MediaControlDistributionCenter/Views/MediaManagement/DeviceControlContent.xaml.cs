@@ -118,6 +118,7 @@ namespace MediaControlDistributionCenter.Views
                 Type = manageViewModel.CommandType,
                 RepeatMode = "day",
                 ExecuteMethod = "SCHEDULED",
+                ExecuteTime = "00:00:00",
                 Status = 0,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
@@ -191,13 +192,14 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.CommandTypeHint = "请输入亮度";
                     manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
                     manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_119");
+                    manageViewModel.CommandRTValue = manageViewModel.CurrentDevice?.Brightness?.ToString();
                     break;
                 case "Volume":
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
                     manageViewModel.CommandTypeHint = "请输入音量";
                     manageViewModel.CommandTypeDesciption = (string)FindResource("LanguageKey_Code_Control_Tooltip_123");
                     manageViewModel.CommandTypeColumnName = (string)FindResource("LanguageKey_Code_Control_Tooltip_120");
-
+                    manageViewModel.CommandRTValue = manageViewModel.CurrentDevice?.Volume?.ToString();
                     break;
                 case "TimeSync":
                     manageViewModel.CommandTypeName = (string)FindResource("LanguageKey_Code_Control_Tooltip_121");
@@ -215,6 +217,12 @@ namespace MediaControlDistributionCenter.Views
                     break;
             }
 
+            if (commandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+                manageViewModel.RefreshTimeZone();
+            }
+
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
             manageViewModel.GetDeviceTimeControls();
         }
@@ -228,7 +236,12 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
-            manageViewModel.CommandRTValue = null;
+            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+
+                manageViewModel.RefreshTimeZone();
+            }
         }
 
         private void btnTimeSyncConfirm_Click(object sender, RoutedEventArgs e)
@@ -322,6 +335,7 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     Brightness.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
                     //TimeSyncPara.Visibility = System.Windows.Visibility.Collapsed;
@@ -334,6 +348,7 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     Volume.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
 
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -348,6 +363,7 @@ namespace MediaControlDistributionCenter.Views
                     Brightness.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(Colors.Transparent);
                     TimeSync.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
 
                     //界面切換 
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -362,6 +378,21 @@ namespace MediaControlDistributionCenter.Views
                     TimeSync.Background = new SolidColorBrush(Colors.Transparent);
                     Brightness.Background = new SolidColorBrush(Colors.Transparent);
                     Restart.Background = new SolidColorBrush(HexToColor("#30479C"));
+                    Power.Background = new SolidColorBrush(Colors.Transparent);
+
+                    //界面切換
+                    //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
+                    //TimeSyncPara.Visibility = System.Windows.Visibility.Collapsed;
+                    //BrightnessPara.Visibility = System.Windows.Visibility.Collapsed;
+                    //RestartPara.Visibility = System.Windows.Visibility.Visible;
+
+                    break;
+                case "Power":
+                    Volume.Background = new SolidColorBrush(Colors.Transparent);
+                    TimeSync.Background = new SolidColorBrush(Colors.Transparent);
+                    Brightness.Background = new SolidColorBrush(Colors.Transparent);
+                    Restart.Background = new SolidColorBrush(Colors.Transparent);
+                    Power.Background = new SolidColorBrush(HexToColor("#30479C"));
 
                     //界面切換
                     //VolumePara.Visibility = System.Windows.Visibility.Collapsed;
@@ -499,7 +530,54 @@ namespace MediaControlDistributionCenter.Views
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncCurrentTimeCommand.Execute(null);
+
+                manageViewModel.RefreshTimeZone();
+            }
+
+            if (manageViewModel.CommandType == "Brightness" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncBrightnessCommand.Execute(null);
+            }
+
+            if (manageViewModel.CommandType == "Volume" && manageViewModel.CurrentDevice != null)
+            {
+                manageViewModel.CurrentDevice.SyncVolumeCommand.Execute(null);
+            }
             manageViewModel.GetDeviceTimeControls();
+        }
+
+        private void btnPublish_Click(object sender, RoutedEventArgs e)
+        {
+            manageViewModel.ExecuteScheduleControlCommand.Execute(null);
+        }
+
+        private void btnTimeControlEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ((sender as Button).DataContext as DeviceTimeControlViewModel)!;
+            viewModel.SetGridColumnName();
+            manageViewModel.ShowDialogCommand.Execute(viewModel);
+        }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            if (checkbox.IsChecked.GetValueOrDefault())
+            {
+                foreach (var item in manageViewModel.DeviceTimeControls)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            else
+            {
+                foreach (var item in manageViewModel.DeviceTimeControls)
+                {
+                    item.IsSelected = false;
+                }
+            }
         }
     }
 }

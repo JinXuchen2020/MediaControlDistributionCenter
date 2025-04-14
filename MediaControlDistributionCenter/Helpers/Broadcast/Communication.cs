@@ -1,6 +1,7 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
+using MediaControlDistributionCenter.Helpers.Tool;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -35,26 +36,40 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncSnCodeResult { get; private set; }
 
+        public string SyncTimeResult { get; private set; }
+
+        public string SyncBrightnessResult { get; private set; }
+
+        public string SyncVolumeResult { get; private set; }
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
 
+        private readonly FtpServer ftpServer;
+
         public Communication(FtpServer ftpServer)
         {
-            Heart.FtpIp = ftpServer._Ip;
+            this.ftpServer = ftpServer;
             Heart.FtpPort = ftpServer._port;
             Heart.FtpUserName = ftpServer._userName;
             Heart.FtpUserPwd = ftpServer._userPwd;
             Heart.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             netClient.ErrorReceived += NetClient_ErrorReceived;
+            netClient.Traced += NetClient_Traced;
             ReceiveOverCmdStr = new List<string>();
+        }
+
+        private void NetClient_Traced(object? sender, NetSockTracedInfoEventArgs e)
+        {
+            Log.Information($"Socket Traced: {e.TraceName}, Message: {e.Message}");
         }
 
         private void NetClient_ErrorReceived(object? sender, NetSockErrorReceivedEventArgs e)
         {
-            Log.Error($"Socket Error: {e.Function}, Error Message: {e.Exception.Message}");
+            Log.Error($"Socket Error: {e.Function}, Error Message: {e.Exception?.Message}");
         }
 
         /// <summary>
@@ -62,6 +77,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public void StartHeart()
         {
+            StartFtpServer();
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
             int interval = 5000; // 5000毫秒即5秒 
@@ -81,6 +97,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <param name="e"></param>
         private void _heartbeatTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
+            Heart.FtpIp = ftpServer._Ip;
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
 
@@ -119,7 +136,26 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(this.IpAddr), int.Parse(this.Port));
             netClient.Connect(iPEnd);
             netClient.ReceiveCompleted += NetClient_ReceiveCompleted;
-        }        
+        }
+
+        public void StartFtpServer()
+        {
+            var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
+            if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
+            {
+                ftpServer._Ip = ipAddresses[0];
+
+                if (ftpServer.IsStarted)
+                {
+                    ftpServer.FtpServerStop();
+                }
+            }
+
+            if (!ftpServer.IsStarted)
+            {
+                ftpServer.FtpServerStart();
+            }
+        }
 
         /// <summary>
         /// 断开与 播控盒链接
@@ -174,6 +210,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         {
                             SyncSnCodeResult = data[2];
                             Log.Information(SyncSnCodeResult);
+                        }
+
+                        if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
+                        {
+                            SyncTimeResult = data[2];
+                            Log.Information(SyncTimeResult);
                         }
                     }
                     catch (Exception ex)

@@ -70,6 +70,7 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeHint));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeDesciption));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeColumnName));
+            RegisterLanguageProperty(this.GetType(), nameof(RefreshTimeZone));
         }
         public override void LoadData()
         {
@@ -121,6 +122,28 @@ namespace MediaControlDistributionCenter.ViewModels
                 viewModel.SetGridColumnName();
                 return viewModel;
             }));
+        }
+
+        public void RefreshTimeZone()
+        {
+            if(CommandType == "TimeSync")
+            {
+                switch (LanguageTool.Instance.Language)
+                {
+                    case Language.Chinese:
+                        CommandRTValue = "China Standard Time";
+                        break;
+                    case Language.English:
+                        CommandRTValue = "Pacific Standard Time";
+                        break;
+                    case Language.Japanese:
+                        CommandRTValue = "Tokyo Standard Time";
+                        break;
+                    case Language.Korean:
+                        CommandRTValue = "Korea Standard Time";
+                        break;
+                }
+            }
         }
 
         [RelayCommand]
@@ -221,7 +244,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var modelString = JsonConvert.SerializeObject(modelList);
                 switch (viewModels[0].Type)
                 {
-                    case "Brightness":                        
+                    case "Brightness":
                         await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
@@ -251,7 +274,24 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
+                    case "Power":
+                        await CurrentDevice.ChangePowerCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        break;
                 }
+
+                foreach (var model in modelList)
+                {
+                    await deviceControlService.Save(model);
+                }
+
+                GetDeviceTimeControls();
             }
         }
 
@@ -260,7 +300,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (CurrentDevice != null && CommandRTValue != null && !string.IsNullOrEmpty(CommandTypeColumnName))
             {
-                var timeZoneDateTime = DateTime.Now;
+                var timeZoneDateTime = CurrentDevice.CurrentTime;
                 var timeZone = TimeZoneInfo.Local;
 
                 var model = new TimeSyncConfigDto()

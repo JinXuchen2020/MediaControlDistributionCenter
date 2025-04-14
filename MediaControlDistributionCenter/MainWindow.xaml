@@ -10,28 +10,28 @@
         mc:Ignorable="d" 
         WindowStyle="None"
         WindowStartupLocation="Manual"
-        ResizeMode="NoResize" AllowsTransparency="True"
+        ResizeMode="CanResize"
         Title="{DynamicResource LanguageKey_Code_SystemTitle}" Height="1024" Width="1440" Cursor="">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <materialDesign:DialogHost Identifier="ErrorMessageBox">
         <Grid x:Name="mainContainner">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="2" />
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="70"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" MouseDown="DragMove_MouseDown">
-            <Border Background="#141726"/>
-            <StackPanel Orientation="Horizontal">
-                <!--#141726-->
-                <Image Source="/Assets/assets-0004.png" Margin="16,0,0,0" Width="75" Height="64" HorizontalAlignment="Left" Stretch="Uniform"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" MouseDown="DragMove_MouseDown">
+                <Border Background="#141726"/>
+                <StackPanel Orientation="Horizontal">
+                    <!--#141726-->
+                    <Image Source="/Assets/assets-0004.png" Margin="16,0,0,0" Width="75" Height="64" HorizontalAlignment="Left" Stretch="Uniform"/>
 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Margin="64,0,0,0" x:Name="Dashboard" Text="{DynamicResource LanguageKey_Code_Dashboard}" Tag="1" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
-                    <!--<TextBlock Margin="64,0,0,0" x:Name="MediaManagement" Text="媒体管理" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>-->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Margin="64,0,0,0" x:Name="Dashboard" Text="{DynamicResource LanguageKey_Code_Dashboard}" Tag="1" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>
+                        <!--<TextBlock Margin="64,0,0,0" x:Name="MediaManagement" Text="媒体管理" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown"  Foreground="White"></TextBlock>-->
 
                         <TextBlock 
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin;agent}"
@@ -43,117 +43,137 @@
                                 Margin="64,0,0,0" x:Name="MediaStore" Text="{DynamicResource LanguageKey_Code_MediaStore}" Tag="3" Cursor="Hand"  FontSize="16" MouseDown="TopMenu_MouseDown" Opacity="0.7"  Foreground="White"/>
                         </StackPanel>
 
-                    <TextBlock 
+                        <TextBlock 
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="MediaManagement" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Management_Media}" Text="{DynamicResource LanguageKey_Code_Management_Media}" FontSize="16" Opacity="0.7"  Foreground="White">
-                    </TextBlock>
+                        </TextBlock>
 
-                    <TextBlock 
+                        <TextBlock 
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="DeviceManagement" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Management_Device}" Text="{DynamicResource LanguageKey_Code_Management_Device}" FontSize="16" Opacity="0.7"  Foreground="White">
-                    </TextBlock>
-                    <TextBlock 
+                        </TextBlock>
+                        <TextBlock 
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=user}"
                         Margin="64,0,0,0" x:Name="DeviceControl" MouseDown="TopMenu_MouseDown"  Cursor="Hand" Tag="{DynamicResource LanguageKey_Code_Control_Device}" Text="{DynamicResource LanguageKey_Code_Control_Device}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
-                    <TextBlock
+                        <TextBlock
                         Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=agent;user}"
                         Margin="64,0,0,0" x:Name="Configs" MouseDown="TopMenu_MouseDown"   Cursor="Hand"  Tag="{DynamicResource LanguageKey_Code_User_Config}"  Text="{DynamicResource LanguageKey_Code_User_Config}" FontSize="16" Opacity="0.7"  Foreground="White"></TextBlock>
-                </StackPanel>               
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Right"
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <materialDesign:PopupBox StaysOpen="False" HorizontalAlignment="Right"
                             PlacementMode="BottomAndAlignCentres"
                             PopupMode="Click">
-                    <materialDesign:PopupBox.ToggleContent>
-                        <Border CornerRadius="2"
+                        <materialDesign:PopupBox.ToggleContent>
+                            <Border CornerRadius="2"
                             Padding="10"
                             Width="100"
                             BorderBrush="White"
                             BorderThickness="1">
-                            <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Text="{DynamicResource LanguageKey_Code_ZH}" Foreground="White"/>
-                        </Border>
-                    </materialDesign:PopupBox.ToggleContent>
-                    <ListView Width="100">
-                        <ListViewItem x:Name="zh_CN" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_ZH}"/>
-                        <ListViewItem x:Name="en_US" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_EN}" />
-                        <ListViewItem x:Name="ja_JP" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_JP}"/>
-                        <ListViewItem x:Name="ko_KR" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_KO}"/>
-                    </ListView>
-                </materialDesign:PopupBox>
+                                <TextBlock x:Name="SysLanguage" HorizontalAlignment="Center" Foreground="White"/>
+                            </Border>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <ListView Width="100">
+                            <ListViewItem x:Name="zh_CN" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_ZH}"/>
+                            <ListViewItem x:Name="en_US" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_EN}" />
+                            <ListViewItem x:Name="ja_JP" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_JP}"/>
+                            <ListViewItem x:Name="ko_KR" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_KO}"/>
+                        </ListView>
+                    </materialDesign:PopupBox>
 
-                <Image Margin="30,0,10,0"  Width="25" Height="25" Source="/Assets/assets-0018.png"/>
-                <TextBlock Margin="0,0,10,0" Text="{Binding CurrentUser.Name}" Foreground="White" VerticalAlignment="Center"/>
-                <Button Width="80" Height="60" HorizontalAlignment="Right"
-                    Background="#141726" Foreground="WhiteSmoke"
-                    BorderThickness="0"
-                    HorizontalContentAlignment="Center"
-                    materialDesign:ColorZoneAssist.Mode="Custom"
-                    materialDesign:ColorZoneAssist.Background="#141726"
-                    materialDesign:ButtonAssist.CornerRadius="5"
-                    Click="ExitButton_Click"
-                    Content="{materialDesign:PackIcon Size=35,Kind=Power}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
-            </StackPanel>
-        </Grid>
-        <Border Grid.Row="1" Width="auto" Background="#40476F"/>
-        <Grid x:Name="bodyContainner" Grid.Row="2">
-            <Border Background="#0F0F10"/>
-            <ContentControl x:Name="MainContentControl"   />
-        </Grid>
+                    <Image Margin="30,0,10,0"  Width="25" Height="25" Source="/Assets/assets-0018.png"/>
+                    <TextBlock Margin="0,0,10,0" Text="{Binding CurrentUser.Name}" Foreground="White" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Width="50" Height="40" HorizontalAlignment="Right"
+                            Background="#141726" Foreground="WhiteSmoke"
+                            BorderThickness="0"
+                            HorizontalContentAlignment="Center"
+                            materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="#141726"
+                            materialDesign:ButtonAssist.CornerRadius="5"
+                            Click="MinButton_Click"
+                            Content="{materialDesign:PackIcon Size=20,Kind=Minimize}"/>
+                        <Button Width="50" Height="40" HorizontalAlignment="Right"
+                            Background="#141726" Foreground="WhiteSmoke"
+                            BorderThickness="0"
+                            HorizontalContentAlignment="Center"
+                            materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="#141726"
+                            materialDesign:ButtonAssist.CornerRadius="5"
+                            Click="MaxButton_Click"
+                            Content="{materialDesign:PackIcon Size=20,Kind=Maximize}"/>
+                        <Button Width="50" Height="40" HorizontalAlignment="Right"
+                            Background="#141726" Foreground="WhiteSmoke"
+                            BorderThickness="0"
+                            HorizontalContentAlignment="Center"
+                            materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="#141726"
+                            materialDesign:ButtonAssist.CornerRadius="5"
+                            Click="ExitButton_Click"
+                            Content="{materialDesign:PackIcon Size=20,Kind=Power}" ToolTip="{DynamicResource LanguageKey_Code_SystemExitTip}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" Width="auto" Background="#40476F"/>
+            <Grid x:Name="bodyContainner" Grid.Row="2">
+                <Border Background="#0F0F10"/>
+                <ContentControl x:Name="MainContentControl"   />
+            </Grid>
 
-        <Grid Grid.Row="3" Grid.ColumnSpan="2"  Background="#1A1B1D">
-            <!--<Border Width="auto" Background="#060606"/>-->
-            <StackPanel Orientation="Horizontal">
-                <Border Width="218" Height="35"
+            <Grid Grid.Row="3" Grid.ColumnSpan="2"  Background="#1A1B1D">
+                <!--<Border Width="auto" Background="#060606"/>-->
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="218" Height="35"
                         Margin="14,0,0,0"
                         CornerRadius="15"
                         Padding="5"
                         HorizontalAlignment="Left"
                         Background="#060606">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
-                        <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
-                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding DeviceConnString, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
-                </Border>
-                <Border Width="259" Height="35"
+                        <StackPanel Orientation="Horizontal">
+                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0" Source="/Assets/assets-0016.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                            <Image Width="28" Height="28" VerticalAlignment="Center" Margin="8,0,10,0"  Source="/Assets/assets-0017.png" Stretch="Uniform" Visibility="{Binding IsDeviceConnected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                            <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding DeviceConnString, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Width="259" Height="35"
                         Margin="50,0,0,0"
                         CornerRadius="15"
                         Padding="5"
                         HorizontalAlignment="Left"
                         Background="#060606">
-                    <StackPanel Orientation="Horizontal">
-                        <Border Background="Transparent"  BorderThickness="0" Width="66" Height="10" Margin="18,0,14,0" CornerRadius="4">
-                            <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="66" Height="10"
-                                     Background="Transparent"
-                                     Foreground="#538AF0"
-                                     Value="{Binding ConnectedDevice.StoragePercentage, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource MaterialDesignLinearProgressBar}">
-                                <ProgressBar.Resources>
-                                    <Style TargetType="Rectangle">
-                                        <Setter Property="RadiusX" Value="5"/>
-                                        <Setter Property="RadiusY" Value="5"/>
-                                        <Setter Property="Fill" Value="AliceBlue"/>
-                                    </Style>
-                                </ProgressBar.Resources>
-                            </ProgressBar>
-                        </Border>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="Transparent"  BorderThickness="0" Width="66" Height="10" Margin="18,0,14,0" CornerRadius="4">
+                                <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="66" Height="10"
+                                        Background="Transparent"
+                                        Foreground="#538AF0"
+                                        Value="{Binding ConnectedDevice.UsedStoragePercentage, UpdateSourceTrigger=PropertyChanged}"
+                                        Style="{StaticResource MaterialDesignLinearProgressBar}">
+                                    <ProgressBar.Resources>
+                                        <Style TargetType="Rectangle">
+                                            <Setter Property="RadiusX" Value="5"/>
+                                            <Setter Property="RadiusY" Value="5"/>
+                                            <Setter Property="Fill" Value="AliceBlue"/>
+                                        </Style>
+                                    </ProgressBar.Resources>
+                                </ProgressBar>
+                            </Border>
                             <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectedDevice.StoragePercentage, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_107}"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-            <Border Width="182" Height="42"
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <Border Width="182" Height="42"
                     CornerRadius="15"
                     Padding="5" Margin="14"
                     HorizontalAlignment="Right"
                     Background="#060606">
-                <StackPanel Orientation="Horizontal">
-                    <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0019.png" Stretch="Uniform"/>
-                    <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0020.png" Stretch="Uniform" Visibility="Collapsed"/>
-                    <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"/>
-                </StackPanel>
-            </Border>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0019.png" Stretch="Uniform"/>
+                        <Image Width="24" Height="24" Margin="8,0,10,0" Source="/Assets/assets-0020.png" Stretch="Uniform" Visibility="Collapsed"/>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
-    </Grid>
     </materialDesign:DialogHost>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -134,7 +135,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = "about:blank",
                 Interval = 10,
                 PlayMode = "pageTurning",
-                ComponentEffect = "FadeIn",
+                ComponentEffect = "Empty",
                 EffectDuration = 1000,
                 Direction = "rollingLeft",
                 RollingSpeed = 3,
@@ -150,10 +151,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Name = Name,
                 ZIndex = ZIndex,
                 Type = (MediaType)Enum.Parse(typeof(MediaType), Type),
-                Left = Left / ratio,
-                Top = Top / ratio,
-                Width = Width / ratio,
-                Height = Height / ratio,
+                Left = Left,
+                Top = Top,
+                Width = Width,
+                Height = Height,
                 Source = Source,
                 Timeline = Timeline,
                 PlayCount = PlayCount,
@@ -180,11 +181,12 @@ namespace MediaControlDistributionCenter.ViewModels
             Border border = CreateBorder();
             border.Child = result;
 
-            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width));
-            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height));
+            var converter = new ToMultipleConverter();
+            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
+            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
-            Canvas.SetLeft(border, Left);
-            Canvas.SetTop(border, Top);
+            Canvas.SetLeft(border, Left * Ratio);
+            Canvas.SetTop(border, Top * Ratio);
             Canvas.SetZIndex(border, ZIndex);
 
             // 添加鼠标事件处理
@@ -227,7 +229,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (PlayMode == FindResource("LanguageKey_Code_ProgramEdit_Tooltip_127") && ComponentEffectKey != null)
             {
-                Effects.Find(c => c.Key == ComponentEffectKey)?.Action(RunningElement);
+                var effect = Effects.Find(c => c.Key == ComponentEffectKey);
+                if (effect != null && effect.Action != null)
+                {
+                    effect.Action(RunningElement);
+                }
             }
         }
 
@@ -249,10 +255,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var newContent = LoadRssFeed().GetAwaiter().GetResult();
             if (newContent != null)
             {
-
                 var mainCanvas = FindCanvasParent(target);
                 mainCanvas.Children.Remove(target);
                 mainCanvas.Children.Add(newContent);
+                EffectExecution();
             }
         }
 
@@ -430,18 +436,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool isSelected;
-
-        //public RssContentViewModel(RssContent content)
-        //{
-        //    fieldName = content.FieldName;
-        //    fontFamily = content.FontFamily;
-        //    fontSize = content.FontSize;
-        //    fontColor = content.FontColor;
-        //    isBold = content.IsBold;
-        //    isItalic = content.IsItalic;
-        //    isUnderline = content.IsUnderline;
-        //    isSelected = false;
-        //}
 
         public RssContent ToModel()
         {
