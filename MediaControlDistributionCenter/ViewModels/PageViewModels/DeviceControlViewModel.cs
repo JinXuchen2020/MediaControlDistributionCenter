@@ -190,46 +190,48 @@ namespace MediaControlDistributionCenter.ViewModels
                 };
 
                 var model = viewModel.ToModel();
+                modelList.Add(model);
+                var modelString = JsonConvert.SerializeObject(modelList);
+                switch (CommandType)
+                {
+                    case "Brightness":
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        CurrentDevice.Brightness = viewModel.Value;
+                        break;
+                    case "Volume":
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        CurrentDevice.Volume = viewModel.Value;
+                        break;
+                    case "Restart":
+                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
+                        {
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
+                        }
+                        break;
+                }
                 var response = await deviceControlService.Save(model);
                 if (response.Code == 200)
                 {
-                    modelList.Add(model);
-                    var modelString = JsonConvert.SerializeObject(modelList);
-                    switch (CommandType)
-                    {
-                        case "Brightness":
-                            await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
-                            CurrentDevice.Brightness = viewModel.Value;
-                            break;
-                        case "Volume":
-                            await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
-                            CurrentDevice.Volume = viewModel.Value;
-                            break;
-                        case "Restart":
-                            await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
-                            break;
-                    }
+                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_132");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
                 }
             }
         }
@@ -317,34 +319,34 @@ namespace MediaControlDistributionCenter.ViewModels
                     case "manual":
                         model.Timezone = CommandRTValue;
                         model.CurrentDate = TimeZoneInfo.ConvertTime(timeZoneDateTime, TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue)).ToString();
-                        var response = await timeSyncConfigService.Save(model);
-                        if (response.Code == 200)
+                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
-                            await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
                         }
                         break;
                     case "gps":
                         await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
-                        response = await timeSyncConfigService.Save(model);
-                        if (response.Code == 200)
+                        if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
-                            if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
-                            {
-                                ErrorMessage = CurrentDevice.ErrorMessage;
-                                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                                CurrentDevice.ErrorMessage = null;
-                                return;
-                            }
+                            ErrorMessage = CurrentDevice.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            CurrentDevice.ErrorMessage = null;
+                            return;
                         }
                         break;
-                }                
+                }
+
+                var response = await timeSyncConfigService.Save(model);
+                if (response.Code == 200)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_132");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    return;
+                }
             }
         }
 

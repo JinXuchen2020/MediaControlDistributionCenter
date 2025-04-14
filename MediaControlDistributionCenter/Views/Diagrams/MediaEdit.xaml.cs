@@ -853,6 +853,33 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SearchString = null;
             manageViewModel.RefreshMedias();
         }
+
+        private void Screen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
+        {
+            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !ResizableControl.IsDragging)
+            {
+                var newLeft = Canvas.GetLeft(manageViewModel.SelectedElement);
+                var newTop = Canvas.GetTop(manageViewModel.SelectedElement);
+                var newWidth = manageViewModel.SelectedElement.Width;
+                var newHeight = manageViewModel.SelectedElement.Height;
+                newWidth = Math.Min(newWidth, MainCanvas.Width - newLeft);
+                newHeight = Math.Min(newHeight, MainCanvas.Height - newTop);
+                manageViewModel.SelectedElement.Width = newWidth;
+                manageViewModel.SelectedElement.Height = newHeight;
+                if(newWidth == MainCanvas.Width - newLeft && manageViewModel.SelectedComponent.Width != newWidth / manageViewModel.SelectedComponent.Ratio)
+                {
+                    manageViewModel.SelectedComponent.Width = newWidth / manageViewModel.SelectedComponent.Ratio;
+                }
+
+                if (newHeight == MainCanvas.Height - newTop && manageViewModel.SelectedComponent.Height != newHeight / manageViewModel.SelectedComponent.Ratio)
+                {
+                    manageViewModel.SelectedComponent.Height = newHeight / manageViewModel.SelectedComponent.Ratio;
+                }
+                var resizableControl = new ResizableControl();
+                resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
+            }
+        }
     }
 
     public class ComponentDataTemplateSelector : DataTemplateSelector

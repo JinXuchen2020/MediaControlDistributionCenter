@@ -39,10 +39,10 @@
                             </Border>
                         </materialDesign:PopupBox.ToggleContent>
                         <ListView Width="100">
+                            <ListViewItem x:Name="ko_KR" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_KO}"/>
                             <ListViewItem x:Name="zh_CN" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_ZH}"/>
                             <ListViewItem x:Name="en_US" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_EN}" />
                             <ListViewItem x:Name="ja_JP" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_JP}"/>
-                            <ListViewItem x:Name="ko_KR" Selected="LanguageSelectionChanged" Content="{DynamicResource LanguageKey_Code_KO}"/>
                         </ListView>
                     </materialDesign:PopupBox>
                     <Button HorizontalAlignment="Left" Width="122" Height="34"

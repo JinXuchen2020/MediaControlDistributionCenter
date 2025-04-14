@@ -144,7 +144,7 @@
                         <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_108}"/>
                     </StackPanel>
 
-                    <Button x:Name="btnToMediaManage" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Click="btnToMediaManage_Click" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
+                    <Button x:Name="btnToMediaManage" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Click="btnToMediaManage_Click" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"
@@ -245,7 +245,7 @@
                         <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_113}"/>
                     </StackPanel>
 
-                    <Button  x:Name="btnToUserManage" Click="btnToUserManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
+                    <Button  x:Name="btnToUserManage" Click="btnToUserManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"
@@ -304,7 +304,7 @@
                         <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_114}"/>
                     </StackPanel>
 
-                    <Button x:Name="btnToDeviceManage" Click="btnToDeviceManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
+                    <Button x:Name="btnToDeviceManage" Click="btnToDeviceManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Devices}">
                     <ItemsControl.ItemsPanel>
@@ -335,7 +335,7 @@
                         <TextBlock Margin="10,0,0,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_115}"/>
                     </StackPanel>
 
-                    <Button Click="btnToMediaManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Width="100" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
+                    <Button Click="btnToMediaManage_Click" Margin="15,19" BorderBrush="#3B57BF" Background="#3B57BF" HorizontalAlignment="Right" Foreground="White" Content="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_109}"/>
                 </Grid>
                 <DataGrid
                     AutoGenerateColumns="False"

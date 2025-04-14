@@ -40,9 +40,14 @@ namespace MediaControlDistributionCenter.Converters
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var index = parameter == null ? 0 : int.Parse(parameter.ToString()!);
-            if (value is string str)
+            if (value is DateTime str)
             {
-                splitString[index] = str;
+                splitString[index] = str.TimeOfDay.ToString();
+            }
+
+            if (value is string strValue)
+            {
+                splitString[index] = strValue;
             }
             return string.Join("-", splitString.Select(c => c.Value));
         }

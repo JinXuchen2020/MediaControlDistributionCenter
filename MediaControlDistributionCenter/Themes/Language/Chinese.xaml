@@ -274,9 +274,10 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">未选择月份！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">未选择天数！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_128">当前时间</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  关机</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">开机</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">关机</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_132">实时控制成功！</sys:String>
 
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>

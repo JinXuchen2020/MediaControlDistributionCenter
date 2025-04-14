@@ -88,14 +88,14 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");
             }
-            else if (connectionMode.Mode == "Local" && !IsSync)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
-            }
-            else if (connectionMode.Mode == "Local" && (!this.SyncUsers.Contains(request.Account) || request.Account == "admin"))
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
-            }
+            //else if (connectionMode.Mode == "Local" && !IsSync)
+            //{
+            //    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
+            //}
+            //else if (connectionMode.Mode == "Local" && (!this.SyncUsers.Contains(request.Account) || request.Account == "admin"))
+            //{
+            //    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
+            //}
             else
             {
                 var resultResponse = await authService.Login(request);
