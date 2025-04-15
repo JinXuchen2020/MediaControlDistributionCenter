@@ -25,10 +25,24 @@ namespace MediaControlDistributionCenter.Converters
             }
             else if (value != null && parameter != null)
             {
-                var expectedValues = parameter.ToString()!.Split(";").ToList();
-                if (expectedValues.Contains(value.ToString()))
+                if (value is string strValue)
                 {
-                    return "#30479C";
+                    if (strValue.Contains('#'))
+                    {
+                        var expectedValues = parameter.ToString()!;
+                        if (strValue.Contains(expectedValues))
+                        {
+                            return "#30479C";
+                        }
+                    }
+                    else
+                    {
+                        var expectedValues = parameter.ToString()!.Split(";").ToList();
+                        if (expectedValues.Contains(strValue))
+                        {
+                            return "#30479C";
+                        }
+                    }
                 }
                 return "#1D1E23";
             }

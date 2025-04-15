@@ -121,22 +121,22 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            //if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            //{
-            //    ConnectedDevice = null;
-            //    return;
-            //}
+            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                ConnectedDevice = null;
+                return;
+            }
 
-            //string path = CommunicationCmd.CmdSyncSnCode + "Connect";
-            //bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            //if (!result)
-            //{
-            //    ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-            //    await ShowConfirmDialogCommand.ExecuteAsync(null);
-            //    return;
-            //}
+            string path = CommunicationCmd.CmdSyncSnCode + "Connect";
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                return;
+            }
 
-            var snCode = client.SyncSnCodeResult;
+            var snCode = client.SyncSnCodeResult ?? string.Empty;
 
             var monitorService = GetService<IMonitorService>();
             var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
@@ -145,7 +145,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 ConnectedDevice = new DeviceViewModel();
                 ConnectedDevice.Binding(connectedDevice);
                 ConnectedDevice.ConnectCommand.Execute(client);
-                //client.StartHeart();
+                client.StartHeart();
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
@@ -17,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -135,6 +137,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private DateTime currentTime;
 
+        [ObservableProperty]
+        private BitmapImage? thumbnail;
+
         private Communication? client;
 
         public DeviceViewModel()
@@ -220,6 +225,49 @@ namespace MediaControlDistributionCenter.ViewModels
                     MediaNames = program.Name;
                 }
             }
+        }
+
+        public void GetThumbnail()
+        {
+            BitmapImage? bitmap = null;
+            if (!string.IsNullOrEmpty(MediaNames))
+            {
+                var programService = GetService<IProgramService>();
+                var program = programService.GetAll(new ProgramDto { Name = MediaNames, Status = 1, MediaType = "PROGRAM" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                if (program != null)
+                {
+                    var filePath = string.Empty;
+                    var fileService = GetService<IFileService>();
+                    var mediaConfigPath = Path.Combine(Constants.OutPath, UserId, program.Name);
+                    if (Directory.Exists(mediaConfigPath))
+                    {
+                        var config = fileService.ReadFileContent<MediaConfig>(mediaConfigPath, Constants.ConfigFileName, new MediaTypeConverter());
+                        filePath = config?.Pages.FirstOrDefault()?.ThumbnailFilePath ?? string.Empty;
+                    }
+
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                        bitmap.UriSource = new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, filePath));
+                        bitmap.EndInit();
+                    }
+                }
+            }
+
+            if (bitmap == null)
+            {
+                var uri = new Uri($"pack://application:,,,/MediaControlDistributionCenter;component/Assets/windows-fill.png", UriKind.Absolute);
+                var resourceStream = Application.GetResourceStream(uri);
+                bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = resourceStream.Stream;
+                bitmap.EndInit();
+            }
+
+            Thumbnail = bitmap;
         }
 
         public bool IsRealTimeConnected()
@@ -543,14 +591,14 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             string path = CommunicationCmd.CmdSyncBrightness + "Current";
-            //bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            //if (!result)
-            //{
-            //    ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-            //    return;
-            //}
+            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                return;
+            }
 
-            Brightness = 50;// string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
+            Brightness = string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
         }
 
         [RelayCommand]

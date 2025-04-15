@@ -107,7 +107,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Id = model.Id;
             Type = model.ControlType;
             Value = model.Value;
-            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? null : model.Execution.Split("|").Last();
+            ExecuteTime = string.IsNullOrEmpty(model.Execution) ? string.Empty : model.Execution.Split("|").Last();
             ExecuteMethod = model.ExecutionType;
             Status = model.IsEnabled;
             StartDate = DateTime.Parse(model.ValidDateStart);

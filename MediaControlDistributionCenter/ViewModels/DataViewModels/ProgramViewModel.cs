@@ -1,11 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Aspose.Words.Bibliography;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -78,6 +83,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private DateTime? validEndDate;
+
+        [ObservableProperty]
+        private BitmapImage? thumbnail;
 
         public override ProgramDto ToModel()
         {
@@ -166,6 +174,41 @@ namespace MediaControlDistributionCenter.ViewModels
                     break;
             }
             return result;
+        }
+
+        public void GetThumbnail()
+        {
+            BitmapImage? bitmap = null;
+            var filePath = string.Empty;
+            var fileService = GetService<IFileService>();
+            var mediaConfigPath = Path.Combine(Constants.OutPath, UserId, Name);
+            if (Directory.Exists(mediaConfigPath))
+            {
+                var config = fileService.ReadFileContent<MediaConfig>(mediaConfigPath, Constants.ConfigFileName, new MediaTypeConverter());
+                filePath = config?.Pages.FirstOrDefault()?.ThumbnailFilePath ?? string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                bitmap.UriSource = new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, filePath));
+                bitmap.EndInit();
+            }
+
+            if (bitmap == null)
+            {
+                var uri = new Uri($"pack://application:,,,/MediaControlDistributionCenter;component/Assets/windows-fill.png", UriKind.Absolute);
+                var resourceStream = Application.GetResourceStream(uri);
+                bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = resourceStream.Stream;
+                bitmap.EndInit();
+            }
+
+            Thumbnail = bitmap;
         }
     }
 }

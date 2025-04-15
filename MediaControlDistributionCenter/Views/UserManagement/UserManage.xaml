@@ -354,8 +354,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Visibility="{Binding Data.Role, Source={StaticResource user}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Background="#30479C" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Visibility="{Binding Data.Role, Source={StaticResource user}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

@@ -3,6 +3,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services;
@@ -21,6 +22,8 @@ namespace MediaControlDistributionCenter
     public partial class Login : Window
     {
         private LoginViewModel viewModel;
+
+        private DispatcherTimer _timer;
 
         private readonly IServiceProvider serviceProvider;
         public Login(LoginViewModel viewModel, IServiceProvider serviceProvider)
@@ -49,6 +52,14 @@ namespace MediaControlDistributionCenter
                     Log.Debug("ko_KR");
                     break;
             }
+
+            InitializeTimer();
+
+            this.Loaded += Login_Loaded;
+        }
+
+        private void Login_Loaded(object sender, RoutedEventArgs e)
+        {
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -69,39 +80,7 @@ namespace MediaControlDistributionCenter
                     this.Hide();
                 }
             });
-
-            //var resultResponse = authService.Login(new AccountDto { Account = loginId, Password = password}).GetAwaiter().GetResult();
-            //if (resultResponse.Code == 200)
-            //{
-            //    Log.Information($"User {loginId} logged in successfully.");
-            //    //MessageBox.Show("Login successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            //    var loginUser = (UserDto)JsonConvert.DeserializeObject(resultResponse.Data!)!;
-
-            //    var userViewModel = new UserViewModel(loginUser);
-
-            //    App.Current.MainWindow = new MainWindow(userViewModel);
-            //    App.Current.MainWindow.Show();
-            //    this.Hide();
-            //}
-            //else
-            //{
-            //    Log.Warning($"Failed login attempt for user {loginId}.");
-            //    MessageBox.Show("Invalid login ID or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
         }
-
-        //private User? ValidateCredentials(string loginId, string password)
-        //{
-        //    // Replace with actual validation logic, e.g., checking against a database 
-        //    //if (!SQLite.CheckTableExists("Users"))
-        //    //{
-        //    //    SQLite.CreateTable<User>();
-        //    //    SQLite.InserTable<User>(new User() { Account = "admin", Password = "123456", Name = "管理员", Role = "admin" });
-        //    //}
-        //    var result = userService.GetUser(string loginId, string password) SQLite.QueryTable<User>().Where(d => d.Account == loginId && password == "123456").First();
-        //    return result;
-        //}
 
 
         private void LanguageSelectionChanged(object sender, RoutedEventArgs e)
@@ -166,6 +145,10 @@ namespace MediaControlDistributionCenter
                 spAddress.Visibility = Visibility.Visible;
                 spSlogan.Visibility = Visibility.Visible;
                 viewModel.RefreshService();
+                Dispatcher.Invoke(async () =>
+                {
+                    await viewModel.DetectConnectedDevice();
+                });
             }
             else
             {
@@ -185,6 +168,29 @@ namespace MediaControlDistributionCenter
                     await viewModel.ConnectCommand.ExecuteAsync(null);
                 }
             });
+        }
+
+        private void InitializeTimer()
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+            }
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(10);
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (viewModel.ConnectionMode.Mode == "Local")
+            {
+                Dispatcher.Invoke(async () =>
+                {
+                    await viewModel.DetectConnectedDevice();
+                });
+            }
         }
     }
 }

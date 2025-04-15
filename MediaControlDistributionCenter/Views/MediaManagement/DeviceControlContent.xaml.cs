@@ -433,12 +433,10 @@ namespace MediaControlDistributionCenter.Views
             if (viewModel.RepeatString.Contains(tagString))
             {
                 viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
                 viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
 
@@ -450,12 +448,10 @@ namespace MediaControlDistributionCenter.Views
             if (viewModel.RepeatString.Contains(tagString))
             {
                 viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
                 viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
 
@@ -522,12 +518,10 @@ namespace MediaControlDistributionCenter.Views
             if (viewModel.RepeatString.Contains(tagString))
             {
                 viewModel.RepeatString = viewModel.RepeatString.Replace($"{tagString}#", string.Empty);
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1E23"));
             }
             else
             {
                 viewModel.RepeatString = $"{viewModel.RepeatString}{tagString}#";
-                button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C"));
             }
         }
 

@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Web.WebView2.Wpf;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -116,7 +117,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingRunningContent()
         {
-            WebBrowser result = new WebBrowser
+            WebView2 result = new WebView2() 
             {
                 Source = string.IsNullOrEmpty(Source) ? null : new Uri(Source),
                 Width = Width * Ratio,
@@ -124,11 +125,12 @@ namespace MediaControlDistributionCenter.ViewModels
             };
 
             IsRunningLoaded = false;
-            result.Loaded += (sender, e) =>
+            result.Loaded += async (sender, e) =>
             {
-                if (sender is WebBrowser target)
+                if (sender is WebView2 target)
                 {
-                    target.Navigate(Source);
+                    await target.EnsureCoreWebView2Async();
+                    target.CoreWebView2.Navigate(Source);
                     InitializeTimer(target);
                     IsRunningLoaded = true;
                 }
@@ -148,12 +150,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override void DisposeContent()
         {
-            if (FrameworkElement is WebBrowser target)
+            if (FrameworkElement is WebView2 target)
             {
                 target.Dispose();
             }
         }
-        private void InitializeTimer(WebBrowser target)
+        private void InitializeTimer(WebView2 target)
         {
             if (_timer != null)
             {
@@ -166,7 +168,7 @@ namespace MediaControlDistributionCenter.ViewModels
             currentPlayCount++;
         }
 
-        private void Timer_Tick(WebBrowser target)
+        private void Timer_Tick(WebView2 target)
         {
             if (currentPlayCount < PlayCount)
             {
@@ -177,7 +179,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var canvas = FindCanvasParent(target);
                 if (canvas != null)
                 {
-                    var existControl = canvas.Children.Cast<FrameworkElement>().FirstOrDefault(c => c is WebBrowser browser && browser.Source == target.Source);
+                    var existControl = canvas.Children.Cast<FrameworkElement>().FirstOrDefault(c => c is WebView2 browser && browser.Source == target.Source);
                     if (existControl != null)
                     {
                         canvas.Children.Remove(existControl);

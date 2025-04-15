@@ -130,6 +130,7 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">可用机器容量</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">设备已过期!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_110">当前没有可用的设备!</sys:String>
     
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>

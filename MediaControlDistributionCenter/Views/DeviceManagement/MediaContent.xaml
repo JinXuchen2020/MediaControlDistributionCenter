@@ -275,18 +275,18 @@
                 <Grid Grid.Column="1" Margin="10,0,0,0">
                     <Grid VerticalAlignment="Top" Margin="0,20,0,0" >
                         <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Cursor="Hand" VerticalAlignment="Center" Margin="15,4,15,4" MouseDown="btnUploadStart_MouseDown" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Upload}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#2A3255" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnChangeGroup" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnChangeGroup_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_ChangGroup}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#2A3255" CornerRadius="2" Margin="0,0,4,0">
+                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="btnDeleteAll" VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDeleteAll_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Delete}" />
                                 </StackPanel>
@@ -382,9 +382,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Preview}" Foreground="White" Click="btnPreview_Click" Margin="3" Height="28" />
-                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Edit}" Background="#30479C" Foreground="White" Name="btnEdit" Click="btnEdit_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Preview}" Background="#30479C" Foreground="White" Click="btnPreview_Click" Margin="3" Height="28" />
+                                                    <Button Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Name="btnDelete" Click="btnDelete_Click" Margin="3" Height="28" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

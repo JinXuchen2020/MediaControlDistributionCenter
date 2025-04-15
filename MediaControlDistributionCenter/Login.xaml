@@ -156,11 +156,16 @@
                                   materialDesign:ThemeAssist.Theme="Light"/>
 
                             <StackPanel Visibility="Collapsed" x:Name="spAddress" Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center" Height="40">
-                                <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
-                                <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
-                                <Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
-                                    <materialDesign:PackIcon Kind="LocalAreaNetworkConnect" Foreground="LightGray"  Width="22" Height="22"/>
-                                </Button>
+                                <StackPanel Visibility="{Binding HasDevices, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
+                                    <TextBlock Foreground="White" Opacity="0.7" VerticalAlignment="Center" FontSize="16" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_110}" />
+                                </StackPanel>
+                                <StackPanel Visibility="{Binding HasDevices, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
+                                    <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
+                                    <Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="LocalAreaNetworkConnect" Foreground="LightGray"  Width="22" Height="22"/>
+                                    </Button>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 

@@ -185,7 +185,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                         ReceiveOverCmdStr.Add(data[1]);
                         if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
                         {
-                           SyncUserResult = data[2];
+                            SyncUserResult = data[2];
+                            Log.Information(SyncUserResult);
                         }
 
                         if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))

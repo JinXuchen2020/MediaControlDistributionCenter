@@ -126,6 +126,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
 
                         viewModel.GetPrograms();
+                        viewModel.GetThumbnail();
                         return viewModel;
                     });
                     Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(4));
@@ -141,6 +142,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         var viewModel = new ProgramViewModel();
                         viewModel.Binding(c);
+                        viewModel.GetThumbnail();
                         return viewModel;
                     }));
                     break;

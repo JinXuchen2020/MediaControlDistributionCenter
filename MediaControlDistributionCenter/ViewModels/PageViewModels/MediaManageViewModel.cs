@@ -62,28 +62,31 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override void LoadData()
         {
-            var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account}).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
-            groups.Insert(0, new ProgramGroupDto
+            if (CurrentUser != null)
             {
-                Id = -1,
-                Name = FindResource("LanguageKey_Code_All"),
-                UserAccount = CurrentUser.Account,
-            });
-            this.MediaGroups = new ObservableCollection<ProgramGroupViewModel>(groups.Select(c=>
-            {
-                var result = new ProgramGroupViewModel();
-                result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
-                return result;
-            }));
+                var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
+                var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
+                groups.Insert(0, new ProgramGroupDto
+                {
+                    Id = -1,
+                    Name = FindResource("LanguageKey_Code_All"),
+                    UserAccount = CurrentUser.Account,
+                });
+                this.MediaGroups = new ObservableCollection<ProgramGroupViewModel>(groups.Select(c =>
+                {
+                    var result = new ProgramGroupViewModel();
+                    result.Binding(c, c.Id == (groupId ?? -1) ? true : false);
+                    return result;
+                }));
 
-            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-            this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
-            {
-                var result = new ProgramViewModel();
-                result.Binding(c);
-                return result;
-            }));
+                var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+                {
+                    var result = new ProgramViewModel();
+                    result.Binding(c);
+                    return result;
+                }));
+            }
         }
 
         public async Task SyncPrograms()

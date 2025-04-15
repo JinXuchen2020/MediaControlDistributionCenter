@@ -57,6 +57,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         public string? slogan;
 
+        [ObservableProperty]
+        public bool hasDevices;
+
         private IAuthService authService;
         private IUserService userService;
         private IUserGroupService userGroupService;
@@ -74,10 +77,68 @@ namespace MediaControlDistributionCenter.ViewModels
             currentUser = new UserViewModel();
             this.connectionMode = connectionMode;
             this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
-            selectedIpAddress = ipAddresses.FirstOrDefault();
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
             RefreshLogo();
+        }
+
+        public async Task DetectConnectedDevice()
+        {
+            IpAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
+            if (!IpAddresses.Contains(communication.IpAddr) || communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
+            {
+                foreach (var address in IpAddresses)
+                {
+                    communication.Connect(address, "5001");
+                    int count = 5;
+                    while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                    {
+                        await Task.Delay(500);
+                        count--;
+                    }
+
+                    if (communication.netClient.State == Helpers.SocketClient.SocketState.Connected)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (SelectedIpAddress != communication.IpAddr && communication.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            {
+                HasDevices = true;
+                SelectedIpAddress = communication.IpAddr;
+                Log.Debug($"Device with IP {SelectedIpAddress} is connected!");
+                string path = CommunicationCmd.CmdSyncUser + "Login";
+                bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+                if (result)
+                {
+                    var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
+                    if (syncUsers != null)
+                    {
+                        foreach (var item in syncUsers.Users)
+                        {
+                            var response = await userService.Save(item.User);
+                            if (response.Code == 200)
+                            {
+                                if (item.Monitor != null)
+                                {
+                                    response = await monitorService.Save(item.Monitor.Monitor);
+                                    if (response.Code == 200)
+                                    {
+                                        ConnectedDevice = new DeviceViewModel();
+                                        ConnectedDevice.Binding(item.Monitor.Monitor);
+                                        ConnectedDevice.ConnectCommand.Execute(communication);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    this.IsSync = true;
+                    RefreshLogo();
+                }
+            }
         }
 
         [RelayCommand]
@@ -88,10 +149,10 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");
             }
-            //else if (connectionMode.Mode == "Local" && !IsSync)
-            //{
-            //    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
-            //}
+            else if (connectionMode.Mode == "Local" && !IsSync)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_100"); //"请先同步机顶盒信息！";
+            }
             //else if (connectionMode.Mode == "Local" && (!this.SyncUsers.Contains(request.Account) || request.Account == "admin"))
             //{
             //    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_101"); // "该账号不可用！";
@@ -151,98 +212,69 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             SyncUsers = new ObservableCollection<string>();
             IsSyncing = true;
-            if (!string.IsNullOrEmpty(SelectedIpAddress))
+            if (!string.IsNullOrEmpty(SelectedIpAddress) && SelectedIpAddress != communication.IpAddr)
             {
                 communication.Connect(SelectedIpAddress, "5001");
-                int count = 1;
+                int count = 5;
                 while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
                 {
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     count--;
                 }
-            }
 
-            if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            {
-                foreach (var address in IpAddresses)
+                if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
                 {
-                    communication.Connect(address, "5001");
-                    int count = 1;
-                    while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                    {
-                        Thread.Sleep(500);
-                        count--;
-                    }
-
-                    if (communication.netClient.State == Helpers.SocketClient.SocketState.Connected)
-                    {
-                        SelectedIpAddress = address;
-                        break;
-                    }
-                }
-            }
-
-            if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
-            }
-            else
-            {
-
-                Log.Debug($"Device with IP {SelectedIpAddress} is connected!");
-                string path = CommunicationCmd.CmdSyncUser + "Login";
-                bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-                if (result)
-                {
-                    Log.Debug($"Current user info in Device is {communication.SyncUserResult}");
-                    var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
-                    if (syncUsers != null)
-                    {
-                        foreach (var item in syncUsers.Users)
-                        {
-                            var respone = await userService.Save(item.User);
-                            if (respone.Code == 200)
-                            {
-                                if (item.Monitor != null)
-                                {
-                                    respone = await monitorService.Save(item.Monitor.Monitor);
-                                    if (respone.Code == 200)
-                                    {
-                                        ConnectedDevice = new DeviceViewModel();
-                                        ConnectedDevice.Binding(item.Monitor.Monitor);
-                                        ConnectedDevice.ConnectCommand.Execute(communication);
-                                        Log.Debug($"Current Connected Device is {ConnectedDevice.Name}");
-                                        //foreach (var program in item.Monitor.Programs)
-                                        //{
-                                        //    respone = await programService.Save(program);
-                                        //    if (respone.Code == 200)
-                                        //    {
-                                        //    }
-                                        //}
-                                    }
-                                }
-
-                                if (item.User.Role != RoleType.Admin.ToString().ToLower())
-                                {
-                                    this.SyncUsers.Add(item.User.Account);
-                                }
-                            }
-                        }
-                    }
-
-                    this.IsSync = true;
-                    RefreshLogo();
-                    IsSyncing = false;
+                    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
                 }
                 else
                 {
-                    ErrorMessage = $"{CommunicationCmd.CmdSyncUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                }
-            }
+                    Log.Debug($"Device with IP {SelectedIpAddress} is connected!");
+                    string path = CommunicationCmd.CmdSyncUser + "Login";
+                    bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+                    if (result)
+                    {
+                        var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
+                        if (syncUsers != null)
+                        {
+                            foreach (var item in syncUsers.Users)
+                            {
+                                var response = await userService.Save(item.User);
+                                if (response.Code == 200)
+                                {
+                                    if (item.Monitor != null)
+                                    {
+                                        response = await monitorService.Save(item.Monitor.Monitor);
+                                        if (response.Code == 200)
+                                        {
+                                            ConnectedDevice = new DeviceViewModel();
+                                            ConnectedDevice.Binding(item.Monitor.Monitor);
+                                            ConnectedDevice.ConnectCommand.Execute(communication);
+                                            Log.Debug($"Current Connected Device is {ConnectedDevice.Name}");
+                                        }
+                                    }
 
-            var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
-            IsSyncing = false;
+                                    if (item.User.Role != RoleType.Admin.ToString().ToLower())
+                                    {
+                                        this.SyncUsers.Add(item.User.Account);
+                                    }
+                                }
+                            }
+                        }
+
+                        this.IsSync = true;
+                        RefreshLogo();
+                        IsSyncing = false;
+                    }
+                    else
+                    {
+                        ErrorMessage = $"{CommunicationCmd.CmdSyncUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                    }
+                }
+
+                var dialog = new ResultConfirmDialog(this);
+                await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+                IsSyncing = false;
+            }            
         }
 
         private async Task ConnectTest()

@@ -129,6 +129,7 @@
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_107">사용된 장치 용량</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">명령 처리 실패!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">장치가 만료되었습니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_110">현재 사용 가능한 장치가 없습니다!</sys:String>
     
 <sys:String x:Key="LanguageKey_Code_Dashboard">대시보드</sys:String>
 <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">미디어를 효과적으로 운영/관리</sys:String>
@@ -272,11 +273,11 @@
 <sys:String x:Key="LanguageKey_Code_Control_Tooltip_126">월을 선택하지 않음!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Control_Tooltip_127">일을 선택하지 않음!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Control_Tooltip_128">현재 시간</sys:String>
-<sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  关机</sys:String>
-<sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">开机</sys:String>
-<sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">关机</sys:String>
-<sys:String x:Key="LanguageKey_Code_Control_Tooltip_132">实时控制成功！</sys:String>
-    
+<sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">전원 켜기/끄기</sys:String>
+<sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">전원 켜기</sys:String>
+<sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">전원 끄기</sys:String>
+<sys:String x:Key="LanguageKey_Code_Control_Tooltip_132">실시간 제어 성공!</sys:String>
+
 <sys:String x:Key="LanguageKey_Code_User_Config">사용자 설정</sys:String>
 <sys:String x:Key="LanguageKey_Code_Setting_OldPassword">기존 비밀번호</sys:String>
 <sys:String x:Key="LanguageKey_Code_Setting_NewPassword">새 비밀번호</sys:String>
