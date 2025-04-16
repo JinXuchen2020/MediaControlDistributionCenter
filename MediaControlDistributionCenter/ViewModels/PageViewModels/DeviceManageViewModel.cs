@@ -284,7 +284,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            if (ConnectionMode.Mode == "Remote" && viewModel.Id != 0 && viewModel.IsConnected)
+            if (viewModel.Id != 0 && viewModel.IsConnected)
             {
                 await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))

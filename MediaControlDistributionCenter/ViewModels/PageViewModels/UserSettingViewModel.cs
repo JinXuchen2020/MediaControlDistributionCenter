@@ -71,6 +71,36 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveUser()
         {
+            var viewModel = ConnectedDevice;
+            if (viewModel != null && viewModel.IsConnected)
+            {
+                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    viewModel.DisconnectCommand.Execute(null);
+                    return;
+                }
+
+                viewModel.SendUserCommand.Execute(null);
+                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                {
+                    ErrorMessage = viewModel.ErrorMessage;
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.ErrorMessage = null;
+                    return;
+                }
+
+                if (viewModel.IsSendUserCompleted)
+                {
+                    ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_129");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.IsSendUserCompleted = false;
+                }
+            }
+
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {

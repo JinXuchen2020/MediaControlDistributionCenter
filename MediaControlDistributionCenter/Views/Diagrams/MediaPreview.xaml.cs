@@ -40,6 +40,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private MediaPageViewModel? AdPage;
 
+        private readonly MediaEditViewModel manageViewModel;
+
         public MediaPreview(MediaEditViewModel viewModel)
         {
             InitializeComponent();
@@ -54,10 +56,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             MainCanvas.Width = Width;
             MainCanvas.Height = Height;
-            _ratio = MainCanvas.Width / 768;
+            _ratio = double.Parse(viewModel.CurrentMedia.Width) > double.Parse(viewModel.CurrentMedia.Height) ? MainCanvas.Width / 768 : MainCanvas.Height / 576;
             this.SizeChanged += MediaPreview_SizeChanged;
             //this.Loaded += MediaPreview_Loaded;
             this.Unloaded += MediaPreview_Unloaded;
+
+            this.manageViewModel = viewModel;
         }
 
         private void MediaPreview_Unloaded(object sender, RoutedEventArgs e)
@@ -73,8 +77,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void MediaPreview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             MainCanvas.Width = (sender as Window).Width;
-            MainCanvas.Height = (sender as Window).Width; 
-            _ratio = MainCanvas.Width / 768;
+            MainCanvas.Height = (sender as Window).Width;
+            _ratio = double.Parse(manageViewModel.CurrentMedia.Width) > double.Parse(manageViewModel.CurrentMedia.Height) ? MainCanvas.Width / 768 : MainCanvas.Height / 576;
 
             LoadCanvasComponents(CurrentPage);
         }

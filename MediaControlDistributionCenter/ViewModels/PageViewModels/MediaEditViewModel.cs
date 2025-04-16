@@ -63,26 +63,36 @@ namespace MediaControlDistributionCenter.ViewModels
         public override void LoadData()
         {
             MediaConfig? config = null;
+            double ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
+
+            if (double.Parse(CurrentMedia.Width) > double.Parse(CurrentMedia.Height))
+            {
+                ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
+                Canvas.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * Canvas.Width;
+            }
+            else
+            {
+                ratio = Canvas.Height / double.Parse(CurrentMedia.Height);
+                Canvas.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * Canvas.Height;
+            }
             if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
             {
                 config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
                 if (config != null)
                 {
                     config.Program = CurrentMedia.ToModel();
-                    config.Ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
+                    config.Ratio = ratio;
                 }
             }
 
             config ??= new MediaConfig
             {
-                Ratio = Canvas.Width / double.Parse(CurrentMedia.Width),
+                Ratio = ratio,
                 Program = CurrentMedia.ToModel(),
                 Pages = new List<MediaPage>()
             };
             this.MediaConfig = new MediaConfigViewModel(config);
             this.MediaConfig.Program = CurrentMedia;
-
-            Canvas.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * Canvas.Width;
 
             SelectedPage = this.MediaConfig.Pages.FirstOrDefault();
             if (SelectedPage != null)
