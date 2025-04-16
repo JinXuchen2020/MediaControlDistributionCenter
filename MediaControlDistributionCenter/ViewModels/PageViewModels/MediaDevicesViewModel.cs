@@ -94,7 +94,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     string filePath = $"{CurrentMedia.Name}.zip";
-                    item.UploadFileCommand.Execute(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
+                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         ErrorMessage = item.ErrorMessage;

@@ -206,7 +206,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     return;
                 }
 
-                viewModel.EnableMonitorCommand.Execute(null);
+                await viewModel.EnableMonitorCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                 {
                     ErrorMessage = viewModel.ErrorMessage;
@@ -251,7 +251,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
 
                 viewModel.Status = 1;
-                viewModel.SendUserCommand.Execute(null);
+                await viewModel.SendUserCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                 {
                     ErrorMessage = viewModel.ErrorMessage;
@@ -296,7 +296,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     return;
                 }
 
-                viewModel.SendUserCommand.Execute(null);
+                await viewModel.SendUserCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                 {
                     ErrorMessage = viewModel.ErrorMessage;

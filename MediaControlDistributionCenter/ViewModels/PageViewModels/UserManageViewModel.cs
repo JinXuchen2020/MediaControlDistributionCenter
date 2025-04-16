@@ -149,12 +149,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     deviceManageViewModel.LoadData();
                     foreach (var device in deviceManageViewModel.Devices)
                     {
-                        deviceManageViewModel.DeleteDeviceCommand.Execute(device);                       
+                        await deviceManageViewModel.DeleteDeviceCommand.ExecuteAsync(device);                       
                     }
 
                     foreach (var deviceGroup in deviceManageViewModel.DeviceGroups)
                     {
-                        deviceManageViewModel.DeleteGroupCommand.Execute(deviceGroup);
+                        await deviceManageViewModel.DeleteGroupCommand.ExecuteAsync(deviceGroup);
                     }
 
                     var mediaManageViewModel = App.ServicesProvider.GetRequiredService<MediaManageViewModel>();
@@ -162,12 +162,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     mediaManageViewModel.LoadData();
                     foreach (var media in mediaManageViewModel.Medias)
                     {
-                        mediaManageViewModel.DeleteMediaCommand.Execute(media);
+                        await mediaManageViewModel.DeleteMediaCommand.ExecuteAsync(media);
                     }
 
                     foreach (var programGroup in mediaManageViewModel.MediaGroups)
                     {
-                        mediaManageViewModel.DeleteGroupCommand.Execute(programGroup);
+                        await mediaManageViewModel.DeleteGroupCommand.ExecuteAsync(programGroup);
                     }
                 }
                 

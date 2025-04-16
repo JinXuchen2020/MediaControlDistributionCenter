@@ -355,7 +355,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (CommandType == "Brightness" && CurrentDevice != null)
             {
-                CurrentDevice.SyncBrightnessCommand.Execute(null);
+                await CurrentDevice.SyncBrightnessCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
                     ErrorMessage = CurrentDevice.ErrorMessage;
@@ -369,7 +369,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (CommandType == "Volume" && CurrentDevice != null)
             {
-                CurrentDevice.SyncVolumeCommand.Execute(null);
+                await CurrentDevice.SyncVolumeCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
                     ErrorMessage = CurrentDevice.ErrorMessage;

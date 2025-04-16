@@ -87,7 +87,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         return;
                     }
 
-                    viewModel.SendUserCommand.Execute(null);
+                    await viewModel.SendUserCommand.ExecuteAsync(null);
                     if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                     {
                         ErrorMessage = viewModel.ErrorMessage;
