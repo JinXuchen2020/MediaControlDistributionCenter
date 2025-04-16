@@ -1180,15 +1180,15 @@
                                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,10,0,0" TextBlock.Foreground="White">
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="X" Width="12" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="NumericUpDown_ValueChanged" Value="{Binding SelectedComponent.Left, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="NumericUpDown_ValueChanged" Value="{Binding SelectedComponent.Left, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"  Maximum="{Binding SelectedComponent.MaxLeft}"/>
                                                         <TextBlock Text="Y" VerticalAlignment="Center" Margin="15,0,0,0"/>
-                                                        <materialDesign:NumericUpDown  Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="NumericUpDown_ValueChanged" Value="{Binding SelectedComponent.Top, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"/>
+                                                        <materialDesign:NumericUpDown  Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="NumericUpDown_ValueChanged" Value="{Binding SelectedComponent.Top, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"  Maximum="{Binding SelectedComponent.MaxTop}"/>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                         <TextBlock Text="W" Width="12" VerticalAlignment="Center"/>
-                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="Screen_ValueChanged" Value="{Binding SelectedComponent.Width, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" />
+                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="10,0,0,0" ValueChanged="Screen_ValueChanged" Value="{Binding SelectedComponent.Width, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" Maximum="{Binding CurrentMedia.Width}" />
                                                         <TextBlock Text="H" VerticalAlignment="Center" Margin="15,0,0,0"/>
-                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="8,0,0,0" ValueChanged="Screen_ValueChanged" Value="{Binding SelectedComponent.Height, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0" />
+                                                        <materialDesign:NumericUpDown Padding="5" BorderBrush="#404870" BorderThickness="1" Margin="8,0,0,0" ValueChanged="Screen_ValueChanged" Value="{Binding SelectedComponent.Height, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="0"  Maximum="{Binding CurrentMedia.Height}" />
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>

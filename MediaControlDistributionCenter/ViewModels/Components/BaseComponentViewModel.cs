@@ -50,6 +50,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private double top;
 
         [ObservableProperty]
+        private double maxLeft;
+
+        [ObservableProperty]
+        private double maxTop;
+
+        [ObservableProperty]
         private double width;
 
         [ObservableProperty]
@@ -447,6 +453,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     manageViewModel.SelectedComponent = null;
                 }
                 var viewModel = selectedElement.DataContext as BaseComponentViewModel;
+                viewModel.MaxLeft = double.Parse(manageViewModel.CurrentMedia.Width) - viewModel.Width;
+                viewModel.MaxTop = double.Parse(manageViewModel.CurrentMedia.Height) - viewModel.Height;
                 manageViewModel.SelectedComponent = viewModel;
                 manageViewModel.SelectedComponent.IsSelected = true;
                 manageViewModel.SelectedElement = selectedElement;

@@ -601,6 +601,8 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.SelectedComponent = null;
             }
 
+            viewModel.MaxLeft = double.Parse(manageViewModel.CurrentMedia.Width) - viewModel.Width;
+            viewModel.MaxTop = double.Parse(manageViewModel.CurrentMedia.Height) - viewModel.Height;
             manageViewModel.SelectedComponent = viewModel;
             manageViewModel.SelectedComponent.IsSelected = true;
             manageViewModel.SelectedElement = viewModel.FrameworkElement;
@@ -875,6 +877,9 @@ namespace MediaControlDistributionCenter.Views
                 {
                     manageViewModel.SelectedComponent.Height = newHeight / manageViewModel.SelectedComponent.Ratio;
                 }
+
+                manageViewModel.SelectedComponent.MaxLeft = double.Parse(manageViewModel.CurrentMedia.Width) - manageViewModel.SelectedComponent.Width;
+                manageViewModel.SelectedComponent.MaxTop = double.Parse(manageViewModel.CurrentMedia.Height) - manageViewModel.SelectedComponent.Height;
                 var resizableControl = new ResizableControl();
                 resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
                 resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);

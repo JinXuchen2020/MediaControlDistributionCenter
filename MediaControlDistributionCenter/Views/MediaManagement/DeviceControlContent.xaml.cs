@@ -34,7 +34,6 @@ namespace MediaControlDistributionCenter.Views
                 deviceControlViewModel.CurrentUser = dashboardViewModel.SelectedUser ?? userManageViewModel.SelectedUser!;
             }
             manageViewModel = deviceControlViewModel;
-            manageViewModel.LoadData();
             DataContext = manageViewModel;
 
             this.Loaded += DeviceControlContent_Loaded;
@@ -48,11 +47,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void DeviceControlContent_Loaded(object sender, RoutedEventArgs e)
         {
-            InitPage("Brightness");
-            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
             this.Dispatcher.Invoke(async () =>
             {
-                await manageViewModel.SyncDeviceTimeControls();
+                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+                InitPage("Brightness");
             });
         }
 

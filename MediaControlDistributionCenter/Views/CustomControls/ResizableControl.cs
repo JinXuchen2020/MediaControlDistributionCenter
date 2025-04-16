@@ -169,8 +169,8 @@ namespace MediaControlDistributionCenter.Views.CustomControls
             var conLeft = Canvas.GetLeft(control);
             var conTop = Canvas.GetTop(control);
             var zIndex = Canvas.GetZIndex(control);
-            var width = control.ActualWidth;
-            var height = control.ActualHeight;
+            var width = control.Width;
+            var height = control.Height;
 
             if (_elementToThumbMap.ContainsKey(control))
             {
