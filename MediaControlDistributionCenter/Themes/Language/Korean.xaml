@@ -2,33 +2,33 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="LanguageKey_LanguageResourceKey">중국어</sys:String>
+<sys:String x:Key="LanguageKey_LanguageResourceKey">중국어</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_ZH">간체 중국어</sys:String>
-    <sys:String x:Key="LanguageKey_Code_EN">영어</sys:String>
-    <sys:String x:Key="LanguageKey_Code_KO">한국 노드</sys:String>
-    <sys:String x:Key="LanguageKey_Code_JP">일본 노드</sys:String>
+<sys:String x:Key="LanguageKey_Code_ZH">간체 중국어</sys:String>
+<sys:String x:Key="LanguageKey_Code_EN">영어</sys:String>
+<sys:String x:Key="LanguageKey_Code_KO">한국 노드</sys:String>
+<sys:String x:Key="LanguageKey_Code_JP">일본 노드</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_SystemTitle">통합 미디어 관리 플랫폼</sys:String>    
+<sys:String x:Key="LanguageKey_Code_SystemTitle">통합 미디어 관리 플랫폼</sys:String>    
     
-    <sys:String x:Key="LanguageKey_Code_LoginDescription">통합 미디어 관리 플랫폼 로그인</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SystemFeature1">멀티미디어 전체 체인</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SystemFeature2">디지털 정보 솔루션</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SystemFeature3">다국어</sys:String>
-    <sys:String x:Key="LanguageKey_Code_SystemExitTip">소프트웨어를 닫고 종료합니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_LoginDescription">통합 미디어 관리 플랫폼 로그인</sys:String>
+<sys:String x:Key="LanguageKey_Code_SystemFeature1">멀티미디어 전체 체인</sys:String>
+<sys:String x:Key="LanguageKey_Code_SystemFeature2">디지털 정보 솔루션</sys:String>
+<sys:String x:Key="LanguageKey_Code_SystemFeature3">다국어</sys:String>
+<sys:String x:Key="LanguageKey_Code_SystemExitTip">소프트웨어를 닫고 종료합니다</sys:String>
 
-   <sys:String x:Key="LanguageKey_Code_LoginTitle">Sign Plex 계정에 로그인</sys:String>
+<sys:String x:Key="LanguageKey_Code_LoginTitle">Sign Plex 계정에 로그인</sys:String>
 <sys:String x:Key="LanguageKey_Code_LoginAccount">아이디</sys:String>
 <sys:String x:Key="LanguageKey_Code_LoginPassword">비밀번호</sys:String>
 <sys:String x:Key="LanguageKey_Code_LoginBtn">로그인</sys:String>
 <sys:String x:Key="LanguageKey_Code_LoginSubTitle">계정 문의는 공급자에게 neox@neoxcorp.co.kr로 연락하세요</sys:String> 
 
-    <sys:String x:Key="LanguageKey_Code_HelloWorld">안녕하세요, 세계</sys:String>
+<sys:String x:Key="LanguageKey_Code_HelloWorld">안녕하세요, 세계</sys:String>
 <sys:String x:Key="LanguageKey_Code_SwitchLanguage">언어 전환</sys:String>
 <sys:String x:Key="LanguageKey_Code_InputUserName">사용자 이름을 입력하세요</sys:String>
 <sys:String x:Key="LanguageKey_Code_InputPassword">비밀번호를 입력하세요</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_Role_Admin">관리자</sys:String>
+<sys:String x:Key="LanguageKey_Code_Role_Admin">관리자</sys:String>
 <sys:String x:Key="LanguageKey_Code_Role_Agent">대리점</sys:String>
 <sys:String x:Key="LanguageKey_Code_Role_User">회원</sys:String>
 <sys:String x:Key="LanguageKey_Code_LoginSlogan">회사 홍보문구:</sys:String>
@@ -401,9 +401,9 @@
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_203">랜덤</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">하루</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">한 시간</sys:String>
-    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">유형</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">유형</sys:String>
 
-    <sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
+<sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
 
 <sys:String x:Key="LanguageKey_Code_MediaStore">미디어 라이브러리</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_BigIcon">대형 아이콘</sys:String>
@@ -421,6 +421,11 @@
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">미디어를 선택하지 않음!</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">미디어 주소</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">미디어 이름을 입력하지 않음!</sys:String>
+
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">账号不能为空！</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">该账号已经存在</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">账号密码不能为空！</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">公司名不能为空！</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Totip_100">매개변수가 유효하지 않거나 누락됨</sys:String>
 <sys:String x:Key="LanguageKey_Code_Totip_102">관련 데이터가 없음</sys:String>

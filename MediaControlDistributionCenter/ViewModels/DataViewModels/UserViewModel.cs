@@ -38,12 +38,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private string? group;
 
         [ObservableProperty]
-        [Required]
-        [CustomValidation(typeof(UserViewModel), nameof(ValidateAccount))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.ValidateAccount))]
         private string account;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string name;
 
         [ObservableProperty]
@@ -53,7 +53,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private int status;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string password;
 
         [ObservableProperty]
@@ -232,22 +232,6 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             return imageData != null ? Convert.ToBase64String(imageData) : null;
-        }
-
-        public static ValidationResult ValidateAccount(string account, ValidationContext context)
-        {
-            UserViewModel instance = (UserViewModel)context.ObjectInstance;
-            var userService = GetService<IUserService>();
-            var response = userService.GetAll(new UserDto { Account = account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
-            bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
-
-            if (isValid)
-            {
-                return ValidationResult.Success;
-            }
-
-            var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Totip_410");
-            return new(erroMessage);
         }
     }
 
