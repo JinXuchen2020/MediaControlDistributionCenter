@@ -57,7 +57,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)
         {
-            manageViewModel.SelectDisabled = 1;
+            manageViewModel.SelectDisabled = "1";
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
@@ -210,13 +210,13 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void ShowDisabledDevices_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(manageViewModel.SelectDisabled == 0)
+            if(manageViewModel.SelectDisabled == "0")
             {
-                manageViewModel.SelectDisabled = 1;
+                manageViewModel.SelectDisabled = "1";
             }
             else
             {
-                manageViewModel.SelectDisabled = 0;
+                manageViewModel.SelectDisabled = "0";
             }
 
             manageViewModel.LoadData();

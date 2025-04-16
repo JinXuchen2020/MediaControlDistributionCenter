@@ -38,7 +38,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private long? selectedGroupId;
 
         [ObservableProperty]
-        private int selectDisabled = 1;
+        private string selectDisabled = "1";
 
         [ObservableProperty]
         private bool isSearching;
@@ -57,9 +57,9 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
-            this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.programService = GetService<IProgramService>();
             this.communication = communication;
+            this.playbackRecordService = GetService<IPlaybackRecordService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
@@ -81,7 +81,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == SelectDisabled).OrderByDescending(c => c.Id).Select(c =>
+            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new DeviceViewModel();
                 result.Binding(c);
