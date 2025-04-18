@@ -1,0 +1,185 @@
+﻿<UserControl x:Class="MediaControlDistributionCenter.Views.Diagrams.CustomRichTextbox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MediaControlDistributionCenter.Views.Diagrams"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:system="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Grid>
+        <DockPanel>
+            <!-- 顶部工具栏（分组） -->
+            <ToolBarTray DockPanel.Dock="Top" Style="{StaticResource MaterialDesignToolBarTray}">
+
+                <!-- 编辑操作工具栏 -->
+                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
+                    <Button Padding="5" Command="ApplicationCommands.Save" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="ContentSave" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="ApplicationCommands.Undo" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Undo" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="ApplicationCommands.Redo" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Redo" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="ApplicationCommands.Cut" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="ContentCut" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="ApplicationCommands.Copy" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="ContentCopy" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="ApplicationCommands.Paste" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="ContentPaste" Width="20" Height="20"/>
+                    </Button>
+                </ToolBar>
+
+                <!-- 字体工具栏 -->
+                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
+                    <!-- 字体选择 -->
+                    <ComboBox x:Name="FontFamilyComboBox" Width="120" SelectionChanged="FontFamily_SelectionChanged" Style="{StaticResource MaterialDesignComboBox}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Source}" FontFamily="{Binding Source}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!-- 字号选择 -->
+                    <ComboBox x:Name="FontSizeComboBox" Width="40" SelectedValuePath="Content" SelectedValue="12" SelectionChanged="FontSize_SelectionChanged" Style="{StaticResource MaterialDesignComboBox}">
+                        <ComboBox.Items>                            
+                            <ComboBoxItem Content="8" />
+                            <ComboBoxItem Content="9"/>
+                            <ComboBoxItem Content="10"/>
+                            <ComboBoxItem Content="11"/>
+                            <ComboBoxItem Content="12"/>
+                            <ComboBoxItem Content="14"/>
+                            <ComboBoxItem Content="16"/>
+                            <ComboBoxItem Content="18"/>
+                            <ComboBoxItem Content="20"/>
+                            <ComboBoxItem Content="22"/>
+                            <ComboBoxItem Content="24"/>
+                            <ComboBoxItem Content="26"/>
+                            <ComboBoxItem Content="28"/>
+                            <ComboBoxItem Content="36"/>
+                            <ComboBoxItem Content="48"/>
+                            <ComboBoxItem Content="72"/>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </ToolBar>
+
+                <!-- 字体样式工具栏 -->
+                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
+                    <ToggleButton Padding="5" Command="EditingCommands.ToggleBold" ToolTip="加粗 (Ctrl+B)" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatBold" Width="20" Height="20"/>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="EditingCommands.ToggleItalic" ToolTip="斜体 (Ctrl+I)" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatItalic" Width="20" Height="20"/>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="EditingCommands.ToggleUnderline" ToolTip="下划线 (Ctrl+U)" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatUnderline" Width="20" Height="20"/>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="{x:Static local:CustomRichTextbox.ToggleStrikethroughCommand}" ToolTip="删除线" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatStrikethrough" Width="20" Height="20"/>
+                    </ToggleButton>
+
+                    <Button Padding="5" Click="ChangeFontColor_Click" ToolTip="文字颜色" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatColorText" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Click="ChangeHighlightColor_Click" ToolTip="背景颜色" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatColorFill" Width="20" Height="20"/>
+                    </Button>
+
+                    <!-- 行间距 -->
+                    <!--<Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatLineSpacing" Width="20" Height="20"/>
+                        <Button.ContextMenu>
+                            <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
+                                <MenuItem Header="单倍行距" Click="LineSpacing_Click" Tag="1.0"/>
+                                <MenuItem Header="1.5倍行距" Click="LineSpacing_Click" Tag="1.5"/>
+                                <MenuItem Header="双倍行距" Click="LineSpacing_Click" Tag="2.0"/>
+                                <MenuItem Header="自定义..." Click="CustomLineSpacing_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>-->
+
+                    <!-- 字符间距 -->
+                    <!--<Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatLetterSpacing" Width="20" Height="20"/>
+                        <Button.ContextMenu>
+                            <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
+                                <MenuItem Header="标准" Click="CharacterSpacing_Click" Tag="0"/>
+                                <MenuItem Header="宽松" Click="CharacterSpacing_Click" Tag="1"/>
+                                <MenuItem Header="更宽松" Click="CharacterSpacing_Click" Tag="2"/>
+                                <MenuItem Header="自定义..." Click="CustomCharacterSpacing_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>-->
+                </ToolBar>
+
+                <!-- 段落格式工具栏 -->
+                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
+                    <RadioButton Padding="5" Command="EditingCommands.AlignLeft" GroupName="Alignment" ToolTip="左对齐" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatAlignLeft" Width="20" Height="20"/>
+                    </RadioButton>
+                    <RadioButton Padding="5" Command="EditingCommands.AlignCenter" GroupName="Alignment" ToolTip="居中对齐" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatAlignCenter" Width="20" Height="20"/>
+                    </RadioButton>
+                    <RadioButton Padding="5" Command="EditingCommands.AlignRight" GroupName="Alignment" ToolTip="右对齐" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatAlignRight" Width="20" Height="20"/>
+                    </RadioButton>
+                    <RadioButton Padding="5" Command="EditingCommands.AlignJustify" GroupName="Alignment" ToolTip="两端对齐" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatAlignJustify" Width="20" Height="20"/>
+                    </RadioButton>
+                    <Button Padding="5" Command="EditingCommands.IncreaseIndentation" ToolTip="增加缩进" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatIndentIncrease" Width="20" Height="20"/>
+                    </Button>
+                    <Button Padding="5" Command="EditingCommands.DecreaseIndentation" ToolTip="减少缩进" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatIndentDecrease" Width="20" Height="20"/>
+                    </Button>
+                </ToolBar>
+
+                <!-- 列表和上下标工具栏 -->
+                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
+                    <ToggleButton Padding="5" Command="EditingCommands.ToggleBullets" ToolTip="项目符号列表" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatListBulleted" Width="20" Height="20"/>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="EditingCommands.ToggleNumbering" ToolTip="编号列表" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="FormatListNumbered" Width="20" Height="20"/>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="{x:Static local:CustomRichTextbox.ToggleSuperscriptCommand}" ToolTip="上标" Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel>
+                            <TextBlock Text="X" VerticalAlignment="Center" FontSize="12"/>
+                            <TextBlock Text="2" VerticalAlignment="Top" FontSize="8" Margin="0,-5,0,0"/>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Padding="5" Command="{x:Static local:CustomRichTextbox.ToggleSubscriptCommand}" ToolTip="下标" Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel>
+                            <TextBlock Text="X" VerticalAlignment="Center" FontSize="12"/>
+                            <TextBlock Text="2" VerticalAlignment="Bottom" FontSize="8" Margin="0,0,0,-5"/>
+                        </StackPanel>
+                    </ToggleButton>
+                </ToolBar>
+            </ToolBarTray>
+
+            <!-- 富文本编辑区 -->
+            <RichTextBox x:Name="rtbEditor" 
+                Style="{StaticResource MaterialDesignRichTextBox}"
+                FlowDirection="LeftToRight"
+                Width="500"
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Auto"
+                SpellCheck.IsEnabled="True"
+                AcceptsTab="True"
+                Height="500"
+                BorderBrush="White"
+                BorderThickness="1"
+                SelectionChanged="RichTextBox_SelectionChanged">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="欢迎使用 MaterialDesign 富文本编辑器"/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </DockPanel>
+    </Grid>
+</UserControl>

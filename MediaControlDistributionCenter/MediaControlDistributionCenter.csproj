@@ -165,7 +165,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspose.Words" Version="25.3.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="FluentFTP" Version="52.0.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
@@ -189,7 +188,7 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
-    <PackageReference Include="Syncfusion.DocIORenderer.NET" Version="29.1.33" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net" Version="29.1.33" />
     <PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="29.1.33" />
     <PackageReference Include="WPFMediaKit" Version="2.3.0" />
   </ItemGroup>

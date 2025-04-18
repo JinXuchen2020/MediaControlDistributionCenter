@@ -607,7 +607,7 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SelectedComponent.IsSelected = true;
             manageViewModel.SelectedElement = viewModel.FrameworkElement;
             var resizableControl = new ResizableControl();
-            resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
+            resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);    
         }
 
         private void PlayModeChanged_Click(object sender, RoutedEventArgs e)
