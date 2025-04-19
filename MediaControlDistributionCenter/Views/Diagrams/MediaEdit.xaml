@@ -671,7 +671,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:TextComponentViewModel}">
                         <Border BorderThickness="1" Background="#090A0E">
-                            <Grid Width="800" Height="600" Background="#090A0E" HorizontalAlignment="Center" Margin="10" >
+                            <Grid Width="800" Height="320" Background="#090A0E" HorizontalAlignment="Center" Margin="10" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="40" />
                                     <RowDefinition Height="280" />
