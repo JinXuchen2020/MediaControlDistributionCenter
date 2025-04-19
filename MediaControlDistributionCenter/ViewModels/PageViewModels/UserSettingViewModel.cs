@@ -31,6 +31,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private const int ListenPort = 9877;    // 接收回复端口
         private UdpClient _listener;
 
+        private List<InternetDevice> detectDevices = new List<InternetDevice>();
+
         [ObservableProperty]
         private bool isScanning;
 
@@ -230,7 +232,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                 Status = 0,
                                 StatusText = GetStatus(0)
                             };
-                            Devices.Add(device);
+                            detectDevices.Add(device);
                         }
                     }
                 }
@@ -242,7 +244,8 @@ namespace MediaControlDistributionCenter.ViewModels
             finally
             {
                 string message = FindResource("LanguageKey_Code_Device_Tooltip_114");
-                DetectStatus = string.Format(message, Devices.Count);
+                DetectStatus = string.Format(message, detectDevices.Count);
+                Devices = new ObservableCollection<InternetDevice>(detectDevices);
                 IsScanning = false;
             }
         }

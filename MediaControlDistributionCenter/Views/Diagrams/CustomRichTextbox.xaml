@@ -137,28 +137,7 @@
                         <materialDesign:PackIcon Kind="FormatIndentDecrease" Width="20" Height="20"/>
                     </Button>
                 </ToolBar>
-
-                <!-- 列表和上下标工具栏 -->
-                <ToolBar Style="{StaticResource MaterialDesignToolBar}">
-                    <ToggleButton Padding="5" Command="EditingCommands.ToggleBullets" Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialDesign:PackIcon Kind="FormatListBulleted" Width="20" Height="20"/>
-                    </ToggleButton>
-                    <ToggleButton Padding="5" Command="EditingCommands.ToggleNumbering" Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialDesign:PackIcon Kind="FormatListNumbered" Width="20" Height="20"/>
-                    </ToggleButton>
-                    <ToggleButton Padding="5" Command="{x:Static local:CustomRichTextbox.ToggleSuperscriptCommand}" Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel>
-                            <TextBlock Text="X" VerticalAlignment="Center" FontSize="12"/>
-                            <TextBlock Text="2" VerticalAlignment="Top" FontSize="8" Margin="0,-5,0,0"/>
-                        </StackPanel>
-                    </ToggleButton>
-                    <ToggleButton Padding="5" Command="{x:Static local:CustomRichTextbox.ToggleSubscriptCommand}" Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel>
-                            <TextBlock Text="X" VerticalAlignment="Center" FontSize="12"/>
-                            <TextBlock Text="2" VerticalAlignment="Bottom" FontSize="8" Margin="0,0,0,-5"/>
-                        </StackPanel>
-                    </ToggleButton>
-                </ToolBar>
+                
             </ToolBarTray>
 
             <!-- 富文本编辑区 -->

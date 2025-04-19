@@ -368,12 +368,12 @@
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
                                     <TextBox AcceptsReturn="True" IsReadOnly="True" Margin="0,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Height="150" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding Source}" />
                                 </StackPanel>
-                                <!--<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_122}" Width="80" VerticalAlignment="Center"/>
                                     <Button Width="25" Height="25" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Click="SelectColor_Click" Background="#16171D" BorderBrush="Gray">
                                         <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
                                     </Button>
-                                </StackPanel>-->
+                                </StackPanel>
                                 <!--<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_123}" Width="80" VerticalAlignment="Center"/>
                                     <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>

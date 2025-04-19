@@ -88,7 +88,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             using (FileStream fs = new FileStream(filePath, FileMode.Open))
             {
-                range.Load(fs, DataFormats.Rtf);
+                range.Load(fs, DataFormats.Xaml);
             }
         }
 
@@ -107,12 +107,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 Directory.CreateDirectory(fileDic);
             }
 
-            var filePath = System.IO.Path.Combine(fileDic, manageViewModel.SelectedComponent.Name + ".rtf");
+            var filePath = System.IO.Path.Combine(fileDic, manageViewModel.SelectedComponent.Name + ".xaml");
             TextRange range = new TextRange(rtbEditor.Document.ContentStart, rtbEditor.Document.ContentEnd);
 
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
-                range.Save(fs, DataFormats.Rtf);
+                range.Save(fs, DataFormats.Xaml);
             }
 
             (manageViewModel.SelectedComponent as TextComponentViewModel).RtfFilePath = filePath;
@@ -125,6 +125,19 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (FontFamilyComboBox.SelectedItem is FontFamily selectedFont)
             {
                 rtbEditor.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, selectedFont);
+                string fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+                string fontFileName = GetFontFileNameFromRegistry(selectedFont.Source) ?? string.Empty;
+                string fontSourcePath = System.IO.Path.Combine(fontsFolder, fontFileName);
+                if (File.Exists(fontSourcePath))
+                {
+                    var manageViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
+                    var fileDic = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name, manageViewModel.SelectedPage.Name, manageViewModel.SelectedComponent.Name);
+                    if (!Directory.Exists(fileDic))
+                    {
+                        Directory.CreateDirectory(fileDic);
+                    }
+                    File.Copy(fontSourcePath, System.IO.Path.Combine(fileDic, fontFileName), true);
+                }
             }
         }
 
@@ -204,6 +217,24 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             // 获取当前选择范围
             rtbEditor.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, spacing);
+        }
+
+        private string GetFontFileNameFromRegistry(string fontName)
+        {
+            using (RegistryKey fontsKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"))
+            {
+                if (fontsKey != null)
+                {
+                    foreach (string valueName in fontsKey.GetValueNames())
+                    {
+                        if (valueName.Contains(fontName))
+                        {
+                            return fontsKey.GetValue(valueName).ToString();
+                        }
+                    }
+                }
+            }
+            return "-";
         }
 
         // 更新UI显示当前选择文本的格式

@@ -181,6 +181,9 @@ namespace MediaControlDistributionCenter.ViewModels
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
             CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
 
+            var colorConverter = new ColorToBrushConverter();
+            CreateBinding(result, RichTextBox.BackgroundProperty, nameof(Background), colorConverter);
+
             Canvas.SetLeft(result, Left * Ratio);
             Canvas.SetTop(result, Top * Ratio);
             Canvas.SetZIndex(result, ZIndex);
@@ -235,7 +238,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     {
                         using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
                         {
-                            range.Load(fs, DataFormats.Rtf);
+                            range.Load(fs, DataFormats.Xaml);
                         }
 
                         Source = range.Text;
@@ -273,7 +276,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 TextRange range = new TextRange(result.Document.ContentStart, result.Document.ContentEnd);
                 using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
                 {
-                    range.Load(fs, DataFormats.Rtf);
+                    range.Load(fs, DataFormats.Xaml);
                 }
             }
             else
