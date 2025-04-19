@@ -30,13 +30,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
     public partial class CustomRichTextbox : UserControl
     {
         public static readonly RoutedUICommand ToggleStrikethroughCommand = new RoutedUICommand(
-            "删除线", "ToggleStrikethrough", typeof(CustomRichTextbox));
+            "strikethrough", "ToggleStrikethrough", typeof(CustomRichTextbox));
 
         public static readonly RoutedUICommand ToggleSuperscriptCommand = new RoutedUICommand(
-            "上标", "ToggleSuperscript", typeof(CustomRichTextbox));
+            "superscript", "ToggleSuperscript", typeof(CustomRichTextbox));
 
         public static readonly RoutedUICommand ToggleSubscriptCommand = new RoutedUICommand(
-            "下标", "ToggleSubscript", typeof(CustomRichTextbox));
+            "subscript", "ToggleSubscript", typeof(CustomRichTextbox));
 
         public ObservableCollection<FontFamily> FontFamilies { get; } = new ObservableCollection<FontFamily>();
 

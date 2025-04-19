@@ -64,6 +64,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public override void LoadData()
         {
+            if (CurrentUser == null)
+            {
+                return;
+            }
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto

@@ -6,7 +6,11 @@ using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace MediaControlDistributionCenter.ViewModels
@@ -19,6 +23,17 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public bool IsShelf { get; set; } = true;
 
+        public bool ShowNavigation { get; set; }
+
+        public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
+
+        private const int BroadcastPort = 9876; // 广播端口
+        private const int ListenPort = 9877;    // 接收回复端口
+        private UdpClient _listener;
+
+        [ObservableProperty]
+        private bool isScanning;
+
         [ObservableProperty]
         private ObservableCollection<TimeZoneInfo> timeZoneInfos;
 
@@ -26,10 +41,18 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<object> roleList;
 
         [ObservableProperty]
+        private ObservableCollection<InternetDevice> devices;
+
+        [ObservableProperty]
+        private string? pageType;
+
+        [ObservableProperty]
+        private string? detectStatus;
+
+        [ObservableProperty]
         private string? oldPassword;
 
         [ObservableProperty]
-
         private string? newPassword;
 
         [ObservableProperty]
@@ -40,9 +63,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public UserSettingViewModel(DeviceManageViewModel deviceManageViewModel)
         {
-            this.userService = GetService<IUserService>(); 
+            this.userService = GetService<IUserService>();
             this.deviceManageViewModel = deviceManageViewModel;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
+            devices = new ObservableCollection<InternetDevice>();
             roleList = new ObservableCollection<object>(new List<RoleModel>
             {
                 new RoleModel
@@ -120,6 +144,50 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task DetectInternetDevices()
+        {
+            if (IsScanning) return;
+
+            IsScanning = true;
+            Devices.Clear();
+
+            try
+            {
+                // 启动监听线程
+                _listener = new UdpClient(ListenPort);
+                var listenThread = new Thread(ListenForResponses);
+                listenThread.IsBackground = true;
+                listenThread.Start();
+
+                // 发送广播
+                using (var broadcaster = new UdpClient())
+                {
+                    broadcaster.EnableBroadcast = true;
+                    var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
+                    var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
+                    await broadcaster.SendAsync(message, message.Length, broadcastIp);
+                }
+
+                DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_112");
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                IsScanning = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task StopDetect()
+        {
+            IsScanning = false;
+            _listener?.Close();
+            DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_113");
+            await Task.CompletedTask;
+        }
+
+        [RelayCommand]
         private async Task ChangePassword()
         {
             CurrentUser.Password = NewPassword;
@@ -138,5 +206,61 @@ namespace MediaControlDistributionCenter.ViewModels
             NewPassword = null;
             NewPasswordConfirm = null;
         }
+
+        private void ListenForResponses()
+        {
+            try
+            {
+                var endPoint = new IPEndPoint(IPAddress.Any, ListenPort);
+
+                while (IsScanning)
+                {
+                    var bytes = _listener.Receive(ref endPoint);
+                    var message = Encoding.ASCII.GetString(bytes);
+
+                    if (message.StartsWith("STB_RESPONSE"))
+                    {
+                        var deviceInfo = message.Split('|');
+                        if (deviceInfo.Length > 1)
+                        {
+                            var device = new InternetDevice
+                            {
+                                SnCode = deviceInfo.Last(),
+                                IpAddress = endPoint.Address.ToString(),
+                                Status = 0,
+                                StatusText = GetStatus(0)
+                            };
+                            Devices.Add(device);
+                        }
+                    }
+                }
+            }
+            catch (SocketException)
+            {
+                // 正常退出时会触发
+            }
+            finally
+            {
+                string message = FindResource("LanguageKey_Code_Device_Tooltip_114");
+                DetectStatus = string.Format(message, Devices.Count);
+                IsScanning = false;
+            }
+        }
+
+        public string GetStatus(int status)
+        {
+            return status == 1 ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
+        }
+    }
+
+    public class InternetDevice
+    {
+        public string SnCode { get; set; }
+
+        public string IpAddress { get; set; }
+
+        public int Status { get; set; }
+
+        public string StatusText { get; set; }
     }
 }

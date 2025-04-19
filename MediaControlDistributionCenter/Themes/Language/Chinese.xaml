@@ -37,7 +37,7 @@
 
     <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
     <sys:String x:Key="LanguageKey_Code_RemoteMode">联网模式</sys:String>
-    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>  
+    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址</sys:String>  
     <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
     <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
     <sys:String x:Key="LanguageKey_Code_ChangGroup">变更分组</sys:String>
@@ -131,6 +131,13 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">设备已过期!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_110">当前没有可用的设备!</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_111">扫描中...等待设备响应</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_112">扫描失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_113">扫描已停止</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_114">扫描完成，找到 {0} 个设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_115">探索网络设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_116">停止探索</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_117">网络设定</sys:String>
     
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>

@@ -36,7 +36,7 @@
 
 <sys:String x:Key="LanguageKey_Code_LocalMode">로컬 모드</sys:String>
 <sys:String x:Key="LanguageKey_Code_RemoteMode">원격 모드</sys:String>
-<sys:String x:Key="LanguageKey_Code_LinkDevice">세트탑 박스 주소：</sys:String>  
+<sys:String x:Key="LanguageKey_Code_LinkDevice">세트탑 박스 주소</sys:String>  
 <sys:String x:Key="LanguageKey_Code_Create">생성</sys:String>
 <sys:String x:Key="LanguageKey_Code_Change">변경</sys:String>
 <sys:String x:Key="LanguageKey_Code_ChangGroup">그룹 변경</sys:String>
@@ -130,6 +130,13 @@
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">명령 처리 실패!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">장치가 만료되었습니다!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_110">현재 사용 가능한 장치가 없습니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_111">스캔 중...장치 응답을 기다립니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_112">스캔 실패</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_113">스캔이 중지되었습니다.</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_114">스캔이 완료되었으며, {0}개의 장치를 찾았습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_115">네트워크 장치 탐색</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_116">탐색 중지</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_117">네트워크 설정</sys:String>
     
 <sys:String x:Key="LanguageKey_Code_Dashboard">대시보드</sys:String>
 <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">미디어를 효과적으로 운영/관리</sys:String>
