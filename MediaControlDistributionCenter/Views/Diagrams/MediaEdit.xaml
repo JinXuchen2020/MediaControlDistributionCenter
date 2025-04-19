@@ -675,7 +675,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="40" />
                                     <RowDefinition Height="280" />
-                                    <RowDefinition Height="280" />
+                                    <!--<RowDefinition Height="280" />-->
                                 </Grid.RowDefinitions>
                                 <StackPanel HorizontalAlignment="Right">
                                     <Button Width="60" Height="38" HorizontalAlignment="Right"
@@ -695,13 +695,13 @@
                                         <TextBlock Text="{Binding Background}" Width="700" Foreground="White" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
-                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
+                                <!--<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_101}" Width="80"/>
                                     <StackPanel Width="700">
                                         <materialDesign:ColorPicker x:Name="textColorPicker" Color="{Binding Foreground}" Height="250" />
                                         <TextBlock Text="{Binding Foreground}" Foreground="White" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                </StackPanel>
+                                </StackPanel>-->
                             </Grid>
                         </Border>
                     </DataTemplate>
