@@ -148,6 +148,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
                 if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
                 {
+                    Log.Information($"Update Ftp server with IP :{ftpServer._Ip}");
                     ftpServer._Ip = ipAddresses[0];
 
                     if (ftpServer.IsStarted)
@@ -159,6 +160,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
             if (!ftpServer.IsStarted)
             {
+                Log.Information($"Connecting Ftp server IP:{ftpServer._Ip}, Port: {ftpServer._port}");
                 ftpServer.FtpServerStart();
             }
         }

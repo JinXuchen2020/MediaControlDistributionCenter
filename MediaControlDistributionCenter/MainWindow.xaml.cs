@@ -249,7 +249,6 @@ namespace MediaControlDistributionCenter
 
         private void OnChildDataContextChanged(object? sender, EventArgs e)
         {
-            var mainViewModel = App.ServicesProvider.GetService<MainViewModel>();
             mainViewModel.IsConnected = mainViewModel.ConnectedDevices.FirstOrDefault(c => c.Status == 1) != null;
             this.DataContext = mainViewModel;
         }
