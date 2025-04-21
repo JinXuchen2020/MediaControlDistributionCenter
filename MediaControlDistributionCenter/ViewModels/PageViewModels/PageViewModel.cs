@@ -3,11 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 
@@ -31,7 +33,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool? canDelete;
 
         [ObservableProperty]
-        private static DeviceViewModel? connectedDevice;
+        private static ObservableCollection<InternetDevice> connectedDevices = new ObservableCollection<InternetDevice>();
 
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
 
@@ -99,7 +101,9 @@ namespace MediaControlDistributionCenter.ViewModels
         protected async Task DetectCommunication(string userAccount)
         {
             var client = App.ServicesProvider.GetRequiredService<Communication>();
-            if (ConnectedDevice != null && ConnectedDevice.UserId == userAccount && ConnectedDevice.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            var localDeviceModel = localDevice?.DeviceViewModel;
+            if (localDevice != null && localDeviceModel != null && localDeviceModel.UserId == userAccount && localDeviceModel.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
                 return;
             }
@@ -123,7 +127,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                ConnectedDevice = null;
+                if (localDevice != null)
+                {
+                    localDevice.DeviceViewModel = null;
+                }
                 return;
             }
 
@@ -142,9 +149,21 @@ namespace MediaControlDistributionCenter.ViewModels
             var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
             if (connectedDevice != null)
             {
-                ConnectedDevice = new DeviceViewModel();
-                ConnectedDevice.Binding(connectedDevice);
-                ConnectedDevice.ConnectCommand.Execute(client);
+                if (localDevice == null)
+                {
+                    localDevice = new InternetDevice
+                    {
+                        SnCode = snCode,
+                        IpAddress = client.IpAddr,
+                        Status = 1,
+                        StatusText = GetStatus(1)
+                    };
+
+                    ConnectedDevices.Add(localDevice);
+                }
+                localDevice.DeviceViewModel = new DeviceViewModel();
+                localDevice.DeviceViewModel.Binding(connectedDevice);
+                localDevice.DeviceViewModel.ConnectCommand.Execute(client);
                 client.StartHeart();
             }
         }
@@ -182,6 +201,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
                 }                
             }
+        }
+
+        public string GetStatus(int status)
+        {
+            return status == 1 ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
         }
     }
 }

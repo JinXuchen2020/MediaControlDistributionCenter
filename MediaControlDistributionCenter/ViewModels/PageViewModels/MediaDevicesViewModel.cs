@@ -48,16 +48,15 @@ namespace MediaControlDistributionCenter.ViewModels
             var publishedSNCode = playbackRecords.Select(c=>c.MonitorSnCode).ToList();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var result = new DeviceViewModel();
-                result.Binding(c);
-                if (ConnectedDevice != null && result.SNumber == ConnectedDevice.SNumber)
+                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    result.ConnectCommand.Execute(communication);
-                    result.IsSelected = publishedSNCode.Contains(c.SnCode);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
-
-                result.GetPrograms();
-                return result;
+                viewModel.IsSelected = publishedSNCode.Contains(c.SnCode);
+                viewModel.GetPrograms();
+                return viewModel;
             }));
         }
 
@@ -86,13 +85,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    if (ConnectedDevice == null || ConnectedDevice.SNumber != item.SNumber)
-                    {
-                        ErrorMessage = FindResource("LanguageKey_Code_Program_Tooltip_118");
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        continue;
-                    }
-
                     string filePath = $"{CurrentMedia.Name}.zip";
                     await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                     if (!string.IsNullOrEmpty(item.ErrorMessage))

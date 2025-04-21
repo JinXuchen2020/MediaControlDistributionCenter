@@ -90,9 +90,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public async Task SyncPrograms()
         {
-            if (ConnectionMode.Mode == "Local" && ConnectedDevice != null && !isSynced)
+            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
+            if (ConnectionMode.Mode == "Local" && localDevice != null && !isSynced)
             {
-                await ConnectedDevice.SyncProgramsCommand.ExecuteAsync(null);
+                await localDevice.SyncProgramsCommand.ExecuteAsync(null);
                 isSynced = true;
             }
         }
@@ -187,21 +188,18 @@ namespace MediaControlDistributionCenter.ViewModels
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var playbackRecord in playRecords)
             {
-                if (ConnectedDevice != null)
+                var connectedDevice = ConnectedDevices.FirstOrDefault(c => c.SnCode == playbackRecord.MonitorSnCode)?.DeviceViewModel;
+                if (connectedDevice != null)
                 {
-                    if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
+                    await connectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
+                    if (!string.IsNullOrEmpty(connectedDevice.ErrorMessage))
                     {
-                        await DetectCommunication(CurrentUser.Account);
-                        await ConnectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
-                        {
-                            ErrorMessage = ConnectedDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            ConnectedDevice.ErrorMessage = null;
-                            return;
-                        }
-                        break;
+                        ErrorMessage = connectedDevice.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        connectedDevice.ErrorMessage = null;
+                        return;
                     }
+                    break;
                 }
                 else
                 {
@@ -233,11 +231,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var selectedItems = Medias.Where(c => c.IsSelected).ToList();
             var playbackRecordService = GetService<IPlaybackRecordService>();
             var publishedPrograms = new List<ProgramDto>();
-            if (ConnectedDevice != null)
+
+            foreach (var connectedDevice in ConnectedDevices.Where(c=>c.DeviceViewModel!= null).Select(c => c.DeviceViewModel!))
             {
                 foreach (var selectedItem in selectedItems)
                 {
-                    var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name, MonitorSnCode = ConnectedDevice.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                    var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name, MonitorSnCode = connectedDevice.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
                     if (playRecords.Count > 0)
                     {
                         publishedPrograms.Add(selectedItem.ToModel());
@@ -248,12 +247,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     var modelString = JsonConvert.SerializeObject(publishedPrograms);
                     await DetectCommunication(CurrentUser.Account);
-                    await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
-                    if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
+                    await connectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
+                    if (!string.IsNullOrEmpty(connectedDevice.ErrorMessage))
                     {
-                        ErrorMessage = ConnectedDevice.ErrorMessage;
+                        ErrorMessage = connectedDevice.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        ConnectedDevice.ErrorMessage = null;
+                        connectedDevice.ErrorMessage = null;
                         return;
                     }
                 }

@@ -22,6 +22,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Serilog;
 using System.Windows;
+using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Services;
 
 namespace MediaControlDistributionCenter.Views
 {
@@ -172,29 +174,7 @@ namespace MediaControlDistributionCenter.Views
             Dispatcher.Invoke(async() =>
             {
                 var device = (sender as Button).DataContext as InternetDevice;
-                var communication = App.ServicesProvider.GetRequiredService<Communication>();
-                if (!string.IsNullOrEmpty(device.IpAddress) && device.IpAddress != communication.IpAddr)
-                {
-                    communication.Connect(device.IpAddress, "5001");
-                    int count = 5;
-                    while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                    {
-                        await Task.Delay(500);
-                        count--;
-                    }
-
-                    if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
-                    {
-                        manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
-                        await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
-                    }
-                    else
-                    {
-                        Log.Debug($"Device with IP {device.IpAddress} is connected!");
-                        device.Status = 1;
-                        device.StatusText = manageViewModel.GetStatus(1);
-                    }
-                }
+                await manageViewModel.ConnectInternetDeviceCommand.ExecuteAsync(device);
             });
         }
 

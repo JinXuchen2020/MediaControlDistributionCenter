@@ -42,6 +42,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncVolumeResult { get; private set; }
 
+        public bool IsInternet { get; private set; }
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
@@ -50,9 +52,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         private readonly FtpServer ftpServer;
 
-        public Communication(FtpServer ftpServer)
+        public Communication(FtpServer ftpServer, bool isInternet = false)
         {
             this.ftpServer = ftpServer;
+            this.IsInternet = isInternet;
             Heart.FtpPort = ftpServer._port;
             Heart.FtpUserName = ftpServer._userName;
             Heart.FtpUserPwd = ftpServer._userPwd;
@@ -140,14 +143,17 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public void StartFtpServer()
         {
-            var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
-            if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
+            if (!IsInternet)
             {
-                ftpServer._Ip = ipAddresses[0];
-
-                if (ftpServer.IsStarted)
+                var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
+                if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
                 {
-                    ftpServer.FtpServerStop();
+                    ftpServer._Ip = ipAddresses[0];
+
+                    if (ftpServer.IsStarted)
+                    {
+                        ftpServer.FtpServerStop();
+                    }
                 }
             }
 

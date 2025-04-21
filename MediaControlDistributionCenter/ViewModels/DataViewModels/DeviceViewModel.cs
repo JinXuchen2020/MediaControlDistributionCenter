@@ -142,6 +142,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private Communication? client;
 
+        public bool IsInternet => client?.IsInternet ?? false;
+
         public DeviceViewModel()
         {
         }

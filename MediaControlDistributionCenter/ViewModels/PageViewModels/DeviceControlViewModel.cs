@@ -76,12 +76,11 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
-                    CurrentDevice = viewModel;
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
                 return viewModel;
             }));
@@ -161,9 +160,11 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task DetectConnectedDevice()
         {
             await DetectCommunication(CurrentUser.Account);
-            if(CurrentDevice?.SNumber != ConnectedDevice?.SNumber)
+            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            if(CurrentDevice?.SNumber != localDevice?.SnCode)
             {
                 isSynced = false;
+                CurrentDevice = localDevice?.DeviceViewModel;
             }
             LoadData();
         }
@@ -435,11 +436,11 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
                 return viewModel;
             }));

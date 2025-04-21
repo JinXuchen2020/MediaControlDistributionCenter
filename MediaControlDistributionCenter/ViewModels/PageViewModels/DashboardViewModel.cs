@@ -58,11 +58,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     var deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
                         viewModel.GetPrograms();
@@ -88,11 +88,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
                         viewModel.GetPrograms();
@@ -118,11 +118,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
                         viewModel.GetPrograms();

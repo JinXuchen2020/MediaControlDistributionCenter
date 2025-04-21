@@ -175,7 +175,7 @@
                                     SelectionMode="Single"
                                     FrozenColumnCount="1" 
                                     Background="Transparent" 
-                                    ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
+                                    ItemsSource="{Binding ConnectedDevices, UpdateSourceTrigger=PropertyChanged}"
                                 >
                                     <DataGrid.Resources>
                                         <Style x:Key="LeftAlignedTextBlockStyle" TargetType="TextBlock">

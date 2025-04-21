@@ -86,16 +86,15 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id).Select(c =>
             {
-                var result = new DeviceViewModel();
-                result.Binding(c);
-
-                if (ConnectedDevice != null && result.SNumber == ConnectedDevice.SNumber)
+                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    result.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
 
-                result.GetPrograms();
-                return result;
+                viewModel.GetPrograms();
+                return viewModel;
             }));
         }
 
@@ -341,12 +340,14 @@ namespace MediaControlDistributionCenter.ViewModels
             nameDevices.AddRange(snDevices);
             this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
+
+                viewModel.GetPrograms();
                 return viewModel;
             }));
 

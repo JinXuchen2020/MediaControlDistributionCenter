@@ -1,10 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
@@ -43,9 +49,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private ObservableCollection<object> roleList;
 
         [ObservableProperty]
-        private ObservableCollection<InternetDevice> devices;
-
-        [ObservableProperty]
         private string? pageType;
 
         [ObservableProperty]
@@ -68,7 +71,6 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userService = GetService<IUserService>();
             this.deviceManageViewModel = deviceManageViewModel;
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-            devices = new ObservableCollection<InternetDevice>();
             roleList = new ObservableCollection<object>(new List<RoleModel>
             {
                 new RoleModel
@@ -100,7 +102,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                var viewModel = ConnectedDevice;
+                var viewModel = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
                 if (viewModel != null && viewModel.IsConnected)
                 {
                     await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
@@ -151,7 +153,8 @@ namespace MediaControlDistributionCenter.ViewModels
             if (IsScanning) return;
 
             IsScanning = true;
-            Devices.Clear();
+            ConnectedDevices.Clear();
+            detectDevices.Clear();
 
             try
             {
@@ -178,6 +181,75 @@ namespace MediaControlDistributionCenter.ViewModels
                 await ShowConfirmDialogCommand.ExecuteAsync(null);
                 IsScanning = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task ConnectInternetDevice(InternetDevice device)
+        {
+            if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
+            {
+                var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
+                var communication = new Communication(ftpServer, true);
+                communication.Connect(device.IpAddress, "5001");
+                int count = 5;
+                while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                {
+                    await Task.Delay(500);
+                    count--;
+                }
+
+                if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
+                {
+                    ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    device.DeviceViewModel = null;
+                }
+                else
+                {
+                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
+                    device.Status = 1;
+                    device.StatusText = GetStatus(1);
+
+                    var monitorService = GetService<IMonitorService>();
+                    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = device.SnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                    if (connectedDevice == null)
+                    {
+                        string path = CommunicationCmd.CmdSyncUser + "Login";
+                        bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+                        if (result)
+                        {
+                            var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
+                            if (syncUsers != null)
+                            {
+                                foreach (var item in syncUsers.Users)
+                                {
+                                    var response = await userService.Save(item.User);
+                                    if (response.Code == 200)
+                                    {
+                                        if (item.Monitor != null)
+                                        {
+                                            response = await monitorService.Save(item.Monitor.Monitor);
+                                            if (response.Code == 200)
+                                            {
+                                                device.DeviceViewModel = new DeviceViewModel();
+                                                device.DeviceViewModel.Binding(item.Monitor.Monitor);
+                                                device.DeviceViewModel.ConnectCommand.Execute(communication);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        device.DeviceViewModel = new DeviceViewModel();
+                        device.DeviceViewModel.Binding(connectedDevice);
+                        device.DeviceViewModel.ConnectCommand.Execute(communication);
+                        communication.StartHeart();
+                    }
+                }
+            }            
         }
 
         [RelayCommand]
@@ -209,7 +281,7 @@ namespace MediaControlDistributionCenter.ViewModels
             NewPasswordConfirm = null;
         }
 
-        private void ListenForResponses()
+        private async void ListenForResponses()
         {
             try
             {
@@ -235,6 +307,21 @@ namespace MediaControlDistributionCenter.ViewModels
                             detectDevices.Add(device);
                         }
                     }
+
+                    //System.Threading.Thread.Sleep(5000);
+                    //var device = new InternetDevice
+                    //{
+                    //    SnCode = "test",
+                    //    IpAddress ="1111",
+                    //    Status = 0,
+                    //    StatusText = GetStatus(0)
+                    //};
+                    //detectDevices.Add(device);
+
+                    DetectStatus = string.Format(FindResource("LanguageKey_Code_Device_Tooltip_114"), detectDevices.Count);
+                    ConnectedDevices = new ObservableCollection<InternetDevice>(detectDevices);
+
+                    //await ConnectInternetDevice(device);
                 }
             }
             catch (SocketException)
@@ -243,27 +330,8 @@ namespace MediaControlDistributionCenter.ViewModels
             }
             finally
             {
-                string message = FindResource("LanguageKey_Code_Device_Tooltip_114");
-                DetectStatus = string.Format(message, detectDevices.Count);
-                Devices = new ObservableCollection<InternetDevice>(detectDevices);
                 IsScanning = false;
             }
         }
-
-        public string GetStatus(int status)
-        {
-            return status == 1 ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
-        }
-    }
-
-    public class InternetDevice
-    {
-        public string SnCode { get; set; }
-
-        public string IpAddress { get; set; }
-
-        public int Status { get; set; }
-
-        public string StatusText { get; set; }
     }
 }
