@@ -52,7 +52,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "富文本文件 (*.rtf)|*.rtf"
+                Filter = "富文本文件 (*.xaml)|*.xaml"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
                     using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open))
                     {
-                        range.Load(fs, DataFormats.Rtf);
+                        range.Load(fs, DataFormats.Xaml);
                     }
                 }
                 catch (Exception ex)
@@ -77,7 +77,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
-                Filter = "富文本文件 (*.rtf)|*.rtf"
+                Filter = "富文本文件 (*.xaml)|*.xaml"
             };
 
             if (saveFileDialog.ShowDialog() == true)
@@ -88,7 +88,7 @@ namespace MediaControlDistributionCenter.Views.CustomControls
 
                     using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
                     {
-                        range.Save(fs, DataFormats.Rtf);
+                        range.Save(fs, DataFormats.Xaml);
                     }
                 }
                 catch (Exception ex)

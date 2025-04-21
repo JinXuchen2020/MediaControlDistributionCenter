@@ -165,7 +165,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 TextRange range = new TextRange(result.Document.ContentStart, result.Document.ContentEnd);
                 using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
                 {
-                    range.Load(fs, DataFormats.Rtf);
+                    range.Load(fs, DataFormats.Xaml);
                 }
             }
             else
