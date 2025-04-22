@@ -147,7 +147,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string RtfFilePath { get; set; }
 
-
+        public string VerticalContentAlignment { get; set; }
     }
 
     public class ColorTextComponent : BaseComponent

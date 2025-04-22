@@ -90,30 +90,14 @@
                     </Button>
 
                     <!-- 行间距 -->
-                    <!--<Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Padding="5" Click="LineSpacing_Click" Style="{StaticResource MaterialDesignFlatButton}">
                         <materialDesign:PackIcon Kind="FormatLineSpacing" Width="20" Height="20"/>
-                        <Button.ContextMenu>
-                            <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
-                                <MenuItem Header="单倍行距" Click="LineSpacing_Click" Tag="1.0"/>
-                                <MenuItem Header="1.5倍行距" Click="LineSpacing_Click" Tag="1.5"/>
-                                <MenuItem Header="双倍行距" Click="LineSpacing_Click" Tag="2.0"/>
-                                <MenuItem Header="自定义..." Click="CustomLineSpacing_Click"/>
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                    </Button>-->
+                    </Button>
 
                     <!-- 字符间距 -->
-                    <!--<Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Padding="5" Click="CharacterSpacing_Click" Style="{StaticResource MaterialDesignFlatButton}">
                         <materialDesign:PackIcon Kind="FormatLetterSpacing" Width="20" Height="20"/>
-                        <Button.ContextMenu>
-                            <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
-                                <MenuItem Header="标准" Click="CharacterSpacing_Click" Tag="0"/>
-                                <MenuItem Header="宽松" Click="CharacterSpacing_Click" Tag="1"/>
-                                <MenuItem Header="更宽松" Click="CharacterSpacing_Click" Tag="2"/>
-                                <MenuItem Header="自定义..." Click="CustomCharacterSpacing_Click"/>
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                    </Button>-->
+                    </Button>
                 </ToolBar>
 
                 <!-- 段落格式工具栏 -->

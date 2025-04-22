@@ -67,6 +67,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double lineSpacing; //16", 
 
         [ObservableProperty]
+        private VerticalAlignment verticalContentAlignment; //16", 
+
+        [ObservableProperty]
         private string? rtfFilePath;
 
         private DispatcherTimer? _timer;
@@ -88,6 +91,7 @@ namespace MediaControlDistributionCenter.ViewModels
             lineSpacing = component.LineSpacing;
             isLoopEnabled = component.IsLoopEnabled;
             rtfFilePath = string.IsNullOrEmpty(component.RtfFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.RtfFilePath);
+            verticalContentAlignment = string.IsNullOrEmpty(component.VerticalContentAlignment) ? VerticalAlignment.Stretch : (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), component.VerticalContentAlignment);
         }
 
         public override TextComponent ToModel(string userAccount, double ratio)
@@ -118,6 +122,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 LineSpacing = LineSpacing,
                 IsLoopEnabled = IsLoopEnabled,
                 RtfFilePath = RtfFilePath == null ? string.Empty : RtfFilePath.Replace(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
+                VerticalContentAlignment = VerticalContentAlignment.ToString(),
             };
         }
 
@@ -144,6 +149,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 LetterSpacing = 2,
                 LineSpacing = 2,
                 RollingSpeed = 2,
+                VerticalContentAlignment = VerticalAlignment.Top.ToString(),
             },userAccount);
         }
 
@@ -157,6 +163,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 BorderThickness = new Thickness(2),
                 BorderBrush = new SolidColorBrush(Colors.White),
                 Background = new SolidColorBrush(Colors.Black),
+                VerticalContentAlignment = VerticalContentAlignment,
                 DataContext = this,
             };
 
@@ -183,6 +190,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var colorConverter = new ColorToBrushConverter();
             CreateBinding(result, RichTextBox.BackgroundProperty, nameof(Background), colorConverter);
+
+            CreateBinding(result, RichTextBox.VerticalContentAlignmentProperty, nameof(VerticalContentAlignment));
 
             Canvas.SetLeft(result, Left * Ratio);
             Canvas.SetTop(result, Top * Ratio);
@@ -264,10 +273,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height * Ratio,
                 IsReadOnly = true,
                 Focusable = false,
-                VerticalAlignment = VerticalAlignment.Top,
+                VerticalContentAlignment = VerticalContentAlignment,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏垂直滚动条
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏水平滚动条
-                Background = Brushes.Transparent, // 设置背景透明
+                Background = new SolidColorBrush(Background), // 设置背景透明
                 BorderThickness = new Thickness(2), // 去掉边框
             };
 

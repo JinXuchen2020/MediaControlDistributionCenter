@@ -26,18 +26,18 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         public InputDialog()
         {
             InitializeComponent();
-
             this.Unloaded += InputDialog_Unloaded;
         }
 
         private void InputDialog_Unloaded(object sender, RoutedEventArgs e)
         {
+            this.tbResult.Text = string.Empty;
         }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
             this.Result = this.tbResult.Text;
-            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.LoginDialogHostId);
         }
     }
 }

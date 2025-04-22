@@ -885,6 +885,15 @@ namespace MediaControlDistributionCenter.Views
                 resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
             }
         }
+
+        private void btnChangeContentVerticalAlign_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (manageViewModel.SelectedComponent is TextComponentViewModel viewModel)
+            {
+                viewModel.VerticalContentAlignment = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), button.Tag?.ToString());
+            }
+        }
     }
 
     public class ComponentDataTemplateSelector : DataTemplateSelector

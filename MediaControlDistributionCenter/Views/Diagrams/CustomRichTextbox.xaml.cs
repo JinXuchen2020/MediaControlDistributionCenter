@@ -153,62 +153,32 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         // 行间距设置
         private void LineSpacing_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is ListViewItem item && double.TryParse(item.Content.ToString(), out var spacing))
-            {
-                var paragraph = rtbEditor.Selection.Start.Paragraph;
-                if (paragraph != null)
-                {
-                    paragraph.LineHeight = spacing * paragraph.FontSize;
-                }
-            }
-
-            //if (sender is Button && e.Source == sender)
-            //{
-            //    var paragraph = rtbEditor.Selection.Start.Paragraph;
-            //    if (paragraph != null)
-            //    {
-            //        spacing = double.Parse(this.tbLineSpacing.Text);
-            //        paragraph.LineHeight = spacing * paragraph.FontSize;
-            //    }
-            //}
-        }
-
-        private void CustomLineSpacing_Click(object sender, RoutedEventArgs e)
-        {
             var dialog = new InputDialog();
-            var dialogHost = MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId).GetAwaiter().GetResult();
-            if (double.TryParse(dialog.Result, out var spacing))
+            Dispatcher.Invoke(async () =>
             {
-                var paragraph = rtbEditor.Selection.Start.Paragraph;
-                if (paragraph != null)
+                Panel.SetZIndex(dialog, 10000);
+                var dialogHost = await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
+                if (double.TryParse(dialog.Result, out var spacing))
                 {
-                    paragraph.LineHeight = spacing * paragraph.FontSize;
+                    var paragraph = rtbEditor.Selection.Start.Paragraph;
+                    if (paragraph != null)
+                    {
+                        paragraph.LineHeight = spacing * paragraph.FontSize;
+                    }
                 }
-            }
+            });
         }
 
         // 字符间距设置
         private void CharacterSpacing_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem item && int.TryParse(item.Tag.ToString(), out var spacing))
-            {
-                rtbEditor.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, new TextDecorationCollection(spacing * 100));
-            }
-        }
-
-        private void CustomCharacterSpacing_Click(object sender, RoutedEventArgs e)
-        {
             var dialog = new InputDialog();
             Dispatcher.Invoke(async () =>
             {
-                var dialogHost = await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
-                if (dialogHost != null)
-                {
-
-                }
+                var dialogHost = await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
                 if (int.TryParse(dialog.Result, out var spacing))
                 {
-                    rtbEditor.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, spacing);
+                ApplyCharacterSpacing(spacing);
                 }
             });
         }
