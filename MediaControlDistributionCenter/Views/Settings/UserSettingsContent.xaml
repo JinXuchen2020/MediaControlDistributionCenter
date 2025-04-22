@@ -213,7 +213,7 @@
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Device_Tooltip_120}" />
                                             </DataGridTextColumn.Header>
                                         </DataGridTextColumn>
-                                        <DataGridTemplateColumn Width="100" >
+                                        <DataGridTemplateColumn Width="160" >
                                             <DataGridTemplateColumn.Header>
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}"/>
                                             </DataGridTemplateColumn.Header>

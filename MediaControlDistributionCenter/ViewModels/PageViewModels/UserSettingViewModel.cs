@@ -310,15 +310,19 @@ namespace MediaControlDistributionCenter.ViewModels
                         var deviceInfo = message.Split('|');
                         if (deviceInfo.Length > 1)
                         {
-                            var device = new InternetDevice
+                            var snCode = deviceInfo[1];
+                            if (!ConnectedDevices.Any(c => c.SnCode == snCode))
                             {
-                                SnCode = deviceInfo.Last(),
-                                IpAddress = endPoint.Address.ToString(),
-                                Status = 0,
-                                StatusText = GetStatus(0),
-                                TypeText = GetDeviceType(true)
-                            };
-                            detectDevices.Add(device);
+                                var device = new InternetDevice
+                                {
+                                    SnCode = snCode,
+                                    IpAddress = endPoint.Address.ToString(),
+                                    Status = 0,
+                                    StatusText = GetStatus(0),
+                                    TypeText = GetDeviceType(true)
+                                };
+                                detectDevices.Add(device);
+                            }
                         }
                     }
 
@@ -326,9 +330,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     //var device = new InternetDevice
                     //{
                     //    SnCode = "test",
-                    //    IpAddress ="1111",
+                    //    IpAddress = "1111",
                     //    Status = 0,
-                    //    StatusText = GetStatus(0)
+                    //    StatusText = GetStatus(0),
+                    //    TypeText = GetDeviceType(true)
                     //};
                     //detectDevices.Add(device);
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Syncfusion.Licensing;
+using NetFwTypeLib;
 
 namespace MediaControlDistributionCenter
 {
@@ -89,6 +90,13 @@ namespace MediaControlDistributionCenter
 
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+            INetFwMgr netFwMgr = (INetFwMgr)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwMgr"));
+            INetFwAuthorizedApplication app = (INetFwAuthorizedApplication)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwAuthorizedApplication"));
+            app.Name = nameof(MediaControlDistributionCenter);
+            app.ProcessImageFileName = Environment.ProcessPath;
+            app.Enabled = true;
+            netFwMgr.LocalPolicy.CurrentProfile.AuthorizedApplications.Add(app);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
