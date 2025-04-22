@@ -153,7 +153,6 @@ namespace MediaControlDistributionCenter.ViewModels
             if (IsScanning) return;
 
             IsScanning = true;
-            ConnectedDevices.Clear();
             detectDevices.Clear();
 
             try
@@ -253,6 +252,20 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task DisconnectInternetDevice(InternetDevice device)
+        {
+            if (device.DeviceViewModel != null)
+            {
+                device.DeviceViewModel.DisconnectCommand.Execute(null);
+                device.DeviceViewModel = null;
+                device.Status = 0;
+                device.StatusText = GetStatus(0);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        [RelayCommand]
         private async Task StopDetect()
         {
             IsScanning = false;
@@ -302,7 +315,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                 SnCode = deviceInfo.Last(),
                                 IpAddress = endPoint.Address.ToString(),
                                 Status = 0,
-                                StatusText = GetStatus(0)
+                                StatusText = GetStatus(0),
+                                TypeText = GetDeviceType(true)
                             };
                             detectDevices.Add(device);
                         }
@@ -319,6 +333,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     //detectDevices.Add(device);
 
                     DetectStatus = string.Format(FindResource("LanguageKey_Code_Device_Tooltip_114"), detectDevices.Count);
+                    var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+                    if (localDevice != null)
+                    {
+                        detectDevices.Insert(0, localDevice);
+                    }
                     ConnectedDevices = new ObservableCollection<InternetDevice>(detectDevices);
 
                     //await ConnectInternetDevice(device);

@@ -61,6 +61,7 @@
     <sys:String x:Key="LanguageKey_Code_Start">开始</sys:String>
     <sys:String x:Key="LanguageKey_Code_End">结束</sys:String>
     <sys:String x:Key="LanguageKey_Code_Connect">连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Disconnect">断开</sys:String>
     <sys:String x:Key="LanguageKey_Code_Activate">激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upgrade">升级</sys:String>
     <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
@@ -138,7 +139,14 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_115">探索网络设备</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_116">停止探索</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_117">网络设定</sys:String>
-    
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_118">网络设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_119">本地设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_120">设备类型</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_121">当前设备已断开</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_122">当前设备已连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_123">本地设备无法手动连接</sys:String>
+
+
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>

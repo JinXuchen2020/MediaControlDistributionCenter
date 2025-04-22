@@ -174,6 +174,20 @@ namespace MediaControlDistributionCenter.Views
             Dispatcher.Invoke(async() =>
             {
                 var device = (sender as Button).DataContext as InternetDevice;
+                if (device?.DeviceViewModel != null && device.DeviceViewModel.IsConnected)
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_122");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
+
+                if (device?.DeviceViewModel != null && !device.DeviceViewModel.IsInternet)
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_123");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
+
                 await manageViewModel.ConnectInternetDeviceCommand.ExecuteAsync(device);
             });
         }
@@ -181,6 +195,22 @@ namespace MediaControlDistributionCenter.Views
         private void btnStopDetect_MouseDown(object sender, MouseButtonEventArgs e)
         {
             manageViewModel.StopDetectCommand.Execute(null);
+        }
+
+        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                var device = (sender as Button).DataContext as InternetDevice;
+                if (device?.DeviceViewModel == null)
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_121");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
+
+                await manageViewModel.DisconnectInternetDeviceCommand.ExecuteAsync(device);
+            });
         }
     }
 }

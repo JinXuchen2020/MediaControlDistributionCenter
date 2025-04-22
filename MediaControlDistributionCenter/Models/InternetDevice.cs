@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.Models
 
         public string StatusText { get; set; }
 
+        public string TypeText { get; set; }
+
         public Communication? Communication { get; set; }
 
         public DeviceViewModel? DeviceViewModel { get; set; }

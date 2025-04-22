@@ -266,7 +266,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                                     SnCode = item.Monitor.Monitor.SnCode,
                                                     IpAddress = SelectedIpAddress,
                                                     Status = 1,
-                                                    StatusText = GetStatus(1)
+                                                    StatusText = GetStatus(1),
+                                                    TypeText = GetDeviceType(false)
                                                 };
 
                                                 ConnectedDevices.Add(device);

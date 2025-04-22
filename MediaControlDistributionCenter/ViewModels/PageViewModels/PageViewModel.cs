@@ -156,7 +156,8 @@ namespace MediaControlDistributionCenter.ViewModels
                         SnCode = snCode,
                         IpAddress = client.IpAddr,
                         Status = 1,
-                        StatusText = GetStatus(1)
+                        StatusText = GetStatus(1),
+                        TypeText = GetDeviceType(false)
                     };
 
                     ConnectedDevices.Add(localDevice);
@@ -206,6 +207,11 @@ namespace MediaControlDistributionCenter.ViewModels
         public string GetStatus(int status)
         {
             return status == 1 ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
+        }
+
+        public string GetDeviceType(bool isInternet)
+        {
+            return isInternet ? FindResource("LanguageKey_Code_Device_Tooltip_118") : FindResource("LanguageKey_Code_Device_Tooltip_119");
         }
     }
 }

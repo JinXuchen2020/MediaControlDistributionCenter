@@ -208,6 +208,11 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
+                                        <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding TypeText}">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="{DynamicResource LanguageKey_Code_Device_Tooltip_120}" />
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
                                         <DataGridTemplateColumn Width="100" >
                                             <DataGridTemplateColumn.Header>
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}"/>
@@ -216,6 +221,7 @@
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                         <Button Content="{DynamicResource LanguageKey_Code_Connect}" Background="#30479C" Foreground="White" Click="btnConnect_Click" Margin="3" Height="28" />
+                                                        <Button Content="{DynamicResource LanguageKey_Code_Disconnect}" Background="#30479C" Foreground="White" Click="btnDisconnect_Click" Margin="3" Height="28" />
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
