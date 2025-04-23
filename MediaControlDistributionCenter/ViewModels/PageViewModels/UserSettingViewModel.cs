@@ -33,8 +33,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
 
-        private const int BroadcastPort = 9876; // 广播端口
-        private const int ListenPort = 9877;    // 接收回复端口
+        private const int BroadcastPort = 5001;//9876; // 广播端口
+        private const int ListenPort = 5001;//9877;    // 接收回复端口
         private UdpClient _listener;
 
         [ObservableProperty]

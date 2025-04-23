@@ -50,6 +50,7 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+                await manageViewModel.SyncDeviceTimeControls();
                 InitPage("Brightness");
             });
         }

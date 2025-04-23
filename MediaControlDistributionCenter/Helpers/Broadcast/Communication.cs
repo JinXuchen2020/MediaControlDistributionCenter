@@ -116,6 +116,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
                 Thread thread = new Thread(() =>
                 {
+                    string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
+                    string path = "Heart|Client|" + HeartStr;
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
 
@@ -148,7 +150,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
                 if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
                 {
-                    Log.Information($"Update Ftp server with IP :{ftpServer._Ip}");
+                    Log.Information($"Update Ftp server with IP :{ipAddresses[0]}");
                     ftpServer._Ip = ipAddresses[0];
 
                     if (ftpServer.IsStarted)
@@ -185,6 +187,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         {
             string str = Encoding.UTF8.GetString(obj);
             string[] data = str.Replace("\0", "").Split("|", 3);
+            if (data.Length != 3)
+            {
+                Log.Error($"接收数据的格式错误，当前数据为{str}");
+                return;
+            }
             switch (data[0])
             {
                 case "CMD":
@@ -241,7 +248,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        Log.Error(ex.Message);
                     }
                     break;
 
@@ -256,7 +263,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        Log.Error(ex.Message);
                     }
                     break;
                 default:
