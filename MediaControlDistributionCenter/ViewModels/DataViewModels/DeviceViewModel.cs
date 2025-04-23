@@ -186,13 +186,13 @@ namespace MediaControlDistributionCenter.ViewModels
             Group = model.MonitorGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             IsSelected = isSelected;
             Enabled = model.Enabled;
-            StatusText = GetStatus();
             ConnectedText = GetConnectedStatus();
             EnableBtnContent = model.Enabled ==  0 ? FindResource("LanguageKey_Code_Enable") : FindResource("LanguageKey_Code_Disable");
             Width = model.Width;
             Height = model.Height;
             StartDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidStart);
             EndDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidEnd);
+            StatusText = GetStatus();
             ContactName = model.ContactName;
             ContactNumber = model.ContactPhone;
             Brightness = model.Brightness;

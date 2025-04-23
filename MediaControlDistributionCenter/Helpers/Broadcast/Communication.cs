@@ -118,12 +118,16 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 {
                     string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
                     string path = "Heart|Client|" + HeartStr;
+                    byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
 
                     Log.Information($"Socket connection reconnected!");
                     Log.Information($"Send Heart:{path}!");
-                    netClient.Send(utf8Bytes);
+                    if (netClient.state == SocketState.Connected)
+                    {
+                        netClient.Send(utf8Bytes);
+                    }
                 });
 
                 thread.Start();
@@ -187,63 +191,61 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         {
             string str = Encoding.UTF8.GetString(obj);
             string[] data = str.Replace("\0", "").Split("|", 3);
-            if (data.Length != 3)
-            {
-                Log.Error($"接收数据的格式错误，当前数据为{str}");
-                return;
-            }
             switch (data[0])
             {
                 case "CMD":
                     try
                     {
                         ReceiveOverCmdStr.Add(data[1]);
-                        if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
+                        if (data.Length == 3)
                         {
-                            SyncUserResult = data[2];
-                            Log.Information(SyncUserResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
+                            {
+                                SyncUserResult = data[2];
+                                Log.Information(SyncUserResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
-                        {
-                            SyncDeviceControlResult = data[2];
-                            Log.Information(SyncDeviceControlResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
+                            {
+                                SyncDeviceControlResult = data[2];
+                                Log.Information(SyncDeviceControlResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncProgram.Split("|")[1]))
-                        {
-                            SyncProgramResult = data[2];
-                            Log.Information(SyncProgramResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncProgram.Split("|")[1]))
+                            {
+                                SyncProgramResult = data[2];
+                                Log.Information(SyncProgramResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdVerifySnCode.Split("|")[1]))
-                        {
-                            VerifySnCodeResult = data[2];
-                            Log.Information(VerifySnCodeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdVerifySnCode.Split("|")[1]))
+                            {
+                                VerifySnCodeResult = data[2];
+                                Log.Information(VerifySnCodeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncSnCode.Split("|")[1]))
-                        {
-                            SyncSnCodeResult = data[2];
-                            Log.Information(SyncSnCodeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncSnCode.Split("|")[1]))
+                            {
+                                SyncSnCodeResult = data[2];
+                                Log.Information(SyncSnCodeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
-                        {
-                            SyncTimeResult = data[2];
-                            Log.Information(SyncTimeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
+                            {
+                                SyncTimeResult = data[2];
+                                Log.Information(SyncTimeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdBrightness.Split("|")[1]))
-                        {
-                            SyncBrightnessResult = data[2];
-                            Log.Information(SyncBrightnessResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncBrightness.Split("|")[1]))
+                            {
+                                SyncBrightnessResult = data[2];
+                                Log.Information(SyncBrightnessResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncVolume.Split("|")[1]))
-                        {
-                            SyncVolumeResult = data[2];
-                            Log.Information(SyncVolumeResult);
+                            if (data[1].Contains(CommunicationCmd.CmdSyncVolume.Split("|")[1]))
+                            {
+                                SyncVolumeResult = data[2];
+                                Log.Information(SyncVolumeResult);
+                            }
                         }
                     }
                     catch (Exception ex)

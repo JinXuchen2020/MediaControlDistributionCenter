@@ -8,6 +8,7 @@ using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -79,6 +80,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Publish()
         {
             this.PublishDevices.Clear();
+            await DetectCommunication(CurrentMedia.UserId);
             foreach (var item in Devices)
             {
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
@@ -94,6 +96,9 @@ namespace MediaControlDistributionCenter.ViewModels
                         continue;
                     }
 
+                    Log.Information("上传媒体文件FTP服务器成功");
+
+
                     CurrentMedia.Status = 1;
                     await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
@@ -104,6 +109,8 @@ namespace MediaControlDistributionCenter.ViewModels
                         continue;
                     }
 
+                    Log.Information("发送媒体信息到设备成功");
+
                     await item.SyncFileSyncCommand.ExecuteAsync(filePath);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
@@ -112,6 +119,8 @@ namespace MediaControlDistributionCenter.ViewModels
                         item.ErrorMessage = null;
                         continue;
                     }
+
+                    Log.Information("发送媒体文件信息到设备成功");
 
                     if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
                     {
@@ -126,6 +135,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                 await programService.Save(media);
                             }
                             await programService.Save(CurrentMedia.ToModel());
+
+                            Log.Information("发送媒体信息到数据库成功");
                         }
                     }
                 }

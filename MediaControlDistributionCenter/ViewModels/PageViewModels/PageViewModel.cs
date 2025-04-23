@@ -175,20 +175,20 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
             {
-                if (localDevice != null)
-                {
-                    localDevice.DeviceViewModel = null;
-                }
-                return;
+               if (localDevice != null)
+               {
+                   localDevice.DeviceViewModel = null;
+               }
+               return;
             }
 
             string path = CommunicationCmd.CmdSyncSnCode + "Connect";
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
+               ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+               await ShowConfirmDialogCommand.ExecuteAsync(null);
+               return;
             }
 
             var snCode = client.SyncSnCodeResult ?? string.Empty;
@@ -246,7 +246,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     if (property != null)
                     {
                         var propertyValue = (string)property.GetValue(typeObj)!;
-                        property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                        if (propertyValue != null)
+                        {
+                            property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                        }
                     }
                     else
                     {
