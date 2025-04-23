@@ -30,25 +30,24 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IProgramService programService;
         private readonly IPlaybackRecordService playbackRecordService;
-        private readonly Communication communication;
 
-        public MediaDevicesViewModel(Communication communication) 
+        public MediaDevicesViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
-            this.communication = communication;
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
         {
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             var playbackRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
-            var publishedSNCode = playbackRecords.Select(c=>c.MonitorSnCode).ToList();
+            var publishedSNCode = playbackRecords.Select(c => c.MonitorSnCode).ToList();
             Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();

@@ -55,28 +55,27 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
         private readonly ITimeSyncConfigService timeSyncConfigService;
-        private readonly Communication communication;
 
-        public DeviceControlViewModel(Communication communication) 
+        public DeviceControlViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.deviceControlService = GetService<IDeviceControlService>();
             this.timeSyncConfigService = GetService<ITimeSyncConfigService>();
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-            this.communication = communication;
 
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeName));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeHint));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeDesciption));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeColumnName));
             RegisterLanguageProperty(this.GetType(), nameof(RefreshTimeZone));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
         public override void LoadData()
         {
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
@@ -84,6 +83,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 return viewModel;
             }));
+
+            CurrentDevice = CurrentDevice ?? Devices.FirstOrDefault(c => c.IsConnected);
         }
 
         public async Task SyncDeviceTimeControls()
@@ -160,8 +161,8 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task DetectConnectedDevice()
         {
             await DetectCommunication(CurrentUser.Account);
-            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-            if(CurrentDevice?.SNumber != localDevice?.SnCode)
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            if (CurrentDevice?.SNumber != localDevice?.SnCode)
             {
                 isSynced = false;
                 CurrentDevice = localDevice?.DeviceViewModel;
@@ -436,7 +437,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();

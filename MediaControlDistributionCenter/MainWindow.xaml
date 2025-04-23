@@ -146,7 +146,7 @@
                                 <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="66" Height="10"
                                         Background="Transparent"
                                         Foreground="#538AF0"
-                                        Value="{Binding ConnectedDevice.UsedStoragePercentage, UpdateSourceTrigger=PropertyChanged}"
+                                        Value="{Binding UsedStoragePercentage, UpdateSourceTrigger=PropertyChanged}"
                                         Style="{StaticResource MaterialDesignLinearProgressBar}">
                                     <ProgressBar.Resources>
                                         <Style TargetType="Rectangle">
@@ -157,7 +157,7 @@
                                     </ProgressBar.Resources>
                                 </ProgressBar>
                             </Border>
-                            <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding ConnectedDevice.StoragePercentage, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{Binding StoragePercentage, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock FontSize="14" VerticalAlignment="Center" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_107}"/>
                         </StackPanel>
                     </Border>

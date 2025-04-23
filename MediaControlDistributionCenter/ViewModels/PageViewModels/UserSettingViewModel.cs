@@ -37,8 +37,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private const int ListenPort = 9877;    // 接收回复端口
         private UdpClient _listener;
 
-        private List<InternetDevice> detectDevices = new List<InternetDevice>();
-
         [ObservableProperty]
         private bool isScanning;
 
@@ -47,6 +45,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<object> roleList;
+
+        [ObservableProperty]
+        private ObservableCollection<InternetDevice> devices;
 
         [ObservableProperty]
         private string? pageType;
@@ -89,11 +90,15 @@ namespace MediaControlDistributionCenter.ViewModels
                     RoleText = FindResource("LanguageKey_Code_Role_User")
                 }
             });
+
+            RegisterLanguageProperty(this.GetType(), nameof(DetectStatus));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
         {
             CurrentUser.LoadLogo();
+            Devices = new ObservableCollection<InternetDevice>([.. OnlineDevices]);
         }
 
         [RelayCommand]
@@ -102,35 +107,37 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await userService.Save(CurrentUser.ToModel());
             if (response.Code == 200)
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
-                if (viewModel != null && viewModel.IsConnected)
+                foreach (var viewModel in OnlineDevices.Where(c => c.DeviceViewModel != null).Select(c => c.DeviceViewModel!))
                 {
-                    await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                    if (viewModel.IsConnected)
                     {
-                        ErrorMessage = viewModel.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        viewModel.ErrorMessage = null;
-                        viewModel.DisconnectCommand.Execute(null);
-                        return;
-                    }
+                        await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        {
+                            ErrorMessage = viewModel.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            viewModel.ErrorMessage = null;
+                            viewModel.DisconnectCommand.Execute(null);
+                            continue;
+                        }
 
-                    await viewModel.SendUserCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                    {
-                        ErrorMessage = viewModel.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        viewModel.ErrorMessage = null;
-                        return;
-                    }
+                        await viewModel.SendUserCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        {
+                            ErrorMessage = viewModel.ErrorMessage;
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            viewModel.ErrorMessage = null;
+                            continue;
+                        }
 
-                    if (viewModel.IsSendUserCompleted)
-                    {
-                        ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_129");
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        viewModel.IsSendUserCompleted = false;
+                        if (viewModel.IsSendUserCompleted)
+                        {
+                            ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_129");
+                            await ShowConfirmDialogCommand.ExecuteAsync(null);
+                            viewModel.IsSendUserCompleted = false;
+                        }
                     }
-                }
+                }                    
 
                 ErrorMessage = FindResource("LanguageKey_Code_Setting_Tooltip_104");
                 await ShowConfirmDialogCommand.ExecuteAsync(null);
@@ -153,7 +160,12 @@ namespace MediaControlDistributionCenter.ViewModels
             if (IsScanning) return;
 
             IsScanning = true;
-            detectDevices.Clear();
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            OnlineDevices.Clear();
+            if (localDevice != null)
+            {
+                OnlineDevices.Insert(0, localDevice);
+            }
 
             try
             {
@@ -178,6 +190,66 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_112");
                 await ShowConfirmDialogCommand.ExecuteAsync(null);
+                IsScanning = false;
+            }
+        }
+
+        private void ListenForResponses()
+        {
+            try
+            {
+                var endPoint = new IPEndPoint(IPAddress.Any, ListenPort);
+
+                while (IsScanning)
+                {
+                    var bytes = _listener.Receive(ref endPoint);
+                    var message = Encoding.ASCII.GetString(bytes);
+
+                    if (message.StartsWith("STB_RESPONSE"))
+                    {
+                        var deviceInfo = message.Split('|');
+                        if (deviceInfo.Length > 1)
+                        {
+                            var snCode = deviceInfo[1];
+                            if (!OnlineDevices.Any(c => c.SnCode == snCode))
+                            {
+                                var device = new InternetDevice
+                                {
+                                    SnCode = snCode,
+                                    IpAddress = endPoint.Address.ToString(),
+                                    Status = 0,
+                                    StatusText = GetStatus(0),
+                                    TypeText = GetDeviceType(true)
+                                };
+                                OnlineDevices.Add(device);
+                                InvokeDevicesChanged();
+                            }
+                        }
+                    }
+
+                    //System.Threading.Thread.Sleep(5000);
+                    //var device = new InternetDevice
+                    //{
+                    //    SnCode = "test" + OnlineDevices.Count,
+                    //    IpAddress = "1111",
+                    //    Status = 0,
+                    //    StatusText = GetStatus(0),
+                    //    TypeText = GetDeviceType(true)
+                    //};
+                    //OnlineDevices.Add(device);
+                    //InvokeDevicesChanged();
+
+                    DetectStatus = string.Format(FindResource("LanguageKey_Code_Device_Tooltip_114"), OnlineDevices.Count);
+
+                    //await ConnectInternetDevice(device);
+                }
+            }
+            catch (SocketException)
+            {
+                // 正常退出时会触发
+            }
+            finally
+            {
                 IsScanning = false;
             }
         }
@@ -245,8 +317,9 @@ namespace MediaControlDistributionCenter.ViewModels
                         device.DeviceViewModel = new DeviceViewModel();
                         device.DeviceViewModel.Binding(connectedDevice);
                         device.DeviceViewModel.ConnectCommand.Execute(communication);
-                        communication.StartHeart();
                     }
+
+                    communication.StartHeart();
                 }
             }            
         }
@@ -292,70 +365,6 @@ namespace MediaControlDistributionCenter.ViewModels
             OldPassword = null;
             NewPassword = null;
             NewPasswordConfirm = null;
-        }
-
-        private async void ListenForResponses()
-        {
-            try
-            {
-                var endPoint = new IPEndPoint(IPAddress.Any, ListenPort);
-
-                while (IsScanning)
-                {
-                    var bytes = _listener.Receive(ref endPoint);
-                    var message = Encoding.ASCII.GetString(bytes);
-
-                    if (message.StartsWith("STB_RESPONSE"))
-                    {
-                        var deviceInfo = message.Split('|');
-                        if (deviceInfo.Length > 1)
-                        {
-                            var snCode = deviceInfo[1];
-                            if (!ConnectedDevices.Any(c => c.SnCode == snCode))
-                            {
-                                var device = new InternetDevice
-                                {
-                                    SnCode = snCode,
-                                    IpAddress = endPoint.Address.ToString(),
-                                    Status = 0,
-                                    StatusText = GetStatus(0),
-                                    TypeText = GetDeviceType(true)
-                                };
-                                detectDevices.Add(device);
-                            }
-                        }
-                    }
-
-                    //System.Threading.Thread.Sleep(5000);
-                    //var device = new InternetDevice
-                    //{
-                    //    SnCode = "test",
-                    //    IpAddress = "1111",
-                    //    Status = 0,
-                    //    StatusText = GetStatus(0),
-                    //    TypeText = GetDeviceType(true)
-                    //};
-                    //detectDevices.Add(device);
-
-                    DetectStatus = string.Format(FindResource("LanguageKey_Code_Device_Tooltip_114"), detectDevices.Count);
-                    var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-                    if (localDevice != null)
-                    {
-                        detectDevices.Insert(0, localDevice);
-                    }
-                    ConnectedDevices = new ObservableCollection<InternetDevice>(detectDevices);
-
-                    //await ConnectInternetDevice(device);
-                }
-            }
-            catch (SocketException)
-            {
-                // 正常退出时会触发
-            }
-            finally
-            {
-                IsScanning = false;
-            }
         }
     }
 }

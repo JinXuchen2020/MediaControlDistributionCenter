@@ -126,7 +126,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                     response = await monitorService.Save(item.Monitor.Monitor);
                                     if (response.Code == 200)
                                     {
-                                        var device = ConnectedDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
+                                        var device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
                                         if (device == null)
                                         {
                                             device = new InternetDevice()
@@ -138,7 +138,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                                 TypeText = GetDeviceType(false)
                                             };
 
-                                            ConnectedDevices.Add(device);
+                                            OnlineDevices.Add(device);
                                         } 
                                         device.DeviceViewModel = new DeviceViewModel();
                                         device.DeviceViewModel.Binding(item.Monitor.Monitor);
@@ -227,6 +227,13 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSyncing = true;
             if (!string.IsNullOrEmpty(SelectedIpAddress) && SelectedIpAddress != communication.IpAddr)
             {
+                communication.Disconnect();
+                var device = OnlineDevices.FirstOrDefault(c => c.IpAddress == communication.IpAddr);
+                if (device != null)
+                {
+                    OnlineDevices.Remove(device);
+                }
+
                 communication.Connect(SelectedIpAddress, "5001");
                 int count = 5;
                 while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
@@ -259,7 +266,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                         response = await monitorService.Save(item.Monitor.Monitor);
                                         if (response.Code == 200)
                                         {
-                                            var device = ConnectedDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
+                                            device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
                                             if (device == null)
                                             {
                                                 device = new InternetDevice()
@@ -271,7 +278,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                                     TypeText = GetDeviceType(false)
                                                 };
 
-                                                ConnectedDevices.Add(device);
+                                                OnlineDevices.Add(device);
                                             }
                                             device.DeviceViewModel = new DeviceViewModel();
                                             device.DeviceViewModel.Binding(item.Monitor.Monitor);

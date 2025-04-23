@@ -36,8 +36,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
         private readonly IServiceProvider serviceProvider;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public UserManage(UserManageViewModel userManageViewModel, IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -59,7 +57,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
 
             manageViewModel.SelectedUser = userViewModel;
             var content = serviceProvider.GetRequiredService<UserControllers>();
-            content.ConnectedDeviceChanged += ConnectedDeviceChanged;
             (App.Current.MainWindow as MainWindow).GoContent(content, 2);
         }
 

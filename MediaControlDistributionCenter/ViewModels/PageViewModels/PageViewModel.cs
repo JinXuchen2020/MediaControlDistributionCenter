@@ -32,10 +32,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool? canDelete;
 
-        [ObservableProperty]
-        private static ObservableCollection<InternetDevice> connectedDevices = new ObservableCollection<InternetDevice>();
-
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
+
+        private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
+
+        public static List<InternetDevice> OnlineDevices = new List<InternetDevice>();
 
         public virtual void LoadData()
         {
@@ -98,10 +99,57 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        protected void RegisterDevicesChangedAction(Type parentType, string propertyName)
+        {
+            if (!devicesChangedRegisterActions.ContainsKey(parentType))
+            {
+                devicesChangedRegisterActions.Add(parentType, new List<string> { propertyName });
+            }
+            else if (!devicesChangedRegisterActions[parentType].Contains(propertyName))
+            {
+                devicesChangedRegisterActions[parentType].Add(propertyName);
+            }
+        }
+
+        public void InvokeDevicesChanged()
+        {
+            foreach (var item in devicesChangedRegisterActions)
+            {
+                foreach (var proName in item.Value)
+                {
+                    var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
+                    var property = item.Key.GetProperty(proName);
+                    if (property != null)
+                    {
+                        var propertyValue = (string)property.GetValue(typeObj)!;
+                        property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                    }
+                    else
+                    {
+                        var method = item.Key.GetMethod(proName);
+                        var parameters = method?.GetParameters();
+                        if (parameters != null)
+                        {
+                            var parameterValues = new List<object?>();
+                            foreach (var parameter in parameters)
+                            {
+                                parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
+                            }
+                            method?.Invoke(typeObj, [.. parameterValues]);
+                        }
+                        else
+                        {
+                            method?.Invoke(typeObj, null);
+                        }
+                    }
+                }
+            }
+        }
+
         protected async Task DetectCommunication(string userAccount)
         {
             var client = App.ServicesProvider.GetRequiredService<Communication>();
-            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
             var localDeviceModel = localDevice?.DeviceViewModel;
             if (localDevice != null && localDeviceModel != null && localDeviceModel.UserId == userAccount && localDeviceModel.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
@@ -160,8 +208,26 @@ namespace MediaControlDistributionCenter.ViewModels
                         TypeText = GetDeviceType(false)
                     };
 
-                    ConnectedDevices.Add(localDevice);
+                    OnlineDevices.Add(localDevice);
                 }
+                else
+                {
+                    if (localDevice.IpAddress != client.IpAddr)
+                    {
+                        OnlineDevices.Remove(localDevice);
+                        localDevice = new InternetDevice
+                        {
+                            SnCode = snCode,
+                            IpAddress = client.IpAddr,
+                            Status = 1,
+                            StatusText = GetStatus(1),
+                            TypeText = GetDeviceType(false)
+                        };
+
+                        OnlineDevices.Add(localDevice);
+                    }
+                }
+                
                 localDevice.DeviceViewModel = new DeviceViewModel();
                 localDevice.DeviceViewModel.Binding(connectedDevice);
                 localDevice.DeviceViewModel.ConnectCommand.Execute(client);

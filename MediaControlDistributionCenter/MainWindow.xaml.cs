@@ -68,10 +68,11 @@ namespace MediaControlDistributionCenter
 
             //userManage.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
+            mainViewModel.LoadData();
+
             DataContext = mainViewModel;
 
             var dashboard = serviceProvider.GetRequiredService<Dashboard>();
-            dashboard.ConnectedDeviceChanged += OnChildDataContextChanged;
             GoContent(dashboard, 1);
             //menus = new List<MenuItem>()
             //{
@@ -217,12 +218,10 @@ namespace MediaControlDistributionCenter
             {
                 case "Dashboard":
                     var dashboard = serviceProvider.GetRequiredService<Dashboard>();
-                    dashboard.ConnectedDeviceChanged += OnChildDataContextChanged;
                     GoContent(dashboard, 1);
                     break;
                 case "UserManagement":
                     var content = serviceProvider.GetRequiredService<UserManage>();
-                    content.ConnectedDeviceChanged += OnChildDataContextChanged;
                     GoContent(content, 2);
                     break;
                 case "MediaManagement":
@@ -230,7 +229,6 @@ namespace MediaControlDistributionCenter
                     break;
                 case "DeviceManagement":
                     var deviceContent = serviceProvider.GetRequiredService<DeviceManage>();
-                    deviceContent.ConnectedDeviceChanged += OnChildDataContextChanged;
                     GoContent(deviceContent, 3);
                     break;
                 case "MediaStore":
@@ -245,12 +243,6 @@ namespace MediaControlDistributionCenter
                     GoContent(serviceProvider.GetRequiredService<UserSettingsContent>(), 5);
                     break;
             }
-        }
-
-        private void OnChildDataContextChanged(object? sender, EventArgs e)
-        {
-            mainViewModel.IsConnected = mainViewModel.ConnectedDevices.FirstOrDefault(c => c.Status == 1) != null;
-            this.DataContext = mainViewModel;
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
@@ -336,6 +328,7 @@ namespace MediaControlDistributionCenter
                         Dashboard.Opacity = 1;
                         UserManagement.Opacity = 0.7;
                         MediaStore.Opacity = 0.7;
+                        Configs.Opacity = 0.7;
                         break;
                     case 2:
                         Dashboard.Opacity = 0.7;
@@ -347,10 +340,12 @@ namespace MediaControlDistributionCenter
                         Dashboard.Opacity = 0.7;
                         UserManagement.Opacity = 0.7;
                         MediaStore.Opacity = 1;
+                        Configs.Opacity = 0.7;
                         break;
                     case 5:
                         Dashboard.Opacity = 0.7;
                         UserManagement.Opacity = 0.7;
+                        MediaStore.Opacity = 0.7;
                         Configs.Opacity = 1;
                         break;
                     default:

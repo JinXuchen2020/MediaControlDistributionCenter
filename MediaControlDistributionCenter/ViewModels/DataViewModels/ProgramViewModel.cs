@@ -119,7 +119,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Size = model.Size;
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
-            CreatedSource = model.CreatedSource;
+            CreatedSource = LanguageTool.Instance.GetResourceTextValue(model.CreatedSource);
             Status = model.Status;
             StatusText = GetStatus();
             GroupId = model.GroupId;

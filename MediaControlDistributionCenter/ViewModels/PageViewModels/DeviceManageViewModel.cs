@@ -48,18 +48,17 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserGroupService userGroupService;
         private readonly IPlaybackRecordService playbackRecordService;
         private readonly IProgramService programService;
-        private readonly Communication communication;
 
-        public DeviceManageViewModel(Communication communication) 
+        public DeviceManageViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
             this.programService = GetService<IProgramService>();
-            this.communication = communication;
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
@@ -86,7 +85,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id).Select(c =>
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
@@ -340,7 +339,7 @@ namespace MediaControlDistributionCenter.ViewModels
             nameDevices.AddRange(snDevices);
             this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>
             {
-                var viewModel = ConnectedDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();

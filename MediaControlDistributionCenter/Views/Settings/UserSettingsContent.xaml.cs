@@ -189,6 +189,7 @@ namespace MediaControlDistributionCenter.Views
                 }
 
                 await manageViewModel.ConnectInternetDeviceCommand.ExecuteAsync(device);
+                manageViewModel.LoadData();
             });
         }
 
@@ -210,6 +211,7 @@ namespace MediaControlDistributionCenter.Views
                 }
 
                 await manageViewModel.DisconnectInternetDeviceCommand.ExecuteAsync(device);
+                manageViewModel.LoadData();
             });
         }
     }

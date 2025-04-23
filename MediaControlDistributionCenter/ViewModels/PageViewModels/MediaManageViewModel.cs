@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public async Task SyncPrograms()
         {
-            var localDevice = ConnectedDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
             if (ConnectionMode.Mode == "Local" && localDevice != null && !isSynced)
             {
                 await localDevice.SyncProgramsCommand.ExecuteAsync(null);
@@ -188,23 +188,16 @@ namespace MediaControlDistributionCenter.ViewModels
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var playbackRecord in playRecords)
             {
-                var connectedDevice = ConnectedDevices.FirstOrDefault(c => c.SnCode == playbackRecord.MonitorSnCode)?.DeviceViewModel;
-                if (connectedDevice != null)
+                foreach(var device in OnlineDevices.Where(c => c.SnCode == playbackRecord.MonitorSnCode && c.DeviceViewModel != null).Select(c => c.DeviceViewModel!))
                 {
-                    await connectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
-                    if (!string.IsNullOrEmpty(connectedDevice.ErrorMessage))
+                    await device.ChangeProgramCommand.ExecuteAsync(viewModel);
+                    if (!string.IsNullOrEmpty(device.ErrorMessage))
                     {
-                        ErrorMessage = connectedDevice.ErrorMessage;
+                        ErrorMessage = device.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        connectedDevice.ErrorMessage = null;
+                        device.ErrorMessage = null;
                         return;
                     }
-                    break;
-                }
-                else
-                {
-                    var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    // 如果设备在线，发送网络版命令                    
                 }
             }
 
@@ -232,7 +225,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var playbackRecordService = GetService<IPlaybackRecordService>();
             var publishedPrograms = new List<ProgramDto>();
 
-            foreach (var connectedDevice in ConnectedDevices.Where(c=>c.DeviceViewModel!= null).Select(c => c.DeviceViewModel!))
+            foreach (var connectedDevice in OnlineDevices.Where(c=>c.DeviceViewModel!= null).Select(c => c.DeviceViewModel!))
             {
                 foreach (var selectedItem in selectedItems)
                 {
@@ -246,7 +239,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (publishedPrograms.Count > 0)
                 {
                     var modelString = JsonConvert.SerializeObject(publishedPrograms);
-                    await DetectCommunication(CurrentUser.Account);
                     await connectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
                     if (!string.IsNullOrEmpty(connectedDevice.ErrorMessage))
                     {

@@ -16,8 +16,6 @@ namespace MediaControlDistributionCenter.Views
         private readonly DashboardViewModel manageViewModel;
         private readonly IServiceProvider serviceProvider;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public Dashboard(DashboardViewModel dashboardViewModel, IServiceProvider serviceProvider)
         {
             manageViewModel = dashboardViewModel;
@@ -35,7 +33,6 @@ namespace MediaControlDistributionCenter.Views
             Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                ConnectedDeviceChanged?.Invoke(sender, null);
             });
         }
 

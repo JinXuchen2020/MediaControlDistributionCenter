@@ -15,8 +15,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     {
         private readonly DeviceManageViewModel manageViewModel;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public DeviceManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, DeviceManageViewModel deviceManageViewModel)
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
@@ -44,7 +42,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
         {
             manageViewModel.DetectConnectedDeviceCommand.Execute(null);
-            ConnectedDeviceChanged?.Invoke(sender, null);
             //if (manageViewModel.ConnectionMode.Mode == "Local")
             //{
             //    var communication = App.ServicesProvider.GetRequiredService<Communication>();
@@ -232,7 +229,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             {
                 manageViewModel.IsSearching = true;
                 await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                ConnectedDeviceChanged?.Invoke(sender, null);
                 manageViewModel.IsSearching = false;
             });
         }
