@@ -900,7 +900,7 @@ namespace MediaControlDistributionCenter.Views
         {
             if (sender is TextBox textBox && manageViewModel.CanvasRatio != Convert.ToDouble(textBox.Text) / 100)
             {
-                manageViewModel.CanvasRatio = Convert.ToDouble(textBox.Text) / 100;
+                manageViewModel.CanvasRatio = Math.Max(0.2, Math.Min(1.1, Convert.ToDouble(textBox.Text) / 100));
 
                 MainCanvas.Width = manageViewModel.CanvasRatio * 768;
                 MainCanvas.Height = manageViewModel.CanvasRatio * 576;
@@ -911,7 +911,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void MinusRatio_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.CanvasRatio -= 0.1;
+            manageViewModel.CanvasRatio = Math.Max(0.2, manageViewModel.CanvasRatio - 0.1);
 
             MainCanvas.Width = manageViewModel.CanvasRatio * 768;
             MainCanvas.Height = manageViewModel.CanvasRatio * 576;
@@ -921,7 +921,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void PlusRatio_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.CanvasRatio += 0.1;
+            manageViewModel.CanvasRatio = Math.Min(1.1, manageViewModel.CanvasRatio + 0.1);
 
             MainCanvas.Width = manageViewModel.CanvasRatio * 768;
             MainCanvas.Height = manageViewModel.CanvasRatio * 576;
