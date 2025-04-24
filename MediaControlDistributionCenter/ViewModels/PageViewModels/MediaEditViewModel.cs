@@ -79,6 +79,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 Canvas.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * Canvas.Height;
             }
 
+            ratio = 1;
+            Canvas.Width = double.Parse(CurrentMedia.Width);
+            Canvas.Height = double.Parse(CurrentMedia.Height);
+
             Canvas.Width = CanvasRatio * Canvas.Width;
             Canvas.Height = CanvasRatio * Canvas.Height;
 

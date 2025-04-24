@@ -900,10 +900,10 @@ namespace MediaControlDistributionCenter.Views
         {
             if (sender is TextBox textBox && manageViewModel.CanvasRatio != Convert.ToDouble(textBox.Text) / 100)
             {
-                manageViewModel.CanvasRatio = Math.Max(0.2, Math.Min(1.1, Convert.ToDouble(textBox.Text) / 100));
+                manageViewModel.CanvasRatio = Math.Max(0.2, Math.Min(4, Convert.ToDouble(textBox.Text) / 100));
 
-                MainCanvas.Width = manageViewModel.CanvasRatio * 768;
-                MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+                MainCanvas.Width = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Width);
+                MainCanvas.Height = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Height);
                 manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
                 LoadCanvasComponents(manageViewModel);
             }
@@ -913,21 +913,20 @@ namespace MediaControlDistributionCenter.Views
         {
             manageViewModel.CanvasRatio = Math.Max(0.2, manageViewModel.CanvasRatio - 0.1);
 
-            MainCanvas.Width = manageViewModel.CanvasRatio * 768;
-            MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+            MainCanvas.Width = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Width);
+            MainCanvas.Height = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Height);
             manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
             LoadCanvasComponents(manageViewModel);
         }
 
         private void PlusRatio_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.CanvasRatio = Math.Min(1.1, manageViewModel.CanvasRatio + 0.1);
+            manageViewModel.CanvasRatio = Math.Min(4, manageViewModel.CanvasRatio + 0.1);
 
-            MainCanvas.Width = manageViewModel.CanvasRatio * 768;
-            MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+            MainCanvas.Width = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Width);
+            MainCanvas.Height = manageViewModel.CanvasRatio * double.Parse(manageViewModel.CurrentMedia.Height);
             manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
             LoadCanvasComponents(manageViewModel);
-
         }
     }
 
