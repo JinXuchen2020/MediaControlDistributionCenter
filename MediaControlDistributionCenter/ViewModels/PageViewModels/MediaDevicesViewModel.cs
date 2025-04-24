@@ -86,6 +86,16 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
+                    await item.VerifySnCodeCommand.ExecuteAsync(null);
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        ErrorMessage = item.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        item.ErrorMessage = null;
+                        item.DisconnectCommand.Execute(null);
+                        continue;
+                    }
+
                     string filePath = $"{CurrentMedia.Name}.zip";
                     await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
