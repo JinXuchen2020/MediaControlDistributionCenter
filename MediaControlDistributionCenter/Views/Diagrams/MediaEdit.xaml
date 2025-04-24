@@ -17,6 +17,7 @@
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:StringToTimeSpanConverter x:Key="StringToTimeSpanConverter" />
         <converters:NotEmptyConverter x:Key="NotEmptyConverter" />
+        <converters:ToMultipleConverter x:Key="ToMultipleConverter" />
         <local:ComponentDataTemplateSelector x:Key="ComponentDataTemplateSelector"/>
         <DataTemplate x:Key="VideoComponent" DataType="{x:Type viewmodels:VideoComponentViewModel}">
             <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
@@ -994,7 +995,7 @@
                                             <DataTemplate>
                                                 <StackPanel Visibility="{Binding IsDeleted, Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=false}" Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                                     <TextBlock Margin="20,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Id}"/>
-                                                    <Image Margin="10,0,0,0" Width="150" Height="100" Source="{Binding Thumbnail}"/>
+                                                    <Image Margin="10,0,0,0" Width="150" Height="100" Stretch="Fill" Source="{Binding Thumbnail}"/>
                                                     <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
                                                         <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
                                                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -1021,11 +1022,12 @@
                             <Button Width="25" Height="25"
                                Padding="0"
                                materialDesign:ButtonAssist.CornerRadius="2"
+                               Click="MinusRatio_Click"
                                Background="#16171D"
                                BorderBrush="Gray">
                                 <materialDesign:PackIcon Kind="Minus" Foreground="White" />
                             </Button>
-                            <TextBox VerticalAlignment="Center" HorizontalContentAlignment="Center" BorderBrush="Gray" BorderThickness="0,2,0,2" Foreground="White" Padding="0"
+                            <TextBox VerticalAlignment="Center" LostFocus="canvasRatio_LostFocus" Text="{Binding CanvasRatio, Converter={StaticResource ToMultipleConverter}, ConverterParameter=100}" HorizontalContentAlignment="Center" BorderBrush="Gray" BorderThickness="0,2,0,2" Foreground="White" Padding="0"
                                  Width="50" Height="25"
                                  materialDesign:TextFieldAssist.SuffixText="%"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}">
@@ -1034,6 +1036,7 @@
                                Padding="0"
                                materialDesign:ButtonAssist.CornerRadius="2"
                                Background="#16171D"
+                               Click="PlusRatio_Click"
                                BorderBrush="Gray">
                                 <materialDesign:PackIcon Kind="Plus" Foreground="#FFE9E5E5"  Width="22" Height="22"/>
                             </Button>
@@ -1157,7 +1160,7 @@
                         <materialDesign:PackIcon Kind="AlignVerticalTop" Foreground="#737B8A"  Width="22" Height="22"/>
                     </Button>
                 </StackPanel>
-                <Grid>
+                <Grid HorizontalAlignment="Center">
                     <Canvas                     
                         x:Name="MainCanvas"
                         Background="Black"

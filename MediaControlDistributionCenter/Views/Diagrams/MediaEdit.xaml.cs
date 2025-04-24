@@ -66,6 +66,7 @@ namespace MediaControlDistributionCenter.Views
 
             manageViewModel = mediaEditViewModel;
             manageViewModel.Canvas = MainCanvas;
+            manageViewModel.CanvasRatio = 1;
             manageViewModel.LoadData();
             manageViewModel.SelectedComponent = null;
             manageViewModel.SelectedElement = null;
@@ -405,20 +406,20 @@ namespace MediaControlDistributionCenter.Views
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !ResizableControl.IsDragging)
+            if (manageViewModel.SelectedComponent != null && manageViewModel.SelectedElement != null && !ResizableControl.IsDragging && !manageViewModel.SelectedComponent.IsDragging)
             {
                 double maxLeft = MainCanvas.Width - manageViewModel.SelectedElement.Width;
                 double maxTop = MainCanvas.Height - manageViewModel.SelectedElement.Height;
                 double minLeft = 0;
                 double minTop = 0;
-                double actualLeft = manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio;
-                double actualTop = manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio;
+                double actualLeft = manageViewModel.SelectedComponent.Left * manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio;
+                double actualTop = manageViewModel.SelectedComponent.Top * manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio;
                 actualLeft = Math.Min(Math.Max(minLeft, actualLeft), maxLeft);
                 actualTop = Math.Min(Math.Max(minTop, actualTop), maxTop);
                 Canvas.SetLeft(manageViewModel.SelectedElement, actualLeft);
                 Canvas.SetTop(manageViewModel.SelectedElement, actualTop);
-                manageViewModel.SelectedComponent.Left = actualLeft / manageViewModel.SelectedComponent.Ratio;
-                manageViewModel.SelectedComponent.Top = actualTop / manageViewModel.SelectedComponent.Ratio;
+                manageViewModel.SelectedComponent.Left = actualLeft / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio);
+                manageViewModel.SelectedComponent.Top = actualTop / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio);
                 var resizableControl = new ResizableControl();
                 resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
                 resizableControl.MakeResizable(manageViewModel.SelectedElement, MainCanvas);
@@ -868,14 +869,14 @@ namespace MediaControlDistributionCenter.Views
                 newHeight = Math.Min(newHeight, MainCanvas.Height - newTop);
                 manageViewModel.SelectedElement.Width = newWidth;
                 manageViewModel.SelectedElement.Height = newHeight;
-                if(newWidth == MainCanvas.Width - newLeft && manageViewModel.SelectedComponent.Width != newWidth / manageViewModel.SelectedComponent.Ratio)
+                if (newWidth == MainCanvas.Width - newLeft && manageViewModel.SelectedComponent.Width != newWidth / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio))
                 {
-                    manageViewModel.SelectedComponent.Width = newWidth / manageViewModel.SelectedComponent.Ratio;
+                    manageViewModel.SelectedComponent.Width = newWidth / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio);
                 }
 
-                if (newHeight == MainCanvas.Height - newTop && manageViewModel.SelectedComponent.Height != newHeight / manageViewModel.SelectedComponent.Ratio)
+                if (newHeight == MainCanvas.Height - newTop && manageViewModel.SelectedComponent.Height != newHeight / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio))
                 {
-                    manageViewModel.SelectedComponent.Height = newHeight / manageViewModel.SelectedComponent.Ratio;
+                    manageViewModel.SelectedComponent.Height = newHeight / (manageViewModel.SelectedComponent.Ratio * manageViewModel.CanvasRatio);
                 }
 
                 manageViewModel.SelectedComponent.MaxLeft = double.Parse(manageViewModel.CurrentMedia.Width) - manageViewModel.SelectedComponent.Width;
@@ -893,6 +894,40 @@ namespace MediaControlDistributionCenter.Views
             {
                 viewModel.VerticalContentAlignment = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), button.Tag?.ToString());
             }
+        }
+
+        private void canvasRatio_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox && manageViewModel.CanvasRatio != Convert.ToDouble(textBox.Text) / 100)
+            {
+                manageViewModel.CanvasRatio = Convert.ToDouble(textBox.Text) / 100;
+
+                MainCanvas.Width = manageViewModel.CanvasRatio * 768;
+                MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+                manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
+                LoadCanvasComponents(manageViewModel);
+            }
+        }
+
+        private void MinusRatio_Click(object sender, RoutedEventArgs e)
+        {
+            manageViewModel.CanvasRatio -= 0.1;
+
+            MainCanvas.Width = manageViewModel.CanvasRatio * 768;
+            MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+            manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
+            LoadCanvasComponents(manageViewModel);
+        }
+
+        private void PlusRatio_Click(object sender, RoutedEventArgs e)
+        {
+            manageViewModel.CanvasRatio += 0.1;
+
+            MainCanvas.Width = manageViewModel.CanvasRatio * 768;
+            MainCanvas.Height = manageViewModel.CanvasRatio * 576;
+            manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
+            LoadCanvasComponents(manageViewModel);
+
         }
     }
 

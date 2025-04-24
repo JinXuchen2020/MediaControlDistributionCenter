@@ -107,7 +107,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 UserAccount = CurrentUser.Account,
                 Status = 0,
                 Size = 0,
-                Resolution = "256*192",                
+                Resolution = "256*192",
             };
 
             var result = new ProgramViewModel();

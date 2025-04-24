@@ -35,6 +35,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string selectedType = "All";
 
         [ObservableProperty]
+        private double canvasRatio;
+
+        [ObservableProperty]
         private ProgramViewModel currentMedia;
 
         [ObservableProperty]
@@ -75,6 +78,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 ratio = Canvas.Height / double.Parse(CurrentMedia.Height);
                 Canvas.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * Canvas.Height;
             }
+
+            Canvas.Width = CanvasRatio * Canvas.Width;
+            Canvas.Height = CanvasRatio * Canvas.Height;
+
             if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
             {
                 config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
@@ -254,12 +261,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     // 创建一个RenderTargetBitmap
                     RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                        (int)canvas.ActualWidth,
-                        (int)canvas.ActualHeight,
+                        (int)canvas.Width,
+                        (int)canvas.Height,
                         96, 96,
                         PixelFormats.Pbgra32);
-                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
-                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+                    //canvas.Measure(new Size(canvas.Width, canvas.Height));
+                    canvas.Arrange(new Rect(new Size(canvas.Width, canvas.Height)));
 
                     // 将MediaElement绘制到RenderTargetBitmap
                     renderTargetBitmap.Render(canvas);
