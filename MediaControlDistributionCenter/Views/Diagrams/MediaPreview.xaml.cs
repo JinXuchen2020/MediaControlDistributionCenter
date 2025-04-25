@@ -56,7 +56,22 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             MainCanvas.Width = Width;
             MainCanvas.Height = Height;
-            _ratio = double.Parse(viewModel.CurrentMedia.Width) > double.Parse(viewModel.CurrentMedia.Height) ? MainCanvas.Width / 768 : MainCanvas.Height / 576;
+            Height = MainCanvas.Height + 62 + 20;
+            Width = MainCanvas.Width + 20;
+
+            if (double.Parse(viewModel.CurrentMedia.Width) > double.Parse(viewModel.CurrentMedia.Height))
+            {
+                _ratio = MainCanvas.Width / double.Parse(viewModel.CurrentMedia.Width);
+                MainCanvas.Height = double.Parse(viewModel.CurrentMedia.Height) / double.Parse(viewModel.CurrentMedia.Width) * MainCanvas.Width;
+                Height = MainCanvas.Height + 62 + 20;
+            }
+            else
+            {
+                _ratio = MainCanvas.Height / double.Parse(viewModel.CurrentMedia.Height);
+                MainCanvas.Width = double.Parse(viewModel.CurrentMedia.Width) / double.Parse(viewModel.CurrentMedia.Height) * MainCanvas.Height;
+                Width = MainCanvas.Width + 20;
+            }
+
             this.SizeChanged += MediaPreview_SizeChanged;
             //this.Loaded += MediaPreview_Loaded;
             this.Unloaded += MediaPreview_Unloaded;
@@ -76,9 +91,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void MediaPreview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            MainCanvas.Width = (sender as Window).Width;
-            MainCanvas.Height = (sender as Window).Width;
-            _ratio = double.Parse(manageViewModel.CurrentMedia.Width) > double.Parse(manageViewModel.CurrentMedia.Height) ? MainCanvas.Width / 768 : MainCanvas.Height / 576;
+        //    MainCanvas.Width = (sender as Window).Width;
+        //    MainCanvas.Height = (sender as Window).Height;
+        //    _ratio = double.Parse(manageViewModel.CurrentMedia.Width) > double.Parse(manageViewModel.CurrentMedia.Height) ? MainCanvas.Width / double.Parse(manageViewModel.CurrentMedia.Width) : MainCanvas.Height / double.Parse(manageViewModel.CurrentMedia.Height);
 
             LoadCanvasComponents(CurrentPage);
         }

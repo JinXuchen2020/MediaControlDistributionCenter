@@ -573,7 +573,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        protected Border CreateBorder(UIElement child = null)
+        protected Border CreateBorder(UIElement child)
         {
             Border result = new Border
             {

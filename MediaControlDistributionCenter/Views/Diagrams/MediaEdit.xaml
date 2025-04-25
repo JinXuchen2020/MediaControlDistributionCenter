@@ -784,7 +784,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="308"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="308"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Row="0" Grid.ColumnSpan="3">
@@ -1161,12 +1161,14 @@
                         <materialDesign:PackIcon Kind="AlignVerticalTop" Foreground="#737B8A"  Width="22" Height="22"/>
                     </Button>
                 </StackPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="10" VerticalAlignment="Top" Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.71}" Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.6}" >
+                <ScrollViewer HorizontalContentAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="10" VerticalAlignment="Top" Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.72}" Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.59}" >
                     <Canvas                     
                         x:Name="MainCanvas"
                         Background="Black"
                         Width="768"
                         Height="576"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
                         AllowDrop="True" 
                         ClipToBounds="True"
                         DragEnter="MainCanvas_DragEnter"

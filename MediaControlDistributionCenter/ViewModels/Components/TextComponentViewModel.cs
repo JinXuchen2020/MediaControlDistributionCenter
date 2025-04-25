@@ -184,17 +184,18 @@ namespace MediaControlDistributionCenter.ViewModels
                 result.Document.Blocks.Add(paragraph);
             }
 
+            var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
             var converter = new ToMultipleConverter();
-            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
-            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio * mediaEditViewModel.CanvasRatio);
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio * mediaEditViewModel.CanvasRatio);
 
             var colorConverter = new ColorToBrushConverter();
             CreateBinding(result, RichTextBox.BackgroundProperty, nameof(Background), colorConverter);
 
             CreateBinding(result, RichTextBox.VerticalContentAlignmentProperty, nameof(VerticalContentAlignment));
 
-            Canvas.SetLeft(result, Left * Ratio);
-            Canvas.SetTop(result, Top * Ratio);
+            Canvas.SetLeft(result, Left * Ratio * mediaEditViewModel.CanvasRatio);
+            Canvas.SetTop(result, Top * Ratio * mediaEditViewModel.CanvasRatio);
             Canvas.SetZIndex(result, ZIndex);
 
             // 添加鼠标事件处理

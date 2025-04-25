@@ -242,8 +242,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = (currentComponent as ImageComponentViewModel)!;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300 / viewModel.Ratio;
-                viewModel.Height = 200 / viewModel.Ratio;
+                viewModel.Width = Math.Min(double.Parse(manageViewModel.CurrentMedia.Width), 300 / viewModel.Ratio / manageViewModel.CanvasRatio);
+                viewModel.Height = Math.Min(double.Parse(manageViewModel.CurrentMedia.Height), 200 / viewModel.Ratio / manageViewModel.CanvasRatio);
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -270,8 +270,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 300 / viewModel.Ratio;
-                viewModel.Height = 200 / viewModel.Ratio;
+                viewModel.Width = Math.Min(double.Parse(manageViewModel.CurrentMedia.Width), 300 / viewModel.Ratio / manageViewModel.CanvasRatio);
+                viewModel.Height = Math.Min(double.Parse(manageViewModel.CurrentMedia.Height), 200 / viewModel.Ratio / manageViewModel.CanvasRatio);
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
@@ -298,8 +298,8 @@ namespace MediaControlDistributionCenter.Views
                 var viewModel = currentComponent;
                 viewModel.Left = left;
                 viewModel.Top = top;
-                viewModel.Width = 229 / viewModel.Ratio;
-                viewModel.Height = 329 / viewModel.Ratio;
+                viewModel.Width = Math.Min(double.Parse(manageViewModel.CurrentMedia.Width), 229 / viewModel.Ratio / manageViewModel.CanvasRatio);
+                viewModel.Height = Math.Min(double.Parse(manageViewModel.CurrentMedia.Height), 329 / viewModel.Ratio / manageViewModel.CanvasRatio);
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
