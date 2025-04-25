@@ -155,6 +155,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected override FrameworkElement DrawingContent()
         {
+            var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
             RichTextBox result = new()
             {
                 Width = Width * Ratio,
@@ -174,17 +175,25 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     range.Load(fs, DataFormats.Xaml);
                 }
+
+                foreach (Paragraph block in result.Document.Blocks)
+                {
+                    foreach(var run in block.Inlines)
+                    {
+                        run.FontSize = run.FontSize * mediaEditViewModel.CanvasRatio;
+                    }
+                }
             }
             else
             {
                 Paragraph paragraph = new Paragraph();
                 Run run = new Run(Source);
+                run.Foreground = new SolidColorBrush(Colors.White);
                 paragraph.Inlines.Add(run);
                 result.Document.Blocks.Clear();
                 result.Document.Blocks.Add(paragraph);
+                result.FontSize = 12 * mediaEditViewModel.CanvasRatio;
             }
-
-            var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
             var converter = new ToMultipleConverter();
             CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio * mediaEditViewModel.CanvasRatio);
             CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio * mediaEditViewModel.CanvasRatio);
@@ -249,6 +258,14 @@ namespace MediaControlDistributionCenter.ViewModels
                         using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
                         {
                             range.Load(fs, DataFormats.Xaml);
+                        }
+
+                        foreach (Paragraph block in richTextBox.Document.Blocks)
+                        {
+                            foreach (var run in block.Inlines)
+                            {
+                                run.FontSize = run.FontSize * manageViewModel.CanvasRatio;
+                            }
                         }
 
                         Source = range.Text;

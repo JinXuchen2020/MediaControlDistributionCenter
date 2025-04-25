@@ -178,7 +178,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 var dialogHost = await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
                 if (int.TryParse(dialog.Result, out var spacing))
                 {
-                ApplyCharacterSpacing(spacing);
+                    ApplyCharacterSpacing(spacing);
                 }
             });
         }
