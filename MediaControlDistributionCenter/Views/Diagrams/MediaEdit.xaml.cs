@@ -928,6 +928,15 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
             LoadCanvasComponents(manageViewModel);
         }
+
+        private void SelectPresetColor_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(manageViewModel.SelectedComponent is TextComponentViewModel textComponentViewModel)
+            {
+                textComponentViewModel.Background = ((sender as Border).Background as SolidColorBrush)?.Color ?? Brushes.Transparent.Color;
+                manageViewModel.CloseDialogCommand.Execute(null);
+            }
+        }
     }
 
     public class ComponentDataTemplateSelector : DataTemplateSelector

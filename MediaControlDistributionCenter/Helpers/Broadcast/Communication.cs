@@ -282,7 +282,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <returns></returns>
         public async Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime)
         {
-            // 设置 
+            // 设置
+            if (!Cmd.EndsWith("\0"))
+            {
+                Cmd = string.Concat(Cmd, "\0");
+            }
             using (var cancellationTokenSource = new CancellationTokenSource(waitExecTime))
             {
                 try
@@ -311,11 +315,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         bool SendCmd(CancellationToken cancellationToken, string Cmd)
         {
             // 获取等接收返回指令
+            Log.Information($"Command: {Cmd} is starting to send!");
             string[] CmdArr = Cmd.Replace("\0", "").Split("|");
             string CmdOver = CmdArr[1] + "Over";
 
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
             netClient.Send(utf8Bytes);
+            Log.Information($"Command: {CmdArr[1]} is sent!");
 
             while (true)
             {

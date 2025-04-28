@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignColors;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
@@ -9,6 +10,7 @@ using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Globalization;
@@ -72,6 +74,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? rtfFilePath;
 
+        [ObservableProperty]
+        private ObservableCollection<SolidColorBrush> presetColors;
+
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
         private FrameworkElement RunningElement;
@@ -92,6 +97,15 @@ namespace MediaControlDistributionCenter.ViewModels
             isLoopEnabled = component.IsLoopEnabled;
             rtfFilePath = string.IsNullOrEmpty(component.RtfFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.RtfFilePath);
             verticalContentAlignment = string.IsNullOrEmpty(component.VerticalContentAlignment) ? VerticalAlignment.Stretch : (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), component.VerticalContentAlignment);
+
+            presetColors = new ObservableCollection<SolidColorBrush>();
+            presetColors.Add(Brushes.Transparent);
+
+            // 加载 Material Design 预设颜色
+            foreach (var swatch in new SwatchesProvider().Swatches)
+            {
+                presetColors.Add(new SolidColorBrush(swatch.PrimaryHues[0].Color));
+            }
         }
 
         public override TextComponent ToModel(string userAccount, double ratio)
@@ -151,6 +165,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 RollingSpeed = 2,
                 VerticalContentAlignment = VerticalAlignment.Top.ToString(),
             },userAccount);
+        }
+
+        [RelayCommand]
+        private void SelectColor(SolidColorBrush brush)
+        {
+            Background = brush.Color;
+            MaterialDesignThemes.Wpf.DialogHost.CloseDialogCommand.Execute(null, null);
         }
 
         protected override FrameworkElement DrawingContent()
@@ -239,6 +260,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var dialogBox = new CustomRichTextbox();
                 dialogBox.rtbEditor.Width = Width * Ratio;
                 dialogBox.rtbEditor.Height = Height * Ratio;
+                dialogBox.rtbEditor.VerticalContentAlignment = VerticalContentAlignment;
                 if (!string.IsNullOrEmpty(RtfFilePath))
                 {
                     dialogBox.LoadData(RtfFilePath);

@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace MediaControlDistributionCenter.Views.Diagrams
 {
@@ -144,7 +145,18 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         // 字号选择
         private void FontSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (double.TryParse(FontSizeComboBox.SelectedValue.ToString(), out double size))
+            if (FontSizeComboBox.SelectedValue != null)
+            {
+                if (double.TryParse(FontSizeComboBox.SelectedValue.ToString(), out double size))
+                {
+                    rtbEditor?.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, size);
+                }
+            }
+        }
+
+        private void FontSize_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (double.TryParse(FontSizeComboBox.Text.ToString(), out double size))
             {
                 rtbEditor?.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, size);
             }
@@ -153,12 +165,10 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         // 行间距设置
         private void LineSpacing_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new InputDialog();
-            Dispatcher.Invoke(async () =>
+            var comobox = sender as ComboBox;
+            if (comobox.Visibility == Visibility.Visible && comobox.SelectedValue != null)
             {
-                Panel.SetZIndex(dialog, 10000);
-                var dialogHost = await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.LoginDialogHostId);
-                if (double.TryParse(dialog.Result, out var spacing))
+                if (double.TryParse(comobox.SelectedValue.ToString(), out var spacing))
                 {
                     var paragraph = rtbEditor.Selection.Start.Paragraph;
                     if (paragraph != null)
@@ -166,7 +176,21 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         paragraph.LineHeight = spacing * paragraph.FontSize;
                     }
                 }
-            });
+
+            }
+        }
+
+        private void LineSpacing_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var comobox = sender as ComboBox;
+            if (double.TryParse(comobox.Text.ToString(), out var spacing))
+            {
+                var paragraph = rtbEditor.Selection.Start.Paragraph;
+                if (paragraph != null)
+                {
+                    paragraph.LineHeight = spacing * paragraph.FontSize;
+                }
+            }
         }
 
         // 字符间距设置
@@ -219,6 +243,16 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (currentSize is double size)
             {
                 FontSizeComboBox.SelectedValue = size.ToString();
+            }
+
+            var lineHeight = rtbEditor.Selection.GetPropertyValue(Paragraph.LineHeightProperty);
+            if (lineHeight is double value && cbLineSpacing.Visibility == Visibility.Visible)
+            {
+                var paragraph = rtbEditor.Selection.Start.Paragraph;
+                if (paragraph != null)
+                {
+                    cbLineSpacing.Text = (value / paragraph.FontSize).ToString();
+                }
             }
         }
 
@@ -473,6 +507,38 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             rtbEditor.Document.Blocks.Add(table);
         }
         #endregion
+
+        private void btnLineSpacing_Click(object sender, RoutedEventArgs e)
+        {
+            cbLineSpacing.Visibility = Visibility.Visible;
+            btnLineSpacing.Visibility = Visibility.Collapsed;
+            Dispatcher.Invoke(async () =>
+            {
+                await Task.Delay(1000);
+                var lineHeight = rtbEditor.Selection.GetPropertyValue(Paragraph.LineHeightProperty);
+                if (lineHeight is double value && cbLineSpacing.Visibility == Visibility.Visible)
+                {
+                    var paragraph = rtbEditor.Selection.Start.Paragraph;
+                    if (paragraph != null)
+                    {
+                        cbLineSpacing.Text = (value / paragraph.FontSize).ToString();
+                    }
+                }
+            });
+        }
+
+        private void cbLineSpacing_LostFocus(object sender, RoutedEventArgs e)
+        {
+            cbLineSpacing.Visibility = Visibility.Collapsed;
+            btnLineSpacing.Visibility = Visibility.Visible;
+        }
+
+        private void cbLineSpacing_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            cbLineSpacing.Visibility = Visibility.Collapsed;
+            btnLineSpacing.Visibility = Visibility.Visible;
+
+        }
     }
 }
 

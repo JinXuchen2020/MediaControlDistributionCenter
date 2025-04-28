@@ -423,6 +423,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_207">垂直对齐</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_208">输入值</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_209">值</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_210">预设颜色</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    

@@ -45,7 +45,7 @@
                     </ComboBox>
 
                     <!-- 字号选择 -->
-                    <ComboBox x:Name="FontSizeComboBox" Width="40" SelectedValuePath="Content" SelectedValue="12" SelectionChanged="FontSize_SelectionChanged" Style="{StaticResource MaterialDesignComboBox}">
+                    <ComboBox x:Name="FontSizeComboBox" Width="40" StaysOpenOnEdit="True" IsEditable="True" TextBoxBase.TextChanged="FontSize_TextChanged" SelectedValuePath="Content" SelectedValue="12" SelectionChanged="FontSize_SelectionChanged" Style="{StaticResource MaterialDesignComboBox}">
                         <ComboBox.Items>                            
                             <ComboBoxItem Content="8" />
                             <ComboBoxItem Content="9"/>
@@ -90,14 +90,24 @@
                     </Button>
 
                     <!-- 行间距 -->
-                    <Button Padding="5" Click="LineSpacing_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Padding="5" Click="btnLineSpacing_Click" Name="btnLineSpacing" ToolTip="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_125}" Style="{StaticResource MaterialDesignFlatButton}">
                         <materialDesign:PackIcon Kind="FormatLineSpacing" Width="20" Height="20"/>
                     </Button>
+                    <ComboBox Name="cbLineSpacing" Width="40" Visibility="Collapsed" StaysOpenOnEdit="True" IsEditable="True" TextBoxBase.TextChanged="LineSpacing_TextChanged" SelectedValuePath="Content" SelectedValue="1" SelectionChanged="LineSpacing_Click" Style="{StaticResource MaterialDesignComboBox}">
+                        <ComboBox.Items>
+                            <ComboBoxItem Content="1" />
+                            <ComboBoxItem Content="1.5"/>
+                            <ComboBoxItem Content="2"/>
+                            <ComboBoxItem Content="2.5" />
+                            <ComboBoxItem Content="3"/>
+                            <ComboBoxItem Content="3.5"/>
+                        </ComboBox.Items>
+                    </ComboBox>
 
                     <!-- 字符间距 -->
-                    <Button Padding="5" Click="CharacterSpacing_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <!--<Button Padding="5" Click="CharacterSpacing_Click" Style="{StaticResource MaterialDesignFlatButton}">
                         <materialDesign:PackIcon Kind="FormatLetterSpacing" Width="20" Height="20"/>
-                    </Button>
+                    </Button>-->
                 </ToolBar>
 
                 <!-- 段落格式工具栏 -->

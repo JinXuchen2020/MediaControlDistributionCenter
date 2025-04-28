@@ -419,6 +419,7 @@
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_207">수직 정렬</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_208">입력 값</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_209">값</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_210">기본 설정 색상</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
 
