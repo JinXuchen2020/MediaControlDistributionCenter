@@ -103,6 +103,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpIp = ftpServer._Ip;
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
+            if (!path.EndsWith("##End##"))
+            {
+                path = string.Concat(path, "##End##");
+            }
 
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
 
@@ -118,6 +122,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 {
                     string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
                     string path = "Heart|Client|" + HeartStr;
+                    if (!path.EndsWith("##End##"))
+                    {
+                        path = string.Concat(path, "##End##");
+                    }
                     byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
@@ -283,9 +291,9 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public async Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime)
         {
             // 设置
-            if (!Cmd.EndsWith("\0"))
+            if (!Cmd.EndsWith("##End##"))
             {
-                Cmd = string.Concat(Cmd, "\0");
+                Cmd = string.Concat(Cmd, "##End##");
             }
             using (var cancellationTokenSource = new CancellationTokenSource(waitExecTime))
             {
@@ -321,7 +329,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
             netClient.Send(utf8Bytes);
-            Log.Information($"Command: {CmdArr[1]} is sent!");
+            Log.Information($"Command: {Cmd} is sent!");
 
             while (true)
             {
