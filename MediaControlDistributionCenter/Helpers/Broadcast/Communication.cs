@@ -2,6 +2,8 @@
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -13,6 +15,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MediaControlDistributionCenter.Helpers.Broadcast
 {
@@ -49,6 +52,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
+        private int retryCount = 0;
 
         private readonly FtpServer ftpServer;
 
@@ -113,11 +117,17 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             if (netClient.state == SocketState.Connected)
             {
                 netClient.Send(utf8Bytes);
+                retryCount = 0;
             }
             else
             {
                 Log.Information($"Socket connection disconnected, need to reconnect!");
-
+                if (retryCount > 5)
+                {
+                    _heartbeatTimer.Stop();
+                    _heartbeatTimer = null;
+                }
+                retryCount++;
                 Thread thread = new Thread(() =>
                 {
                     string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
@@ -174,8 +184,29 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
             if (!ftpServer.IsStarted)
             {
+                if(IsInternet)
+                {
+                    var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
+                    if (string.IsNullOrEmpty(connection.IpAddress))
+                    {
+                        List<string> addrs = NetworkTool.GetLocalIPv4Address();
+                        if (addrs.Count > 0)
+                        {
+                            ftpServer._Ip = addrs[0];
+                        }
+                        else
+                        {
+                            ftpServer._Ip = "127.0.0.1";
+                        }
+                    }
+                    else
+                    {
+                        ftpServer._Ip = connection.IpAddress;
+                    }
+                }
+
                 Log.Information($"Connecting Ftp server IP:{ftpServer._Ip}, Port: {ftpServer._port}");
-                ftpServer.FtpServerStart();
+                ftpServer.FtpServerStart(IsInternet);
             }
         }
 

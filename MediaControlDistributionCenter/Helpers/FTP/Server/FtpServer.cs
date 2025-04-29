@@ -32,6 +32,8 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
 
         public bool IsStarted { get; private set; }
 
+        public bool IsInternet { get; private set; }
+
         public FtpServer(FtpConnection connection)
         {
             // 设置默认的主目录
@@ -97,7 +99,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             }
         }
         // 启动服务器
-        public void FtpServerStart()
+        public void FtpServerStart(bool isInternet = false)
         {
             if (myTcpListener == null)
             {
@@ -105,6 +107,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 listenThread.IsBackground = true;
                 listenThread.Start();
                 IsStarted = true;
+                IsInternet = isInternet;
             }
         }
 
@@ -114,7 +117,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             myTcpListener = new TcpListener(IPAddress.Parse(_Ip), _port);
             // 开始监听传入的请求
             myTcpListener.Start();
-            AddInfo("启动FTP服务成功！");
+            AddInfo($"启动{(IsInternet ? "网络" : "本地")}FTP服务成功！");
             AddInfo("Ftp服务器运行中...[点击”停止“按钮停止FTP服务]");
             while (true)
             {
