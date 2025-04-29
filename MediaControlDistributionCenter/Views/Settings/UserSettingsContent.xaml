@@ -31,10 +31,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Background="#1D1E23" Height="796">
-                    <StackPanel Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}">
+                    <StackPanel Visibility="{Binding ShowNavigation, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
                         <Border Cursor="Hand" Margin="0,10,0,0" MouseLeftButtonDown="StackPanel_MouseDown" Tag="internet" Background="{Binding PageType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=internet}">
                             <StackPanel Margin="20,0,10,0" Height="44"  HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Image Width="31" Height="28"  Source="/Assets/12.png" Stretch="Uniform"/>
+                                <materialDesign:PackIcon Kind="CogOutline" Foreground="White" Width="31" Height="28" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <TextBlock  VerticalAlignment="Center" Margin="13,0,0,0" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_117}" />
                             </StackPanel>
                         </Border>
@@ -42,7 +42,7 @@
                     <StackPanel Visibility="{Binding CurrentUser.Role, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=agent;user}">
                         <Border Cursor="Hand" Margin="0,10,0,0" MouseLeftButtonDown="StackPanel_MouseDown" Tag="user" Background="{Binding PageType, Converter={StaticResource SelectedValueConverter}, ConverterParameter=user}">
                             <StackPanel Margin="20,0,10,0" Height="44"  HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Image Width="31" Height="28"  Source="/Assets/12.png" Stretch="Uniform" Cursor=""/>
+                                <materialDesign:PackIcon Kind="AccountCogOutline" Foreground="White" Width="31" Height="28" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <TextBlock  VerticalAlignment="Center" Margin="13,0,0,0" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_User_Config}" />
                             </StackPanel>
                         </Border>
@@ -136,7 +136,7 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid Margin="20,0,0,0">
-                            <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
+                            <!--<StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Left">
                                 <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock VerticalAlignment="Center" Cursor="Hand" MouseDown="btnDetect_MouseDown" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Device_Tooltip_115}" />
@@ -151,7 +151,7 @@
 
                             <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
                                 <TextBlock VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{Binding DetectStatus}" />
-                            </StackPanel>
+                            </StackPanel>-->
 
                             <!--<StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
                                 <StackPanel Orientation="Horizontal" Background="#2A3255" Margin="16,0,0,0" >

@@ -33,13 +33,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public Thickness PageMargin => ShowNavigation ? new Thickness(20, 8, 20, 0) : new Thickness(0, 0, 0, 0);
 
-        private const int BroadcastPort = 5001;//9876; // 广播端口
-        private const int ListenPort = 5001;//9877;    // 接收回复端口
-        private UdpClient _listener;
-
-        [ObservableProperty]
-        private bool isScanning;
-
         [ObservableProperty]
         private ObservableCollection<TimeZoneInfo> timeZoneInfos;
 
@@ -155,176 +148,6 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task DetectInternetDevices()
-        {
-            if (IsScanning) return;
-
-            IsScanning = true;
-            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-            OnlineDevices.Clear();
-            if (localDevice != null)
-            {
-                OnlineDevices.Insert(0, localDevice);
-            }
-
-            try
-            {
-                // 启动监听线程
-                _listener = new UdpClient(ListenPort);
-                var listenThread = new Thread(ListenForResponses);
-                listenThread.IsBackground = true;
-                listenThread.Start();
-
-                // 发送广播
-                using (var broadcaster = new UdpClient())
-                {
-                    broadcaster.EnableBroadcast = true;
-                    var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
-                    var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
-                    await broadcaster.SendAsync(message, message.Length, broadcastIp);
-                }
-
-                DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_112");
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                IsScanning = false;
-            }
-        }
-
-        private void ListenForResponses()
-        {
-            try
-            {
-                var endPoint = new IPEndPoint(IPAddress.Any, ListenPort);
-
-                while (IsScanning)
-                {
-                    var bytes = _listener.Receive(ref endPoint);
-                    var message = Encoding.ASCII.GetString(bytes);
-
-                    if (message.StartsWith("STB_RESPONSE"))
-                    {
-                        var deviceInfo = message.Split('|');
-                        if (deviceInfo.Length > 1)
-                        {
-                            var snCode = deviceInfo[1];
-                            if (!OnlineDevices.Any(c => c.SnCode == snCode))
-                            {
-                                var device = new InternetDevice
-                                {
-                                    SnCode = snCode,
-                                    IpAddress = endPoint.Address.ToString(),
-                                    Status = 0,
-                                    StatusText = GetStatus(0),
-                                    TypeText = GetDeviceType(true)
-                                };
-                                OnlineDevices.Add(device);
-                                InvokeDevicesChanged();
-                            }
-                        }
-                    }
-
-                    //System.Threading.Thread.Sleep(5000);
-                    //var device = new InternetDevice
-                    //{
-                    //    SnCode = "test" + OnlineDevices.Count,
-                    //    IpAddress = "1111",
-                    //    Status = 0,
-                    //    StatusText = GetStatus(0),
-                    //    TypeText = GetDeviceType(true)
-                    //};
-                    //OnlineDevices.Add(device);
-                    //InvokeDevicesChanged();
-
-                    DetectStatus = string.Format(FindResource("LanguageKey_Code_Device_Tooltip_114"), OnlineDevices.Count);
-
-                    //await ConnectInternetDevice(device);
-                }
-            }
-            catch (SocketException)
-            {
-                // 正常退出时会触发
-            }
-            finally
-            {
-                IsScanning = false;
-            }
-        }
-
-        [RelayCommand]
-        private async Task ConnectInternetDevice(InternetDevice device)
-        {
-            if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
-            {
-                var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
-                var communication = new Communication(ftpServer, true);
-                communication.Connect(device.IpAddress, "5001");
-                int count = 5;
-                while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                {
-                    await Task.Delay(500);
-                    count--;
-                }
-
-                if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
-                {
-                    ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                    device.DeviceViewModel = null;
-                }
-                else
-                {
-                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
-                    device.Status = 1;
-                    device.StatusText = GetStatus(1);
-
-                    var monitorService = GetService<IMonitorService>();
-                    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = device.SnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    if (connectedDevice == null)
-                    {
-                        string path = CommunicationCmd.CmdSyncUser + "Login";
-                        bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-                        if (result)
-                        {
-                            var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
-                            if (syncUsers != null)
-                            {
-                                foreach (var item in syncUsers.Users)
-                                {
-                                    var response = await userService.Save(item.User);
-                                    if (response.Code == 200)
-                                    {
-                                        if (item.Monitor != null)
-                                        {
-                                            response = await monitorService.Save(item.Monitor.Monitor);
-                                            if (response.Code == 200)
-                                            {
-                                                device.DeviceViewModel = new DeviceViewModel();
-                                                device.DeviceViewModel.Binding(item.Monitor.Monitor);
-                                                device.DeviceViewModel.ConnectCommand.Execute(communication);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        device.DeviceViewModel = new DeviceViewModel();
-                        device.DeviceViewModel.Binding(connectedDevice);
-                        device.DeviceViewModel.ConnectCommand.Execute(communication);
-                    }
-
-                    communication.StartHeart();
-                }
-            }            
-        }
-
-        [RelayCommand]
         private async Task DisconnectInternetDevice(InternetDevice device)
         {
             if (device.DeviceViewModel != null)
@@ -335,15 +158,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 device.StatusText = GetStatus(0);
             }
 
-            await Task.CompletedTask;
-        }
-
-        [RelayCommand]
-        private async Task StopDetect()
-        {
-            IsScanning = false;
-            _listener?.Close();
-            DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_113");
             await Task.CompletedTask;
         }
 

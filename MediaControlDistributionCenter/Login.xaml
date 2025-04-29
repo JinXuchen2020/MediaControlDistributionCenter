@@ -161,10 +161,10 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Visibility="{Binding HasDevices, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
                                     <TextBlock Foreground="White" VerticalAlignment="Center" FontSize="14" Text="{DynamicResource LanguageKey_Code_LinkDevice}" />
-                                    <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding IpAddresses}" Width="190" SelectedValue="{Binding SelectedIpAddress}" />
-                                    <Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
+                                    <ComboBox Foreground="White" VerticalAlignment="Center" FontSize="14" ItemsSource="{Binding Devices}" Width="190" DisplayMemberPath="IpAddress" SelectedItem="{Binding CurrentDevice}" />
+                                    <!--<Button Width="22" Height="22" IsEnabled="{Binding IsSyncing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Margin="15,0,0,0" Padding="0" x:Name="btnConnect" Click="btnConnect_Click" materialDesign:ButtonAssist.CornerRadius="2" Background="Transparent" BorderBrush="Gray">
                                         <materialDesign:PackIcon Kind="LocalAreaNetworkConnect" Foreground="LightGray"  Width="22" Height="22"/>
-                                    </Button>
+                                    </Button>-->
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

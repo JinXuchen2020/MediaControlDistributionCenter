@@ -72,7 +72,7 @@ namespace MediaControlDistributionCenter.Views
                 manageViewModel.CurrentUser.Logo = null;
             }
 
-            manageViewModel.StopDetectCommand.Execute(null);
+            //manageViewModel.StopDetectCommand.Execute(null);
             manageViewModel.DetectStatus = null;
         }
 
@@ -193,10 +193,10 @@ namespace MediaControlDistributionCenter.Views
             });
         }
 
-        private void btnStopDetect_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            manageViewModel.StopDetectCommand.Execute(null);
-        }
+        //private void btnStopDetect_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    manageViewModel.StopDetectCommand.Execute(null);
+        //}
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {

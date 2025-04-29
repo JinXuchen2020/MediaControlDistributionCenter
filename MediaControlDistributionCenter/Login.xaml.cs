@@ -60,6 +60,10 @@ namespace MediaControlDistributionCenter
 
         private void Login_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Dispatcher.Invoke(async () =>
+            {
+                await viewModel.DetectInternetDevicesCommand.ExecuteAsync(null);
+            });
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -159,16 +163,16 @@ namespace MediaControlDistributionCenter
             }
         }
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            this.Dispatcher.Invoke(async () =>
-            {
-                if (!viewModel.IsSyncing)
-                {
-                    await viewModel.ConnectCommand.ExecuteAsync(null);
-                }
-            });
-        }
+        //private void btnConnect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.Dispatcher.Invoke(async () =>
+        //    {
+        //        if (!viewModel.IsSyncing)
+        //        {
+        //            await viewModel.ConnectCommand.ExecuteAsync(null);
+        //        }
+        //    });
+        //}
 
         private void InitializeTimer()
         {

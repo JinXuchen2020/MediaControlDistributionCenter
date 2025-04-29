@@ -2,16 +2,23 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -37,6 +44,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
 
         public static List<InternetDevice> OnlineDevices = new List<InternetDevice>();
+
+        private const int BroadcastPort = 5001;//9876; // 广播端口
+        private const int ListenPort = 5001;//9877;    // 接收回复端口
+        private UdpClient _listener;
+
+        [ObservableProperty]
+        private bool isScanning;
 
         public virtual void LoadData()
         {
@@ -146,6 +160,44 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
+        public void TranslateLanguageProperties()
+        {
+            foreach (var item in languagePropertyCache)
+            {
+                foreach (var proName in item.Value)
+                {
+                    var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
+                    var property = item.Key.GetProperty(proName);
+                    if (property != null)
+                    {
+                        var propertyValue = (string)property.GetValue(typeObj)!;
+                        if (propertyValue != null)
+                        {
+                            property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                        }
+                    }
+                    else
+                    {
+                        var method = item.Key.GetMethod(proName);
+                        var parameters = method?.GetParameters();
+                        if (parameters != null)
+                        {
+                            var parameterValues = new List<object?>();
+                            foreach (var parameter in parameters)
+                            {
+                                parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
+                            }
+                            method?.Invoke(typeObj, [.. parameterValues]);
+                        }
+                        else
+                        {
+                            method?.Invoke(typeObj, null);
+                        }
+                    }
+                }
+            }
+        }
+
         protected async Task DetectCommunication(string userAccount)
         {
             var client = App.ServicesProvider.GetRequiredService<Communication>();
@@ -205,6 +257,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         IpAddress = client.IpAddr,
                         Status = 1,
                         StatusText = GetStatus(1),
+                        IsInternet = false,
                         TypeText = GetDeviceType(false)
                     };
 
@@ -221,6 +274,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             IpAddress = client.IpAddr,
                             Status = 1,
                             StatusText = GetStatus(1),
+                            IsInternet = false,
                             TypeText = GetDeviceType(false)
                         };
 
@@ -235,41 +289,189 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        public void TranslateLanguageProperties()
+        [RelayCommand]
+        private async Task DetectInternetDevices()
         {
-            foreach (var item in languagePropertyCache)
+            if (IsScanning) return;
+
+            IsScanning = true;
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            OnlineDevices.Clear();
+            if (localDevice != null)
             {
-                foreach(var proName in item.Value)
+                OnlineDevices.Insert(0, localDevice);
+            }
+
+            try
+            {
+                // 启动监听线程
+                _listener = new UdpClient(ListenPort);
+                var listenThread = new Thread(ListenForResponses);
+                listenThread.IsBackground = true;
+                listenThread.Start();
+
+                // 发送广播
+                using (var broadcaster = new UdpClient())
                 {
-                    var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
-                    var property = item.Key.GetProperty(proName);
-                    if (property != null)
+                    broadcaster.EnableBroadcast = true;
+                    var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
+                    var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
+                    await broadcaster.SendAsync(message, message.Length, broadcastIp);
+                }
+
+                //DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_112");
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+                IsScanning = false;
+            }
+        }
+
+        private void ListenForResponses()
+        {
+            try
+            {
+                var endPoint = new IPEndPoint(IPAddress.Any, ListenPort);
+
+                while (IsScanning)
+                {
+                    var bytes = _listener.Receive(ref endPoint);
+                    var message = Encoding.ASCII.GetString(bytes);
+
+                    if (message.StartsWith("STB_RESPONSE"))
                     {
-                        var propertyValue = (string)property.GetValue(typeObj)!;
-                        if (propertyValue != null)
+                        var deviceInfo = message.Split('|');
+                        if (deviceInfo.Length > 1)
                         {
-                            property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                            var snCode = deviceInfo[1];
+                            if (!string.IsNullOrEmpty(snCode))
+                            {
+                                var existDevice = OnlineDevices.FirstOrDefault(c => c.SnCode == snCode);
+                                if (existDevice != null && existDevice.DeviceViewModel != null && existDevice.DeviceViewModel.IsRealTimeConnected()) 
+                                {
+                                    continue;
+                                }
+
+                                if (existDevice != null)
+                                {
+                                    OnlineDevices.Remove(existDevice);
+                                }
+
+                                var device = new InternetDevice
+                                {
+                                    SnCode = snCode,
+                                    IpAddress = endPoint.Address.ToString(),
+                                    Status = 0,
+                                    StatusText = GetStatus(0),
+                                    IsInternet = true,
+                                    TypeText = GetDeviceType(true)
+                                };
+                                OnlineDevices.Add(device);
+                                ConnectInternetDevice(device).GetAwaiter().OnCompleted(() =>
+                                {
+                                    InvokeDevicesChanged();
+                                });
+                            }
+                        }
+                    }
+
+                    //System.Threading.Thread.Sleep(5000);
+                    //var device = new InternetDevice
+                    //{
+                    //    SnCode = "test" + OnlineDevices.Count,
+                    //    IpAddress = "1111",
+                    //    Status = 0,
+                    //    StatusText = GetStatus(0),
+                    //    IsInternet = true,
+                    //    TypeText = GetDeviceType(true)
+                    //};
+                    //OnlineDevices.Add(device);
+                    //ConnectInternetDevice(device).GetAwaiter().OnCompleted(() =>
+                    //{
+                    //    InvokeDevicesChanged();
+                    //});
+                }
+            }
+            catch (SocketException)
+            {
+                // 正常退出时会触发
+            }
+            finally
+            {
+                IsScanning = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task ConnectInternetDevice(InternetDevice device)
+        {
+            if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
+            {
+                var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
+                var communication = new Communication(ftpServer, true);
+                communication.Connect(device.IpAddress, "5001");
+                int count = 5;
+                while (communication.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+                {
+                    await Task.Delay(500);
+                    count--;
+                }
+
+                if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
+                {
+                    ErrorMessage = (string)FindResource("LanguageKey_Code_Device_Tooltip_100");// MessageBox.Show("无法连接机顶盒!");
+                    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    device.DeviceViewModel = null;
+                }
+                else
+                {
+                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
+                    device.Status = 1;
+                    device.StatusText = GetStatus(1);
+
+                    var monitorService = GetService<IMonitorService>();
+                    var userService = GetService<IUserService>();
+                    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = null }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                    if (connectedDevice == null)
+                    {
+                        string path = CommunicationCmd.CmdSyncUser + "Login";
+                        bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+                        if (result)
+                        {
+                            var syncUsers = JsonConvert.DeserializeObject<UsersSync>(communication.SyncUserResult);
+                            if (syncUsers != null)
+                            {
+                                foreach (var item in syncUsers.Users)
+                                {
+                                    var response = await userService.Save(item.User);
+                                    if (response.Code == 200)
+                                    {
+                                        if (item.Monitor != null)
+                                        {
+                                            response = await monitorService.Save(item.Monitor.Monitor);
+                                            if (response.Code == 200)
+                                            {
+                                                device.DeviceViewModel = new DeviceViewModel();
+                                                device.DeviceViewModel.Binding(item.Monitor.Monitor);
+                                                device.DeviceViewModel.ConnectCommand.Execute(communication);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     else
                     {
-                        var method = item.Key.GetMethod(proName);
-                        var parameters = method?.GetParameters();
-                        if (parameters != null)
-                        {
-                            var parameterValues = new List<object?>();
-                            foreach (var parameter in parameters)
-                            {
-                                parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
-                            }
-                            method?.Invoke(typeObj, [.. parameterValues]);
-                        }
-                        else
-                        {
-                            method?.Invoke(typeObj, null);  
-                        }
+                        device.DeviceViewModel = new DeviceViewModel();
+                        device.DeviceViewModel.Binding(connectedDevice);
+                        device.DeviceViewModel.ConnectCommand.Execute(communication);
                     }
-                }                
+
+                    communication.StartHeart();
+                }
             }
         }
 
