@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -56,6 +57,15 @@ namespace MediaControlDistributionCenter
             InitializeTimer();
 
             this.Loaded += Login_Loaded;
+            NetworkChange.NetworkAddressChanged += NetworkChange_NetworkAddressChanged;
+        }
+
+        private void NetworkChange_NetworkAddressChanged(object? sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(async () =>
+            {
+                await viewModel.SendBroadcastMessageCommand.ExecuteAsync(null);
+            });
         }
 
         private void Login_Loaded(object sender, RoutedEventArgs e)

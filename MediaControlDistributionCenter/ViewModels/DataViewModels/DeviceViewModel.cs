@@ -661,6 +661,14 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            client.StartFtpServer();
             var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
 
             var result = await ftpClient.UploadFileToFtpServer(filePath);

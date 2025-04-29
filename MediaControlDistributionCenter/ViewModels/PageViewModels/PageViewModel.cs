@@ -286,6 +286,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 localDevice.DeviceViewModel.Binding(connectedDevice);
                 localDevice.DeviceViewModel.ConnectCommand.Execute(client);
                 client.StartHeart();
+
+                InvokeDevicesChanged();
             }
         }
 
@@ -312,14 +314,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 listenThread.Start();
 
                 // 发送广播
-                using (var broadcaster = new UdpClient())
-                {
-                    Log.Information($"发送UDP广播到端口：{BroadcastPort}");
-                    broadcaster.EnableBroadcast = true;
-                    var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
-                    var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
-                    await broadcaster.SendAsync(message, message.Length, broadcastIp);
-                }
+                await SendBroadcastMessage();
 
                 //DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
             }
@@ -328,6 +323,19 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_112");
                 await ShowConfirmDialogCommand.ExecuteAsync(null);
                 IsScanning = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SendBroadcastMessage()
+        {
+            using (var broadcaster = new UdpClient())
+            {
+                Log.Information($"发送UDP广播到端口：{BroadcastPort}");
+                broadcaster.EnableBroadcast = true;
+                var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
+                var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
+                await broadcaster.SendAsync(message, message.Length, broadcastIp);
             }
         }
 
@@ -375,11 +383,7 @@ namespace MediaControlDistributionCenter.ViewModels
                                 OnlineDevices.Add(device);
                                 InvokeDevicesChanged();
                                 Log.Information($"添加SN码：{snCode}的设备成功，开始连接!");
-                                Task.Run(async () => 
-                                {
-                                    await ConnectInternetDevice(device);
-                                    Log.Information($"连接SN码：{snCode}的设备成功!");
-                                });
+                                ConnectInternetDevice(device).Wait();
                             }
                         }
                     }
@@ -434,10 +438,6 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
-                    device.Status = 1;
-                    device.StatusText = GetStatus(1);
-
                     var monitorService = GetService<IMonitorService>();
                     var userService = GetService<IUserService>();
                     var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = device.SnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
@@ -478,6 +478,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     communication.StartHeart();
+
+                    device.Status = 1;
+                    device.StatusText = GetStatus(1);
+                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
                 }
             }
         }

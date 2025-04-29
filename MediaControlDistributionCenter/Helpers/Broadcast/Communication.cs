@@ -84,7 +84,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public void StartHeart()
         {
-            StartFtpServer();
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
             int interval = 5000; // 5000毫秒即5秒 
@@ -124,8 +123,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 Log.Information($"Socket connection disconnected, need to reconnect!");
                 if (retryCount > 5)
                 {
-                    _heartbeatTimer.Stop();
-                    _heartbeatTimer = null;
+                    Disconnect();
                 }
                 retryCount++;
                 Thread thread = new Thread(() =>
@@ -167,7 +165,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public void StartFtpServer()
         {
-            if (!IsInternet)
+            var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
+            if (string.IsNullOrEmpty(connection.IpAddress))
             {
                 var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
                 if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
@@ -181,30 +180,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     }
                 }
             }
+            else
+            {
+                ftpServer._Ip = connection.IpAddress;
+            }
 
             if (!ftpServer.IsStarted)
             {
-                if(IsInternet)
-                {
-                    var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
-                    if (string.IsNullOrEmpty(connection.IpAddress))
-                    {
-                        List<string> addrs = NetworkTool.GetLocalIPv4Address();
-                        if (addrs.Count > 0)
-                        {
-                            ftpServer._Ip = addrs[0];
-                        }
-                        else
-                        {
-                            ftpServer._Ip = "127.0.0.1";
-                        }
-                    }
-                    else
-                    {
-                        ftpServer._Ip = connection.IpAddress;
-                    }
-                }
-
                 Log.Information($"Connecting Ftp server IP:{ftpServer._Ip}, Port: {ftpServer._port}");
                 ftpServer.FtpServerStart(IsInternet);
             }

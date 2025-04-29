@@ -179,6 +179,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                         {
                                             CurrentDevice = device;
                                         }
+
+                                        LoadData();
                                     }
                                 }
                             }
