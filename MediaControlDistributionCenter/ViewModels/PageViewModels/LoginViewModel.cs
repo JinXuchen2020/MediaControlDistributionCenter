@@ -137,7 +137,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (communication.netClient.State == Helpers.SocketClient.SocketState.Connected)
             {
-                Log.Debug($"Device with IP {communication.IpAddr} is connected!");
                 string path = CommunicationCmd.CmdSyncUser + "Login";
                 bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                 if (result)
@@ -169,18 +168,20 @@ namespace MediaControlDistributionCenter.ViewModels
                                             };
 
                                             OnlineDevices.Add(device);
-                                        } 
-                                        device.DeviceViewModel = new DeviceViewModel();
-                                        device.DeviceViewModel.Binding(item.Monitor.Monitor);
-                                        device.DeviceViewModel.ConnectCommand.Execute(communication);
-                                        communication.StartHeart();
+                                            device.DeviceViewModel = new DeviceViewModel();
+                                            device.DeviceViewModel.Binding(item.Monitor.Monitor);
+                                            device.DeviceViewModel.ConnectCommand.Execute(communication);
+                                            communication.StartHeart();
+
+                                            Log.Debug($"Device with IP {communication.IpAddr} is connected!");
+
+                                            LoadData();
+                                        }
 
                                         if (CurrentDevice == null)
                                         {
                                             CurrentDevice = device;
                                         }
-
-                                        LoadData();
                                     }
                                 }
                             }
