@@ -47,6 +47,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public bool IsInternet { get; private set; }
 
+        public FtpServer FtpServer => this.ftpServer;
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息

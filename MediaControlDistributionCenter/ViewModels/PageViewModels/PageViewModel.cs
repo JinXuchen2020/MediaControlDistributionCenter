@@ -523,10 +523,11 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             Log.Information($"Local IP :{string.Join(";", ipAddresses)}");
-            var ftpServer = FtpServers.Find(c => c._Ip == ipAddresses[0]);
+            var ftpServer = FtpServers.Find(c => c._Ip == ipAddresses[0] && c._port == connection.Port);
             if (ftpServer == null)
             {
                 connection.IpAddress = ipAddresses[0];
+                connection.Port = connection.Port + 1;
                 ftpServer = new FtpServer(connection);
 
                 FtpServers.Add(ftpServer);

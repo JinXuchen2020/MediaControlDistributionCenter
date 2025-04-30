@@ -669,7 +669,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             client.StartFtpServer();
-            var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+            var ftpClient = new FtpClient(client.FtpServer);
 
             var result = await ftpClient.UploadFileToFtpServer(filePath);
             if (result)
@@ -810,13 +810,12 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
-            var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
             var syncObj = new FileSync
             {
-                HostName = ftpServer._Ip,
-                ServerPort = ftpServer._port,
-                UserName = ftpServer._userName,
-                Password = ftpServer._userPwd,
+                HostName = client.FtpServer._Ip,
+                ServerPort = client.FtpServer._port,
+                UserName = client.FtpServer._userName,
+                Password = client.FtpServer._userPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };
