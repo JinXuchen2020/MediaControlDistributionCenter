@@ -45,6 +45,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public static List<InternetDevice> OnlineDevices = new List<InternetDevice>();
 
+        public static List<FtpServer> FtpServers = new List<FtpServer>();
+
         private const int BroadcastPort = 5001;//9876; // 广播端口
         private const int ListenPort = 5001;//9877;    // 接收回复端口
         private UdpClient _listener;
@@ -426,7 +428,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
             {
-                var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
+                var ftpServer = GetFtpServer(device.IpAddress);
                 var communication = new Communication(ftpServer, true);
                 communication.Connect(device.IpAddress, "5001");
                 int count = 5;
@@ -490,6 +492,47 @@ namespace MediaControlDistributionCenter.ViewModels
                     Log.Debug($"Device with IP {device.IpAddress} is connected!");
                 }
             }
+        }
+
+        public FtpServer GetFtpServer(string deviceIp)
+        {
+            var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
+            var gatewayAddresses = NetworkTool.GetGatewayIp();
+            Log.Information($"Gateway IP :{string.Join(";", gatewayAddresses)}");
+            List<string> ipAddresses = new List<string>();
+            if (gatewayAddresses.Contains(deviceIp))
+            {
+                Log.Information($"当前设备 IP {deviceIp} 为网关IP");
+                ipAddresses = NetworkTool.GetLocalIPv4Address(deviceIp);
+            }
+            else
+            {
+                var prefix = string.Join(".", deviceIp.Split('.').Take(3));
+                var gatewayAddress = gatewayAddresses.Find(c => c.StartsWith(prefix));
+                if (!string.IsNullOrEmpty(gatewayAddress))
+                {
+                    Log.Information($"当前设备 IP {deviceIp} 的网关IP是: {gatewayAddress}");
+                    ipAddresses = NetworkTool.GetLocalIPv4Address(gatewayAddress);
+                }
+            }
+
+            if (ipAddresses.Count == 0)
+            {
+                Log.Debug($"未找到设备{deviceIp}对应的本地IP作为FTP服务器地址");
+                ipAddresses.Add("127.0.0.1");
+            }
+
+            Log.Information($"Local IP :{string.Join(";", ipAddresses)}");
+            var ftpServer = FtpServers.Find(c => c._Ip == ipAddresses[0]);
+            if (ftpServer == null)
+            {
+                connection.IpAddress = ipAddresses[0];
+                ftpServer = new FtpServer(connection);
+
+                FtpServers.Add(ftpServer);
+            }
+
+            return ftpServer;
         }
 
         public string GetStatus(int status)

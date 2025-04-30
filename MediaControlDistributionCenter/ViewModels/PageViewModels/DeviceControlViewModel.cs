@@ -160,8 +160,8 @@ namespace MediaControlDistributionCenter.ViewModels
         //[RelayCommand]
         //private async Task DetectConnectedDevice()
         //{
-        //    await DetectCommunication(CurrentUser.Account);
-        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+        //    //await DetectCommunication(CurrentUser.Account);
+        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null);
         //    if (CurrentDevice?.SNumber != localDevice?.SnCode)
         //    {
         //        isSynced = false;
