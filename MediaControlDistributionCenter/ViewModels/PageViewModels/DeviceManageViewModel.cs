@@ -92,6 +92,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel.Binding(c);
                 }
 
+                viewModel.RefreshStatus();
                 viewModel.GetPrograms();
                 return viewModel;
             }));
@@ -346,6 +347,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel.Binding(c);
                 }
 
+                viewModel.RefreshStatus();
                 viewModel.GetPrograms();
                 return viewModel;
             }));

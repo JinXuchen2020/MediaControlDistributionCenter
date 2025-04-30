@@ -55,6 +55,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel.Binding(c);
                 }
                 viewModel.IsSelected = viewModel.IsConnected ? publishedSNCode.Contains(c.SnCode) : false;
+                viewModel.RefreshStatus();
                 viewModel.GetPrograms();
                 return viewModel;
             }));
