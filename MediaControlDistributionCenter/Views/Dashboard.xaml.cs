@@ -30,10 +30,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void Dashboard_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            Dispatcher.Invoke(async () =>
-            {
-                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-            });
+            //Dispatcher.Invoke(async () =>
+            //{
+            //    await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+            //});
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

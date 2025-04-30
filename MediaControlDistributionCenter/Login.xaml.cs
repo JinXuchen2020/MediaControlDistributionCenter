@@ -54,7 +54,7 @@ namespace MediaControlDistributionCenter
                     break;
             }
 
-            InitializeTimer();
+            //InitializeTimer();
 
             this.Loaded += Login_Loaded;
             NetworkChange.NetworkAddressChanged += NetworkChange_NetworkAddressChanged;
@@ -64,6 +64,7 @@ namespace MediaControlDistributionCenter
         {
             this.Dispatcher.Invoke(async () =>
             {
+                //await viewModel.DetectConnectedDevice();
                 await viewModel.SendBroadcastMessageCommand.ExecuteAsync(null);
             });
         }
@@ -72,6 +73,7 @@ namespace MediaControlDistributionCenter
         {
             this.Dispatcher.Invoke(async () =>
             {
+                //await viewModel.DetectConnectedDevice();
                 await viewModel.DetectInternetDevicesCommand.ExecuteAsync(null);
             });
         }
@@ -159,10 +161,10 @@ namespace MediaControlDistributionCenter
                 spAddress.Visibility = Visibility.Visible;
                 spSlogan.Visibility = Visibility.Visible;
                 viewModel.RefreshService();
-                Dispatcher.Invoke(async () =>
-                {
-                    await viewModel.DetectConnectedDevice();
-                });
+                //Dispatcher.Invoke(async () =>
+                //{
+                //    await viewModel.DetectConnectedDevice();
+                //});
             }
             else
             {

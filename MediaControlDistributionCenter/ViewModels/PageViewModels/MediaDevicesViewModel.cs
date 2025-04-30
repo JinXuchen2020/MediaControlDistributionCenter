@@ -54,7 +54,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
-                viewModel.IsSelected = publishedSNCode.Contains(c.SnCode);
+                viewModel.IsSelected = viewModel.IsConnected ? publishedSNCode.Contains(c.SnCode) : false;
                 viewModel.GetPrograms();
                 return viewModel;
             }));
@@ -69,18 +69,18 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentMedia.UserId);
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    await DetectCommunication(CurrentMedia.UserId);
+        //    LoadData();
+        //}
 
         [RelayCommand]
         private async Task Publish()
         {
             this.PublishDevices.Clear();
-            await DetectCommunication(CurrentMedia.UserId);
+            //await DetectCommunication(CurrentMedia.UserId);
             foreach (var item in Devices)
             {
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };

@@ -121,10 +121,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             else
             {
                 Log.Information($"Socket connection disconnected, need to reconnect!");
-                if (retryCount > 5)
-                {
-                    Disconnect();
-                }
+                //if (retryCount > 5)
+                //{
+                //    Disconnect();
+                //}
                 retryCount++;
                 Thread thread = new Thread(() =>
                 {
@@ -168,7 +168,32 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
             if (string.IsNullOrEmpty(connection.IpAddress))
             {
-                var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
+                var gatewayAddresses = NetworkTool.GetGatewayIp();
+                Log.Information($"Gateway IP :{string.Join(";", gatewayAddresses)}");
+                List<string> ipAddresses = new List<string>();
+                if (gatewayAddresses.Contains(IpAddr))
+                {
+                    Log.Information($"当前设备 IP {IpAddr} 为网关IP");
+                    ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
+                }
+                else
+                {
+                    var prefix = string.Join(".", IpAddr.Split('.').Take(3));
+                    var gatewayAddress = gatewayAddresses.Find(c => c.StartsWith(prefix));
+                    if(!string.IsNullOrEmpty(gatewayAddress))
+                    {
+                        Log.Information($"当前设备 IP {IpAddr} 的网关IP是: {gatewayAddress}");
+                        ipAddresses = NetworkTool.GetLocalIPv4Address(gatewayAddress);
+                    }
+                }
+
+                if (ipAddresses.Count == 0)
+                {
+                    Log.Debug($"未找到设备{IpAddr}对应的本地IP作为FTP服务器地址");
+                    ipAddresses.Add("127.0.0.1");
+                }
+
+                Log.Information($"Local IP :{string.Join(";", ipAddresses)}");
                 if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
                 {
                     Log.Information($"Update Ftp server with IP :{ipAddresses[0]}");

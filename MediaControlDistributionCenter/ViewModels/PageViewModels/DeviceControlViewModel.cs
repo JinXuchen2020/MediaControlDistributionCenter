@@ -157,18 +157,18 @@ namespace MediaControlDistributionCenter.ViewModels
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentUser.Account);
-            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-            if (CurrentDevice?.SNumber != localDevice?.SnCode)
-            {
-                isSynced = false;
-                CurrentDevice = localDevice?.DeviceViewModel;
-            }
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    await DetectCommunication(CurrentUser.Account);
+        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+        //    if (CurrentDevice?.SNumber != localDevice?.SnCode)
+        //    {
+        //        isSynced = false;
+        //        CurrentDevice = localDevice?.DeviceViewModel;
+        //    }
+        //    LoadData();
+        //}
 
         [RelayCommand]
         private async Task ExecuteRealTimeControl()

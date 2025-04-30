@@ -322,12 +322,12 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentUser.Account);
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    await DetectCommunication(CurrentUser.Account);
+        //    LoadData();
+        //}
 
         protected override async Task SearchContent()
         {

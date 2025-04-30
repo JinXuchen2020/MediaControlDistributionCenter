@@ -62,7 +62,16 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
 
             if (string.IsNullOrEmpty(connection.IpAddress))
             {
-               List<string> addrs = NetworkTool.GetLocalIPv4Address();
+                var gatewayAddresses = NetworkTool.GetGatewayIp();
+                List<string> addrs = new List<string>();
+                if (gatewayAddresses.Count > 0)
+                {
+                    addrs = NetworkTool.GetLocalIPv4Address(gatewayAddresses[0]);
+                }
+                else
+                {
+                    addrs = NetworkTool.GetLocalIPv4Address();
+                }
                 if (addrs.Count > 0)
                 {
                     _Ip = addrs[0];

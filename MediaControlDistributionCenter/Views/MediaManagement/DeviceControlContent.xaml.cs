@@ -49,7 +49,7 @@ namespace MediaControlDistributionCenter.Views
         {
             this.Dispatcher.Invoke(async () =>
             {
-                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+                //await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
                 await manageViewModel.SyncDeviceTimeControls();
                 InitPage("Brightness");
             });
@@ -529,14 +529,14 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel.SearchCommand.Execute(null);
         }
 
-        private void btnDetectConnectedDevice(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
-            this.Dispatcher.Invoke(async () =>
-            {
-                await manageViewModel.SyncDeviceTimeControls();
-            });
-        }
+        //private void btnDetectConnectedDevice(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        //{
+        //    manageViewModel.DetectConnectedDeviceCommand.Execute(null);
+        //    this.Dispatcher.Invoke(async () =>
+        //    {
+        //        await manageViewModel.SyncDeviceTimeControls();
+        //    });
+        //}
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

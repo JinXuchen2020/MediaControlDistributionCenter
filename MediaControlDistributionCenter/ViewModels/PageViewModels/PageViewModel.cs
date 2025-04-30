@@ -198,98 +198,98 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        protected async Task DetectCommunication(string userAccount)
-        {
-            var client = App.ServicesProvider.GetRequiredService<Communication>();
-            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-            var localDeviceModel = localDevice?.DeviceViewModel;
-            if (localDevice != null && localDeviceModel != null && localDeviceModel.UserId == userAccount && localDeviceModel.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-            {
-                return;
-            }
+        //protected async Task DetectCommunication(string userAccount)
+        //{
+        //    var client = App.ServicesProvider.GetRequiredService<Communication>();
+        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+        //    var localDeviceModel = localDevice?.DeviceViewModel;
+        //    if (localDevice != null && localDeviceModel != null && localDeviceModel.UserId == userAccount && localDeviceModel.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+        //    {
+        //        return;
+        //    }
 
-            var ipAddress = NetworkTool.GetGatewayIp();
-            foreach (var address in ipAddress)
-            {
-                client.Connect(address, "5001");
-                int count = 10;
-                while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                {
-                    await Task.Delay(500);
-                    count--;
-                }
+        //    var ipAddress = NetworkTool.GetGatewayIp();
+        //    foreach (var address in ipAddress)
+        //    {
+        //        client.Connect(address, "5001");
+        //        int count = 10;
+        //        while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+        //        {
+        //            await Task.Delay(500);
+        //            count--;
+        //        }
 
-                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-                {
-                    break;
-                }
-            }
+        //        if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+        //        {
+        //            break;
+        //        }
+        //    }
 
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            {
-               if (localDevice != null)
-               {
-                   localDevice.DeviceViewModel = null;
-               }
-               return;
-            }
+        //    if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+        //    {
+        //        if (localDevice != null)
+        //        {
+        //            localDevice.DeviceViewModel = null;
+        //        }
+        //        return;
+        //    }
 
-            string path = CommunicationCmd.CmdSyncSnCode + "Connect";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-               ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-               await ShowConfirmDialogCommand.ExecuteAsync(null);
-               return;
-            }
+        //    string path = CommunicationCmd.CmdSyncSnCode + "Connect";
+        //    bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+        //    if (!result)
+        //    {
+        //        ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+        //        await ShowConfirmDialogCommand.ExecuteAsync(null);
+        //        return;
+        //    }
 
-            var snCode = client.SyncSnCodeResult ?? string.Empty;
+        //    var snCode = client.SyncSnCodeResult ?? string.Empty;
 
-            var monitorService = GetService<IMonitorService>();
-            var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-            if (connectedDevice != null)
-            {
-                if (localDevice == null)
-                {
-                    localDevice = new InternetDevice
-                    {
-                        SnCode = snCode,
-                        IpAddress = client.IpAddr,
-                        Status = 1,
-                        StatusText = GetStatus(1),
-                        IsInternet = false,
-                        TypeText = GetDeviceType(false)
-                    };
+        //    var monitorService = GetService<IMonitorService>();
+        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+        //    if (connectedDevice != null)
+        //    {
+        //        if (localDevice == null)
+        //        {
+        //            localDevice = new InternetDevice
+        //            {
+        //                SnCode = snCode,
+        //                IpAddress = client.IpAddr,
+        //                Status = 1,
+        //                StatusText = GetStatus(1),
+        //                IsInternet = false,
+        //                TypeText = GetDeviceType(false)
+        //            };
 
-                    OnlineDevices.Add(localDevice);
-                }
-                else
-                {
-                    if (localDevice.IpAddress != client.IpAddr)
-                    {
-                        OnlineDevices.Remove(localDevice);
-                        localDevice = new InternetDevice
-                        {
-                            SnCode = snCode,
-                            IpAddress = client.IpAddr,
-                            Status = 1,
-                            StatusText = GetStatus(1),
-                            IsInternet = false,
-                            TypeText = GetDeviceType(false)
-                        };
+        //            OnlineDevices.Add(localDevice);
+        //        }
+        //        else
+        //        {
+        //            if (localDevice.IpAddress != client.IpAddr)
+        //            {
+        //                OnlineDevices.Remove(localDevice);
+        //                localDevice = new InternetDevice
+        //                {
+        //                    SnCode = snCode,
+        //                    IpAddress = client.IpAddr,
+        //                    Status = 1,
+        //                    StatusText = GetStatus(1),
+        //                    IsInternet = false,
+        //                    TypeText = GetDeviceType(false)
+        //                };
 
-                        OnlineDevices.Add(localDevice);
-                    }
-                }
-                
-                localDevice.DeviceViewModel = new DeviceViewModel();
-                localDevice.DeviceViewModel.Binding(connectedDevice);
-                localDevice.DeviceViewModel.ConnectCommand.Execute(client);
-                client.StartHeart();
+        //                OnlineDevices.Add(localDevice);
+        //            }
+        //        }
 
-                InvokeDevicesChanged();
-            }
-        }
+        //        localDevice.DeviceViewModel = new DeviceViewModel();
+        //        localDevice.DeviceViewModel.Binding(connectedDevice);
+        //        localDevice.DeviceViewModel.ConnectCommand.Execute(client);
+        //        client.StartHeart();
+
+        //        InvokeDevicesChanged();
+        //    }
+        //}
 
         [RelayCommand]
         private async Task DetectInternetDevices()
@@ -329,13 +329,17 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SendBroadcastMessage()
         {
-            using (var broadcaster = new UdpClient())
+            var broadcastIps = NetworkTool.GetBroadcastIp();
+            foreach (var ipAddress in broadcastIps)
             {
-                Log.Information($"发送UDP广播到端口：{BroadcastPort}");
-                broadcaster.EnableBroadcast = true;
-                var broadcastIp = new IPEndPoint(IPAddress.Broadcast, BroadcastPort);
-                var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
-                await broadcaster.SendAsync(message, message.Length, broadcastIp);
+                using (var broadcaster = new UdpClient())
+                {
+                    Log.Information($"发送UDP广播到子网：{ipAddress}与端口：{BroadcastPort}");
+                    broadcaster.EnableBroadcast = true;
+                    var broadcastIp = new IPEndPoint(ipAddress, BroadcastPort);
+                    var message = Encoding.ASCII.GetBytes("STB_REQUEST|DISCOVERY");
+                    await broadcaster.SendAsync(message, message.Length, broadcastIp);
+                }
             }
         }
 
@@ -363,6 +367,8 @@ namespace MediaControlDistributionCenter.ViewModels
                                 var existDevice = OnlineDevices.FirstOrDefault(c => c.SnCode == snCode);
                                 if (existDevice != null && existDevice.DeviceViewModel != null && existDevice.DeviceViewModel.IsRealTimeConnected()) 
                                 {
+                                    Log.Information($"设备 IP：{endPoint.Address.ToString()} 已连接");
+                                    InvokeDevicesChanged();
                                     continue;
                                 }
 

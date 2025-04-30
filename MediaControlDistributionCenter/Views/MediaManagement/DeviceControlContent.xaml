@@ -234,11 +234,11 @@
                                 <Image Width="32" Height="32" Source="/Assets/5.png" HorizontalAlignment="Left"/>
                             </Button>
                         </StackPanel>
-                        <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
+                        <!--<Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock MouseDown="btnDetectConnectedDevice" VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Refresh}" />
                             </StackPanel>
-                        </Border>
+                        </Border>-->
                         <!--<Button Background="Transparent" BorderBrush="#404870" Padding="0">
                             <StackPanel Orientation="Horizontal">
                                 <Image Width="12" Height="12" Margin="4,7" Source="/Assets/6.png" HorizontalAlignment="Left"/>
