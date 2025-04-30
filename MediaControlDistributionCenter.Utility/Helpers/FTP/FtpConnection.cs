@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaControlDistributionCenter.Models
+namespace MediaControlDistributionCenter.Helpers.FTP
 {
     public class FtpConnection
     {

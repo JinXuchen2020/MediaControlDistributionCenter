@@ -20,6 +20,6 @@ namespace MediaControlDistributionCenter.Helpers
 
         public const string LoginDialogHostId = "LoginDialogHostId";
 
-        public const string ErrorMessageboxId = "ErrorMessageBox";
+        public const string ErrorMessageBoxId = "ErrorMessageBox";
     }
 }

@@ -1,19 +1,18 @@
-﻿using System.IO;
-using System.Windows;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
+﻿using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
-using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFwTypeLib;
 using Serilog;
 using Syncfusion.Licensing;
-using NetFwTypeLib;
+using System.IO;
+using System.Windows;
 
 namespace MediaControlDistributionCenter
 {
@@ -63,8 +62,6 @@ namespace MediaControlDistributionCenter
 
             services.AddPageViewServices();
             services.AddPageViewModelServices();
-
-            //SyncfusionLicenseProvider.RegisterLicense();
 
             ServicesProvider = services.BuildServiceProvider();
 

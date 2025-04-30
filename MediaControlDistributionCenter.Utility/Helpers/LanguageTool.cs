@@ -31,7 +31,7 @@ namespace MediaControlDistributionCenter
         /// <summary>
         /// 改变语言环境时触发
         /// </summary>
-        void ChangeLanguaged();
+        void LanguageChanged();
 
     }
     public enum Language
@@ -167,7 +167,7 @@ namespace MediaControlDistributionCenter
         public void ChangeLanguaged()
         {
             foreach (var languageElement in LanguageElementCache)
-                languageElement.Value.ChangeLanguaged();
+                languageElement.Value.LanguageChanged();
         }
         #endregion
 

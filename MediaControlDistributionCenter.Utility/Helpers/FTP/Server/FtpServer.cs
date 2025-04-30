@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.NetworkInformation;
-using MediaControlDistributionCenter.Helpers.Tool;
-using System.Collections;
-using System.IO.Pipes;
+﻿using MediaControlDistributionCenter.Helpers.Tool;
 using Serilog;
-using MediaControlDistributionCenter.Models;
+using System.Globalization;
+using System.Net;
+using System.Net.Sockets;
 
 namespace MediaControlDistributionCenter.Helpers.FTP.Server
 {

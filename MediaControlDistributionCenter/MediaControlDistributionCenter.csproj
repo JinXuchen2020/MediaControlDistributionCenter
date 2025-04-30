@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Login_old.xaml.cs" />
     <Compile Remove="MainWindow_old.xaml.cs" />
     <Compile Remove="Views\Setting.xaml.cs" />
     <Compile Remove="Views\UserManage_old.xaml.cs" />
@@ -84,6 +85,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Login_old.xaml" />
     <Page Remove="MainWindow_old.xaml" />
     <Page Remove="Views\Setting.xaml" />
     <Page Remove="Views\UserManage_old.xaml" />
@@ -178,7 +180,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="FluentFTP" Version="52.0.0" />
     <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
@@ -222,9 +223,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Login_old.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Views\DeviceManagement\DeviceManage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -237,13 +235,11 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="数据.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MediaControlDistributionCenter.Services\MediaControlDistributionCenter.Services.csproj" />
+    <ProjectReference Include="..\MediaControlDistributionCenter.Utility\MediaControlDistributionCenter.Utility.csproj" />
   </ItemGroup>
 
 </Project>

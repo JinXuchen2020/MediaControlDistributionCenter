@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter
 
             var language = typeof(Language).ToOptionList();
 
-            var str = TipCodeFindRes.GetTipString(503);
+            //var str = TipCodeFindRes.GetTipString(503);
 
             LanguageTool.Instance.Language = MediaControlDistributionCenter.Language.English;
             LanguageTool.Instance.ChangeLanguageResource();

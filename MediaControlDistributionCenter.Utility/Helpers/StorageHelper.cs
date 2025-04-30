@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using System.IO.IsolatedStorage;
 
-using Microsoft.EntityFrameworkCore;
-
 namespace MediaControlDistributionCenter.Helpers
 {
     internal class StorageHelper

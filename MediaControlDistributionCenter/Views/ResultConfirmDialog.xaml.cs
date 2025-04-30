@@ -77,7 +77,7 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = ((sender as Button).DataContext as PageViewModel)!;
             viewModel.CanDelete = true;
-            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageboxId);
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.ErrorMessageBoxId);
         }
 
         private void loginUser_MouseDown(object sender, MouseButtonEventArgs e)

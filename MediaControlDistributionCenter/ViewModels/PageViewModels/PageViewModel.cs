@@ -3,11 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -63,7 +65,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ShowConfirmDialog()
         {
             var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageBoxId);
         }
 
         [RelayCommand]

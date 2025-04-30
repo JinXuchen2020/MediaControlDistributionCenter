@@ -118,7 +118,7 @@ namespace MediaControlDistributionCenter.Views
 
                 var language = typeof(MediaControlDistributionCenter.Language).ToOptionList();
 
-                var str = TipCodeFindRes.GetTipString(503);
+                //var str = TipCodeFindRes.GetTipString(503);
 
                 LanguageTool.Instance.Language = LanguageTool.Instance.Language;
                 LanguageTool.Instance.ChangeLanguageResource();
