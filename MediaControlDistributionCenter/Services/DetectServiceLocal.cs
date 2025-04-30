@@ -164,6 +164,7 @@ namespace MediaControlDistributionCenter.Services
 
             if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
             {
+                Log.Debug($"Start to connect device with IP {device.IpAddress}!");
                 var ftpServer = GetFtpServer(device.IpAddress);
                 var communication = new Communication(ftpServer, true);
                 communication.Connect(device.IpAddress, "5001");
