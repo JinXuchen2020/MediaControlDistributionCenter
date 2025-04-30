@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,7 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<FtpServer>();
             services.AddSingleton<FtpClient>();
             services.AddSingleton<Communication>();
+            services.AddSingleton<IDetectService, DetectServiceLocal>();
 
             services.AddLocalServices();
             services.AddRemoteServices();

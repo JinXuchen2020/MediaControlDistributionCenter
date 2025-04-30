@@ -202,10 +202,10 @@ namespace MediaControlDistributionCenter
         {
             if (viewModel.ConnectionMode.Mode == "Local")
             {
-                Dispatcher.Invoke(async () =>
-                {
-                    await viewModel.DetectConnectedDevice();
-                });
+                //Dispatcher.Invoke(async () =>
+                //{
+                //    await viewModel.DetectConnectedDevice();
+                //});
             }
         }
     }

@@ -22,23 +22,23 @@ namespace MediaControlDistributionCenter.Services
 
     public class DetectServiceLocal : IDetectService
     {
-        public static List<InternetDevice> OnlineDevices = new List<InternetDevice>();
+        private readonly List<InternetDevice> onlineDevices = [];
 
-        public static List<FtpServer> FtpServers = new List<FtpServer>();
-
-        public EventHandler InvokeDevicesChanged;
+        private readonly List<FtpServer> ftpServers = [];
 
         private const int BroadcastPort = 5001;//9876; // 广播端口
         private const int ListenPort = 5001;//9877;    // 接收回复端口
         private UdpClient _listener;
 
-        public async Task DetectInternetDevices()
+        public event EventHandler? InvokeDevicesChanged;
+
+        public async Task StartDetect()
         {
-            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
-            OnlineDevices.Clear();
+            var localDevice = onlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+            onlineDevices.Clear();
             if (localDevice != null)
             {
-                OnlineDevices.Insert(0, localDevice);
+                onlineDevices.Insert(0, localDevice);
             }
 
             try
@@ -90,7 +90,7 @@ namespace MediaControlDistributionCenter.Services
 
                     if (message.StartsWith("STB_RESPONSE"))
                     {
-                        Log.Information($"接收到来自IP：{endPoint.Address.ToString()}, 开始添加设备!");
+                        Log.Information($"接收到来自IP：{endPoint.Address.ToString()}的消息, 开始添加设备!");
                         var deviceInfo = message.Split('|');
                         if (deviceInfo.Length > 1)
                         {
@@ -98,17 +98,17 @@ namespace MediaControlDistributionCenter.Services
                             if (!string.IsNullOrEmpty(snCode))
                             {
                                 Log.Information($"设备SN码：{snCode}");
-                                var existDevice = OnlineDevices.FirstOrDefault(c => c.SnCode == snCode);
+                                var existDevice = onlineDevices.FirstOrDefault(c => c.SnCode == snCode);
                                 if (existDevice != null && existDevice.DeviceViewModel != null && existDevice.DeviceViewModel.IsRealTimeConnected())
                                 {
                                     Log.Information($"设备 IP：{endPoint.Address.ToString()} 已连接");
-                                    InvokeDevicesChanged.Invoke(this, null);
+                                    InvokeDevicesChanged?.Invoke(this, null);
                                     continue;
                                 }
 
                                 if (existDevice != null)
                                 {
-                                    OnlineDevices.Remove(existDevice);
+                                    onlineDevices.Remove(existDevice);
                                 }
 
                                 var device = new InternetDevice
@@ -118,10 +118,10 @@ namespace MediaControlDistributionCenter.Services
                                     Status = 0,
                                     IsInternet = true,
                                 };
-                                OnlineDevices.Add(device);
-                                InvokeDevicesChanged.Invoke(this, null);
+                                onlineDevices.Add(device);
+                                InvokeDevicesChanged?.Invoke(this, null);
                                 Log.Information($"添加SN码：{snCode}的设备成功，开始连接!");
-                                ConnectInternetDevice(device).Wait();
+                                ConnectDevice(snCode).Wait();
                             }
                         }
                     }
@@ -153,8 +153,15 @@ namespace MediaControlDistributionCenter.Services
             }
         }
 
-        public async Task ConnectInternetDevice(InternetDevice device)
+        public async Task ConnectDevice(string snCode)
         {
+            var device = onlineDevices.FirstOrDefault(c => c.SnCode == snCode);
+            if (device == null) 
+            {
+                Log.Error($"Device with SnCode: {snCode} is not detected");
+                return;
+            }
+
             if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
             {
                 var ftpServer = GetFtpServer(device.IpAddress);
@@ -220,7 +227,7 @@ namespace MediaControlDistributionCenter.Services
             }
         }
 
-        public FtpServer GetFtpServer(string deviceIp)
+        private FtpServer GetFtpServer(string deviceIp)
         {
             var connection = App.ServicesProvider.GetRequiredService<FtpConnection>();
             var gatewayAddresses = NetworkTool.GetGatewayIp();
@@ -249,38 +256,43 @@ namespace MediaControlDistributionCenter.Services
             }
 
             Log.Information($"Local IP :{string.Join(";", ipAddresses)}");
-            var ftpServer = FtpServers.Find(c => c._Ip == ipAddresses[0] && c._port == connection.Port);
+            var ftpServer = ftpServers.Find(c => c._Ip == ipAddresses[0] && c._port == connection.Port);
             if (ftpServer == null)
             {
                 connection.IpAddress = ipAddresses[0];
                 connection.Port = connection.Port + 1;
                 ftpServer = new FtpServer(connection);
 
-                FtpServers.Add(ftpServer);
+                ftpServers.Add(ftpServer);
             }
 
             return ftpServer;
         }
 
-        protected T GetService<T>() where T : class
+        private TService GetService<TService>() where TService : class
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
             switch (connectionMode.Mode)
             {
                 case "Local":
-                    return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
+                    return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
                 case "Remote":
                     if (string.IsNullOrEmpty(connectionMode.ServiceUri))
                     {
-                        return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
+                        return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
                     }
                     else
                     {
-                        return App.ServicesProvider.GetServices<T>().First(c => !c.GetType().Name.EndsWith("Local"));
+                        return App.ServicesProvider.GetServices<TService>().First(c => !c.GetType().Name.EndsWith("Local"));
                     }
                 default:
                     throw new ArgumentException("未知的服务名称");
             }
+        }
+
+        public IEnumerable<InternetDevice> GetOnlineDevices()
+        {
+            return [.. onlineDevices];
         }
     }
 }
