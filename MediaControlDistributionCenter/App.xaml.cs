@@ -50,6 +50,7 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<FtpClient>();
             services.AddSingleton<Communication>();
             services.AddSingleton<IDetectService, DetectServiceLocal>();
+            services.AddSingleton<IDetectService, DetectService>();
 
             services.AddLocalServices();
             services.AddRemoteServices();
