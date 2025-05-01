@@ -16,7 +16,7 @@ namespace MediaControlDistributionCenter.Services
 
         public Task SendBroadcastMessage();
 
-        public Task ConnectDevice(string snCode);
+        public Task ConnectDevice(InternetDevice device);
 
         public IEnumerable<InternetDevice> GetOnlineDevices();
     }

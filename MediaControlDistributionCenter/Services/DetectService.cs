@@ -19,7 +19,7 @@ namespace MediaControlDistributionCenter.Services
             await Task.CompletedTask;
         }
 
-        public async Task ConnectDevice(string snCode)
+        public async Task ConnectDevice(InternetDevice device)
         {
             await Task.CompletedTask;
         }

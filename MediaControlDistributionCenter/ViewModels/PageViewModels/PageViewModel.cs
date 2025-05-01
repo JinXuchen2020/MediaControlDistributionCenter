@@ -321,7 +321,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ConnectInternetDevice(InternetDevice device)
         {
-            await detectService.ConnectDevice(device.SnCode);
+            await detectService.ConnectDevice(device);
+            if(device.DeviceViewModel != null && !string.IsNullOrEmpty(device.DeviceViewModel.ErrorMessage))
+            {
+                ErrorMessage = FindResource(device.DeviceViewModel.ErrorMessage);
+                await ShowConfirmDialogCommand.ExecuteAsync(null);
+            }
         }
 
         public string GetStatus(int status)
