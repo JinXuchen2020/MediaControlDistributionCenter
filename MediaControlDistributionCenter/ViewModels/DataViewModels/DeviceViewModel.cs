@@ -9,6 +9,7 @@ using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -142,6 +143,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private Communication? client;
 
+        public bool IsInternet => client?.IsInternet ?? false;
+
         public DeviceViewModel()
         {
         }
@@ -184,8 +187,6 @@ namespace MediaControlDistributionCenter.ViewModels
             Group = model.MonitorGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             IsSelected = isSelected;
             Enabled = model.Enabled;
-            StatusText = GetStatus();
-            ConnectedText = GetConnectedStatus();
             EnableBtnContent = model.Enabled ==  0 ? FindResource("LanguageKey_Code_Enable") : FindResource("LanguageKey_Code_Disable");
             Width = model.Width;
             Height = model.Height;
@@ -200,6 +201,12 @@ namespace MediaControlDistributionCenter.ViewModels
             UsedStoragePercentage = 100 - model.StoragePercentage;
             MediaNames = string.Empty;
             MediaIds = new List<int>();
+        }
+
+        public void RefreshStatus() 
+        {
+            ConnectedText = GetConnectedStatus();
+            StatusText = GetStatus();
         }
 
         public string GetStatus()
@@ -659,7 +666,15 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
-            var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+            if (client == null)
+            {
+                Log.Debug($"Device:{Name} didn't set client!");
+                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
+                return;
+            }
+
+            client.StartFtpServer();
+            var ftpClient = new FtpClient(client.FtpServer);
 
             var result = await ftpClient.UploadFileToFtpServer(filePath);
             if (result)
@@ -800,13 +815,12 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
-            var ftpServer = App.ServicesProvider.GetRequiredService<FtpServer>();
             var syncObj = new FileSync
             {
-                HostName = ftpServer._Ip,
-                ServerPort = ftpServer._port,
-                UserName = ftpServer._userName,
-                Password = ftpServer._userPwd,
+                HostName = client.FtpServer._Ip,
+                ServerPort = client.FtpServer._port,
+                UserName = client.FtpServer._userName,
+                Password = client.FtpServer._userPwd,
                 FileName = fileName,
                 FileSize = fileSize
             };

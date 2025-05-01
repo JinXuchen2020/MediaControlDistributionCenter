@@ -17,6 +17,11 @@ namespace MediaControlDistributionCenter.Converters
             {
                 return str * ratio;
             }
+
+            if (value is string strValue && double.TryParse(strValue, out double doubleValue))
+            {
+                return doubleValue * ratio;
+            }
             return 0;
         }
 
@@ -26,6 +31,11 @@ namespace MediaControlDistributionCenter.Converters
             if (value is double str)
             {
                 return str / ratio;
+            }
+
+            if (value is string strValue && double.TryParse(strValue, out double doubleValue))
+            {
+                return doubleValue / ratio;
             }
             return 0;
         }

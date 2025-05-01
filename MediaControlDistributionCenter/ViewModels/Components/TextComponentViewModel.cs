@@ -1,12 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignColors;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Views.CustomControls;
+using MediaControlDistributionCenter.Views.Diagrams;
+using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +68,15 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private double lineSpacing; //16", 
 
+        [ObservableProperty]
+        private VerticalAlignment verticalContentAlignment; //16", 
+
+        [ObservableProperty]
+        private string? rtfFilePath;
+
+        [ObservableProperty]
+        private ObservableCollection<SolidColorBrush> presetColors;
+
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
         private FrameworkElement RunningElement;
@@ -78,6 +95,17 @@ namespace MediaControlDistributionCenter.ViewModels
             letterSpacing = component.LetterSpacing;
             lineSpacing = component.LineSpacing;
             isLoopEnabled = component.IsLoopEnabled;
+            rtfFilePath = string.IsNullOrEmpty(component.RtfFilePath) ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount, component.RtfFilePath);
+            verticalContentAlignment = string.IsNullOrEmpty(component.VerticalContentAlignment) ? VerticalAlignment.Stretch : (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), component.VerticalContentAlignment);
+
+            presetColors = new ObservableCollection<SolidColorBrush>();
+            presetColors.Add(Brushes.Transparent);
+
+            // 加载 Material Design 预设颜色
+            foreach (var swatch in new SwatchesProvider().Swatches)
+            {
+                presetColors.Add(new SolidColorBrush(swatch.PrimaryHues[0].Color));
+            }
         }
 
         public override TextComponent ToModel(string userAccount, double ratio)
@@ -107,6 +135,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 LetterSpacing = LetterSpacing,
                 LineSpacing = LineSpacing,
                 IsLoopEnabled = IsLoopEnabled,
+                RtfFilePath = RtfFilePath == null ? string.Empty : RtfFilePath.Replace(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, userAccount) + "\\", string.Empty),
+                VerticalContentAlignment = VerticalContentAlignment.ToString(),
             };
         }
 
@@ -133,11 +163,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 LetterSpacing = 2,
                 LineSpacing = 2,
                 RollingSpeed = 2,
+                VerticalContentAlignment = VerticalAlignment.Top.ToString(),
             },userAccount);
+        }
+
+        [RelayCommand]
+        private void SelectColor(SolidColorBrush brush)
+        {
+            Background = brush.Color;
+            MaterialDesignThemes.Wpf.DialogHost.CloseDialogCommand.Execute(null, null);
         }
 
         protected override FrameworkElement DrawingContent()
         {
+            var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
             RichTextBox result = new()
             {
                 Width = Width * Ratio,
@@ -146,29 +185,47 @@ namespace MediaControlDistributionCenter.ViewModels
                 BorderThickness = new Thickness(2),
                 BorderBrush = new SolidColorBrush(Colors.White),
                 Background = new SolidColorBrush(Colors.Black),
+                VerticalContentAlignment = VerticalContentAlignment,
                 DataContext = this,
             };
 
-            Paragraph paragraph = new Paragraph();
-            Run run = new Run(Source);
+            if (!string.IsNullOrEmpty(RtfFilePath))
+            {
+                TextRange range = new TextRange(result.Document.ContentStart, result.Document.ContentEnd);
+                using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
+                {
+                    range.Load(fs, DataFormats.Xaml);
+                }
 
-            CreateBinding(paragraph, Paragraph.LineHeightProperty, nameof(LineSpacing));
-
-            CreateBinding(run, Run.TextProperty, nameof(Source));
-            CreateBinding(run, Run.BackgroundProperty, nameof(Background), new ColorToBrushConverter());
-            CreateBinding(run, Run.ForegroundProperty, nameof(Foreground), new ColorToBrushConverter());
-
-            paragraph.Inlines.Add(run);
-            result.Document.Blocks.Clear();
-            result.Document.Blocks.Add(paragraph);
-
+                foreach (Paragraph block in result.Document.Blocks)
+                {
+                    foreach(var run in block.Inlines)
+                    {
+                        run.FontSize = run.FontSize * mediaEditViewModel.CanvasRatio;
+                    }
+                }
+            }
+            else
+            {
+                Paragraph paragraph = new Paragraph();
+                Run run = new Run(Source);
+                run.Foreground = new SolidColorBrush(Colors.White);
+                paragraph.Inlines.Add(run);
+                result.Document.Blocks.Clear();
+                result.Document.Blocks.Add(paragraph);
+                result.FontSize = 12 * mediaEditViewModel.CanvasRatio;
+            }
             var converter = new ToMultipleConverter();
-            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
-            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
-            CreateBinding(result, TextBlock.FontSizeProperty, nameof(TextSize));
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio * mediaEditViewModel.CanvasRatio);
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio * mediaEditViewModel.CanvasRatio);
 
-            Canvas.SetLeft(result, Left * Ratio);
-            Canvas.SetTop(result, Top * Ratio);
+            var colorConverter = new ColorToBrushConverter();
+            CreateBinding(result, RichTextBox.BackgroundProperty, nameof(Background), colorConverter);
+
+            CreateBinding(result, RichTextBox.VerticalContentAlignmentProperty, nameof(VerticalContentAlignment));
+
+            Canvas.SetLeft(result, Left * Ratio * mediaEditViewModel.CanvasRatio);
+            Canvas.SetTop(result, Top * Ratio * mediaEditViewModel.CanvasRatio);
             Canvas.SetZIndex(result, ZIndex);
 
             // 添加鼠标事件处理
@@ -198,9 +255,44 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (sender is RichTextBox richTextBox)
             {
-                richTextBox.IsReadOnly = false;
-                richTextBox.Focusable = true;
-                richTextBox.Focus();
+                TextRange range = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
+
+                var dialogBox = new CustomRichTextbox();
+                dialogBox.rtbEditor.Width = Width * Ratio;
+                dialogBox.rtbEditor.Height = Height * Ratio;
+                dialogBox.rtbEditor.VerticalContentAlignment = VerticalContentAlignment;
+                if (!string.IsNullOrEmpty(RtfFilePath))
+                {
+                    dialogBox.LoadData(RtfFilePath);
+                }
+                else
+                {
+                    dialogBox.LoadDataContent(Source);
+                }
+
+                var manageViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
+                richTextBox.Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.ShowDialogContentCommand.ExecuteAsync(dialogBox);
+
+                    if (!string.IsNullOrEmpty(RtfFilePath))
+                    {
+                        using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
+                        {
+                            range.Load(fs, DataFormats.Xaml);
+                        }
+
+                        foreach (Paragraph block in richTextBox.Document.Blocks)
+                        {
+                            foreach (var run in block.Inlines)
+                            {
+                                run.FontSize = run.FontSize * manageViewModel.CanvasRatio;
+                            }
+                        }
+
+                        Source = range.Text;
+                    }
+                });
             }
         }
 
@@ -221,21 +313,32 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height * Ratio,
                 IsReadOnly = true,
                 Focusable = false,
+                VerticalContentAlignment = VerticalContentAlignment,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏垂直滚动条
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden, // 隐藏水平滚动条
-                Background = Brushes.Transparent, // 设置背景透明
-                BorderThickness = new Thickness(0), // 去掉边框
-                FontSize = TextSize != 0 ? TextSize : 12
+                Background = new SolidColorBrush(Background), // 设置背景透明
+                BorderThickness = new Thickness(2), // 去掉边框
             };
 
-            Paragraph paragraph = new Paragraph();
-            Run run = new Run(Source);
-            run.Foreground = new SolidColorBrush(Foreground);
-            run.Background = new SolidColorBrush(Background);
-            paragraph.LineHeight = LineSpacing;
-            paragraph.Inlines.Add(run);
-            result.Document.Blocks.Clear();
-            result.Document.Blocks.Add(paragraph);
+            if (!string.IsNullOrEmpty(RtfFilePath))
+            {
+                TextRange range = new TextRange(result.Document.ContentStart, result.Document.ContentEnd);
+                using (FileStream fs = new FileStream(RtfFilePath, FileMode.Open))
+                {
+                    range.Load(fs, DataFormats.Xaml);
+                }
+            }
+            else
+            {
+                Paragraph paragraph = new Paragraph();
+                Run run = new Run(Source);
+                run.Foreground = new SolidColorBrush(Foreground);
+                run.Background = new SolidColorBrush(Background);
+                paragraph.LineHeight = LineSpacing;
+                paragraph.Inlines.Add(run);
+                result.Document.Blocks.Clear();
+                result.Document.Blocks.Add(paragraph);
+            }
 
             // 创建一个Canvas来放置RichTextBox
             Canvas canvas = new Canvas

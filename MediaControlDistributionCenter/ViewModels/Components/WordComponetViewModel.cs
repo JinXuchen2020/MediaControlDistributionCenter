@@ -1,6 +1,4 @@
-﻿//using Aspose.Words;
-//using Aspose.Words.Saving;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
@@ -99,22 +97,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Image result = CapturePage(1);
 
-            Border border = CreateBorder();
-            border.Child = result;
-
-            var converter = new ToMultipleConverter();
-            CreateBinding(border, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
-            CreateBinding(border, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
-
-            Canvas.SetLeft(border, Left * Ratio);
-            Canvas.SetTop(border, Top * Ratio);
-            Canvas.SetZIndex(border, ZIndex);
-
-            // 添加鼠标事件处理
-            border.MouseLeftButtonDown += Element_MouseLeftButtonDown;
-            border.MouseLeftButtonUp += Element_MouseLeftButtonUp;
-            border.MouseMove += Element_MouseMove;
-            border.MouseWheel += Element_MouseWheel;
+            Border border = CreateBorder(result);
 
             FrameworkElement = border;
 

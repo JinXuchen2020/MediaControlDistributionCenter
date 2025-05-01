@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Login_old.xaml.cs" />
     <Compile Remove="MainWindow_old.xaml.cs" />
     <Compile Remove="Views\Setting.xaml.cs" />
     <Compile Remove="Views\UserManage_old.xaml.cs" />
@@ -84,10 +85,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Login_old.xaml" />
     <Page Remove="MainWindow_old.xaml" />
     <Page Remove="Views\Setting.xaml" />
     <Page Remove="Views\UserManage_old.xaml" />
     <Page Remove="Views\UserRegister.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="NetFwTypeLib">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>58fbcf7c-e7a9-467c-80b3-fc65e8fcca08</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -165,9 +179,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspose.Words" Version="25.3.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="FluentFTP" Version="52.0.0" />
+    <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
@@ -189,7 +202,7 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
-    <PackageReference Include="Syncfusion.DocIORenderer.NET" Version="29.1.33" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net" Version="29.1.33" />
     <PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="29.1.33" />
     <PackageReference Include="WPFMediaKit" Version="2.3.0" />
   </ItemGroup>
@@ -210,9 +223,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Login_old.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Views\DeviceManagement\DeviceManage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -225,13 +235,11 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="数据.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MediaControlDistributionCenter.Services\MediaControlDistributionCenter.Services.csproj" />
+    <ProjectReference Include="..\MediaControlDistributionCenter.Utility\MediaControlDistributionCenter.Utility.csproj" />
   </ItemGroup>
 
 </Project>

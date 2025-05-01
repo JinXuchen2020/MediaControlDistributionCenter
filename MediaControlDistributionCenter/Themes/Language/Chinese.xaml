@@ -37,7 +37,7 @@
 
     <sys:String x:Key="LanguageKey_Code_LocalMode">本地模式</sys:String>
     <sys:String x:Key="LanguageKey_Code_RemoteMode">联网模式</sys:String>
-    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址：</sys:String>  
+    <sys:String x:Key="LanguageKey_Code_LinkDevice">机顶盒地址</sys:String>  
     <sys:String x:Key="LanguageKey_Code_Create">创建</sys:String>
     <sys:String x:Key="LanguageKey_Code_Change">变更</sys:String>
     <sys:String x:Key="LanguageKey_Code_ChangGroup">变更分组</sys:String>
@@ -61,6 +61,7 @@
     <sys:String x:Key="LanguageKey_Code_Start">开始</sys:String>
     <sys:String x:Key="LanguageKey_Code_End">结束</sys:String>
     <sys:String x:Key="LanguageKey_Code_Connect">连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Disconnect">断开</sys:String>
     <sys:String x:Key="LanguageKey_Code_Activate">激活</sys:String>
     <sys:String x:Key="LanguageKey_Code_Upgrade">升级</sys:String>
     <sys:String x:Key="LanguageKey_Code_Online">已激活</sys:String>
@@ -131,7 +132,21 @@
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_108">命令处理失败!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_109">设备已过期!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_110">当前没有可用的设备!</sys:String>
-    
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_111">扫描中...等待设备响应</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_112">扫描失败</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_113">扫描已停止</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_114">扫描完成，找到 {0} 个设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_115">探索网络设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_116">停止探索</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_117">网络设定</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_118">网络设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_119">本地设备</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_120">设备类型</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_121">当前设备已断开</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_122">当前设备已连接</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Device_Tooltip_123">本地设备无法手动连接</sys:String>
+
+
 
     <sys:String x:Key="LanguageKey_Code_Dashboard">仪表盘</sys:String>
     <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">能够有效运营/管理媒体</sys:String>
@@ -405,6 +420,10 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_204">每天</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_205">每小时</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_206">类型</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_207">垂直对齐</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_208">输入值</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_209">值</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_210">预设颜色</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    

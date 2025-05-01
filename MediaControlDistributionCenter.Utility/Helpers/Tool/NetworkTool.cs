@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,14 +56,41 @@ namespace MediaControlDistributionCenter.Helpers.Tool
             var result = new List<string>();
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (networkInterface.OperationalStatus == OperationalStatus.Up)
+                if (networkInterface.OperationalStatus == OperationalStatus.Up && networkInterface.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 {
                     var gatewayAddress = networkInterface.GetIPProperties().GatewayAddresses;
                     if (gatewayAddress != null)
                     {
                         foreach (var address in gatewayAddress)
                         {
-                            result.Add(address.Address.ToString());                            
+                            result.Add(address.Address.ToString());
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static List<IPAddress> GetBroadcastIp()
+        {
+            var result = new List<IPAddress>();
+            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (networkInterface.OperationalStatus == OperationalStatus.Up && networkInterface.NetworkInterfaceType != NetworkInterfaceType.Loopback && networkInterface.Supports(NetworkInterfaceComponent.IPv4))
+                {
+                    foreach (var ip in networkInterface.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            var ipBytes = ip.Address.GetAddressBytes();
+                            var maskBytes = ip.IPv4Mask.GetAddressBytes();
+                            var broadcastBytes = new byte[ipBytes.Length];
+                            for(int i = 0; i < ipBytes.Length; i++)
+                            {
+                                broadcastBytes[i] = (byte)(ipBytes[i] | ~maskBytes[i]);
+                            }
+
+                            result.Add(new IPAddress(broadcastBytes));
                         }
                     }
                 }

@@ -17,6 +17,8 @@
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:StringToTimeSpanConverter x:Key="StringToTimeSpanConverter" />
         <converters:NotEmptyConverter x:Key="NotEmptyConverter" />
+        <converters:ToMultipleConverter x:Key="ToMultipleConverter" />
+        <converters:PercentageConverter x:Key="PercentageConverter" />
         <local:ComponentDataTemplateSelector x:Key="ComponentDataTemplateSelector"/>
         <DataTemplate x:Key="VideoComponent" DataType="{x:Type viewmodels:VideoComponentViewModel}">
             <StackPanel Visibility="{Binding IsShowInfo, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, UpdateSourceTrigger=PropertyChanged}">
@@ -366,26 +368,35 @@
                             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_121}" Width="80" VerticalAlignment="Center"/>
-                                    <TextBox AcceptsReturn="True" Margin="0,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Height="150" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding Source}" />
+                                    <TextBox AcceptsReturn="True" IsReadOnly="True" Margin="0,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Width="150" Height="150" Background="#2A3255" Padding="5" BorderBrush="#404870" BorderThickness="1" Foreground="White" Text="{Binding Source}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_122}" Width="80" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80" VerticalAlignment="Center"/>
                                     <Button Width="25" Height="25" Padding="0" materialDesign:ButtonAssist.CornerRadius="2" Click="SelectColor_Click" Background="#16171D" BorderBrush="Gray">
                                         <materialDesign:PackIcon Kind="SelectColour" Foreground="#737B8A"  Width="22" Height="22"/>
                                     </Button>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_123}" Width="80" VerticalAlignment="Center"/>
-                                    <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding TextSize, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_207}" Width="80" VerticalAlignment="Center"/>
+                                    <Button Click="btnChangeContentVerticalAlign_Click" Width="25" Height="25" Margin="0,0,0,0" Padding="0" Tag="Bottom" materialDesign:ButtonAssist.CornerRadius="2" Background="{Binding VerticalContentAlignment, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Bottom}" BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="AlignVerticalBottom" Foreground="#737B8A" Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Click="btnChangeContentVerticalAlign_Click" Width="25" Height="25" Margin="10,0,0,0" Padding="0" Tag="Center" materialDesign:ButtonAssist.CornerRadius="2" Background="{Binding VerticalContentAlignment, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Center}" BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="AlignVerticalCenter" Foreground="#737B8A" Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Click="btnChangeContentVerticalAlign_Click" Width="25" Height="25" Margin="10,0,0,0" Padding="0" Tag="Top" materialDesign:ButtonAssist.CornerRadius="2" Background="{Binding VerticalContentAlignment, Converter={StaticResource SelectedValueConverter}, ConverterParameter=Top}" BorderBrush="Gray">
+                                        <materialDesign:PackIcon Kind="AlignVerticalTop" Foreground="#737B8A" Width="22" Height="22"/>
+                                    </Button>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                
+                                <!--<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_124}" Width="80" VerticalAlignment="Center"/>
                                     <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding LetterSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_125}" Width="80" VerticalAlignment="Center"/>
                                     <materialDesign:NumericUpDown Width="150" Padding="5" BorderBrush="#404870" BorderThickness="1" Value="{Binding LineSpacing, UpdateSourceTrigger=PropertyChanged}" ValueStep="1" Minimum="1"/>
-                                </StackPanel>
+                                </StackPanel>-->
                                 <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_126}" Width="80" Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <RadioButton VerticalAlignment="Center" Tag="pageTurning" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_127}" Click="PlayModeChanged_Click" IsChecked="{Binding PlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=pageTurning}" />
@@ -422,7 +433,7 @@
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_133}" Width="80" VerticalAlignment="Center"/>
                                     <ComboBox Width="150" ItemsSource="{Binding Effects}" Padding="5"  BorderBrush="#404870" BorderThickness="1" DisplayMemberPath="Name" SelectedValue="{Binding ComponentEffectKey}" SelectedValuePath="Key" />
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_134}" Width="80" VerticalAlignment="Center"/>
                                     <materialDesign:NumericUpDown VerticalAlignment="Center" Padding="5" Width="150" Value="{Binding EffectDuration, UpdateSourceTrigger=PropertyChanged}" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                 </StackPanel>
@@ -677,6 +688,9 @@
                                     <RowDefinition Height="280" />
                                     <RowDefinition Height="280" />
                                 </Grid.RowDefinitions>
+                                <Grid.Resources>
+                                    <CustomControls:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                </Grid.Resources>
                                 <StackPanel HorizontalAlignment="Right">
                                     <Button Width="60" Height="38" HorizontalAlignment="Right"
                                         Background="#090A0E" Foreground="WhiteSmoke"
@@ -688,19 +702,34 @@
                                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                         Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
                                 </StackPanel>
-                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_100}" Width="80"/>
                                     <StackPanel Width="700">
                                         <materialDesign:ColorPicker x:Name="bgColorPicker" Color="{Binding Background}" Height="250" />
                                         <TextBlock Text="{Binding Background}" Width="700" Foreground="White" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
-                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
-                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_101}" Width="80"/>
-                                    <StackPanel Width="700">
-                                        <materialDesign:ColorPicker x:Name="textColorPicker" Color="{Binding Foreground}" Height="250" />
-                                        <TextBlock Text="{Binding Foreground}" Foreground="White" VerticalAlignment="Center"/>
-                                    </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_210}" Width="80"/>
+                                    <ItemsControl ItemsSource="{Binding PresetColors}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="7" Rows="3"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Margin="5" Width="40" Height="40" Cursor="Hand" BorderThickness="1" BorderBrush="Gray" CornerRadius="20" Background="{Binding}" MouseDown="SelectPresetColor_MouseDown" >
+                                                    <materialDesign:RippleAssist.Feedback>
+                                                        <SolidColorBrush Color="#40000000" Opacity="0.5"/>
+                                                    </materialDesign:RippleAssist.Feedback>
+                                                    <!--<Border.InputBindings>
+                                                        <MouseBinding Gesture="LeftClick" Command="{Binding proxy.SelectColorCommand, Source={StaticResource proxy}}"/>
+                                                    </Border.InputBindings>-->
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -985,7 +1014,7 @@
                                             <DataTemplate>
                                                 <StackPanel Visibility="{Binding IsDeleted, Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=false}" Orientation="Horizontal" Margin="0,10" Height="115" MouseDown="SelectPage_MouseDown"  Background="{Binding IsSelected, Converter={StaticResource SelectedValueConverter}}">
                                                     <TextBlock Margin="20,0,0,0" FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Id}"/>
-                                                    <Image Margin="10,0,0,0" Width="150" Height="100" Source="{Binding Thumbnail}"/>
+                                                    <Image Margin="10,0,0,0" Width="150" Height="100" Stretch="Fill" Source="{Binding Thumbnail}"/>
                                                     <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
                                                         <TextBlock FontSize="14" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
                                                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -1012,11 +1041,12 @@
                             <Button Width="25" Height="25"
                                Padding="0"
                                materialDesign:ButtonAssist.CornerRadius="2"
+                               Click="MinusRatio_Click"
                                Background="#16171D"
                                BorderBrush="Gray">
                                 <materialDesign:PackIcon Kind="Minus" Foreground="White" />
                             </Button>
-                            <TextBox VerticalAlignment="Center" HorizontalContentAlignment="Center" BorderBrush="Gray" BorderThickness="0,2,0,2" Foreground="White" Padding="0"
+                            <TextBox VerticalAlignment="Center" LostFocus="canvasRatio_LostFocus" Text="{Binding CanvasRatio, Converter={StaticResource ToMultipleConverter}, ConverterParameter=100}" HorizontalContentAlignment="Center" BorderBrush="Gray" BorderThickness="0,2,0,2" Foreground="White" Padding="0"
                                  Width="50" Height="25"
                                  materialDesign:TextFieldAssist.SuffixText="%"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}">
@@ -1025,6 +1055,7 @@
                                Padding="0"
                                materialDesign:ButtonAssist.CornerRadius="2"
                                Background="#16171D"
+                               Click="PlusRatio_Click"
                                BorderBrush="Gray">
                                 <materialDesign:PackIcon Kind="Plus" Foreground="#FFE9E5E5"  Width="22" Height="22"/>
                             </Button>
@@ -1148,21 +1179,21 @@
                         <materialDesign:PackIcon Kind="AlignVerticalTop" Foreground="#737B8A"  Width="22" Height="22"/>
                     </Button>
                 </StackPanel>
-                <Grid>
+                <ScrollViewer HorizontalContentAlignment="Left" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="10" VerticalAlignment="Top" Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.72}" Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={StaticResource PercentageConverter}, ConverterParameter=0.59}" >
                     <Canvas                     
                         x:Name="MainCanvas"
                         Background="Black"
                         Width="768"
                         Height="576"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
                         AllowDrop="True" 
                         ClipToBounds="True"
                         DragEnter="MainCanvas_DragEnter"
                         DragOver="MainCanvas_DragOver"
                         Drop="MainCanvas_Drop"
                     />
-                </Grid>
+                </ScrollViewer>
             </StackPanel>
             <Border Grid.Row="2" Grid.Column="2" BorderThickness="2,0,0,0" BorderBrush="#40476F" Background="#16171D">
                 <Grid Grid.Row="2" Grid.Column="2">
@@ -1327,11 +1358,11 @@
                                             <Expander HorizontalAlignment="Stretch" Header="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_198}" Foreground="White" ExpandDirection="Down" IsExpanded="True" materialDesign:ExpanderAssist.ExpanderButtonPosition="Start" Background="#16171D">
                                                 <Border Margin="20,0" BorderThickness="0,1,0,0" BorderBrush="#404870">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" TextBlock.Foreground="White">
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_204}" Tag="perday" Margin="0,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perday}" />
                                                             <RadioButton VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_205}" Tag="perhour" Margin="25,0,0,0" Click="AdPlayModeChanged_Click" IsChecked="{Binding SelectedPage.AdPlayMode, Mode=OneWay, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=perhour}" />
                                                         </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" Height="40" Margin="0,10,0,0">
+                                                        <StackPanel Orientation="Horizontal" Height="40" >
                                                             <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_199}" Width="80" VerticalAlignment="Center"/>
                                                             <materialDesign:NumericUpDown VerticalAlignment="Center" Value="{Binding SelectedPage.PlayGap, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="150" BorderBrush="#404870" BorderThickness="1" ValueStep="1" Minimum="0"/>
                                                         </StackPanel>

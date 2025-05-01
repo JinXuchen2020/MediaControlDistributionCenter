@@ -44,6 +44,15 @@ namespace MediaControlDistributionCenter.Converters
                         }
                     }
                 }
+
+                if (value is Enum enumValue)
+                {
+                    var expectedValues = parameter.ToString()!.Split(";").ToList();
+                    if (expectedValues.Contains(enumValue.ToString()))
+                    {
+                        return "#30479C";
+                    }
+                }
                 return "#1D1E23";
             }
 

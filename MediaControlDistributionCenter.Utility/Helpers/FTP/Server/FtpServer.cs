@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.NetworkInformation;
-using MediaControlDistributionCenter.Helpers.Tool;
-using System.Collections;
-using System.IO.Pipes;
+﻿using MediaControlDistributionCenter.Helpers.Tool;
 using Serilog;
-using MediaControlDistributionCenter.Models;
+using System.Globalization;
+using System.Net;
+using System.Net.Sockets;
 
 namespace MediaControlDistributionCenter.Helpers.FTP.Server
 {
@@ -31,6 +21,8 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
         public string _userPwd = "admin";
 
         public bool IsStarted { get; private set; }
+
+        public bool IsInternet { get; private set; }
 
         public FtpServer(FtpConnection connection)
         {
@@ -60,7 +52,16 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
 
             if (string.IsNullOrEmpty(connection.IpAddress))
             {
-               List<string> addrs = NetworkTool.GetLocalIPv4Address();
+                var gatewayAddresses = NetworkTool.GetGatewayIp();
+                List<string> addrs = new List<string>();
+                if (gatewayAddresses.Count > 0)
+                {
+                    addrs = NetworkTool.GetLocalIPv4Address(gatewayAddresses[0]);
+                }
+                else
+                {
+                    addrs = NetworkTool.GetLocalIPv4Address();
+                }
                 if (addrs.Count > 0)
                 {
                     _Ip = addrs[0];
@@ -97,7 +98,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             }
         }
         // 启动服务器
-        public void FtpServerStart()
+        public void FtpServerStart(bool isInternet = false)
         {
             if (myTcpListener == null)
             {
@@ -105,6 +106,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
                 listenThread.IsBackground = true;
                 listenThread.Start();
                 IsStarted = true;
+                IsInternet = isInternet;
             }
         }
 
@@ -114,7 +116,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Server
             myTcpListener = new TcpListener(IPAddress.Parse(_Ip), _port);
             // 开始监听传入的请求
             myTcpListener.Start();
-            AddInfo("启动FTP服务成功！");
+            AddInfo($"启动{(IsInternet ? "网络" : "本地")}FTP服务成功！");
             AddInfo("Ftp服务器运行中...[点击”停止“按钮停止FTP服务]");
             while (true)
             {

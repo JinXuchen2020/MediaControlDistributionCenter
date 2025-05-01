@@ -1,5 +1,4 @@
-﻿using Aspose.Words;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
@@ -56,36 +55,36 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
         private readonly ITimeSyncConfigService timeSyncConfigService;
-        private readonly Communication communication;
 
-        public DeviceControlViewModel(Communication communication) 
+        public DeviceControlViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.deviceControlService = GetService<IDeviceControlService>();
             this.timeSyncConfigService = GetService<ITimeSyncConfigService>();
             timeZoneInfos = new ObservableCollection<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones());
-            this.communication = communication;
 
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeName));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeHint));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeDesciption));
             RegisterLanguageProperty(this.GetType(), nameof(CommandTypeColumnName));
             RegisterLanguageProperty(this.GetType(), nameof(RefreshTimeZone));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
         public override void LoadData()
         {
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
-                    CurrentDevice = viewModel;
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
                 return viewModel;
             }));
+
+            CurrentDevice = CurrentDevice ?? Devices.FirstOrDefault(c => c.IsConnected);
         }
 
         public async Task SyncDeviceTimeControls()
@@ -158,16 +157,18 @@ namespace MediaControlDistributionCenter.ViewModels
             MaterialDesignThemes.Wpf.DialogHost.Close(DialogHostId);
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentUser.Account);
-            if(CurrentDevice?.SNumber != ConnectedDevice?.SNumber)
-            {
-                isSynced = false;
-            }
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    //await DetectCommunication(CurrentUser.Account);
+        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null);
+        //    if (CurrentDevice?.SNumber != localDevice?.SnCode)
+        //    {
+        //        isSynced = false;
+        //        CurrentDevice = localDevice?.DeviceViewModel;
+        //    }
+        //    LoadData();
+        //}
 
         [RelayCommand]
         private async Task ExecuteRealTimeControl()
@@ -436,11 +437,11 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
                 return viewModel;
             }));

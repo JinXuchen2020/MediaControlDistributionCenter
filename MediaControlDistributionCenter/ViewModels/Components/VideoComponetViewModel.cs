@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Views.CustomControls;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 using Syncfusion.Presentation;
 using System;
@@ -198,22 +199,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     Stretch = Stretch.Fill,
                 };
 
-                Border result = CreateBorder();
-                result.Child = image;
-
-                var converter = new ToMultipleConverter();
-                CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio);
-                CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio);
-
-                Canvas.SetLeft(result, Left * Ratio);
-                Canvas.SetTop(result, Top * Ratio);
-                Canvas.SetZIndex(result, ZIndex);
-
-                // 添加鼠标事件处理
-                result.MouseLeftButtonDown += Element_MouseLeftButtonDown;
-                result.MouseLeftButtonUp += Element_MouseLeftButtonUp;
-                result.MouseMove += Element_MouseMove;
-                result.MouseWheel += Element_MouseWheel;
+                Border result = CreateBorder(image);
 
                 canvas.Children.Add(result);
                 canvas.Children.Remove(video);

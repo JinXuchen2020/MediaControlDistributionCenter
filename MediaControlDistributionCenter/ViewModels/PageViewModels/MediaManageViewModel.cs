@@ -1,5 +1,4 @@
-﻿using Aspose.Words;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Data.Entity;
@@ -91,9 +90,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public async Task SyncPrograms()
         {
-            if (ConnectionMode.Mode == "Local" && ConnectedDevice != null && !isSynced)
+            var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet)?.DeviceViewModel;
+            if (ConnectionMode.Mode == "Local" && localDevice != null && !isSynced)
             {
-                await ConnectedDevice.SyncProgramsCommand.ExecuteAsync(null);
+                await localDevice.SyncProgramsCommand.ExecuteAsync(null);
                 isSynced = true;
             }
         }
@@ -107,7 +107,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 UserAccount = CurrentUser.Account,
                 Status = 0,
                 Size = 0,
-                Resolution = "256*192",                
+                Resolution = "256*192",
             };
 
             var result = new ProgramViewModel();
@@ -188,26 +188,16 @@ namespace MediaControlDistributionCenter.ViewModels
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = viewModel.Name })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var playbackRecord in playRecords)
             {
-                if (ConnectedDevice != null)
+                foreach(var device in OnlineDevices.Where(c => c.SnCode == playbackRecord.MonitorSnCode && c.DeviceViewModel != null).Select(c => c.DeviceViewModel!))
                 {
-                    if (ConnectedDevice.SNumber == playbackRecord.MonitorSnCode)
+                    await device.ChangeProgramCommand.ExecuteAsync(viewModel);
+                    if (!string.IsNullOrEmpty(device.ErrorMessage))
                     {
-                        await DetectCommunication(CurrentUser.Account);
-                        await ConnectedDevice.ChangeProgramCommand.ExecuteAsync(viewModel);
-                        if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
-                        {
-                            ErrorMessage = ConnectedDevice.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            ConnectedDevice.ErrorMessage = null;
-                            return;
-                        }
-                        break;
+                        ErrorMessage = device.ErrorMessage;
+                        await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        device.ErrorMessage = null;
+                        return;
                     }
-                }
-                else
-                {
-                    var device = deviceService.GetAll(new MonitorDto { SnCode = playbackRecord.MonitorSnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                    // 如果设备在线，发送网络版命令                    
                 }
             }
 
@@ -234,11 +224,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var selectedItems = Medias.Where(c => c.IsSelected).ToList();
             var playbackRecordService = GetService<IPlaybackRecordService>();
             var publishedPrograms = new List<ProgramDto>();
-            if (ConnectedDevice != null)
+
+            foreach (var connectedDevice in OnlineDevices.Where(c=>c.DeviceViewModel!= null).Select(c => c.DeviceViewModel!))
             {
                 foreach (var selectedItem in selectedItems)
                 {
-                    var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name, MonitorSnCode = ConnectedDevice.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                    var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = selectedItem.Name, MonitorSnCode = connectedDevice.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
                     if (playRecords.Count > 0)
                     {
                         publishedPrograms.Add(selectedItem.ToModel());
@@ -248,13 +239,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (publishedPrograms.Count > 0)
                 {
                     var modelString = JsonConvert.SerializeObject(publishedPrograms);
-                    await DetectCommunication(CurrentUser.Account);
-                    await ConnectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
-                    if (!string.IsNullOrEmpty(ConnectedDevice.ErrorMessage))
+                    await connectedDevice.DeleteProgramCommand.ExecuteAsync(modelString);
+                    if (!string.IsNullOrEmpty(connectedDevice.ErrorMessage))
                     {
-                        ErrorMessage = ConnectedDevice.ErrorMessage;
+                        ErrorMessage = connectedDevice.ErrorMessage;
                         await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        ConnectedDevice.ErrorMessage = null;
+                        connectedDevice.ErrorMessage = null;
                         return;
                     }
                 }

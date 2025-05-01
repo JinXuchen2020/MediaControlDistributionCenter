@@ -30,8 +30,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         private readonly UserControllerViewModel manageViewModel;
         private readonly IServiceProvider serviceProvider;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public UserControllers(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, UserControllerViewModel viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
@@ -65,7 +63,6 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     break;
                 case "DeviceManage":
                     var content = serviceProvider.GetRequiredService<DeviceManage>();
-                    content.ConnectedDeviceChanged += (sender, args) => ConnectedDeviceChanged?.Invoke(sender, args);
                     GoCotent(content, 2);
                     break;
                 case "DeviceControl":

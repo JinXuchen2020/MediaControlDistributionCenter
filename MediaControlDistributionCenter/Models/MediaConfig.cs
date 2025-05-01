@@ -144,7 +144,10 @@ namespace MediaControlDistributionCenter.ViewModels
         public double LetterSpacing{ get; set; } //10",                  //字体间距
         
         public double LineSpacing { get; set; } //16", 
-          
+
+        public string RtfFilePath { get; set; }
+
+        public string VerticalContentAlignment { get; set; }
     }
 
     public class ColorTextComponent : BaseComponent

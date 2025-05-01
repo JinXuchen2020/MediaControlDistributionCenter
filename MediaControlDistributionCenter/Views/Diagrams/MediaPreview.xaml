@@ -12,9 +12,10 @@
     <Grid>
         <Grid Background="#090A0E" MouseDown="DragMove_MouseDown">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="60" />
                 <RowDefinition Height="2" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="2" />
             </Grid.RowDefinitions>
 
             <StackPanel Margin="10">
@@ -35,12 +36,13 @@
             <Canvas  
                 Grid.Row="2"
                 x:Name="MainCanvas"
-                Background="Black"
+                Background="white"
                 HorizontalAlignment="Center"
-                Margin="10,10,0,0"
+                Margin="10"
                 VerticalAlignment="Center"
                 ClipToBounds="True"
             />
+            <Border Grid.Row="3" Width="auto" Background="#40476F"/>
         </Grid>
 
         <!-- 加载页面 -->

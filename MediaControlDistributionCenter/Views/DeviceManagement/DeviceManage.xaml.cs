@@ -15,8 +15,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     {
         private readonly DeviceManageViewModel manageViewModel;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public DeviceManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, DeviceManageViewModel deviceManageViewModel)
         {
             if (dashboardViewModel.CurrentUser.Role == "user")
@@ -43,8 +41,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
         {
-            manageViewModel.DetectConnectedDeviceCommand.Execute(null);
-            ConnectedDeviceChanged?.Invoke(sender, null);
+            //manageViewModel.DetectConnectedDeviceCommand.Execute(null);
             //if (manageViewModel.ConnectionMode.Mode == "Local")
             //{
             //    var communication = App.ServicesProvider.GetRequiredService<Communication>();
@@ -222,20 +219,19 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             manageViewModel.LoadData();
         }
 
-        private void btnDetectConnectedDevice(object sender, MouseButtonEventArgs e)
-        {
-            if (manageViewModel.IsSearching)
-            {
-                return;
-            }
-            this.Dispatcher.Invoke(async () =>
-            {
-                manageViewModel.IsSearching = true;
-                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                ConnectedDeviceChanged?.Invoke(sender, null);
-                manageViewModel.IsSearching = false;
-            });
-        }
+        //private void btnDetectConnectedDevice(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (manageViewModel.IsSearching)
+        //    {
+        //        return;
+        //    }
+        //    this.Dispatcher.Invoke(async () =>
+        //    {
+        //        manageViewModel.IsSearching = true;
+        //        await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+        //        manageViewModel.IsSearching = false;
+        //    });
+        //}
 
         private void btnActivate_Click(object sender, RoutedEventArgs e)
         {

@@ -16,8 +16,6 @@ namespace MediaControlDistributionCenter.Views
         private readonly DashboardViewModel manageViewModel;
         private readonly IServiceProvider serviceProvider;
 
-        public event EventHandler ConnectedDeviceChanged;
-
         public Dashboard(DashboardViewModel dashboardViewModel, IServiceProvider serviceProvider)
         {
             manageViewModel = dashboardViewModel;
@@ -32,11 +30,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void Dashboard_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            Dispatcher.Invoke(async () =>
-            {
-                await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                ConnectedDeviceChanged?.Invoke(sender, null);
-            });
+            //Dispatcher.Invoke(async () =>
+            //{
+            //    await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+            //});
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

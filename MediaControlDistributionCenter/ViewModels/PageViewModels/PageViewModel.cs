@@ -2,14 +2,25 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP;
+using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
+using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Serilog;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -30,10 +41,31 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool? canDelete;
 
-        [ObservableProperty]
-        private static DeviceViewModel? connectedDevice;
-
         private static Dictionary<Type, List<string>> languagePropertyCache = new Dictionary<Type, List<string>>();
+
+        private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
+
+        private readonly IDetectService detectService;
+
+        public List<InternetDevice> OnlineDevices 
+        {
+            get
+            {
+                var devices = detectService.GetOnlineDevices();
+                foreach (var item in devices)
+                {
+                    item.StatusText = GetStatus(item.Status);
+                    item.TypeText = GetDeviceType(item.IsInternet);
+                }
+                return devices.ToList();
+            }
+        }
+
+        public PageViewModel()
+        {
+            detectService = GetService<IDetectService>();
+            detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
+        }
 
         public virtual void LoadData()
         {
@@ -44,7 +76,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task ShowConfirmDialog()
         {
             var dialog = new ResultConfirmDialog(this);
-            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageboxId);
+            await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.ErrorMessageBoxId);
         }
 
         [RelayCommand]
@@ -96,64 +128,23 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        protected async Task DetectCommunication(string userAccount)
+        protected void RegisterDevicesChangedAction(Type parentType, string propertyName)
         {
-            var client = App.ServicesProvider.GetRequiredService<Communication>();
-            if (ConnectedDevice != null && ConnectedDevice.UserId == userAccount && ConnectedDevice.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+            if (!devicesChangedRegisterActions.ContainsKey(parentType))
             {
-                return;
+                devicesChangedRegisterActions.Add(parentType, new List<string> { propertyName });
             }
-
-            var ipAddress = NetworkTool.GetGatewayIp();
-            foreach (var address in ipAddress)
+            else if (!devicesChangedRegisterActions[parentType].Contains(propertyName))
             {
-                client.Connect(address, "5001");
-                int count = 10;
-                while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
-                {
-                    await Task.Delay(500);
-                    count--;
-                }
-
-                if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
-                {
-                    break;
-                }
-            }
-
-            if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
-            {
-                ConnectedDevice = null;
-                return;
-            }
-
-            string path = CommunicationCmd.CmdSyncSnCode + "Connect";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                await ShowConfirmDialogCommand.ExecuteAsync(null);
-                return;
-            }
-
-            var snCode = client.SyncSnCodeResult ?? string.Empty;
-
-            var monitorService = GetService<IMonitorService>();
-            var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-            if (connectedDevice != null)
-            {
-                ConnectedDevice = new DeviceViewModel();
-                ConnectedDevice.Binding(connectedDevice);
-                ConnectedDevice.ConnectCommand.Execute(client);
-                client.StartHeart();
+                devicesChangedRegisterActions[parentType].Add(propertyName);
             }
         }
 
-        public void TranslateLanguageProperties()
+        public void InvokeDevicesChanged()
         {
-            foreach (var item in languagePropertyCache)
+            foreach (var item in devicesChangedRegisterActions)
             {
-                foreach(var proName in item.Value)
+                foreach (var proName in item.Value)
                 {
                     var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
                     var property = item.Key.GetProperty(proName);
@@ -177,11 +168,170 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                         else
                         {
-                            method?.Invoke(typeObj, null);  
+                            method?.Invoke(typeObj, null);
                         }
                     }
-                }                
+                }
             }
+        }
+
+        public void TranslateLanguageProperties()
+        {
+            foreach (var item in languagePropertyCache)
+            {
+                foreach (var proName in item.Value)
+                {
+                    var typeObj = App.ServicesProvider.GetRequiredService(item.Key);
+                    var property = item.Key.GetProperty(proName);
+                    if (property != null)
+                    {
+                        var propertyValue = (string)property.GetValue(typeObj)!;
+                        if (propertyValue != null)
+                        {
+                            property.SetValue(typeObj, LanguageTool.Instance.GetResourceTextValue(propertyValue));
+                        }
+                    }
+                    else
+                    {
+                        var method = item.Key.GetMethod(proName);
+                        var parameters = method?.GetParameters();
+                        if (parameters != null)
+                        {
+                            var parameterValues = new List<object?>();
+                            foreach (var parameter in parameters)
+                            {
+                                parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
+                            }
+                            method?.Invoke(typeObj, [.. parameterValues]);
+                        }
+                        else
+                        {
+                            method?.Invoke(typeObj, null);
+                        }
+                    }
+                }
+            }
+        }
+
+        //protected async Task DetectCommunication(string userAccount)
+        //{
+        //    var client = App.ServicesProvider.GetRequiredService<Communication>();
+        //    var localDevice = OnlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
+        //    var localDeviceModel = localDevice?.DeviceViewModel;
+        //    if (localDevice != null && localDeviceModel != null && localDeviceModel.UserId == userAccount && localDeviceModel.SelectedIpAddress == client.IpAddr && client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+        //    {
+        //        return;
+        //    }
+
+        //    var ipAddress = NetworkTool.GetGatewayIp();
+        //    foreach (var address in ipAddress)
+        //    {
+        //        client.Connect(address, "5001");
+        //        int count = 10;
+        //        while (client.netClient.State != Helpers.SocketClient.SocketState.Connected && count > 0)
+        //        {
+        //            await Task.Delay(500);
+        //            count--;
+        //        }
+
+        //        if (client.netClient.State == Helpers.SocketClient.SocketState.Connected)
+        //        {
+        //            break;
+        //        }
+        //    }
+
+        //    if (client.netClient.State != Helpers.SocketClient.SocketState.Connected)
+        //    {
+        //        if (localDevice != null)
+        //        {
+        //            localDevice.DeviceViewModel = null;
+        //        }
+        //        return;
+        //    }
+
+        //    string path = CommunicationCmd.CmdSyncSnCode + "Connect";
+        //    bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
+        //    if (!result)
+        //    {
+        //        ErrorMessage = $"{CommunicationCmd.CmdSyncSnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+        //        await ShowConfirmDialogCommand.ExecuteAsync(null);
+        //        return;
+        //    }
+
+        //    var snCode = client.SyncSnCodeResult ?? string.Empty;
+
+        //    var monitorService = GetService<IMonitorService>();
+        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+        //    if (connectedDevice != null)
+        //    {
+        //        if (localDevice == null)
+        //        {
+        //            localDevice = new InternetDevice
+        //            {
+        //                SnCode = snCode,
+        //                IpAddress = client.IpAddr,
+        //                Status = 1,
+        //                StatusText = GetStatus(1),
+        //                IsInternet = false,
+        //                TypeText = GetDeviceType(false)
+        //            };
+
+        //            OnlineDevices.Add(localDevice);
+        //        }
+        //        else
+        //        {
+        //            if (localDevice.IpAddress != client.IpAddr)
+        //            {
+        //                OnlineDevices.Remove(localDevice);
+        //                localDevice = new InternetDevice
+        //                {
+        //                    SnCode = snCode,
+        //                    IpAddress = client.IpAddr,
+        //                    Status = 1,
+        //                    StatusText = GetStatus(1),
+        //                    IsInternet = false,
+        //                    TypeText = GetDeviceType(false)
+        //                };
+
+        //                OnlineDevices.Add(localDevice);
+        //            }
+        //        }
+
+        //        localDevice.DeviceViewModel = new DeviceViewModel();
+        //        localDevice.DeviceViewModel.Binding(connectedDevice);
+        //        localDevice.DeviceViewModel.ConnectCommand.Execute(client);
+        //        client.StartHeart();
+
+        //        InvokeDevicesChanged();
+        //    }
+        //}
+
+        [RelayCommand]
+        private async Task DetectInternetDevices()
+        {
+            await detectService.StartDetect();            
+        }
+
+        [RelayCommand]
+        private async Task SendBroadcastMessage()
+        {
+            await detectService.SendBroadcastMessage();
+        }
+
+        [RelayCommand]
+        private async Task ConnectInternetDevice(InternetDevice device)
+        {
+            await detectService.ConnectDevice(device.SnCode);
+        }
+
+        public string GetStatus(int status)
+        {
+            return status == 1 ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
+        }
+
+        public string GetDeviceType(bool isInternet)
+        {
+            return isInternet ? FindResource("LanguageKey_Code_Device_Tooltip_118") : FindResource("LanguageKey_Code_Device_Tooltip_119");
         }
     }
 }

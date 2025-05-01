@@ -35,6 +35,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string selectedType = "All";
 
         [ObservableProperty]
+        private double canvasRatio;
+
+        [ObservableProperty]
         private ProgramViewModel currentMedia;
 
         [ObservableProperty]
@@ -75,6 +78,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 ratio = Canvas.Height / double.Parse(CurrentMedia.Height);
                 Canvas.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * Canvas.Height;
             }
+
+            ratio = 1;
+            Canvas.Width = double.Parse(CurrentMedia.Width);
+            Canvas.Height = double.Parse(CurrentMedia.Height);
+
+            Canvas.Width = CanvasRatio * Canvas.Width;
+            Canvas.Height = CanvasRatio * Canvas.Height;
+
             if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
             {
                 config = fileService.ReadFileContent<MediaConfig>(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name), Helpers.Constants.ConfigFileName, new MediaTypeConverter());
@@ -154,44 +165,44 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 case "Text":
                     var textComponent = (component as TextComponentViewModel)!;
-                    textComponent.Width = 300 / component.Ratio;
-                    textComponent.Height = 200 / component.Ratio;
+                    textComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 300 / component.Ratio / CanvasRatio);
+                    textComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
                     textComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Web":
                     var webComponent = (component as WebComponentViewModel)!;
-                    webComponent.Width = 220 / component.Ratio;
-                    webComponent.Height = 220 / component.Ratio;
+                    webComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 220 / component.Ratio / CanvasRatio);
+                    webComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 220 / component.Ratio / CanvasRatio);
                     webComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Stream":
                     var streamComponent = (component as StreamComponentViewModel)!;
-                    streamComponent.Width = 220 / component.Ratio;
-                    streamComponent.Height = 220 / component.Ratio;
+                    streamComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 220 / component.Ratio / CanvasRatio);
+                    streamComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 220 / component.Ratio / CanvasRatio);
                     streamComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Hdmi":
                     var hdmiComponent = (component as HdmiComponentViewModel)!;
-                    hdmiComponent.Width = 241 / component.Ratio;
-                    hdmiComponent.Height = 160 / component.Ratio;
+                    hdmiComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 241 / component.Ratio / CanvasRatio);
+                    hdmiComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 160 / component.Ratio / CanvasRatio);
                     hdmiComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Rss":
                     var rssComponent = (component as RssComponentViewModel)!;
-                    rssComponent.Width = 200 / component.Ratio;
-                    rssComponent.Height = 200 / component.Ratio;
+                    rssComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 200 / component.Ratio / CanvasRatio);
+                    rssComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
                     rssComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "Word":
                     var wordComponent = (component as WordComponentViewModel)!;
-                    wordComponent.Width = 229 / component.Ratio;
-                    wordComponent.Height = 329 / component.Ratio;
+                    wordComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 229 / component.Ratio / CanvasRatio);
+                    wordComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 329 / component.Ratio / CanvasRatio);
                     wordComponent.DrawContentCommand.Execute(canvas);
                     break;
                 case "ColorText":
                     var colorTextComponent = (component as ColorTextComponentViewModel)!;
-                    colorTextComponent.Width = 300 / component.Ratio;
-                    colorTextComponent.Height = 200 / component.Ratio;
+                    colorTextComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 300 / component.Ratio / CanvasRatio);
+                    colorTextComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
                     colorTextComponent.DrawContentCommand.Execute(canvas);
                     break;
             }
@@ -254,12 +265,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     // 创建一个RenderTargetBitmap
                     RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                        (int)canvas.ActualWidth,
-                        (int)canvas.ActualHeight,
+                        (int)canvas.Width,
+                        (int)canvas.Height,
                         96, 96,
                         PixelFormats.Pbgra32);
-                    //canvas.Measure(new Size(canvas.ActualWidth, canvas.ActualHeight));
-                    //canvas.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+                    //canvas.Measure(new Size(canvas.Width, canvas.Height));
+                    canvas.Arrange(new Rect(new Size(canvas.Width, canvas.Height)));
 
                     // 将MediaElement绘制到RenderTargetBitmap
                     renderTargetBitmap.Render(canvas);

@@ -1,18 +1,10 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
-using MediaControlDistributionCenter.Helpers.Tool;
 using Newtonsoft.Json;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace MediaControlDistributionCenter.Helpers.Broadcast
 {
@@ -42,17 +34,23 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncVolumeResult { get; private set; }
 
+        public bool IsInternet { get; private set; }
+
+        public FtpServer FtpServer => this.ftpServer;
+
         //本机及播控盒心跳数据
         public SocketHeart Heart = new SocketHeart();
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
+        private int retryCount = 0;
 
         private readonly FtpServer ftpServer;
 
-        public Communication(FtpServer ftpServer)
+        public Communication(FtpServer ftpServer, bool isInternet = false)
         {
             this.ftpServer = ftpServer;
+            this.IsInternet = isInternet;
             Heart.FtpPort = ftpServer._port;
             Heart.FtpUserName = ftpServer._userName;
             Heart.FtpUserPwd = ftpServer._userPwd;
@@ -77,7 +75,6 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public void StartHeart()
         {
-            StartFtpServer();
             //开启链接
             // 设置心跳包发送的间隔（例如，每5秒发送一次）
             int interval = 5000; // 5000毫秒即5秒 
@@ -100,25 +97,44 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             Heart.FtpIp = ftpServer._Ip;
             string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
             string path = "Heart|Client|" + HeartStr;
+            if (!path.EndsWith("##End##"))
+            {
+                path = string.Concat(path, "##End##");
+            }
 
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
 
             if (netClient.state == SocketState.Connected)
             {
                 netClient.Send(utf8Bytes);
+                retryCount = 0;
             }
             else
             {
                 Log.Information($"Socket connection disconnected, need to reconnect!");
-
+                //if (retryCount > 5)
+                //{
+                //    Disconnect();
+                //}
+                retryCount++;
                 Thread thread = new Thread(() =>
                 {
+                    string HeartStr = JsonConvert.SerializeObject(Heart, Newtonsoft.Json.Formatting.Indented);
+                    string path = "Heart|Client|" + HeartStr;
+                    if (!path.EndsWith("##End##"))
+                    {
+                        path = string.Concat(path, "##End##");
+                    }
+                    byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(path);
                     IPEndPoint iPEnd = new IPEndPoint(IPAddress.Parse(IpAddr), int.Parse(Port));
                     netClient.Connect(iPEnd);
 
                     Log.Information($"Socket connection reconnected!");
                     Log.Information($"Send Heart:{path}!");
-                    netClient.Send(utf8Bytes);
+                    if (netClient.state == SocketState.Connected)
+                    {
+                        netClient.Send(utf8Bytes);
+                    }
                 });
 
                 thread.Start();
@@ -140,20 +156,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public void StartFtpServer()
         {
-            var ipAddresses = NetworkTool.GetLocalIPv4Address(IpAddr);
-            if (ipAddresses.Count > 0 && ftpServer._Ip != ipAddresses[0])
-            {
-                ftpServer._Ip = ipAddresses[0];
-
-                if (ftpServer.IsStarted)
-                {
-                    ftpServer.FtpServerStop();
-                }
-            }
-
             if (!ftpServer.IsStarted)
             {
-                ftpServer.FtpServerStart();
+                Log.Information($"Connecting Ftp server IP:{ftpServer._Ip}, Port: {ftpServer._port}");
+                ftpServer.FtpServerStart(IsInternet);
             }
         }
 
@@ -183,57 +189,60 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     try
                     {
                         ReceiveOverCmdStr.Add(data[1]);
-                        if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
+                        if (data.Length == 3)
                         {
-                            SyncUserResult = data[2];
-                            Log.Information(SyncUserResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncUser.Split("|")[1]))
+                            {
+                                SyncUserResult = data[2];
+                                Log.Information(SyncUserResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
-                        {
-                            SyncDeviceControlResult = data[2];
-                            Log.Information(SyncDeviceControlResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncDeviceControl.Split("|")[1]))
+                            {
+                                SyncDeviceControlResult = data[2];
+                                Log.Information(SyncDeviceControlResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncProgram.Split("|")[1]))
-                        {
-                            SyncProgramResult = data[2];
-                            Log.Information(SyncProgramResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncProgram.Split("|")[1]))
+                            {
+                                SyncProgramResult = data[2];
+                                Log.Information(SyncProgramResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdVerifySnCode.Split("|")[1]))
-                        {
-                            VerifySnCodeResult = data[2];
-                            Log.Information(VerifySnCodeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdVerifySnCode.Split("|")[1]))
+                            {
+                                VerifySnCodeResult = data[2];
+                                Log.Information(VerifySnCodeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncSnCode.Split("|")[1]))
-                        {
-                            SyncSnCodeResult = data[2];
-                            Log.Information(SyncSnCodeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncSnCode.Split("|")[1]))
+                            {
+                                SyncSnCodeResult = data[2];
+                                Log.Information(SyncSnCodeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
-                        {
-                            SyncTimeResult = data[2];
-                            Log.Information(SyncTimeResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncTime.Split("|")[1]))
+                            {
+                                SyncTimeResult = data[2];
+                                Log.Information(SyncTimeResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdBrightness.Split("|")[1]))
-                        {
-                            SyncBrightnessResult = data[2];
-                            Log.Information(SyncBrightnessResult);
-                        }
+                            if (data[1].Contains(CommunicationCmd.CmdSyncBrightness.Split("|")[1]))
+                            {
+                                SyncBrightnessResult = data[2];
+                                Log.Information(SyncBrightnessResult);
+                            }
 
-                        if (data[1].Contains(CommunicationCmd.CmdSyncVolume.Split("|")[1]))
-                        {
-                            SyncVolumeResult = data[2];
-                            Log.Information(SyncVolumeResult);
+                            if (data[1].Contains(CommunicationCmd.CmdSyncVolume.Split("|")[1]))
+                            {
+                                SyncVolumeResult = data[2];
+                                Log.Information(SyncVolumeResult);
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        Log.Error(ex.Message);
                     }
                     break;
 
@@ -248,7 +257,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        Log.Error(ex.Message);
                     }
                     break;
                 default:
@@ -265,7 +274,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <returns></returns>
         public async Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime)
         {
-            // 设置 
+            // 设置
+            if (!Cmd.EndsWith("##End##"))
+            {
+                Cmd = string.Concat(Cmd, "##End##");
+            }
             using (var cancellationTokenSource = new CancellationTokenSource(waitExecTime))
             {
                 try
@@ -294,11 +307,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         bool SendCmd(CancellationToken cancellationToken, string Cmd)
         {
             // 获取等接收返回指令
+            Log.Information($"Command: {Cmd} is starting to send!");
             string[] CmdArr = Cmd.Replace("\0", "").Split("|");
             string CmdOver = CmdArr[1] + "Over";
 
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
             netClient.Send(utf8Bytes);
+            Log.Information($"Command: {Cmd} is sent!");
 
             while (true)
             {

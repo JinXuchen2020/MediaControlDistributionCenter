@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Views.CustomControls;
+using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
 using SqlSugar;
 using System;
@@ -501,8 +503,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 resizableControl.MakeResizable(selectedElement, canvas);
 
-                Left = newLeft / Ratio;
-                Top = newTop / Ratio;
+                var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
+                Left = newLeft / Ratio / mediaEditViewModel.CanvasRatio;
+                Top = newTop / Ratio / mediaEditViewModel.CanvasRatio;
 
                 startPoint = currentPoint;
             }
@@ -570,7 +573,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        protected Border CreateBorder()
+        protected Border CreateBorder(UIElement child)
         {
             Border result = new Border
             {
@@ -580,6 +583,23 @@ namespace MediaControlDistributionCenter.ViewModels
                 Height = Height,
                 DataContext = this,
             };
+
+            result.Child = child;
+
+            var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
+            var converter = new ToMultipleConverter();
+            CreateBinding(result, FrameworkElement.WidthProperty, nameof(Width), converter, Ratio * mediaEditViewModel.CanvasRatio);
+            CreateBinding(result, FrameworkElement.HeightProperty, nameof(Height), converter, Ratio * mediaEditViewModel.CanvasRatio);
+
+            Canvas.SetLeft(result, Left * Ratio * mediaEditViewModel.CanvasRatio);
+            Canvas.SetTop(result, Top * Ratio * mediaEditViewModel.CanvasRatio);
+            Canvas.SetZIndex(result, ZIndex);
+
+            // 添加鼠标事件处理
+            result.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+            result.MouseLeftButtonUp += Element_MouseLeftButtonUp;
+            result.MouseMove += Element_MouseMove;
+            result.MouseWheel += Element_MouseWheel;
 
             //var rectangle = new System.Windows.Shapes.Rectangle
             //{

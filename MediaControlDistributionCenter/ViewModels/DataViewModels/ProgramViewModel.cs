@@ -1,5 +1,4 @@
-﻿using Aspose.Words.Bibliography;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
@@ -120,7 +119,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Size = model.Size;
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
-            CreatedSource = model.CreatedSource;
+            CreatedSource = string.IsNullOrEmpty(model.CreatedSource) ? null : LanguageTool.Instance.GetResourceTextValue(model.CreatedSource);
             Status = model.Status;
             StatusText = GetStatus();
             GroupId = model.GroupId;

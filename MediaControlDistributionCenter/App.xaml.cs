@@ -1,18 +1,19 @@
-﻿using System.IO;
-using System.Windows;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
+﻿using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
-using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFwTypeLib;
 using Serilog;
 using Syncfusion.Licensing;
+using System.IO;
+using System.Windows;
 
 namespace MediaControlDistributionCenter
 {
@@ -48,6 +49,7 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<FtpServer>();
             services.AddSingleton<FtpClient>();
             services.AddSingleton<Communication>();
+            services.AddSingleton<IDetectService, DetectServiceLocal>();
 
             services.AddLocalServices();
             services.AddRemoteServices();
@@ -62,8 +64,6 @@ namespace MediaControlDistributionCenter
 
             services.AddPageViewServices();
             services.AddPageViewModelServices();
-
-            //SyncfusionLicenseProvider.RegisterLicense();
 
             ServicesProvider = services.BuildServiceProvider();
 
@@ -89,6 +89,13 @@ namespace MediaControlDistributionCenter
 
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+            INetFwMgr netFwMgr = (INetFwMgr)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwMgr"));
+            INetFwAuthorizedApplication app = (INetFwAuthorizedApplication)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwAuthorizedApplication"));
+            app.Name = nameof(MediaControlDistributionCenter);
+            app.ProcessImageFileName = Environment.ProcessPath;
+            app.Enabled = true;
+            netFwMgr.LocalPolicy.CurrentProfile.AuthorizedApplications.Add(app);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

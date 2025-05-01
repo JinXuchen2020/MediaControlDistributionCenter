@@ -48,6 +48,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = GetService<IProgramService>();
             this.userService = GetService<IUserService>();
             this.communication = communication;
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
@@ -58,13 +59,14 @@ namespace MediaControlDistributionCenter.ViewModels
                     var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     var deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
+                        viewModel.RefreshStatus();
                         viewModel.GetPrograms();
                         return viewModel;
                     });
@@ -88,13 +90,14 @@ namespace MediaControlDistributionCenter.ViewModels
                     deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
+                        viewModel.RefreshStatus();
                         viewModel.GetPrograms();
                         return viewModel;
                     });
@@ -118,13 +121,14 @@ namespace MediaControlDistributionCenter.ViewModels
                     deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
                     deviceViewModels = deviceResponse.Select(c =>
                     {
-                        var viewModel = new DeviceViewModel();
-                        viewModel.Binding(c);
-                        if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        if (viewModel == null)
                         {
-                            viewModel.ConnectCommand.Execute(communication);
+                            viewModel = new DeviceViewModel();
+                            viewModel.Binding(c);
                         }
 
+                        viewModel.RefreshStatus();
                         viewModel.GetPrograms();
                         viewModel.GetThumbnail();
                         return viewModel;
@@ -149,11 +153,11 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentUser.Account);
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    await DetectCommunication(CurrentUser.Account);
+        //    LoadData();
+        //}
     }
 }

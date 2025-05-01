@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -53,13 +54,28 @@ namespace MediaControlDistributionCenter
                     break;
             }
 
-            InitializeTimer();
+            //InitializeTimer();
 
             this.Loaded += Login_Loaded;
+            NetworkChange.NetworkAddressChanged += NetworkChange_NetworkAddressChanged;
+        }
+
+        private void NetworkChange_NetworkAddressChanged(object? sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(async () =>
+            {
+                //await viewModel.DetectConnectedDevice();
+                await viewModel.SendBroadcastMessageCommand.ExecuteAsync(null);
+            });
         }
 
         private void Login_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Dispatcher.Invoke(async () =>
+            {
+                //await viewModel.DetectConnectedDevice();
+                await viewModel.DetectInternetDevicesCommand.ExecuteAsync(null);
+            });
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -145,10 +161,10 @@ namespace MediaControlDistributionCenter
                 spAddress.Visibility = Visibility.Visible;
                 spSlogan.Visibility = Visibility.Visible;
                 viewModel.RefreshService();
-                Dispatcher.Invoke(async () =>
-                {
-                    await viewModel.DetectConnectedDevice();
-                });
+                //Dispatcher.Invoke(async () =>
+                //{
+                //    await viewModel.DetectConnectedDevice();
+                //});
             }
             else
             {
@@ -159,16 +175,16 @@ namespace MediaControlDistributionCenter
             }
         }
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            this.Dispatcher.Invoke(async () =>
-            {
-                if (!viewModel.IsSyncing)
-                {
-                    await viewModel.ConnectCommand.ExecuteAsync(null);
-                }
-            });
-        }
+        //private void btnConnect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.Dispatcher.Invoke(async () =>
+        //    {
+        //        if (!viewModel.IsSyncing)
+        //        {
+        //            await viewModel.ConnectCommand.ExecuteAsync(null);
+        //        }
+        //    });
+        //}
 
         private void InitializeTimer()
         {
@@ -186,10 +202,10 @@ namespace MediaControlDistributionCenter
         {
             if (viewModel.ConnectionMode.Mode == "Local")
             {
-                Dispatcher.Invoke(async () =>
-                {
-                    await viewModel.DetectConnectedDevice();
-                });
+                //Dispatcher.Invoke(async () =>
+                //{
+                //    await viewModel.DetectConnectedDevice();
+                //});
             }
         }
     }

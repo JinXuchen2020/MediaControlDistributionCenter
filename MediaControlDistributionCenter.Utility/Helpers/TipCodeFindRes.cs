@@ -169,19 +169,19 @@ new  TipCode(){ Code=526,Description="用户账户未完成安全审核", Langua
         /// </summary>
         /// <param name="code">错误编码</param>
         /// <returns></returns>
-        public static string GetTipString(int code)
-        {
-            var temp = tipTypes.Where(d => d.Code == code).FirstOrDefault();
-            if (temp != null)
-            {
-                string key = "LanguageKey_Code_Totip_" + temp.LanguageKey;
-                return Application.Current.TryFindResource(key)?.ToString();
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
+        //public static string GetTipString(int code)
+        //{
+        //    var temp = tipTypes.Where(d => d.Code == code).FirstOrDefault();
+        //    if (temp != null)
+        //    {
+        //        string key = "LanguageKey_Code_Totip_" + temp.LanguageKey;
+        //        return Application.Current.TryFindResource(key)?.ToString();
+        //    }
+        //    else
+        //    {
+        //        return string.Empty;
+        //    }
+        //}
 
     }
 }

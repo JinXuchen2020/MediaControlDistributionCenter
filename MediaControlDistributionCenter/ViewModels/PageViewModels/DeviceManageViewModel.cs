@@ -1,5 +1,4 @@
-﻿using Autofac.Core;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
@@ -49,22 +48,25 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IUserGroupService userGroupService;
         private readonly IPlaybackRecordService playbackRecordService;
         private readonly IProgramService programService;
-        private readonly Communication communication;
 
-        public DeviceManageViewModel(Communication communication) 
+        public DeviceManageViewModel() 
         {
             this.monitorService = GetService<IMonitorService>();
             this.monitorGroupService = GetService<IMonitorGroupService>();
             this.userService = GetService<IUserService>();
             this.userGroupService = GetService<IUserGroupService>();
             this.programService = GetService<IProgramService>();
-            this.communication = communication;
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override void LoadData()
         {
+            if (CurrentUser == null)
+            {
+                return;
+            }
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto
@@ -83,16 +85,16 @@ namespace MediaControlDistributionCenter.ViewModels
             var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id).Select(c =>
             {
-                var result = new DeviceViewModel();
-                result.Binding(c);
-
-                if (ConnectedDevice != null && result.SNumber == ConnectedDevice.SNumber)
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    result.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
 
-                result.GetPrograms();
-                return result;
+                viewModel.RefreshStatus();
+                viewModel.GetPrograms();
+                return viewModel;
             }));
         }
 
@@ -321,12 +323,12 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task DetectConnectedDevice()
-        {
-            await DetectCommunication(CurrentUser.Account);
-            LoadData();
-        }
+        //[RelayCommand]
+        //private async Task DetectConnectedDevice()
+        //{
+        //    await DetectCommunication(CurrentUser.Account);
+        //    LoadData();
+        //}
 
         protected override async Task SearchContent()
         {
@@ -338,12 +340,15 @@ namespace MediaControlDistributionCenter.ViewModels
             nameDevices.AddRange(snDevices);
             this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>
             {
-                var viewModel = new DeviceViewModel();
-                viewModel.Binding(c);
-                if (ConnectedDevice != null && viewModel.SNumber == ConnectedDevice.SNumber)
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                if (viewModel == null)
                 {
-                    viewModel.ConnectCommand.Execute(communication);
+                    viewModel = new DeviceViewModel();
+                    viewModel.Binding(c);
                 }
+
+                viewModel.RefreshStatus();
+                viewModel.GetPrograms();
                 return viewModel;
             }));
 

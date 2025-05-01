@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaControlDistributionCenter.Helpers.Broadcast.Entity
+namespace MediaControlDistributionCenter.Services.DTO
 {
     public class UsersSync
     {

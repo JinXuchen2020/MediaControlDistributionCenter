@@ -308,11 +308,11 @@
                                     <TextBlock MouseDown="ShowDisabledDevices_MouseDown"  VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_126}" />
                                 </StackPanel>
                             </Border>
-                            <Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" IsEnabled="{Binding IsSearching, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}">
+                            <!--<Border Background="#1D1E23" BorderBrush="#538AF0" BorderThickness="1" CornerRadius="2" Margin="0,0,4,0" IsEnabled="{Binding IsSearching, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock MouseDown="btnDetectConnectedDevice" VerticalAlignment="Center" Cursor="Hand" Margin="15,4,15,4" FontSize="16" Foreground="White" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_134}" />
                                 </StackPanel>
-                            </Border>
+                            </Border>-->
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Height="32" Margin="0,0,20,0" HorizontalAlignment="Right">
