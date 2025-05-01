@@ -121,7 +121,7 @@ namespace MediaControlDistributionCenter.Services
                                 onlineDevices.Add(device);
                                 InvokeDevicesChanged?.Invoke(this, null);
                                 Log.Information($"添加SN码：{snCode}的设备成功，开始连接!");
-                                ConnectDevice(snCode).Wait();
+                                ConnectDevice(device).Wait();
                             }
                         }
                     }
@@ -153,15 +153,8 @@ namespace MediaControlDistributionCenter.Services
             }
         }
 
-        public async Task ConnectDevice(string snCode)
+        public async Task ConnectDevice(InternetDevice device)
         {
-            var device = onlineDevices.FirstOrDefault(c => c.SnCode == snCode);
-            if (device == null) 
-            {
-                Log.Error($"Device with SnCode: {snCode} is not detected");
-                return;
-            }
-
             if (device.DeviceViewModel == null || !device.DeviceViewModel.IsConnected || !device.DeviceViewModel.IsRealTimeConnected())
             {
                 Log.Debug($"Start to connect device with IP {device.IpAddress}!");
@@ -178,6 +171,10 @@ namespace MediaControlDistributionCenter.Services
                 if (communication.netClient.State != Helpers.SocketClient.SocketState.Connected)
                 {
                     Log.Error($"Fail to connect device with IP: {device.IpAddress}");
+                    if (device.DeviceViewModel != null)
+                    {
+                        device.DeviceViewModel.ErrorMessage = "LanguageKey_Code_Device_Tooltip_100";
+                    }
                 }
                 else
                 {
