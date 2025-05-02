@@ -191,7 +191,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Width = model.Width;
             Height = model.Height;
             StartDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidStart);
-            EndDate = string.IsNullOrEmpty(model.ValidStart) ? DateTime.Now : DateTime.Parse(model.ValidEnd);
+            EndDate = string.IsNullOrEmpty(model.ValidEnd) ? DateTime.Now : DateTime.Parse(model.ValidEnd);
             ContactName = model.ContactName;
             ContactNumber = model.ContactPhone;
             Brightness = model.Brightness;
@@ -312,52 +312,22 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SendUser()
         {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                IsSendUserCompleted = await interactService.SendUser(this.ToModel(), client);
+            }
+            catch (Exception ex) 
+            {
+                ErrorMessage = ex.Message;
+                IsSendUserCompleted = false;
+            }
             if (client == null)
             {
                 Log.Debug($"Device:{Name} didn't set client!");
                 ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
                 return;
             }
-
-            //if (EndDate < DateTime.Now)
-            //{
-            //    Log.Debug($"Device:{Name} is not valid");
-            //    ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-            //    return;
-            //}
-
-            var userInfo = new UsersSync();
-            var users = new List<UserSync>();
-            var userService = GetService<IUserService>();
-            var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-            if (adminUser != null)
-            {
-                users.Add(new UserSync(adminUser, null));
-            }
-
-            var currentUser = userService.GetAll(new UserDto { Account = UserId }).GetAwaiter().GetResult().Data?.FirstOrDefault()!;
-            if (!string.IsNullOrEmpty(currentUser.AgentAccount))
-            {
-                var agentUser = userService.GetAll(new UserDto { Account = currentUser.AgentAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault();
-                if (agentUser != null)
-                {
-                    users.Add(new UserSync(agentUser, null));
-                }
-            }
-
-            users.Add(new UserSync(currentUser, new MonitorSync(this.ToModel(), null)));
-            userInfo.Users = users;
-
-            var userInfoString = JsonConvert.SerializeObject(userInfo);
-            string path = CommunicationCmd.CmdSendUser + userInfoString;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSendUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
-
-            IsSendUserCompleted = true;
         }
 
         [RelayCommand]

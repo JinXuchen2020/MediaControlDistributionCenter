@@ -51,6 +51,7 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<Communication>();
             services.AddSingleton<IDetectService, DetectServiceLocal>();
             services.AddSingleton<IDetectService, DetectService>();
+            services.AddSingleton<IDeviceInteractService, DeviceInteractServiceLocal>();
 
             services.AddLocalServices();
             services.AddRemoteServices();
