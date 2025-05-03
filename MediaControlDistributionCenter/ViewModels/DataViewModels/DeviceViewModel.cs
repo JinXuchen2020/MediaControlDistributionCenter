@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
@@ -14,6 +15,8 @@ using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OpenCvSharp;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -322,558 +325,271 @@ namespace MediaControlDistributionCenter.ViewModels
                 ErrorMessage = ex.Message;
                 IsSendUserCompleted = false;
             }
-            if (client == null)
-            {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
-            }
         }
 
         [RelayCommand]
         private async Task VerifyUser(UserViewModel user)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.VerifyUser(this.ToModel(), user.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            var userInfo = new { user.Account, user.Password, user.Role };
-            var userInfoString = JsonConvert.SerializeObject(userInfo);
-            string path = CommunicationCmd.CmdVerifyUser + userInfoString;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdVerifyUser} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task VerifySnCode()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.VerifySnCode(this.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdVerifySnCode + SNumber;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdVerifySnCode} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
-
-            if (client.VerifySnCodeResult == "fail")
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdVerifySnCode} {FindResource("LanguageKey_Code_Device_Tooltip_108")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task ChangeBrightness(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.ChangeBrightness(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdBrightness + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task ChangeVolume(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.ChangeVolume(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdVolume + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdVolume} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task Restart(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.Restart(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdReStart + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdReStart} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task ChangePower(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.ChangePower(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdScreen + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdScreen} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task TimeSync(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.TimeSync(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdTime + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdTime} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task SyncCurrentTime()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                CurrentTime = DateTime.Now;
-                return;
+                CurrentTime = await interactService.SyncCurrentTime(this.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
+                ErrorMessage = ex.Message;
             }
-
-            string path = CommunicationCmd.CmdSyncTime + "Current";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncTime} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
-
-            CurrentTime = string.IsNullOrEmpty(client.SyncTimeResult) ? DateTime.Now : DateTime.Parse(client.SyncTimeResult);
         }
 
         [RelayCommand]
         private async Task SyncBrightness()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                CurrentTime = DateTime.Now;
-                return;
+                Brightness = await interactService.SyncBrightness(this.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
+                ErrorMessage = ex.Message;
             }
-
-            string path = CommunicationCmd.CmdSyncBrightness + "Current";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncBrightness} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
-
-            Brightness = string.IsNullOrEmpty(client.SyncBrightnessResult) ? 1 : double.Parse(client.SyncBrightnessResult);
         }
 
         [RelayCommand]
         private async Task SyncVolume()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                CurrentTime = DateTime.Now;
-                return;
+                Volume = await interactService.SyncVolume(this.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
+                ErrorMessage = ex.Message;
             }
-
-            string path = CommunicationCmd.CmdSyncVolume + "Current";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncVolume} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
-            }
-
-            Volume = string.IsNullOrEmpty(client.SyncVolumeResult) ? 1 : double.Parse(client.SyncVolumeResult);
         }
 
         [RelayCommand]
         private async Task TimeGPSSync(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.TimeGPSSync(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdTimeGPS + value;
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdTimeGPS} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task UploadFile(string filePath)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
             }
-
-            client.StartFtpServer();
-            var ftpClient = new FtpClient(client.FtpServer);
-
-            var result = await ftpClient.UploadFileToFtpServer(filePath);
-            if (result)
+            catch (Exception ex)
             {
-                UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_118");
-            }
-            else
-            {
-                UploadResult = FindResource("LanguageKey_Code_Monitor_Tooltip_119");
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task SendProgram(ProgramViewModel program)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.SendProgram(this.ToModel(), program.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            var model = program.ToModel();
-            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
-            string path = CommunicationCmd.CmdSendProgram + syncString;
-            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdSendProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task ChangeProgram(ProgramViewModel program)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.ChangeProgram(this.ToModel(), program.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            var model = program.ToModel();
-            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
-            string path = CommunicationCmd.CmdChangeProgram + syncString;
-            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdChangeProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task EnableMonitor()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.EnableMonitor(this.ToModel(), client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            var model = this.ToModel();
-            string syncString = JsonConvert.SerializeObject(model, Formatting.Indented);
-            string path = CommunicationCmd.CmdEnableMonitor + syncString;
-            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdEnableMonitor} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task DeleteProgram(string value)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                await interactService.DeleteProgram(this.ToModel(), value, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdDeleteProgram + value;
-            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (!result)
-            {
-                ErrorMessage = $"{CommunicationCmd.CmdDeleteProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                return;
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task SyncFileSync(string fileName)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
+                SendResult =await interactService.SendSyncFile(this.ToModel(), fileName, client);
             }
-
-            if (EndDate < DateTime.Now)
+            catch (Exception ex)
             {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, fileName)).LongLength;
-            var syncObj = new FileSync
-            {
-                HostName = client.FtpServer._Ip,
-                ServerPort = client.FtpServer._port,
-                UserName = client.FtpServer._userName,
-                Password = client.FtpServer._userPwd,
-                FileName = fileName,
-                FileSize = fileSize
-            };
-            string fileSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
-            string path = CommunicationCmd.CmdSyncFile + fileSyncString;
-            var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result) 
-            {
-                SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_120");
-            }
-            else
-            {
-                SendResult = FindResource("LanguageKey_Code_Monitor_Tooltip_121");
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task SyncDeviceControl(IDeviceControlService deviceControlService)
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
-            }
-
-            if (EndDate < DateTime.Now)
-            {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdSyncDeviceControl + "Control";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
-            {
-                var syncResult = JsonConvert.DeserializeObject<IList<DeviceControlDto>>(client.SyncDeviceControlResult);
-                if (syncResult == null)
-                {
-                    ErrorMessage = $"{CommunicationCmd.CmdSyncDeviceControl} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                    return;
-                }
-
+                var syncResult = await interactService.SyncDeviceControl(this.ToModel(), client);
                 foreach (var item in syncResult)
                 {
                     await deviceControlService.Save(item);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncDeviceControl} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                ErrorMessage = ex.Message;
             }
         }
 
         [RelayCommand]
         private async Task SyncPrograms()
         {
-            if (client == null)
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
             {
-                Log.Debug($"Device:{Name} didn't set client!");
-                ErrorMessage = FindResource("LanguageKey_Code_Monitor_Tooltip_116");
-                return;
-            }
-
-            if (EndDate < DateTime.Now)
-            {
-                Log.Debug($"Device:{Name} is not valid");
-                ErrorMessage = FindResource("LanguageKey_Code_Device_Tooltip_109");
-                return;
-            }
-
-            string path = CommunicationCmd.CmdSyncProgram + "List";
-            bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            if (result)
-            {
-                var syncResult = JsonConvert.DeserializeObject<IList<ProgramDto>>(client.SyncProgramResult);
-                if (syncResult == null)
-                {
-                    ErrorMessage = $"{CommunicationCmd.CmdSyncProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
-                    return;
-                }
-
+                var syncResult = await interactService.SyncPrograms(this.ToModel(), client);
                 var programService = GetService<IProgramService>();
                 var playRecordService = GetService<IPlaybackRecordService>();
                 foreach (var item in syncResult)
@@ -890,9 +606,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorMessage = $"{CommunicationCmd.CmdSyncProgram} {FindResource("LanguageKey_Code_Device_Tooltip_101")}";
+                ErrorMessage = ex.Message;
             }
         }
 
