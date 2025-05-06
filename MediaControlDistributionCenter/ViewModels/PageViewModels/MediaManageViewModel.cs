@@ -59,12 +59,12 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             if (CurrentUser != null)
             {
                 var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-                var groups = programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramGroupDto>();
+                var groups = (await programGroupService.GetAll(new ProgramGroupDto { UserAccount = CurrentUser.Account })).Data?.ToList() ?? new List<ProgramGroupDto>();
                 groups.Insert(0, new ProgramGroupDto
                 {
                     Id = -1,
@@ -78,7 +78,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     return result;
                 }));
 
-                var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                var medias = (await programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, GroupId = groupId })).Data?.ToList() ?? new List<ProgramDto>();
                 this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
                 {
                     var result = new ProgramViewModel();
@@ -146,7 +146,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programGroupService.Save(groupViewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
                 CloseDialog();
             }
         }
@@ -167,7 +167,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            LoadData();
+            await LoadData();
             CloseDialog();
         }
 
@@ -214,7 +214,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
             }
         }
 
@@ -261,7 +261,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programService.DeleteBatch(selectedItems.Select(c => c.Id).ToList());
             if (response.Code == 200) 
             {
-                LoadData();
+                await LoadData();
             }
         }
 
@@ -322,7 +322,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                     }
 
-                    LoadData();
+                    await LoadData();
                     viewModel.Id = Medias.First(c => c.Name == viewModel.Name).Id;
                     CloseDialog();
                 }                
@@ -335,7 +335,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await programGroupService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                var agentUsers = programService.GetAll(new ProgramDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                var agentUsers = (await programService.GetAll(new ProgramDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<ProgramDto>();
                 foreach (var item in agentUsers)
                 {
                     item.GroupId = null;
@@ -343,14 +343,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            LoadData();
+            await LoadData();
         }
 
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var medias = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            var medias = (await programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true)).Data?.ToList() ?? new List<ProgramDto>();
             this.Medias = new ObservableCollection<ProgramViewModel>(medias.Select(c =>
             {
                 var viewModel = new ProgramViewModel();

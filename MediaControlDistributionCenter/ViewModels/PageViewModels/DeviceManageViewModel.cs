@@ -61,14 +61,14 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             if (CurrentUser == null)
             {
                 return;
             }
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var groups = monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorGroupDto>();
+            var groups = (await monitorGroupService.GetAll(new MonitorGroupDto { UserAccount = CurrentUser.Account })).Data?.ToList() ?? new List<MonitorGroupDto>();
             groups.Insert(0, new MonitorGroupDto
             {
                 Id = -1,
@@ -82,8 +82,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 return result;
             }));
 
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            this.Devices = new ObservableCollection<DeviceViewModel>(devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id).Select(c =>
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, GroupId = groupId })).Data?.ToList() ?? new List<MonitorDto>();
+            var devicesList = new List<DeviceViewModel>();
+            foreach (var c in devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id)) 
             {
                 var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
@@ -93,9 +94,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
 
                 viewModel.RefreshStatus();
-                viewModel.GetPrograms();
-                return viewModel;
-            }));
+                await viewModel.GetPrograms();
+                devicesList.Add(viewModel);
+            }
+            this.Devices = new ObservableCollection<DeviceViewModel>(devicesList);
         }
 
         [RelayCommand]
@@ -114,7 +116,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var viewModel = new DeviceViewModel();
             viewModel.UserId = CurrentUser.Account;
-            viewModel.OwnerName = userService.GetAll(new UserDto { Account = CurrentUser.Account }).GetAwaiter().GetResult().Data!.First().Company;
+            viewModel.OwnerName = CurrentUser.Name;
             viewModel.DeviceId = "";
             viewModel.Status = 0;
             viewModel.Enabled = 1;
@@ -135,7 +137,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorGroupService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
                 CloseDialog();
             }
         }
@@ -154,7 +156,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (response.Code == 200)
                 {
                     SelectedGroupId = null;
-                    LoadData();
+                    await LoadData();
                     CloseDialog();
                 }
             }
@@ -166,7 +168,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorGroupService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                var agentUsers = monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+                var agentUsers = (await monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<MonitorDto>();
                 foreach (var item in agentUsers)
                 {
                     item.GroupId = null;
@@ -174,7 +176,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            LoadData();
+            await LoadData();
         }
 
         [RelayCommand]
@@ -189,7 +191,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = viewModel.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
                 await playbackRecordService.DeleteBatch(playRecords.Select(c => c.Id).ToList());
-                LoadData();
+                await LoadData();
             }
         }
 
@@ -232,7 +234,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var response = await monitorService.EnableById(viewModel.Id, viewModel.Enabled == 1);
                 if (response.Code == 200)
                 {
-                    LoadData();
+                    await LoadData();
                 }
             }
         }
@@ -272,7 +274,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var response = await monitorService.Save(viewModel.ToModel());
                 if (response.Code == 200)
                 {
-                    LoadData();
+                    await LoadData();
                 }
             }
         }
@@ -318,7 +320,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await monitorService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
                 CloseDialog();
             }
         }
@@ -334,11 +336,12 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var nameDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            var snDevices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var nameDevices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true)).Data?.ToList() ?? new List<MonitorDto>();
+            var snDevices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString, GroupId = groupId })).Data?.ToList() ?? new List<MonitorDto>();
 
             nameDevices.AddRange(snDevices);
-            this.Devices = new ObservableCollection<DeviceViewModel>(nameDevices.Select(c =>
+            var devicesList = new List<DeviceViewModel>();
+            foreach (var c in nameDevices)
             {
                 var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
@@ -348,11 +351,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
 
                 viewModel.RefreshStatus();
-                viewModel.GetPrograms();
-                return viewModel;
-            }));
-
-            await Task.CompletedTask;
+                await viewModel.GetPrograms();
+                devicesList.Add(viewModel);
+            }
+            this.Devices = new ObservableCollection<DeviceViewModel>(devicesList);
         }
     }
 }

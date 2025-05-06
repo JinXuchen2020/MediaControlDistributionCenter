@@ -27,9 +27,18 @@ namespace MediaControlDistributionCenter.Views
         {
             InitializeComponent();
             manageViewModel = mediaContentViewModel;
-            manageViewModel.LoadData();
             DataContext = mediaContentViewModel;
             this.fileService = fileService;
+
+            this.Loaded += MediaContent_Loaded;
+        }
+
+        private void MediaContent_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnGroupAdd_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -70,7 +79,10 @@ namespace MediaControlDistributionCenter.Views
         {
             var groupViewModel = ((sender as DockPanel).DataContext as MediaGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnUploadStart_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -211,7 +223,10 @@ namespace MediaControlDistributionCenter.Views
             var tag = ((sender as Border).Tag as string)!;
             manageViewModel.SelectedType = tag;
             manageViewModel.SearchString = null;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnGroupDelete_Click(object sender, RoutedEventArgs e)

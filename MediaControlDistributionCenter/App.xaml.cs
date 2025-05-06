@@ -158,11 +158,11 @@ namespace MediaControlDistributionCenter
             IDictionary<string, string> languageResourceCache = new Dictionary<string, string>();
             var languageResource = base.Resources.MergedDictionaries.FirstOrDefault(rItem => rItem.Contains("LanguageKey_LanguageResourceKey"));
             if (languageResource == null) return languageResourceCache;
-            foreach (var key in languageResource.Keys)
+            foreach (string key in languageResource.Keys)
             {
                 var languageKey = key.ToString();
                 var languageValue = languageResource[key].ToString();
-                if (!languageResourceCache.ContainsKey(languageValue)
+                if (!string.IsNullOrEmpty(languageValue) && !languageResourceCache.ContainsKey(languageValue)
                     && languageKey.Contains("LanguageKey_Code_"))
                     languageResourceCache.Add(languageValue, languageKey);
             }
@@ -174,11 +174,12 @@ namespace MediaControlDistributionCenter
             IDictionary<string, string> languageResourceCache = LanguageTool.Instance.LanguageResourceCache;
             var languageResource = langRd;
             if (languageResource == null) return;
-            foreach (var key in languageResource.Keys)
+            foreach (string key in languageResource.Keys)
             {
                 var languageKey = key.ToString();
                 var languageValue = languageResource[key].ToString();
-                if (!languageResourceCache.ContainsKey(languageValue) && languageKey.Contains("LanguageKey_Code_"))
+                if (!string.IsNullOrEmpty(languageValue) && !languageResourceCache.ContainsKey(languageValue)
+                   && languageKey.Contains("LanguageKey_Code_"))
                     languageResourceCache.Add(languageValue, languageKey);
             }
         }

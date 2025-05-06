@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 
 namespace MediaControlDistributionCenter.ViewModels
@@ -67,8 +68,9 @@ namespace MediaControlDistributionCenter.ViewModels
             detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
         }
 
-        public virtual void LoadData()
+        public virtual async Task LoadData()
         {
+            await Task.CompletedTask;
 
         }
 
@@ -164,7 +166,21 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
                             }
-                            method?.Invoke(typeObj, [.. parameterValues]);
+                            if (method != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task))
+                            {
+                                Task.Run(async () =>
+                                {
+                                    if (method.Invoke(typeObj, [.. parameterValues]) is Task methodTask)
+                                    {
+                                        await methodTask;
+                                    }
+
+                                }).Wait();
+                            }
+                            else
+                            {
+                                method?.Invoke(typeObj, [.. parameterValues]);
+                            }
                         }
                         else
                         {
@@ -202,7 +218,22 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
                             }
-                            method?.Invoke(typeObj, [.. parameterValues]);
+
+                            if (method != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task))
+                            {
+                                Task.Run(async () =>
+                                {
+                                    if (method.Invoke(typeObj, [.. parameterValues]) is Task methodTask)
+                                    {
+                                        await methodTask;
+                                    }
+
+                                }).Wait();
+                            }
+                            else
+                            {
+                                method?.Invoke(typeObj, [.. parameterValues]);
+                            }
                         }
                         else
                         {
@@ -261,7 +292,7 @@ namespace MediaControlDistributionCenter.ViewModels
         //    var snCode = client.SyncSnCodeResult ?? string.Empty;
 
         //    var monitorService = GetService<IMonitorService>();
-        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode })).Data?.FirstOrDefault();
         //    if (connectedDevice != null)
         //    {
         //        if (localDevice == null)

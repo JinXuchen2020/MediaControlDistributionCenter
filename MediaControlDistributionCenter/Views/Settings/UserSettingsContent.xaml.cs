@@ -55,9 +55,17 @@ namespace MediaControlDistributionCenter.Views
 
             manageViewModel = userSettingViewModel;
             manageViewModel.PageType = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? "internet" : "user";
-            manageViewModel.LoadData();
             DataContext = userSettingViewModel;
             this.Unloaded += UserSettingsContent_Unloaded;
+            this.Loaded += UserSettingsContent_Loaded;
+        }
+
+        private void UserSettingsContent_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void UserSettingsContent_Unloaded(object sender, System.Windows.RoutedEventArgs e)
@@ -189,7 +197,7 @@ namespace MediaControlDistributionCenter.Views
                 }
 
                 await manageViewModel.ConnectInternetDeviceCommand.ExecuteAsync(device);
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
             });
         }
 
@@ -211,7 +219,7 @@ namespace MediaControlDistributionCenter.Views
                 }
 
                 await manageViewModel.DisconnectInternetDeviceCommand.ExecuteAsync(device);
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
             });
         }
     }

@@ -141,11 +141,11 @@ namespace MediaControlDistributionCenter.ViewModels
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
-        public static ValidationResult ValidateAccount(string name, ValidationContext context)
+        public static async Task<ValidationResult> ValidateAccount(string name, ValidationContext context)
         {
             ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
             var userService = GetService<IProgramService>();
-            var response = userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+            var response = (await userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Data?.ToList() ?? new List<ProgramDto>();
             bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
 
             if (isValid)

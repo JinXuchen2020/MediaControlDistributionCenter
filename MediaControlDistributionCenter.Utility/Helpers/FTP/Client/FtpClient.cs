@@ -44,7 +44,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                     requestStream.Write(fileContents, 0, fileContents.Length);
                 }
 
-                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
                 {
                     return response.StatusCode == FtpStatusCode.ClosingData;
                 }
@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
             request.UsePassive = false;
             request.UseBinary = true;
             request.Credentials = new NetworkCredential(ftpServer._userName, ftpServer._userPwd);
-            using (var response = (FtpWebResponse)request.GetResponse())
+            using (var response = (FtpWebResponse)(await request.GetResponseAsync()))
             {
                 using (var stream = response.GetResponseStream())
                 {

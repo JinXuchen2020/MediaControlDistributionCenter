@@ -51,7 +51,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.SyncPrograms();
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
             });
         }
 
@@ -75,7 +75,10 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var groupViewModel = ((sender as DockPanel).DataContext as ProgramGroupViewModel)!;
             groupViewModel.IsSelected = true;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
@@ -115,7 +118,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                     var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
                     viewModel.IsSelected = true;
                     await manageViewModel.DeleteMediaCommand.ExecuteAsync(null);
-                    manageViewModel.LoadData();
+                    await manageViewModel.LoadData();
                 }
 
                 manageViewModel.CanDelete = null;
@@ -269,7 +272,10 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if (viewModel.Id != 0)
             {
-                manageViewModel.LoadData();
+                Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.LoadData();
+                });
                 manageViewModel.SelectedMedia = manageViewModel.Medias.First(c => c.Id == viewModel.Id);
                 var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);

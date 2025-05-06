@@ -29,8 +29,6 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override string Type => "Web";
 
-        private BitmapSource thumbnail;
-
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 

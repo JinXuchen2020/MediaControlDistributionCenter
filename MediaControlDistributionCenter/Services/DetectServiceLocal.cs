@@ -180,7 +180,7 @@ namespace MediaControlDistributionCenter.Services
                 {
                     var monitorService = GetService<IMonitorService>();
                     var userService = GetService<IUserService>();
-                    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = device.SnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                    var connectedDevice = (await monitorService.GetAll(new MonitorDto { SnCode = device.SnCode })).Data?.FirstOrDefault();
                     if (connectedDevice == null)
                     {
                         string path = CommunicationCmd.CmdSyncUser + "Login";

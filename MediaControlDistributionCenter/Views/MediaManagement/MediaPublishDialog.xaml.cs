@@ -38,7 +38,6 @@ namespace MediaControlDistributionCenter.Views
 
             DataContext = viewModel;
             manageViewModel = viewModel;
-            manageViewModel.LoadData();
             this.dashboardViewModel = dashboardViewModel;
 
             this.Loaded += MediaPublishDialog_Loaded;
@@ -46,6 +45,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaPublishDialog_Loaded(object sender, RoutedEventArgs e)
         {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
             //Dispatcher.Invoke(async () =>
             //{
             //    await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);

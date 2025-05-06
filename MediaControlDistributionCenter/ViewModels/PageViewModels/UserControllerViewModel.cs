@@ -22,10 +22,5 @@ namespace MediaControlDistributionCenter.ViewModels
             CurrentTabName = tabName;
             CurrentPageName = pageName;
         }
-
-        public override void LoadData()
-        {
-            return;
-        }
     }
 }

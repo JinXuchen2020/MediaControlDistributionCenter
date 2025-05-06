@@ -160,14 +160,14 @@ namespace MediaControlDistributionCenter.ViewModels
             TagLine = model.TagLine;
         }
 
-        public void LoadLogo()
+        public async Task LoadLogo()
         {
-            Logo = Logo ?? DownloadLogo();
+            Logo = Logo ?? await DownloadLogo();
             LogoThumbnail = LogoThumbnail ?? GetThumbnail();
             IsUpload = Logo != null;
         }
 
-        public string? DownloadLogo()
+        public async Task<string?> DownloadLogo()
         {
             if (string.IsNullOrEmpty(LogoFileName)) 
             {
@@ -178,7 +178,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (!File.Exists(filePath)) 
             {
                 var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
-                var result = ftpClient.DownloadFile(LogoFileName!).GetAwaiter().GetResult();
+                var result = await ftpClient.DownloadFile(LogoFileName!);
                 if (!result)
                 {
                     filePath = null;

@@ -13,11 +13,11 @@ namespace MediaControlDistributionCenter.Helpers
 {
     public class DataValidation
     {
-        public static ValidationResult ValidateAccount(string account, ValidationContext context)
+        public static async Task<ValidationResult> ValidateAccount(string account, ValidationContext context)
         {
             UserViewModel instance = (UserViewModel)context.ObjectInstance;
             var userService = GetService<IUserService>();
-            var response = userService.GetAll(new UserDto { Account = account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+            var response = (await userService.GetAll(new UserDto { Account = account })).Data?.ToList() ?? new List<UserDto>();
             bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
 
             if (isValid)

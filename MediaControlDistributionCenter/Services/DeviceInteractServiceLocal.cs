@@ -25,16 +25,16 @@ namespace MediaControlDistributionCenter.Services
             var userInfo = new UsersSync();
             var users = new List<UserSync>();
             var userService = Utility.GetService<IUserService>();
-            var adminUser = userService.GetAll(new UserDto { Role = "admin" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+            var adminUser = (await userService.GetAll(new UserDto { Role = "admin" })).Data?.FirstOrDefault();
             if (adminUser != null)
             {
                 users.Add(new UserSync(adminUser, null));
             }
 
-            var currentUser = userService.GetAll(new UserDto { Account = monitor.UserAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault()!;
+            var currentUser = (await userService.GetAll(new UserDto { Account = monitor.UserAccount })).Data?.FirstOrDefault()!;
             if (!string.IsNullOrEmpty(currentUser.AgentAccount))
             {
-                var agentUser = userService.GetAll(new UserDto { Account = currentUser.AgentAccount }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                var agentUser = (await userService.GetAll(new UserDto { Account = currentUser.AgentAccount })).Data?.FirstOrDefault();
                 if (agentUser != null)
                 {
                     users.Add(new UserSync(agentUser, null));

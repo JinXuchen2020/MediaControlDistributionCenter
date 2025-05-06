@@ -50,7 +50,7 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 //await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
                 await manageViewModel.SyncDeviceTimeControls();
                 InitPage("Brightness");
             });
@@ -67,7 +67,7 @@ namespace MediaControlDistributionCenter.Views
             ChangePage(border.Tag.ToString());
         }
 
-        private async void Restart_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Restart_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (manageViewModel.CurrentDevice == null)
             {
@@ -233,9 +233,9 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+                await manageViewModel.GetDeviceTimeControls();
             });
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
-            manageViewModel.GetDeviceTimeControls();
         }
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)
@@ -485,9 +485,9 @@ namespace MediaControlDistributionCenter.Views
 
             while (parentObject != null)
             {
-                if (parentObject is FrameworkElement parent && parent.DataContext is DeviceTimeControlViewModel)
+                if (parentObject is FrameworkElement parent && parent.DataContext is DeviceTimeControlViewModel viewModel)
                 {
-                    return (parent.DataContext as DeviceTimeControlViewModel);
+                    return viewModel;
                 }
 
                 parentObject = VisualTreeHelper.GetParent(parentObject);
@@ -557,9 +557,9 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+                await manageViewModel.GetDeviceTimeControls();
             });
 
-            manageViewModel.GetDeviceTimeControls();
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)

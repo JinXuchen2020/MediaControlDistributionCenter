@@ -67,7 +67,6 @@ namespace MediaControlDistributionCenter.Views
             manageViewModel = mediaEditViewModel;
             manageViewModel.Canvas = MainCanvas;
             manageViewModel.CanvasRatio = 1;
-            manageViewModel.LoadData();
             manageViewModel.SelectedComponent = null;
             manageViewModel.SelectedElement = null;
             DataContext = mediaEditViewModel;
@@ -84,6 +83,10 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaEdit_Loaded(object sender, RoutedEventArgs e)
         {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
             MainCanvas.MouseLeftButtonDown += (sender, e) =>
             {
                 if (e.Source == sender && manageViewModel.SelectedElement != null)
@@ -854,7 +857,10 @@ namespace MediaControlDistributionCenter.Views
             var tag = ((sender as Border).Tag as string)!;
             manageViewModel.SelectedType = tag;
             manageViewModel.SearchString = null;
-            manageViewModel.RefreshMedias();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.RefreshMedias();
+            });
         }
 
         private void Screen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)

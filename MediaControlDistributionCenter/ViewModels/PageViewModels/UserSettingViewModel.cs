@@ -88,9 +88,9 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            CurrentUser.LoadLogo();
+            await CurrentUser.LoadLogo();
             Devices = new ObservableCollection<InternetDevice>([.. OnlineDevices]);
         }
 

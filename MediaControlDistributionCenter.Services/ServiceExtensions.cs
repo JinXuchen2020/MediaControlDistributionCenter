@@ -35,6 +35,7 @@ namespace MediaControlDistributionCenter.Services
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileService, FileServiceLocal>();
+            services.AddHttpClient();
 
             var types = typeof(IService<,>).Assembly.DefinedTypes;
             var interfaceTypes = types.Where(c => c.IsInterface && !c.IsGenericType);

@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.mediaService = GetService<IMediaService>();
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             MediaConfig? config = null;
             double ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
@@ -111,7 +111,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 SelectedPage.IsSelected = true;
             }
 
-            var medias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = (await mediaService.GetAll(null)).Data?.ToList() ?? new List<MediaDto>();
             Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
             {
                 var result = new MediaViewModel();
@@ -120,10 +120,10 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
         }
 
-        public void RefreshMedias()
+        public async Task RefreshMedias()
         {
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type })).Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var result = new MediaViewModel();
@@ -212,7 +212,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }, true)).Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new MediaViewModel();

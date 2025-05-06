@@ -40,9 +40,18 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             this.serviceProvider = serviceProvider;
             manageViewModel = userManageViewModel;
-            manageViewModel.LoadData();
             DataContext = manageViewModel;
             InitializeComponent();
+
+            this.Loaded += UserManage_Loaded;
+        }
+
+        private void UserManage_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnControlUser_Click(object sender, RoutedEventArgs e)
@@ -139,10 +148,14 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     RoleText = (string)FindResource("LanguageKey_Code_Role_User")
                 }
             });
-            viewModel.LoadLogo();
 
-            var dialogBox = new UserEditDialog(viewModel);
-            manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
+            Dispatcher.Invoke(async () =>
+            {
+                await viewModel.LoadLogo();
+
+                var dialogBox = new UserEditDialog(viewModel);
+                manageViewModel.ShowDialogContentCommand.Execute(dialogBox);
+            });
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -193,7 +206,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 if (manageViewModel.CanDelete.HasValue && manageViewModel.CanDelete.Value)
                 {
                     await manageViewModel.DeleteUserBatchCommand.ExecuteAsync(null);
-                    manageViewModel.LoadData();
+                    await manageViewModel.LoadData();
                 }
 
                 manageViewModel.CanDelete = null;
@@ -211,7 +224,10 @@ namespace MediaControlDistributionCenter.Views.UserManagement
         {
             var groupViewModel = ((sender as DockPanel).DataContext as UserGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnGroupSave_Click(object sender, RoutedEventArgs e)

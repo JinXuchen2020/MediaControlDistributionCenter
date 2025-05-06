@@ -41,12 +41,13 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            var playbackRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1})).Data?.ToList() ?? new List<MonitorDto>();
+            var playbackRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             var publishedSNCode = playbackRecords.Select(c => c.MonitorSnCode).ToList();
-            Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
+            var devicesList = new List<DeviceViewModel>();
+            foreach (var c in devices)
             {
                 var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                 if (viewModel == null)
@@ -54,11 +55,14 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
-                viewModel.IsSelected = viewModel.IsConnected ? publishedSNCode.Contains(c.SnCode) : false;
+
+                viewModel.IsSelected = viewModel.IsConnected && publishedSNCode.Contains(c.SnCode);
                 viewModel.RefreshStatus();
-                viewModel.GetPrograms();
-                return viewModel;
-            }));
+                await viewModel.GetPrograms();
+                devicesList.Add(viewModel);
+            }
+
+            Devices = new ObservableCollection<DeviceViewModel>(devicesList);
         }
 
         [RelayCommand]

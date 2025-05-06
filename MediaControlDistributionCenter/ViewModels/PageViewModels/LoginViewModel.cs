@@ -86,16 +86,17 @@ namespace MediaControlDistributionCenter.ViewModels
             //this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
-            RefreshLogo();
+            //RefreshLogo();
 
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             Devices = new ObservableCollection<InternetDevice>([.. OnlineDevices]);
             HasDevices = OnlineDevices.Count > 0;
             CurrentDevice = CurrentDevice ?? OnlineDevices.FirstOrDefault();
+            await base.LoadData();
         }
 
         public async Task DetectConnectedDevice()
@@ -176,7 +177,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                                             Log.Debug($"Device with IP {communication.IpAddr} is connected!");
 
-                                            LoadData();
+                                            await LoadData();
                                         }
 
                                         if (CurrentDevice == null)
@@ -190,7 +191,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     this.IsSync = true;
-                    RefreshLogo();
+                    await RefreshLogo();
                 }
             }
         }
@@ -355,12 +356,12 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = GetService<IProgramService>();
         }
 
-        private void RefreshLogo()
+        private async Task RefreshLogo()
         {
             BitmapImage? result = null;
             if (ConnectionMode.Mode == "Local" && this.SyncUsers.Count > 0)
             {
-                var user = userService.GetAll(new UserDto { Account = this.SyncUsers.Last() }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                var user = (await userService.GetAll(new UserDto { Account = this.SyncUsers.Last() })).Data?.FirstOrDefault();
                 if (user != null) 
                 {
                     if (!string.IsNullOrEmpty(user.LogoSrc))
@@ -369,7 +370,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             UserViewModel viewModel = new UserViewModel();
                             viewModel.Binding(user);
-                            viewModel.LoadLogo();
+                            await viewModel.LoadLogo();
                             result = viewModel.LogoThumbnail;
                         }
                         catch

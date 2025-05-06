@@ -200,7 +200,7 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override FrameworkElement DrawingRunningContent()
         {
             IsRunningLoaded = false;
-            var result = LoadRssFeed().GetAwaiter().GetResult();
+            var result = Task.Run(async () => await LoadRssFeed()).GetAwaiter().GetResult();
             IsRunningLoaded = true;
             return result;
         }
@@ -237,7 +237,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private void Timer_Tick(Canvas target)
         {
-            var newContent = LoadRssFeed().GetAwaiter().GetResult();
+            var newContent = Task.Run(async () => await LoadRssFeed()).GetAwaiter().GetResult();
             if (newContent != null)
             {
                 var mainCanvas = FindCanvasParent(target);

@@ -222,14 +222,14 @@ namespace MediaControlDistributionCenter.ViewModels
             return IsConnected ? FindResource("LanguageKey_Code_Connected") : FindResource("LanguageKey_Code_Disconnected");
         }
 
-        public void GetPrograms()
+        public async Task GetPrograms()
         {
             var playbackRecordService = GetService<IPlaybackRecordService>();
             var programService = GetService<IProgramService>();
-            var playRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var record in playRecords) 
             {
-                var program = programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                var program = (await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" })).Data?.FirstOrDefault();
                 if(program != null)
                 {
                     MediaNames = program.Name;
@@ -237,13 +237,13 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        public void GetThumbnail()
+        public async Task GetThumbnail()
         {
             BitmapImage? bitmap = null;
             if (!string.IsNullOrEmpty(MediaNames))
             {
                 var programService = GetService<IProgramService>();
-                var program = programService.GetAll(new ProgramDto { Name = MediaNames, Status = 1, MediaType = "PROGRAM" }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                var program = (await programService.GetAll(new ProgramDto { Name = MediaNames, Status = 1, MediaType = "PROGRAM" })).Data?.FirstOrDefault();
                 if (program != null)
                 {
                     var filePath = string.Empty;

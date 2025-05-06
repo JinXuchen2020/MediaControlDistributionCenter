@@ -70,9 +70,9 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(RefreshTimeZone));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
@@ -100,12 +100,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     return;
                 }
 
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
                 isSynced = true;
             }
         }
 
-        public void GetDeviceTimeControls()
+        public async Task GetDeviceTimeControls()
         {
             if (CurrentDevice == null)
             {
@@ -113,7 +113,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var results = deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" }).GetAwaiter().GetResult().Data?.ToList() ?? new List<DeviceControlDto>();
+            var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
             DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c =>
             {
                 var viewModel = new DeviceTimeControlViewModel();
@@ -294,7 +294,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     await deviceControlService.Save(model);
                 }
 
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
             }
         }
 
@@ -390,7 +390,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
             }
         }
 
@@ -426,7 +426,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
                 CloseDialog();
             }
         }
@@ -434,7 +434,7 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true)).Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
                 var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;

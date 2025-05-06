@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:local="clr-namespace:MediaControlDistributionCenter.Views"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels" 
              mc:Ignorable="d"   d:DesignWidth="1440">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

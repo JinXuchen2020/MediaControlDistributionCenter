@@ -32,13 +32,13 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             IsConnected = OnlineDevices.FirstOrDefault(c => c.Status == 1) != null;
             UsedStoragePercentage = OnlineDevices.FirstOrDefault(c => c.Status == 1)?.DeviceViewModel?.UsedStoragePercentage;
             StoragePercentage = OnlineDevices.FirstOrDefault(c => c.Status == 1)?.DeviceViewModel?.StoragePercentage;
             DeviceConnString = IsConnected ? FindResource("LanguageKey_Code_Device_Tooltip_105") : FindResource("LanguageKey_Code_Device_Tooltip_106");
-
+            await base.LoadData();
         }
     }
 }

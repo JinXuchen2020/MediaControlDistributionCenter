@@ -51,13 +51,14 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
+            var deviceViewModels = new List<DeviceViewModel>();
             switch (CurrentUser.Role)
             {
                 case "admin":
-                    var deviceResponse = monitorService.GetAll(new MonitorDto { Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    var deviceViewModels = deviceResponse.Select(c =>
+                    var deviceResponse = (await monitorService.GetAll(new MonitorDto { Enabled = 1})).Data?.ToList() ?? new List<MonitorDto>();
+                    foreach (var c in deviceResponse)
                     {
                         var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                         if (viewModel == null)
@@ -67,16 +68,17 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
 
                         viewModel.RefreshStatus();
-                        viewModel.GetPrograms();
-                        return viewModel;
-                    });
+                        await viewModel.GetPrograms();
+                        deviceViewModels.Add(viewModel);
+                    }
+
                     Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(5));
 
                     TotalDeviceCount = deviceResponse.Count();
                     ConnectedDeviceCount = deviceViewModels.Where(c => c.IsConnected).Count();
                     DisconnectedDeviceCount = TotalDeviceCount - ConnectedDeviceCount;
 
-                    var userResponse = userService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    var userResponse = (await userService.GetAll(null)).Data?.ToList() ?? new List<UserDto>();
                     Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
                     {
                         var viewModel = new UserViewModel();
@@ -87,8 +89,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     Medias = new ObservableCollection<ProgramViewModel>();
                     break;
                 case "agent":
-                    deviceResponse = monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    deviceViewModels = deviceResponse.Select(c =>
+                    deviceResponse = (await monitorService.GetAgentAll(CurrentUser.Account, new MonitorDto { Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
+
+                    foreach (var c in deviceResponse)
                     {
                         var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                         if (viewModel == null)
@@ -98,16 +101,16 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
 
                         viewModel.RefreshStatus();
-                        viewModel.GetPrograms();
-                        return viewModel;
-                    });
+                        await viewModel.GetPrograms();
+                        deviceViewModels.Add(viewModel);
+                    }
                     Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(5));
 
                     TotalDeviceCount = deviceResponse.Count();
                     ConnectedDeviceCount = deviceViewModels.Where(c => c.IsConnected).Count();
                     DisconnectedDeviceCount = TotalDeviceCount - ConnectedDeviceCount;
 
-                    userResponse = userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<UserDto>();
+                    userResponse = (await userService.GetAll(new UserDto { AgentAccount = CurrentUser.Account })).Data?.ToList() ?? new List<UserDto>();
                     Users = new ObservableCollection<UserViewModel>(userResponse.OrderByDescending(c => c.Id).Take(10).Select(c =>
                     {
                         var viewModel = new UserViewModel();
@@ -118,8 +121,9 @@ namespace MediaControlDistributionCenter.ViewModels
                     Medias = new ObservableCollection<ProgramViewModel>();
                     break;
                 case "user":
-                    deviceResponse = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-                    deviceViewModels = deviceResponse.Select(c =>
+                    deviceResponse = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
+                    
+                    foreach (var c in deviceResponse)
                     {
                         var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
                         if (viewModel == null)
@@ -129,10 +133,10 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
 
                         viewModel.RefreshStatus();
-                        viewModel.GetPrograms();
-                        viewModel.GetThumbnail();
-                        return viewModel;
-                    });
+                        await viewModel.GetPrograms();
+                        await viewModel.GetThumbnail();
+                        deviceViewModels.Add(viewModel);
+                    }
                     Devices = new ObservableCollection<DeviceViewModel>(deviceViewModels.OrderByDescending(c => c.IsConnected).Take(4));
 
                     TotalDeviceCount = deviceResponse.Count();
@@ -141,7 +145,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                     Users = new ObservableCollection<UserViewModel>();
 
-                    var mediaResponse = programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
+                    var mediaResponse = (await programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account })).Data?.ToList() ?? new List<ProgramDto>();
                     Medias = new ObservableCollection<ProgramViewModel>(mediaResponse.OrderByDescending(c => c.Id).Take(3).Select(c =>
                     {
                         var viewModel = new ProgramViewModel();
