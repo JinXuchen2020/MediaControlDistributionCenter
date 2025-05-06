@@ -17,7 +17,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("agentAccount", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string AgentAccount { get; set; }
 
         public void CreateMappings(Profile configuration)

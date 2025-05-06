@@ -241,7 +241,14 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
+                    if (resultResponse.Code == (int)System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
+                    }
+                    else 
+                    {
+                        ErrorMessage = resultResponse.Message;
+                    }
                 }
             }
 

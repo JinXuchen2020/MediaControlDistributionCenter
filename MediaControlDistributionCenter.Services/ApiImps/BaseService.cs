@@ -18,7 +18,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
         }
 
-        public async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
+        public virtual async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
         {
             var parameters = GetQueryByInput(request);
             var queryString = await GetQueryString(parameters);
@@ -85,7 +85,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         }
 
-        private List<Tuple<string, object>> GetQueryByInput(DTO? request)
+        protected List<Tuple<string, object>> GetQueryByInput(DTO? request)
         {
             var parameters = new List<Tuple<string, object>>();
             if (request != null)

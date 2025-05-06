@@ -141,11 +141,11 @@ namespace MediaControlDistributionCenter.ViewModels
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
-        public static async Task<ValidationResult> ValidateAccount(string name, ValidationContext context)
+        public static ValidationResult ValidateAccount(string name, ValidationContext context)
         {
             ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
             var userService = GetService<IProgramService>();
-            var response = (await userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Data?.ToList() ?? new List<ProgramDto>();
+            var response = Task.Run(async () => await userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Result?.Data?.ToList() ?? new List<ProgramDto>();
             bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
 
             if (isValid)
@@ -153,8 +153,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 return ValidationResult.Success;
             }
 
-            var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
-            return new(erroMessage);
+            var errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
+            return new(errorMessage);
         }
 
         public string GetStatus()
