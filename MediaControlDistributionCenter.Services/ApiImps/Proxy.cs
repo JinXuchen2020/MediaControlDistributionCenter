@@ -182,7 +182,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 var response =
                     await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(responseContent);
+                return JsonConvert.DeserializeObject<TOutput>(responseContent);
             }
             catch(Exception ex)
             {
