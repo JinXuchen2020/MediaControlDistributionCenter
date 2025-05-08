@@ -236,6 +236,14 @@ namespace MediaControlDistributionCenter.ViewModels
                                 CurrentUser.Binding(userResult);
                                 IsLogin = true;
                             }
+                            else
+                            {
+                                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_104");
+                            }
+                        }
+                        else
+                        {
+                            ErrorMessage = resultResponse.Message;
                         }
                     }
                 }

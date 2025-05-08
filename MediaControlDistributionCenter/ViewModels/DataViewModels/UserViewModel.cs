@@ -158,6 +158,7 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSelected = isSelected;
             IsUpload = Logo != null;
             TagLine = model.TagLine;
+            Status = model.Status;            
         }
 
         public async Task LoadLogo()

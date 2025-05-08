@@ -120,7 +120,8 @@
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_101">该账号不可用！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>   
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_104">用户名不存在</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_100">无法连接机顶盒!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_101">命令无法被处理!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_102">同步机顶盒信息成功！可选择下列用户登录：</sys:String>

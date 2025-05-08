@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Microsoft.Extensions.Options;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,12 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var queryString = await GetQueryString(parameters);
 
             var uri = $"{ApiUrls["GetAll"]}{queryString}";
-            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
+            var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
+            if (result == null)
+            {
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Repsonse error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<IEnumerable<DTO>>> GetPageAll(int pageSize, int page, DTO? request)
@@ -39,25 +45,45 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var queryString = await GetQueryString(parameters);
 
             var uri = $"{ApiUrls["GetPageAll"]}{queryString}";
-            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
+            var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Repsonse error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<DTO>> GetById(long id)
         {
             var uri = string.Format($"{ApiUrls["GetById"]}", id);
-            return await GetResponse<ResultResponse<DTO>>(uri);
+            var result = await GetResponse<ResultResponse<DTO>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<DTO>.ErrorInstance("Repsonse error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> Save(DTO data)
         {
             var uri = ApiUrls["Save"];
-            return await Post<ResultResponse<bool>, DTO>(uri, data);
+            var result = await Post<ResultResponse<bool>, DTO>(uri, data);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> DeleteById(long id)
         {
             var uri = string.Format($"{ApiUrls["DeleteById"]}", id);
-            return await Delete<ResultResponse<bool>>(uri);
+            var result = await Delete<ResultResponse<bool>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> DeleteBatch(IList<long> ids)
@@ -81,7 +107,12 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             //};
 
             var uri = ApiUrls["DeleteBatch"];
-            return await DeleteWithBody<ResultResponse<bool>, IList<long>>(uri, ids);
+            var result = await DeleteWithBody<ResultResponse<bool>, IList<long>>(uri, ids);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+            }
+            return result;
 
         }
 

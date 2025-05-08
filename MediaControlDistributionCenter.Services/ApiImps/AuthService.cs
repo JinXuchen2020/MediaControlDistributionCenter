@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,13 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         public async Task<ResultResponse<string>> Login(AccountDto data)
         {
-            return await Post<ResultResponse<string>, AccountDto>("/auth/login", data);
+            var result = await Post<ResultResponse<string>, AccountDto>("/auth/login", data);
+            if (result == null)
+            {
+                result = ResultResponse<string>.ErrorInstance("Repsonse error");
+            }
+
+            return result;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             try
             {
                 using var client = new HttpClient();
-                var webApiRequestTimeout = 5000;
+                var webApiRequestTimeout = 50000;
                 if (timeOut > 0)
                 {
                     webApiRequestTimeout = timeOut;
