@@ -28,7 +28,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
             if (result == null)
             {
-                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Repsonse error");
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Response error");
             }
             return result;
         }
@@ -48,7 +48,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
             if (result == null)
             {
-                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Repsonse error");
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Response error");
             }
             return result;
         }
@@ -59,7 +59,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await GetResponse<ResultResponse<DTO>>(uri);
             if (result == null)
             {
-                result = ResultResponse<DTO>.ErrorInstance("Repsonse error");
+                result = ResultResponse<DTO>.ErrorInstance("Response error");
             }
             return result;
         }
@@ -70,7 +70,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await Post<ResultResponse<bool>, DTO>(uri, data);
             if (result == null)
             {
-                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+                result = ResultResponse<bool>.ErrorInstance("Response error");
             }
             return result;
         }
@@ -81,7 +81,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await Delete<ResultResponse<bool>>(uri);
             if (result == null)
             {
-                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+                result = ResultResponse<bool>.ErrorInstance("Response error");
             }
             return result;
         }
@@ -110,7 +110,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await DeleteWithBody<ResultResponse<bool>, IList<long>>(uri, ids);
             if (result == null)
             {
-                result = ResultResponse<bool>.ErrorInstance("Repsonse error");
+                result = ResultResponse<bool>.ErrorInstance("Response error");
             }
             return result;
 

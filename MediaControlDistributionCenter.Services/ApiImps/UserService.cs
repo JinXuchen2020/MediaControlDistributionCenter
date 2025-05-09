@@ -42,7 +42,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var result = await GetResponse<ResultResponse<IEnumerable<UserDto>>>(uri.Trim());
             if (result == null)
             {
-                result = ResultResponse<IEnumerable<UserDto>>.ErrorInstance("Repsonse error");
+                result = ResultResponse<IEnumerable<UserDto>>.ErrorInstance("Response error");
             }
             if (result.Code == 200 && result.Data != null)
             {
