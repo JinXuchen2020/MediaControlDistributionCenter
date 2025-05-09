@@ -17,12 +17,12 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
         }
 
-        public async Task<ResultResponse<string>> Login(AccountDto data)
+        public async Task<ResultResponse<TokenDto>> Login(AccountDto data)
         {
-            var result = await Post<ResultResponse<string>, AccountDto>("/auth/login", data);
+            var result = await Post<ResultResponse<TokenDto>, AccountDto>("/auth/login", data);
             if (result == null)
             {
-                result = ResultResponse<string>.ErrorInstance("Repsonse error");
+                result = ResultResponse<TokenDto>.ErrorInstance("Response error");
             }
 
             return result;

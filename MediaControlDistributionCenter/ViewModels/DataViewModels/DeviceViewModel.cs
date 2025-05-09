@@ -289,11 +289,19 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Connect(Communication client)
         {
             Log.Debug($"Socket status:{client.netClient.State}!");
-
             this.client = client;
             StatusText = GetStatus();
             IsConnected = true;
             SelectedIpAddress = client.IpAddr;
+            ConnectedText = GetConnectedStatus();
+            await Task.CompletedTask;
+        }
+
+        [RelayCommand]
+        private async Task ConnectRemote()
+        {
+            StatusText = GetStatus();
+            IsConnected = true;
             ConnectedText = GetConnectedStatus();
             await Task.CompletedTask;
         }
@@ -356,12 +364,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ChangeBrightness(string value)
+        private async Task ChangeBrightness(List<DeviceControlDto> deviceControls)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                await interactService.ChangeBrightness(this.ToModel(), value, client);
+                await interactService.ChangeBrightness(this.ToModel(), deviceControls, client);
             }
             catch (Exception ex)
             {
@@ -370,12 +378,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ChangeVolume(string value)
+        private async Task ChangeVolume(List<DeviceControlDto> deviceControls)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                await interactService.ChangeVolume(this.ToModel(), value, client);
+                await interactService.ChangeVolume(this.ToModel(), deviceControls, client);
             }
             catch (Exception ex)
             {
@@ -384,12 +392,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task Restart(string value)
+        private async Task Restart(List<DeviceControlDto> deviceControls)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                await interactService.Restart(this.ToModel(), value, client);
+                await interactService.Restart(this.ToModel(), deviceControls, client);
             }
             catch (Exception ex)
             {
@@ -398,12 +406,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task ChangePower(string value)
+        private async Task ChangePower(List<DeviceControlDto> deviceControls)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                await interactService.ChangePower(this.ToModel(), value, client);
+                await interactService.ChangePower(this.ToModel(), deviceControls, client);
             }
             catch (Exception ex)
             {
@@ -412,12 +420,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task TimeSync(string value)
+        private async Task TimeSync(TimeSyncConfigDto model)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                await interactService.TimeSync(this.ToModel(), value, client);
+                await interactService.TimeSync(this.ToModel(), model, client);
             }
             catch (Exception ex)
             {
@@ -426,54 +434,12 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SyncCurrentTime()
+        private async Task TimeGPSSync(TimeSyncConfigDto model)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                CurrentTime = await interactService.SyncCurrentTime(this.ToModel(), client);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-        }
-
-        [RelayCommand]
-        private async Task SyncBrightness()
-        {
-            var interactService = Utility.GetService<IDeviceInteractService>();
-            try
-            {
-                Brightness = await interactService.SyncBrightness(this.ToModel(), client);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-        }
-
-        [RelayCommand]
-        private async Task SyncVolume()
-        {
-            var interactService = Utility.GetService<IDeviceInteractService>();
-            try
-            {
-                Volume = await interactService.SyncVolume(this.ToModel(), client);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-        }
-
-        [RelayCommand]
-        private async Task TimeGPSSync(string value)
-        {
-            var interactService = Utility.GetService<IDeviceInteractService>();
-            try
-            {
-                await interactService.TimeGPSSync(this.ToModel(), value, client);
+                await interactService.TimeGPSSync(this.ToModel(), model, client);
             }
             catch (Exception ex)
             {
@@ -566,16 +532,59 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SyncDeviceControl(IDeviceControlService deviceControlService)
+        private async Task SyncCurrentTime()
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                var syncResult = await interactService.SyncDeviceControl(this.ToModel(), client);
-                foreach (var item in syncResult)
-                {
-                    await deviceControlService.Save(item);
-                }
+                CurrentTime = await interactService.SyncCurrentTime(this.ToModel(), client);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncBrightness()
+        {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                var model = this.ToModel();
+                await interactService.SyncBrightness(model, client);
+                Brightness = model.Brightness;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncVolume()
+        {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                var model = this.ToModel();
+                await interactService.SyncVolume(model, client);
+                Volume = model.Volume;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SyncDeviceControl()
+        {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                await interactService.SyncDeviceControl(this.ToModel(), client);
             }
             catch (Exception ex)
             {
@@ -589,22 +598,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                var syncResult = await interactService.SyncPrograms(this.ToModel(), client);
-                var programService = GetService<IProgramService>();
-                var playRecordService = GetService<IPlaybackRecordService>();
-                foreach (var item in syncResult)
-                {
-                    await programService.Save(item);
-                    var model = new PlaybackRecordDto { MediaName = item.Name, MediaType = item.MediaType, MonitorSnCode = SNumber };
-                    var existRecord = (await playRecordService.GetAll(model)).Data?.FirstOrDefault();
-                    if (existRecord == null)
-                    {
-                        var response = await playRecordService.Save(model);
-                        if (response.Code == 200)
-                        {
-                        }
-                    }
-                }
+                await interactService.SyncPrograms(this.ToModel(), client);
             }
             catch (Exception ex)
             {

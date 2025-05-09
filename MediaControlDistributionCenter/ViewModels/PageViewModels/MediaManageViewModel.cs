@@ -278,7 +278,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }                    
 
                 var response = await programService.Save(viewModel.ToModel());
-                if (response.Code == 200)
+                if (response.Code == 200 && response.Data)
                 {
                     if (dbModel != null)
                     {
@@ -325,7 +325,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     await LoadData();
                     viewModel.Id = Medias.First(c => c.Name == viewModel.Name).Id;
                     CloseDialog();
-                }                
+                }
             }
         }
 

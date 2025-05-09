@@ -150,12 +150,23 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DisconnectInternetDevice(InternetDevice device)
         {
-            if (device.DeviceViewModel != null)
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            if (connectionMode.Mode == "Local")
             {
-                device.DeviceViewModel.DisconnectCommand.Execute(null);
-                device.DeviceViewModel = null;
-                device.Status = 0;
-                device.StatusText = GetStatus(0);
+                if (device.DeviceViewModel != null)
+                {
+                    device.DeviceViewModel.DisconnectCommand.Execute(null);
+                    device.DeviceViewModel = null;
+                    device.Status = 0;
+                    device.StatusText = GetStatus(0);
+                }
+            }
+            else
+            {
+                if (device.DeviceViewModel != null)
+                {
+                    device.DeviceViewModel.DisconnectCommand.Execute(null);
+                }
             }
 
             await Task.CompletedTask;

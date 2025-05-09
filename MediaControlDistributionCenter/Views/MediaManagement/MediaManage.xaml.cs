@@ -259,9 +259,17 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             manageViewModel.SaveMediaCommand.Execute(viewModel);
             if (!viewModel.HasErrors)
             {
-                manageViewModel.SelectedMedia = viewModel;
-                var content = serviceProvider.GetRequiredService<MediaEdit>();
-                (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                if (viewModel.Id == 0)
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Error_Tooltip_104");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                }
+                else
+                {
+                    manageViewModel.SelectedMedia = viewModel;
+                    var content = serviceProvider.GetRequiredService<MediaEdit>();
+                    (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                }
             }
         }
 

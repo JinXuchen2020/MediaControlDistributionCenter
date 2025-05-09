@@ -217,20 +217,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 var resultResponse = await authService.Login(request);
                 if (resultResponse.Code == 200)
                 {
-                    var userString = resultResponse.Data!;
+                    var tokenDto = resultResponse.Data!;
                     if (connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri))
                     {
-                        var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
+                        var loginUser = JsonConvert.DeserializeObject<UserDto>(tokenDto.Token);
                         CurrentUser.Binding(loginUser!);
                         IsLogin = true;
                     }
                     else
                     {
-                        connectionMode.RemoteToken = userString.Split(" ")[1];
-                        var userResponse = await userService.GetAll(new UserDto { Account = request.Account });
+                        connectionMode.RemoteToken = tokenDto.Token;
+                        var userResponse = await userService.GetById(tokenDto.UserId);
                         if (userResponse.Code == 200)
                         {
-                            var userResult = userResponse.Data?.FirstOrDefault();
+                            var userResult = userResponse.Data;
                             if (userResult != null)
                             {
                                 CurrentUser.Binding(userResult);

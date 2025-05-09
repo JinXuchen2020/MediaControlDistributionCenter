@@ -23,7 +23,7 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private double? usedStoragePercentage;
 
-        public MainViewModel(LoginViewModel loginViewModel, Communication communication)
+        public MainViewModel(LoginViewModel loginViewModel)
         {
             currentUser = loginViewModel.CurrentUser;
             connectionString = ConnectionMode.Mode == "Local" ? FindResource("LanguageKey_Code_Device_Tooltip_103") : FindResource("LanguageKey_Code_Device_Tooltip_104");

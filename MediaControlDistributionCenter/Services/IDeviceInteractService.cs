@@ -13,12 +13,12 @@ namespace MediaControlDistributionCenter.Services
         Task<bool> SendUser(MonitorDto monitor, Communication? client = null);
         Task VerifyUser(MonitorDto monitor, UserDto user, Communication? client = null);
         Task VerifySnCode(MonitorDto monitor, Communication? client = null);
-        Task ChangeBrightness(MonitorDto monitor, string value, Communication? client = null);
-        Task ChangeVolume(MonitorDto monitor, string value, Communication? client = null);
-        Task Restart(MonitorDto monitor, string value, Communication? client = null);
-        Task ChangePower(MonitorDto monitor, string value, Communication? client = null);
-        Task TimeSync(MonitorDto monitor, string value, Communication? client = null);
-        Task TimeGPSSync(MonitorDto monitor, string value, Communication? client = null);
+        Task ChangeBrightness(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null);
+        Task ChangeVolume(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null);
+        Task Restart(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null);
+        Task ChangePower(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null);
+        Task TimeSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null);
+        Task TimeGPSSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null);
         Task<string> SendSyncFile(MonitorDto monitor, string fileName, Communication? client = null);
         Task<string> UploadFile(MonitorDto monitor, string filePath, Communication? client = null);
         Task SendProgram(MonitorDto monitor, ProgramDto program, Communication? client = null);
@@ -26,9 +26,9 @@ namespace MediaControlDistributionCenter.Services
         Task EnableMonitor(MonitorDto monitor, Communication? client = null);
         Task DeleteProgram(MonitorDto monitor, string value, Communication? client = null);
         Task<DateTime> SyncCurrentTime(MonitorDto monitor, Communication? client = null);
-        Task<double> SyncBrightness(MonitorDto monitor, Communication? client = null);
-        Task<double> SyncVolume(MonitorDto monitor, Communication? client = null);
-        Task<IList<DeviceControlDto>> SyncDeviceControl(MonitorDto monitor, Communication? client = null);
-        Task<IList<ProgramDto>> SyncPrograms(MonitorDto monitor, Communication? client = null);
+        Task SyncBrightness(MonitorDto monitor, Communication? client = null);
+        Task SyncVolume(MonitorDto monitor, Communication? client = null);
+        Task SyncDeviceControl(MonitorDto monitor, Communication? client = null);
+        Task SyncPrograms(MonitorDto monitor, Communication? client = null);
     }
 }

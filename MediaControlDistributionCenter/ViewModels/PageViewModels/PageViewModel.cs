@@ -64,7 +64,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public PageViewModel()
         {
-            detectService = GetService<IDetectService>();
+            detectService = Utility.GetService<IDetectService>();
             detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
         }
 

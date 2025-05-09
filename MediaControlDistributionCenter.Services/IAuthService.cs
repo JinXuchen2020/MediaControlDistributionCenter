@@ -9,6 +9,6 @@ namespace MediaControlDistributionCenter.Services
 {
     public interface IAuthService
     {
-        public Task<ResultResponse<string>> Login(AccountDto data);
+        public Task<ResultResponse<TokenDto>> Login(AccountDto data);
     }
 }

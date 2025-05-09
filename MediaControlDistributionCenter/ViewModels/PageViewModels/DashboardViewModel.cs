@@ -33,7 +33,6 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMonitorService monitorService;
         private readonly IProgramService programService;
         private readonly IUserService userService;
-        private readonly Communication communication;
 
         public UserViewModel CurrentUser { get; set; }
 
@@ -41,13 +40,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public ProgramViewModel? SelectedMedia { get; set; }
 
-        public DashboardViewModel(LoginViewModel loginViewModel, Communication communication)
+        public DashboardViewModel(LoginViewModel loginViewModel)
         {
             CurrentUser = loginViewModel.CurrentUser;
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
             this.userService = GetService<IUserService>();
-            this.communication = communication;
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
