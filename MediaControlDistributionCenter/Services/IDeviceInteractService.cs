@@ -1,4 +1,5 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace MediaControlDistributionCenter.Services
 {
     public interface IDeviceInteractService
     {
+        event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
         Task<bool> SendUser(MonitorDto monitor, Communication? client = null);
         Task VerifyUser(MonitorDto monitor, UserDto user, Communication? client = null);
         Task VerifySnCode(MonitorDto monitor, Communication? client = null);

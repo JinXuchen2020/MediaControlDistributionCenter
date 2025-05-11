@@ -114,6 +114,31 @@
                                     <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
+                            <DataGridTemplateColumn Width="1*">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_212}" />
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Visibility="{Binding IsUploading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                                            <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_211}"></TextBlock>
+                                            <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="80" Height="10"
+                                                Background="Transparent"
+                                                Foreground="#538AF0"
+                                                Value="{Binding UploadProgress, UpdateSourceTrigger=PropertyChanged}"
+                                                Style="{StaticResource MaterialDesignLinearProgressBar}">
+                                                <ProgressBar.Resources>
+                                                    <Style TargetType="Rectangle">
+                                                        <Setter Property="RadiusX" Value="5"/>
+                                                        <Setter Property="RadiusY" Value="5"/>
+                                                        <Setter Property="Fill" Value="AliceBlue"/>
+                                                    </Style>
+                                                </ProgressBar.Resources>
+                                            </ProgressBar>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

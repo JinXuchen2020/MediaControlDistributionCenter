@@ -938,7 +938,7 @@
                         SelectionChanged="LeftTab_SelectionChanged"
                         SelectedIndex="1"
                         materialDesign:ColorZoneAssist.Mode="Custom">
-                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Media}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=true}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Media}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -989,7 +989,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Page}" Selector.IsSelected ="{Binding SelectedComponent, Converter={StaticResource NotEmptyConverter}, ConverterParameter=false}">
+                        <TabItem Header="{DynamicResource LanguageKey_Code_ProgramEdit_Page}" IsSelected="True">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">

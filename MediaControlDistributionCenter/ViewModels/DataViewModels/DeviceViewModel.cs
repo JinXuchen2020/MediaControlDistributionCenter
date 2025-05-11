@@ -144,6 +144,12 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private BitmapImage? thumbnail;
 
+        [ObservableProperty]
+        private double uploadProgress;
+
+        [ObservableProperty]
+        private bool isUploading;
+
         private Communication? client;
 
         public bool IsInternet => client?.IsInternet ?? false;
@@ -453,7 +459,18 @@ namespace MediaControlDistributionCenter.ViewModels
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
+                interactService.InvokeProgressChanged += (sender, e) =>
+                {
+                    UploadProgress = e.Progress;
+                };
+
+                IsUploading = true;
+                if (UploadProgress > 0)
+                {
+                    UploadProgress = 0;
+                }
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
+                IsUploading = false;
             }
             catch (Exception ex)
             {

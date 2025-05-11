@@ -15,7 +15,9 @@ using System.IO.Pipelines;
 namespace MediaControlDistributionCenter.Services
 {
     public class DeviceInteractServiceLocal : IDeviceInteractService
-    {        
+    {
+        public event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
+
         public async Task<bool> SendUser(MonitorDto monitor, Communication? client = null)
         {
             if (client == null)
@@ -384,6 +386,7 @@ namespace MediaControlDistributionCenter.Services
 
             client.StartFtpServer();
             var ftpClient = new FtpClient(client.FtpServer);
+            ftpClient.InvokeProgressChanged += InvokeProgressChanged;
 
             var result = await ftpClient.UploadFileToFtpServer(filePath);
             if (result)

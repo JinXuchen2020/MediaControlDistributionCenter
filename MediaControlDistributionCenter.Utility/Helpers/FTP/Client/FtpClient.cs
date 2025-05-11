@@ -16,6 +16,8 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
     {
         private readonly FtpServer ftpServer;
 
+        public event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
+
         public FtpClient(FtpServer ftpServer) 
         {
             this.ftpServer = ftpServer;
@@ -41,7 +43,26 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
 
                 using (var requestStream = request.GetRequestStream())
                 {
-                    requestStream.Write(fileContents, 0, fileContents.Length);
+                    int bufferSize = 4096;
+                    int bytesSent = 0;
+                    int totalBytes = fileContents.Length;
+
+                    using (MemoryStream memoryStream = new MemoryStream(fileContents))
+                    {
+                        byte[] buffer = new byte[bufferSize];
+                        int bytesRead;
+
+                        while ((bytesRead = memoryStream.Read(buffer, 0, bufferSize)) > 0)
+                        {
+                            requestStream.Write(buffer, 0, bytesRead);
+                            bytesSent += bytesRead;
+
+                            // 计算并显示进度
+                            double progressPercentage = (bytesSent * 100.0) / totalBytes;
+                            InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progressPercentage));
+                        }
+                    }
+                    //requestStream.Write(fileContents, 0, fileContents.Length);
                 }
 
                 using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
@@ -73,6 +94,16 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                     return true;
                 }
             }
+        }
+    }
+
+    public class ProgressEventArgs : EventArgs
+    {
+        public double Progress { get; set; }
+
+        public ProgressEventArgs(double progress)
+        {
+            this.Progress = progress;
         }
     }
 }

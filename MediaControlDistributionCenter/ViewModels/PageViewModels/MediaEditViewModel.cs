@@ -100,7 +100,17 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Ratio = ratio,
                 Program = CurrentMedia.ToModel(),
-                Pages = new List<MediaPage>()
+                Pages =
+                [
+                    new() {
+                        Id = 1,
+                        Order = 1,
+                        PlayCount = 1,
+                        Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{1}",
+                        Schedulers = [new() { Id = 1, ScheduleDays = [1, 2, 3, 4, 5, 6, 7] }],
+                        Components = []
+                    }
+                ]
             };
             this.MediaConfig = new MediaConfigViewModel(config);
             this.MediaConfig.Program = CurrentMedia;

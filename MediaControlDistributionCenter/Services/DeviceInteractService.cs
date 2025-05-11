@@ -14,6 +14,7 @@ namespace MediaControlDistributionCenter.Services
 {
     public class DeviceInteractService : IDeviceInteractService
     {
+        public event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
         public async Task<bool> SendUser(MonitorDto monitor, Communication? client = null)
         {
             var userInfo = new UsersSync();

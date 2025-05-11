@@ -183,6 +183,7 @@ namespace MediaControlDistributionCenter.Services
                     var connectedDevice = (await monitorService.GetAll(new MonitorDto { SnCode = device.SnCode })).Data?.FirstOrDefault();
                     if (connectedDevice == null)
                     {
+                        Log.Debug($"Start to Sync user from device with IP {device.IpAddress}!");
                         string path = CommunicationCmd.CmdSyncUser + "Login";
                         bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                         if (result)
@@ -191,15 +192,17 @@ namespace MediaControlDistributionCenter.Services
                             if (syncUsers != null)
                             {
                                 foreach (var item in syncUsers.Users)
-                                {
+                                {                                    
                                     var response = await userService.Save(item.User);
                                     if (response.Code == 200)
                                     {
+                                        Log.Debug($"Save user: {item.User.Account} to local db !");
                                         if (item.Monitor != null)
                                         {
                                             response = await monitorService.Save(item.Monitor.Monitor);
                                             if (response.Code == 200)
                                             {
+                                                Log.Debug($"Save monitor: {item.Monitor.Monitor.SnCode} to local db !");
                                                 device.DeviceViewModel = new DeviceViewModel();
                                                 device.DeviceViewModel.Binding(item.Monitor.Monitor);
                                                 device.DeviceViewModel.ConnectCommand.Execute(communication);
