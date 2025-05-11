@@ -34,6 +34,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncVolumeResult { get; private set; }
 
+        public string SyncFileProgressResult { get; private set; }
+
         public bool IsInternet { get; private set; }
 
         public FtpServer FtpServer => this.ftpServer;
@@ -237,6 +239,12 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                             {
                                 SyncVolumeResult = data[2];
                                 Log.Information(SyncVolumeResult);
+                            }
+
+                            if (data[1].Contains(CommunicationCmd.CmdSyncFile.Split("|")[1]))
+                            {
+                                SyncFileProgressResult = data[2];
+                                Log.Information(SyncFileProgressResult);
                             }
                         }
                     }

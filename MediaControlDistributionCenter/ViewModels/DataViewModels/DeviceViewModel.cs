@@ -461,7 +461,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 interactService.InvokeProgressChanged += (sender, e) =>
                 {
-                    UploadProgress = e.Progress;
+                    UploadProgress = e.Progress / 2;
                 };
 
                 IsUploading = true;
@@ -470,7 +470,6 @@ namespace MediaControlDistributionCenter.ViewModels
                     UploadProgress = 0;
                 }
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
-                IsUploading = false;
             }
             catch (Exception ex)
             {
@@ -540,7 +539,12 @@ namespace MediaControlDistributionCenter.ViewModels
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
+                interactService.InvokeProgressChanged += (sender, e) =>
+                {
+                    UploadProgress = 50 + e.Progress / 2;
+                };
                 SendResult =await interactService.SendSyncFile(this.ToModel(), fileName, client);
+                IsUploading = false;
             }
             catch (Exception ex)
             {
