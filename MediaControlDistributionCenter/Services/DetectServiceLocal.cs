@@ -52,8 +52,6 @@ namespace MediaControlDistributionCenter.Services
 
                 // 发送广播
                 await SendBroadcastMessage();
-
-                //DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
             }
             catch (Exception ex)
             {
@@ -178,8 +176,8 @@ namespace MediaControlDistributionCenter.Services
                 }
                 else
                 {
-                    var monitorService = GetService<IMonitorService>();
-                    var userService = GetService<IUserService>();
+                    var monitorService = Utility.GetService<IMonitorService>();
+                    var userService = Utility.GetService<IUserService>();
                     var connectedDevice = (await monitorService.GetAll(new MonitorDto { SnCode = device.SnCode })).Data?.FirstOrDefault();
                     if (connectedDevice == null)
                     {
@@ -268,27 +266,6 @@ namespace MediaControlDistributionCenter.Services
             }
 
             return ftpServer;
-        }
-
-        private TService GetService<TService>() where TService : class
-        {
-            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            switch (connectionMode.Mode)
-            {
-                case "Local":
-                    return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
-                case "Remote":
-                    if (string.IsNullOrEmpty(connectionMode.ServiceUri))
-                    {
-                        return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
-                    }
-                    else
-                    {
-                        return App.ServicesProvider.GetServices<TService>().First(c => !c.GetType().Name.EndsWith("Local"));
-                    }
-                default:
-                    throw new ArgumentException("未知的服务名称");
-            }
         }
 
         public IEnumerable<InternetDevice> GetOnlineDevices()

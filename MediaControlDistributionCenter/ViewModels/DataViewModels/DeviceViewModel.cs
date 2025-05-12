@@ -231,8 +231,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public async Task GetPrograms()
         {
-            var playbackRecordService = GetService<IPlaybackRecordService>();
-            var programService = GetService<IProgramService>();
+            var playbackRecordService = Utility.GetService<IPlaybackRecordService>();
+            var programService = Utility.GetService<IProgramService>();
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }))?.Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var record in playRecords) 
             {
@@ -249,12 +249,12 @@ namespace MediaControlDistributionCenter.ViewModels
             BitmapImage? bitmap = null;
             if (!string.IsNullOrEmpty(MediaNames))
             {
-                var programService = GetService<IProgramService>();
+                var programService = Utility.GetService<IProgramService>();
                 var program = (await programService.GetAll(new ProgramDto { Name = MediaNames, Status = 1, MediaType = "PROGRAM" })).Data?.FirstOrDefault();
                 if (program != null)
                 {
                     var filePath = string.Empty;
-                    var fileService = GetService<IFileService>();
+                    var fileService = Utility.GetService<IFileService>();
                     var mediaConfigPath = Path.Combine(Constants.OutPath, UserId, program.Name);
                     if (Directory.Exists(mediaConfigPath))
                     {

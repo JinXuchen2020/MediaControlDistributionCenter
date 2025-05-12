@@ -144,8 +144,8 @@ namespace MediaControlDistributionCenter.ViewModels
         public static ValidationResult ValidateAccount(string name, ValidationContext context)
         {
             ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
-            var userService = GetService<IProgramService>();
-            var response = Task.Run(async () => await userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Result?.Data?.ToList() ?? new List<ProgramDto>();
+            var programService = Utility.GetService<IProgramService>();
+            var response = Task.Run(async () => await programService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Result?.Data?.ToList() ?? new List<ProgramDto>();
             bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
 
             if (isValid)
@@ -179,7 +179,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             BitmapImage? bitmap = null;
             var filePath = string.Empty;
-            var fileService = GetService<IFileService>();
+            var fileService = Utility.GetService<IFileService>();
             var mediaConfigPath = Path.Combine(Constants.OutPath, UserId, Name);
             if (Directory.Exists(mediaConfigPath))
             {
