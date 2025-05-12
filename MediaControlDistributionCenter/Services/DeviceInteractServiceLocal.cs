@@ -1,17 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data.Entity;
-using MediaControlDistributionCenter.Helpers;
+﻿using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
-using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Newtonsoft.Json;
 using Serilog;
-using System;
 using System.IO;
-using System.IO.Pipelines;
 
 namespace MediaControlDistributionCenter.Services
 {
@@ -364,16 +359,25 @@ namespace MediaControlDistributionCenter.Services
             string fileSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
             string path = CommunicationCmd.CmdSyncFile + fileSyncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
-            var syncResult = string.IsNullOrEmpty(client.SyncFileProgressResult) ? 1 : double.Parse(client.SyncFileProgressResult);
-            InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(syncResult));
-            while (syncResult < 100)
+            var syncResult = client.SyncFileProgressResult;
+            double progress;
+            while (double.TryParse(syncResult, out progress) && progress <= 100)
             {
+                InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
+                if(progress == 100)
+                {
+                    break;
+                }
                 await Task.Delay(1000);
-                syncResult = string.IsNullOrEmpty(client.SyncFileProgressResult) ? 1 : double.Parse(client.SyncFileProgressResult);
-                InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(syncResult));
+                syncResult = client.SyncFileProgressResult;
             }
-            if (result)
+            if (syncResult == "Successful")
             {
+                if(progress != 100)
+                {
+                    progress = 100;
+                    InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
+                }
                 sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_120");
             }
             else

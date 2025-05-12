@@ -550,7 +550,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         UploadProgress = 50 + e.Progress / 2;
                     });
                 };
-                SendResult =await interactService.SendSyncFile(this.ToModel(), fileName, client);
+                SendResult = await interactService.SendSyncFile(this.ToModel(), fileName, client);
                 IsUploading = false;
             }
             catch (Exception ex)
