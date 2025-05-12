@@ -93,7 +93,6 @@ namespace MediaControlDistributionCenter.Views
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var type = item.GetType();
             var dialogBox = FindDialog(container);
             switch (item)
             {

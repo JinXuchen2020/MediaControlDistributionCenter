@@ -216,6 +216,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             ConnectedText = GetConnectedStatus();
             StatusText = GetStatus();
+            Group = GroupId == null ? FindResource("LanguageKey_Code_NoGroup") : Group;
         }
 
         public string GetStatus()
@@ -232,7 +233,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var playbackRecordService = GetService<IPlaybackRecordService>();
             var programService = GetService<IProgramService>();
-            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }))?.Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var record in playRecords) 
             {
                 var program = (await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" })).Data?.FirstOrDefault();
@@ -459,16 +460,19 @@ namespace MediaControlDistributionCenter.ViewModels
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
-                interactService.InvokeProgressChanged += (sender, e) =>
-                {
-                    UploadProgress = e.Progress / 2;
-                };
-
                 IsUploading = true;
                 if (UploadProgress > 0)
                 {
                     UploadProgress = 0;
                 }
+                interactService.InvokeProgressChanged += (sender, e) =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        UploadProgress = e.Progress / 2;
+                    });
+                };
+
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
             }
             catch (Exception ex)
@@ -541,7 +545,10 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 interactService.InvokeProgressChanged += (sender, e) =>
                 {
-                    UploadProgress = 50 + e.Progress / 2;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        UploadProgress = 50 + e.Progress / 2;
+                    });
                 };
                 SendResult =await interactService.SendSyncFile(this.ToModel(), fileName, client);
                 IsUploading = false;

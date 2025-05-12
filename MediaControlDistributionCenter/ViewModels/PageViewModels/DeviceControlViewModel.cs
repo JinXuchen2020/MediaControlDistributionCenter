@@ -81,6 +81,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
+
+                viewModel.RefreshStatus();
                 return viewModel;
             }));
 

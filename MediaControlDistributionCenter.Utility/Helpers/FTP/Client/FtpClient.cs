@@ -41,9 +41,9 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
 
                 request.ContentLength = fileContents.Length;
 
-                using (var requestStream = request.GetRequestStream())
+                using (var requestStream = await request.GetRequestStreamAsync())
                 {
-                    int bufferSize = 4096;
+                    int bufferSize = fileContents.Length / 100;
                     int bytesSent = 0;
                     int totalBytes = fileContents.Length;
 
@@ -52,9 +52,9 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                         byte[] buffer = new byte[bufferSize];
                         int bytesRead;
 
-                        while ((bytesRead = memoryStream.Read(buffer, 0, bufferSize)) > 0)
+                        while ((bytesRead = await memoryStream.ReadAsync(buffer, 0, bufferSize)) > 0)
                         {
-                            requestStream.Write(buffer, 0, bytesRead);
+                            await requestStream.WriteAsync(buffer, 0, bytesRead);
                             bytesSent += bytesRead;
 
                             // 计算并显示进度
@@ -86,11 +86,11 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
             request.Credentials = new NetworkCredential(ftpServer._userName, ftpServer._userPwd);
             using (var response = (FtpWebResponse)(await request.GetResponseAsync()))
             {
-                using (var stream = response.GetResponseStream())
+                using (var stream = await request.GetRequestStreamAsync())
                 {
                     string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, fileName);
                     using var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                    stream.CopyTo(fileStream);
+                    await stream.CopyToAsync(fileStream);
                     return true;
                 }
             }

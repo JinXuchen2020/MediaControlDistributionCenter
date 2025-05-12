@@ -39,7 +39,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
-            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
+            //RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override async Task LoadData()
@@ -57,7 +57,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     viewModel.Binding(c);
                 }
 
-                viewModel.IsSelected = viewModel.IsConnected && publishedSNCode.Contains(c.SnCode);
+                viewModel.IsSelected = viewModel.IsSelected || (viewModel.IsConnected && publishedSNCode.Contains(c.SnCode));
                 viewModel.RefreshStatus();
                 await viewModel.GetPrograms();
                 devicesList.Add(viewModel);
@@ -95,11 +95,11 @@ namespace MediaControlDistributionCenter.ViewModels
                     await item.VerifySnCodeCommand.ExecuteAsync(null);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        item.DisconnectCommand.Execute(null);
-                        continue;
+                       ErrorMessage = item.ErrorMessage;
+                       await ShowConfirmDialogCommand.ExecuteAsync(null);
+                       item.ErrorMessage = null;
+                       item.DisconnectCommand.Execute(null);
+                       continue;
                     }
 
                     string filePath = $"{CurrentMedia.Name}.zip";
@@ -119,10 +119,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        continue;
+                       ErrorMessage = item.ErrorMessage;
+                       await ShowConfirmDialogCommand.ExecuteAsync(null);
+                       item.ErrorMessage = null;
+                       continue;
                     }
 
                     Log.Information("发送媒体信息到设备成功");
@@ -130,10 +130,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     await item.SyncFileSyncCommand.ExecuteAsync(filePath);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        continue;
+                       ErrorMessage = item.ErrorMessage;
+                       await ShowConfirmDialogCommand.ExecuteAsync(null);
+                       item.ErrorMessage = null;
+                       continue;
                     }
 
                     Log.Information("发送媒体文件信息到设备成功");
