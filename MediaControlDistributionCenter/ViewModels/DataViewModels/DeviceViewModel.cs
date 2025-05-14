@@ -545,12 +545,15 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 interactService.InvokeProgressChanged += (sender, e) =>
                 {
+                    Log.Information($"Current Download progress:{e.Progress}%");
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         UploadProgress = 50 + e.Progress / 2;
                     });
                 };
                 SendResult = await interactService.SendSyncFile(this.ToModel(), fileName, client);
+
+                Log.Information($"媒体文件发布结果为：{SendResult}");
                 IsUploading = false;
             }
             catch (Exception ex)

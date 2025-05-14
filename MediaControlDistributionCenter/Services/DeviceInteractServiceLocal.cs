@@ -360,15 +360,14 @@ namespace MediaControlDistributionCenter.Services
             string path = CommunicationCmd.CmdSyncFile + fileSyncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             var syncResult = client.SyncFileProgressResult;
-            double progress;
-            while (double.TryParse(syncResult, out progress) && progress <= 100)
+            double progress = 0;
+            while (string.IsNullOrEmpty(syncResult) || (double.TryParse(syncResult, out progress) && progress <= 100))
             {
                 InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
                 if(progress == 100)
                 {
                     break;
                 }
-                await Task.Delay(1000);
                 syncResult = client.SyncFileProgressResult;
             }
             if (syncResult == "Successful")
