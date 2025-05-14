@@ -110,7 +110,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("userGroupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? AgentUserGroupId { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("userGroupName", NullValueHandling = NullValueHandling.Ignore)]
         public string? UserGroupName { get; set; }
 
         public void CreateMappings(Profile configuration)

@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -125,9 +126,15 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 foreach (var property in properties)
                 {
                     var value = property.GetValue(request);
+                    var proName = property.Name;
+                    var attribute = property.CustomAttributes.Where(c => c.AttributeType == typeof(JsonPropertyAttribute)).FirstOrDefault();
+                    if(attribute != null)
+                    {
+                        proName = attribute.ConstructorArguments.First().Value?.ToString() ?? proName;
+                    }
                     if (value != null && !value.Equals(DefaultForType(property.PropertyType)))
                     {
-                        parameters.Add(new(property.Name, value));
+                        parameters.Add(new(proName, value));
                     }
                 }
             }

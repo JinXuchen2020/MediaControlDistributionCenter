@@ -165,18 +165,21 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DeleteGroup(DeviceGroupViewModel viewModel)
         {
-            var response = await monitorGroupService.DeleteById(viewModel.Id);
-            if (response.Code == 200)
+            if(viewModel.Id != -1)
             {
-                var agentUsers = (await monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<MonitorDto>();
-                foreach (var item in agentUsers)
+                var response = await monitorGroupService.DeleteById(viewModel.Id);
+                if (response.Code == 200)
                 {
-                    item.GroupId = null;
-                    await monitorService.Save(item);
+                    var agentUsers = (await monitorService.GetAll(new MonitorDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<MonitorDto>();
+                    foreach (var item in agentUsers)
+                    {
+                        item.GroupId = null;
+                        await monitorService.Save(item);
+                    }
                 }
-            }
 
-            await LoadData();
+                await LoadData();
+            }
         }
 
         [RelayCommand]

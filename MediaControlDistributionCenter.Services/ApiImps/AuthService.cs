@@ -19,7 +19,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         public async Task<ResultResponse<TokenDto>> Login(AccountDto data)
         {
-            var result = await Post<ResultResponse<TokenDto>, AccountDto>("/auth/login", data);
+            var result = await Post<ResultResponse<TokenDto>, AccountDto>("/simpleLogin", data);
             if (result == null)
             {
                 result = ResultResponse<TokenDto>.ErrorInstance("Response error");

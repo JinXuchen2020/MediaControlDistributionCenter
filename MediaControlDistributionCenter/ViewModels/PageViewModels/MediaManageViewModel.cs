@@ -332,18 +332,21 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DeleteGroup(ProgramGroupViewModel viewModel)
         {
-            var response = await programGroupService.DeleteById(viewModel.Id);
-            if (response.Code == 200)
+            if(viewModel.Id != -1)
             {
-                var agentUsers = (await programService.GetAll(new ProgramDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<ProgramDto>();
-                foreach (var item in agentUsers)
+                var response = await programGroupService.DeleteById(viewModel.Id);
+                if (response.Code == 200)
                 {
-                    item.GroupId = null;
-                    await programService.Save(item);
+                    var agentUsers = (await programService.GetAll(new ProgramDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<ProgramDto>();
+                    foreach (var item in agentUsers)
+                    {
+                        item.GroupId = null;
+                        await programService.Save(item);
+                    }
                 }
-            }
 
-            await LoadData();
+                await LoadData();
+            }
         }
 
         protected override async Task SearchContent()

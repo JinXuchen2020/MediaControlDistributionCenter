@@ -128,7 +128,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
             viewModel.Agents = manageViewModel.CurrentUser.Role == "admin" ? new ObservableCollection<UserViewModel>(manageViewModel.Users.Where(c => c.Role == "agent")) :
                 new ObservableCollection<UserViewModel>(new List<UserViewModel> { manageViewModel.CurrentUser });
             viewModel.SelectedGroupId = manageViewModel.CurrentUser.Role == "admin" ? viewModel.AdminUserGroupId : viewModel.AgentUserGroupId;
-            viewModel.RoleList = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
+            viewModel.RoleList = viewModel.RoleList ?? (manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? new ObservableCollection<object>(new List<RoleModel>
             {
                 new RoleModel
                 {
@@ -147,7 +147,7 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                     Role = RoleType.User.ToString().ToLower(),
                     RoleText = (string)FindResource("LanguageKey_Code_Role_User")
                 }
-            });
+            }));
 
             Dispatcher.Invoke(async () =>
             {

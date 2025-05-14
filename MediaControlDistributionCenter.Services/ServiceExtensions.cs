@@ -34,7 +34,7 @@ namespace MediaControlDistributionCenter.Services
         public static IServiceCollection AddRemoteServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IFileService, FileServiceLocal>();
+            services.AddScoped<IFileService, FileService>();
             services.AddHttpClient();
 
             var types = typeof(IService<,>).Assembly.DefinedTypes;
