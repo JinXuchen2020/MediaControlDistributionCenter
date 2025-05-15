@@ -241,7 +241,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name + ".zip");
 
-            fileService.CreatZip(sourceDic, desZipFilePath);
+            fileService.CreateZip(sourceDic, desZipFilePath);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
             viewModel.CurrentMedia = selectedMedia;

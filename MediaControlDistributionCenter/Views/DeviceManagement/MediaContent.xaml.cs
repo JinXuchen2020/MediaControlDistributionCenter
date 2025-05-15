@@ -1,11 +1,14 @@
 ﻿
 
 using MaterialDesignThemes.Wpf;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.Diagrams;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -209,12 +212,21 @@ namespace MediaControlDistributionCenter.Views
                 viewModel.Size = Math.Round(fileSize, 2);
                 var fileName = Path.GetFileName(filePath);
 
-                var fileDic = Path.Combine(Helpers.Constants.MediaStorePath, viewModel.Name);
-                var fileContent = File.ReadAllBytes(filePath);
-                using var fileStream = new MemoryStream(fileContent);
-                var desPath = fileService.SaveFileContent(fileDic, fileName, fileStream);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    var uploadService = Utility.GetService<IUploadService>();
+                    if (uploadService is UploadServiceLocal local)
+                    {
+                        var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                        local.FtpClient = ftpClient;
+                    }
 
-                viewModel.Src = desPath;
+                    fileName = string.IsNullOrEmpty(viewModel.Name) ? fileName : $"{viewModel.Name}{viewModel.Extension}";
+
+                    await uploadService.UploadFile(filePath, fileName);
+
+                    viewModel.Src = fileName;
+                });
             }
         }
 

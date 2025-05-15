@@ -13,12 +13,12 @@ namespace MediaControlDistributionCenter.Services.ApiImps
     {
         public override Dictionary<string, string> ApiUrls => new Dictionary<string, string>
         {
-            {"GetAll", "/programmeGroup/all"},
-            {"GetPageAll", "/programmeGroup/page"},
-            {"GetById", "/programmeGroup/{0}"},
-            {"Save", "/programmeGroup/save"},
-            {"DeleteById", "/programmeGroup/{0}"},
-            {"DeleteBatch", "/programmeGroup/batch"},
+            {"GetAll", "/programGroup/all"},
+            {"GetPageAll", "/programGroup/page"},
+            {"GetById", "/programGroup/{0}"},
+            {"Save", "/programGroup/save"},
+            {"DeleteById", "/programGroup/{0}"},
+            {"DeleteBatch", "/programGroup/batch"},
         };
 
         public ProgramGroupService(ConnectionMode options) : base(options)

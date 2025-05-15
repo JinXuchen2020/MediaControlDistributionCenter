@@ -88,23 +88,23 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// <summary>
         /// 分组id
         /// </summary>
-        [JsonProperty("groupId")]
+        [JsonProperty("groupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? GroupId { get; set; }
 
 
-        [JsonIgnore]
+        [JsonProperty("monitorGroupName", NullValueHandling = NullValueHandling.Ignore)]
         public string? MonitorGroupName { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("userName", NullValueHandling = NullValueHandling.Ignore)]
         public string UserName { get; set; }
 
         /// <summary>
         /// 设备id
         /// </summary>
-        [JsonProperty("deviceId")]
+        [JsonProperty("deviceId", NullValueHandling = NullValueHandling.Ignore)]
         public string DeviceId { get; set; }
 
-        [JsonProperty("storagePercentage")]
+        [JsonProperty("storagePercentage", NullValueHandling = NullValueHandling.Ignore)]
         public double? StoragePercentage { get; set; }
 
         ///// <summary>

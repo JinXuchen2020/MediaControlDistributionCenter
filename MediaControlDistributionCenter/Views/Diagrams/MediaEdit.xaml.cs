@@ -360,7 +360,7 @@ namespace MediaControlDistributionCenter.Views
             var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name);
 
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
-            fileService.CreatZip(sourceDic, desZipFilePath);
+            fileService.CreateZip(sourceDic, desZipFilePath);
 
             var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;
 

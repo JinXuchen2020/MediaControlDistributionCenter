@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Services.LocalImps;
 using Newtonsoft.Json;
 using Serilog;
 using System.IO;
@@ -398,10 +399,13 @@ namespace MediaControlDistributionCenter.Services
 
             client.StartFtpServer();
             var ftpClient = new FtpClient(client.FtpServer);
-            ftpClient.InvokeProgressChanged += InvokeProgressChanged;
 
-            var result = await ftpClient.UploadFileToFtpServer(filePath);
-            if (result)
+            var uploadService = (UploadServiceLocal)Utility.GetService<IUploadService>();
+            uploadService.FtpClient = ftpClient;
+            uploadService.InvokeProgressChanged += InvokeProgressChanged;
+
+            var result = await uploadService.UploadFile(filePath, string.Empty, true);
+            if (result.Data)
             {
                 uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
             }
@@ -409,6 +413,8 @@ namespace MediaControlDistributionCenter.Services
             {
                 uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
             }
+
+            uploadService.InvokeProgressChanged -= InvokeProgressChanged;
 
             return uploadResult;
         }

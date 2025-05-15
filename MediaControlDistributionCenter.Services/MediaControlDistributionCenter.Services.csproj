@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaControlDistributionCenter.Data\MediaControlDistributionCenter.Data.csproj" />
+    <ProjectReference Include="..\MediaControlDistributionCenter.Utility\MediaControlDistributionCenter.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />

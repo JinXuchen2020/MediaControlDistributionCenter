@@ -73,12 +73,15 @@ namespace MediaControlDistributionCenter.ViewModels
 
             var type = SelectedType == "All" ? null : SelectedType;
             var medias = (await mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId })).Data?.ToList() ?? new List<MediaDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+            var mediaList = new List<MediaViewModel>();
+            foreach (var c in medias.OrderByDescending(t => t.Id))
             {
                 var result = new MediaViewModel();
                 result.Binding(c);
-                return result;
-            }));
+                mediaList.Add(result);
+            }
+
+            this.Medias = new ObservableCollection<MediaViewModel>(mediaList);
 
             var allMedias = (await mediaService.GetAll(null)).Data?.ToList() ?? new List<MediaDto>();
             AllCount = allMedias.Count;

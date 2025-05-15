@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediaControlDistributionCenter.Services.DTO.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -73,7 +74,41 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             }            
         }
 
-        protected async Task<T> PostMultipleFiles<T>(string requestUri, List<IFormFile> formFiles)
+        protected async Task<Stream> GetAttachedFile(string requestUri)
+        {
+            try
+            {
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                string encryptedUrl = GetEncryptedUrl(requestUri);
+                var response = await client.GetAsync(encryptedUrl);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var resultObj = JsonConvert.DeserializeObject<ResultResponse<object>>(responseContent);
+                if (resultObj == null)
+                {
+                    return await response.Content.ReadAsStreamAsync();
+                }
+                else
+                {
+                    return default;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return default;
+            }
+        }
+
+        protected async Task<T> PostMultipleFiles<T>(string requestUri, params IFormFile[] formFiles)
         {
             try
             {

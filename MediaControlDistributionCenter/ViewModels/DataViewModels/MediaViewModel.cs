@@ -3,11 +3,15 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.Tool;
+using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using OpenCvSharp;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -99,7 +103,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Src = model.Src; 
             IsSelected = isSelected;
             Extension = model.Extension;
-            Thumbnail = GetBitmap(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, model.Src));
+            //Thumbnail = GetBitmap(model.Src);
         }
 
         [RelayCommand]
@@ -109,39 +113,59 @@ namespace MediaControlDistributionCenter.ViewModels
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
         }
 
-        private BitmapImage? GetBitmap(string? source)
+        public async Task GetBitmap()
         {
-            if (string.IsNullOrEmpty(source))
+            if (!string.IsNullOrEmpty(Src))
             {
-                return null;
-            }
+                try
+                {
+                    var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, Src);
+                    if (!File.Exists(filePath))
+                    {
+                        var uploadService = Utility.GetService<IUploadService>();
+                        if (uploadService is UploadServiceLocal local)
+                        {
+                            var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                            local.FtpClient = ftpClient;
+                        }
 
-            if (Type == "Image")
-            {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                bitmap.UriSource = new Uri(source);
-                bitmap.EndInit();
+                        await uploadService.DownloadFile(Src);
+                    }
 
-                return bitmap;
-            }
-            else
-            {
+                    if (File.Exists(filePath))
+                    {
+                        if (Type == "Image")
+                        {
+                            BitmapImage bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                            bitmap.UriSource = new Uri(filePath);
+                            bitmap.EndInit();
 
-                var videoPath = source;
-                var thumbnailPath = source.Replace(Extension, ".png");
-                VideoScreenCapture.CaptureFrame(videoPath, thumbnailPath, 1);
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                bitmap.UriSource = new Uri(thumbnailPath);
-                bitmap.EndInit();
+                            Thumbnail = bitmap;
+                        }
+                        else
+                        {
+                            var videoPath = filePath;
+                            var thumbnailPath = filePath.Replace(Extension, ".png");
+                            VideoScreenCapture.CaptureFrame(videoPath, thumbnailPath, 1);
+                            BitmapImage bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                            bitmap.UriSource = new Uri(thumbnailPath);
+                            bitmap.EndInit();
 
-                return bitmap;
-            }
+                            Thumbnail = bitmap;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.Message);
+                }                
+            }            
         }
     }
 }

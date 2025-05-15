@@ -1,4 +1,6 @@
 ﻿using MediaControlDistributionCenter.Helpers.FTP.Client;
+using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
@@ -59,8 +61,14 @@ namespace MediaControlDistributionCenter.Views.UserManagement
                 string extension = System.IO.Path.GetExtension(filePath);
                 this.Dispatcher.Invoke(async () =>
                 {
-                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
-                    await ftpClient.UploadFileToFtpServer(filePath, $"{viewModel.Account}{extension}");
+                    var uploadService = Utility.GetService<IUploadService>();
+                    if (uploadService is UploadServiceLocal local)
+                    {
+                        var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                        local.FtpClient = ftpClient;
+                    }
+
+                    await uploadService.UploadFile(filePath, $"{viewModel.Account}{extension}");
 
                     // 显示缩略图
                     BitmapImage bitmap = new BitmapImage(new Uri(filePath));

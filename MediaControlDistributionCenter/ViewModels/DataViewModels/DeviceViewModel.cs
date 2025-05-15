@@ -1,22 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
-using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
-using MediaControlDistributionCenter.Helpers.FTP.Client;
-using MediaControlDistributionCenter.Helpers.FTP.Server;
-using MediaControlDistributionCenter.Helpers.Tool;
 using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
-using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Views;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using OpenCvSharp;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -149,6 +139,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool isUploading;
+
+        [ObservableProperty]
+        private double downloadProgress;
+
+        [ObservableProperty]
+        private bool isDownloading;
 
         private Communication? client;
 
@@ -469,11 +465,12 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        UploadProgress = e.Progress / 2;
+                        UploadProgress = e.Progress;
                     });
                 };
 
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
+                IsUploading = false;
             }
             catch (Exception ex)
             {
@@ -543,18 +540,26 @@ namespace MediaControlDistributionCenter.ViewModels
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
             {
+                IsDownloading = true;
+                if (DownloadProgress > 0)
+                {
+                    DownloadProgress = 0;
+                }
                 interactService.InvokeProgressChanged += (sender, e) =>
                 {
-                    Log.Information($"Current Download progress:{e.Progress}%");
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (DownloadProgress != e.Progress)
                     {
-                        UploadProgress = 50 + e.Progress / 2;
-                    });
+                        Log.Information($"Current Download progress:{e.Progress}%");
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            DownloadProgress = e.Progress;
+                        });
+                    }
                 };
                 SendResult = await interactService.SendSyncFile(this.ToModel(), fileName, client);
 
                 Log.Information($"媒体文件发布结果为：{SendResult}");
-                IsUploading = false;
+                IsDownloading = false;
             }
             catch (Exception ex)
             {

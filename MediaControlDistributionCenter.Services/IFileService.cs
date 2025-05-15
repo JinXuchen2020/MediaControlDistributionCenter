@@ -23,6 +23,6 @@ namespace MediaControlDistributionCenter.Services
 
         public T? ReadFileContent<T>(string fileDicPath, string fileName, params JsonConverter[] converters);
 
-        public void CreatZip(string sourceDirectoryName, string destinationArchiveFileName, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool includeBaseDirectory = true);
+        public void CreateZip(string sourceDirectoryName, string destinationArchiveFileName, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool includeBaseDirectory = true);
     }
 }

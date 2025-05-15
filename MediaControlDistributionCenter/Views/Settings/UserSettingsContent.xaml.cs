@@ -24,6 +24,7 @@ using Serilog;
 using System.Windows;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 
 namespace MediaControlDistributionCenter.Views
 {
@@ -52,6 +53,9 @@ namespace MediaControlDistributionCenter.Views
                 userSettingViewModel.CurrentUser.Groups = userManageViewModel.Groups;
                 userSettingViewModel.IsShelf = userSettingViewModel.IsShelf || dashboardViewModel.CurrentUser.Role == RoleType.Agent.ToString().ToLower();
             }
+
+
+            userSettingViewModel.CurrentUser.SelectedGroupId = dashboardViewModel.CurrentUser.Role == "admin" ? userSettingViewModel.CurrentUser.AdminUserGroupId : userSettingViewModel.CurrentUser.AgentUserGroupId;
 
             manageViewModel = userSettingViewModel;
             manageViewModel.PageType = manageViewModel.CurrentUser.Role == RoleType.Admin.ToString().ToLower() ? "internet" : "user";
@@ -86,6 +90,15 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            var userManageViewModel = App.ServicesProvider.GetRequiredService<UserManageViewModel>();
+            if (userManageViewModel.CurrentUser.Role == "agent")
+            {
+                manageViewModel.CurrentUser.AgentUserGroupId = manageViewModel.CurrentUser.SelectedGroupId;
+            }
+            else
+            {
+                manageViewModel.CurrentUser.AdminUserGroupId = manageViewModel.CurrentUser.SelectedGroupId;
+            }
             manageViewModel.SaveUserCommand.Execute(null);
         }
 
@@ -153,8 +166,14 @@ namespace MediaControlDistributionCenter.Views
                 string extension = System.IO.Path.GetExtension(filePath);
                 this.Dispatcher.Invoke(async () =>
                 {
-                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
-                    await ftpClient.UploadFileToFtpServer(filePath, $"{viewModel.Account}{extension}");
+                    var uploadService = Utility.GetService<IUploadService>();
+                    if (uploadService is UploadServiceLocal local)
+                    {
+                        var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                        local.FtpClient = ftpClient;
+                    }
+
+                    await uploadService.UploadFile(filePath, $"{viewModel.Account}{extension}");
 
                     // 显示缩略图
                     BitmapImage bitmap = new BitmapImage(new Uri(filePath));

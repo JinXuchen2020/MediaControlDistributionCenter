@@ -1,6 +1,10 @@
 ﻿using MediaControlDistributionCenter.Helpers;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
+using MediaControlDistributionCenter.Services.LocalImps;
+using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.Diagrams;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +20,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.IO;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -48,7 +53,21 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         protected FrameworkElement DrawingImage(MediaViewModel viewModel)
         {
-            var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src);
+            var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.Src);
+            if (!File.Exists(source))
+            {
+                var uploadService = Utility.GetService<IUploadService>();
+                if (uploadService is UploadServiceLocal local)
+                {
+                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                    local.FtpClient = ftpClient;
+                }
+
+                Dispatcher.Invoke(async () =>
+                {
+                    await uploadService.DownloadFile(viewModel.Src);
+                });
+            }
             Image result = new()
             {
                 Source = GetBitmap(source),
@@ -73,7 +92,21 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         protected FrameworkElement DrawingVideo(MediaViewModel viewModel)
         {
-            var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src);
+            var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.Src);
+            if (!File.Exists(source))
+            {
+                var uploadService = Utility.GetService<IUploadService>();
+                if (uploadService is UploadServiceLocal local)
+                {
+                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                    local.FtpClient = ftpClient;
+                }
+
+                Dispatcher.Invoke(async () =>
+                {
+                    await uploadService.DownloadFile(viewModel.Src);
+                });
+            }
             MediaElement result = new()
             {
                 Source = new Uri(source),

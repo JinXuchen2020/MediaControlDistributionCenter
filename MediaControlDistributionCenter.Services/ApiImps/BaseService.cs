@@ -107,8 +107,8 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             //    Data = result
             //};
 
-            var uri = ApiUrls["DeleteBatch"];
-            var result = await DeleteWithBody<ResultResponse<bool>, IList<long>>(uri, ids);
+            var uri = string.Format($"{ApiUrls["DeleteById"]}", string.Join(',', ids.ToArray()));
+            var result = await Delete<ResultResponse<bool>>(uri);
             if (result == null)
             {
                 result = ResultResponse<bool>.ErrorInstance("Response error");
