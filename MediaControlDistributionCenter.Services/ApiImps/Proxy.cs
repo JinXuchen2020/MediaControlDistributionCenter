@@ -132,7 +132,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                     }
                     ByteArrayContent bytes = new ByteArrayContent(data);
 
-                    multipartFormDataContent.Add(bytes, "FileName", FormFile.FileName);
+                    multipartFormDataContent.Add(bytes, "file", FormFile.FileName);
                 }
                 var response = await client.PostAsync(requestUri, multipartFormDataContent);
                 var responseContent = await response.Content.ReadAsStringAsync();

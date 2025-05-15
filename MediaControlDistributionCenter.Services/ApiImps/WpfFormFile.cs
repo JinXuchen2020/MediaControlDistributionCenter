@@ -44,9 +44,9 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         }
 
         public long Length { get; }
-        public string ContentType { get; }
+        public string ContentType => _contentType;
         public string ContentDisposition { get; set; }
-        public string FileName { get; }
+        public string FileName => _fileName;
         public string Name { get; }
 
         public IHeaderDictionary Headers { get; set; }
