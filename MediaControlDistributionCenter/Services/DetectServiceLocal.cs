@@ -32,6 +32,8 @@ namespace MediaControlDistributionCenter.Services
 
         public event EventHandler? InvokeDevicesChanged;
 
+        public bool IsStarted => _listener != null;
+
         public async Task StartDetect()
         {
             var localDevice = onlineDevices.FirstOrDefault(c => c.DeviceViewModel != null && !c.DeviceViewModel.IsInternet);
@@ -271,6 +273,14 @@ namespace MediaControlDistributionCenter.Services
         public IEnumerable<InternetDevice> GetOnlineDevices()
         {
             return [.. onlineDevices];
+        }
+
+        public void StopDetect()
+        {
+            _listener.Close();
+            _listener.Dispose();
+            _listener = null;
+            InvokeDevicesChanged = null;
         }
     }
 }

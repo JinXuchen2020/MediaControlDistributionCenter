@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.Services
 
         public event EventHandler? InvokeDevicesChanged;
 
+        public bool IsStarted => _timer != null;
+
         public async Task StartDetect()
         {
             InitializeTimer();
@@ -82,6 +84,12 @@ namespace MediaControlDistributionCenter.Services
                     InvokeDevicesChanged?.Invoke(this, null);
                 }
             }).Wait();
+        }
+
+        public void StopDetect()
+        {
+            _timer.Stop();
+            InvokeDevicesChanged = null;
         }
     }
 }

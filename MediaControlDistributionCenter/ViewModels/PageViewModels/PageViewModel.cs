@@ -46,7 +46,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
 
-        private readonly IDetectService detectService;
+        protected IDetectService detectService;
 
         public List<InternetDevice> OnlineDevices 
         {

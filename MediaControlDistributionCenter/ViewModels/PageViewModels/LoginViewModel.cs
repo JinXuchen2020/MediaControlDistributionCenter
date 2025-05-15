@@ -18,6 +18,7 @@ using Serilog;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -364,11 +365,21 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public void RefreshService()
         {
-            this.userService = GetService<IUserService>();
-            this.authService = GetService<IAuthService>();
-            this.userGroupService = GetService<IUserGroupService>();
-            this.monitorService = GetService<IMonitorService>();
-            this.programService = GetService<IProgramService>();
+            this.userService = Utility.GetService<IUserService>();
+            this.authService = Utility.GetService<IAuthService>();
+            this.userGroupService = Utility.GetService<IUserGroupService>();
+            this.monitorService = Utility.GetService<IMonitorService>();
+            this.programService = Utility.GetService<IProgramService>();
+            this.detectService = Utility.GetService<IDetectService>();
+
+            if (detectService.IsStarted)
+            {
+                SendBroadcastMessageCommand.Execute(null);
+            }
+            else
+            {
+                DetectInternetDevicesCommand.Execute(null);
+            }
         }
 
         private async Task RefreshLogo()
