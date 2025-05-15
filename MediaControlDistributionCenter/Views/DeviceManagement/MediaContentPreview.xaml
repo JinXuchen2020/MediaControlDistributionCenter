@@ -33,7 +33,7 @@
             <Border Grid.Row="1" Width="auto" Background="#40476F"/>
             <Canvas  
                 Grid.Row="2"
-                x:Name="MainCanvas"
+                Name="MainCanvas"
                 Background="Black"
                 HorizontalAlignment="Center"
                 Margin="0,10,0,0"

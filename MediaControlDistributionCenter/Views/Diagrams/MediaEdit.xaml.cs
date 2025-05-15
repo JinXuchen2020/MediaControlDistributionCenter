@@ -1,7 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using MediaControlDistributionCenter.Converters;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
@@ -12,26 +9,13 @@ using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using SkiaSharp;
 using SqlSugar;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 
 namespace MediaControlDistributionCenter.Views
@@ -825,7 +809,7 @@ namespace MediaControlDistributionCenter.Views
             var element = (Image)sender;
             var viewModel = element.DataContext as MediaViewModel;
 
-            UpdateFileComponent(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewModel.Src));
+            UpdateFileComponent(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Helpers.Constants.OutPath, viewModel.Src));
         }
 
         private void SelectColorTextColor_Click(object sender, RoutedEventArgs e)

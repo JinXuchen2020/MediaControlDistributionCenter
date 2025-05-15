@@ -90,16 +90,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 }
                 string encryptedUrl = GetEncryptedUrl(requestUri);
                 var response = await client.GetAsync(encryptedUrl);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var resultObj = JsonConvert.DeserializeObject<ResultResponse<object>>(responseContent);
-                if (resultObj == null)
-                {
-                    return await response.Content.ReadAsStreamAsync();
-                }
-                else
-                {
-                    return default;
-                }
+                return await response.Content.ReadAsStreamAsync();
             }
             catch (Exception ex)
             {
@@ -117,7 +108,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                     BaseAddress = HttpClientBaseAddress
                 };
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
+                //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
                 if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);

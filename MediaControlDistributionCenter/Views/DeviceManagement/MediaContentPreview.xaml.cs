@@ -21,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.IO;
+using MediaControlDistributionCenter.Services.ApiImps;
 
 namespace MediaControlDistributionCenter.Views.DeviceManagement
 {
@@ -29,21 +30,31 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
     /// </summary>
     public partial class MediaContentPreview : Window
     {
+        private readonly MediaViewModel viewModel;
         public MediaContentPreview(MediaViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;
+            this.viewModel = viewModel;
 
-            if (viewModel.Type == "Video")
+            this.Loaded += MediaContentPreview_Loaded;
+        }
+
+        private void MediaContentPreview_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
             {
-                var element = DrawingVideo(viewModel);
-                MainCanvas.Children.Add(element);
-            }
-            else if (viewModel.Type == "Image")
-            {
-                var element = DrawingImage(viewModel);
-                MainCanvas.Children.Add(element);
-            }
+                if (viewModel.Type == "Video")
+                {
+                    var element = await DrawingVideo(viewModel);
+                    MainCanvas.Children.Add(element);
+                }
+                else if (viewModel.Type == "Image")
+                {
+                    var element = await DrawingImage(viewModel);
+                    MainCanvas.Children.Add(element);
+                }
+            });
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -51,7 +62,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             this.Close();
         }
 
-        protected FrameworkElement DrawingImage(MediaViewModel viewModel)
+        protected async Task<FrameworkElement> DrawingImage(MediaViewModel viewModel)
         {
             var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.Src);
             if (!File.Exists(source))
@@ -63,16 +74,13 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                     local.FtpClient = ftpClient;
                 }
 
-                Dispatcher.Invoke(async () =>
-                {
-                    await uploadService.DownloadFile(viewModel.Src);
-                });
+                await uploadService.DownloadFile(viewModel.Src);
             }
             Image result = new()
             {
                 Source = GetBitmap(source),
-                Width = Math.Min(viewModel.Width, MainCanvas.Width),
-                Height = Math.Min(viewModel.Height, MainCanvas.Height),
+                Width = viewModel.Width > 0 && viewModel.Width < MainCanvas.Width ? viewModel.Width : MainCanvas.Width,
+                Height = viewModel.Height > 0 && viewModel.Height < MainCanvas.Height ? viewModel.Height : MainCanvas.Height,
                 Stretch = Stretch.Fill
             };
 
@@ -90,7 +98,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             return result;
         }
 
-        protected FrameworkElement DrawingVideo(MediaViewModel viewModel)
+        protected async Task<FrameworkElement> DrawingVideo(MediaViewModel viewModel)
         {
             var source = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, viewModel.Src);
             if (!File.Exists(source))
@@ -102,16 +110,13 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                     local.FtpClient = ftpClient;
                 }
 
-                Dispatcher.Invoke(async () =>
-                {
-                    await uploadService.DownloadFile(viewModel.Src);
-                });
+                await uploadService.DownloadFile(viewModel.Src);
             }
             MediaElement result = new()
             {
                 Source = new Uri(source),
-                Width = Math.Min(viewModel.Width, MainCanvas.Width),
-                Height = Math.Min(viewModel.Height, MainCanvas.Height),
+                Width = viewModel.Width > 0 && viewModel.Width < MainCanvas.Width ? viewModel.Width : MainCanvas.Width,
+                Height = viewModel.Height > 0 && viewModel.Height < MainCanvas.Height ? viewModel.Height : MainCanvas.Height,
                 LoadedBehavior = MediaState.Manual,
                 UnloadedBehavior = MediaState.Stop,
                 Stretch = Stretch.Fill

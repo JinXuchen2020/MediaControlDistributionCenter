@@ -5,6 +5,8 @@ using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Services.LocalImps;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using System.IO;
@@ -79,6 +81,8 @@ namespace MediaControlDistributionCenter.Services
             }
 
             string path = CommunicationCmd.CmdVerifySnCode + monitor.SnCode;
+
+            await Task.CompletedTask;
             //bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             //if (!result)
             //{
@@ -318,18 +322,17 @@ namespace MediaControlDistributionCenter.Services
         {
             var uploadResult = string.Empty;
 
-            //client.StartFtpServer();
-            //var ftpClient = new FtpClient(client.FtpServer);
+            var uploadService = Utility.GetService<IUploadService>();
 
-            //var result = await ftpClient.UploadFileToFtpServer(filePath);
-            //if (result)
-            //{
-            //    uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
-            //}
-            //else
-            //{
-            //    uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
-            //}
+            var result = await uploadService.UploadFile(filePath, string.Empty, true);
+            if (result.Data)
+            {
+                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
+            }
+            else
+            {
+                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
+            }
 
             return uploadResult;
         }
