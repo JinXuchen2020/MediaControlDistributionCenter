@@ -107,6 +107,9 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("storagePercentage", NullValueHandling = NullValueHandling.Ignore)]
         public double? StoragePercentage { get; set; }
 
+        [JsonProperty("currentDataTime", NullValueHandling = NullValueHandling.Ignore)]
+        public string? CurrentDataTime { get; set; }
+
         ///// <summary>
         ///// 显示器本地账号
         ///// </summary>

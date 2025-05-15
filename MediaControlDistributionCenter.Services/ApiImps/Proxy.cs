@@ -145,13 +145,22 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                     BaseAddress = HttpClientBaseAddress
                 };
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent requestContent = null;
+                if(parameter is string strContent)
+                {
+                    requestContent = new StringContent(strContent);
+                }
+                else
+                {
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
+                    requestContent = new StringContent(content, Encoding.UTF8, "application/json");
+                }
                 if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
                 }
-                var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-                var response = await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
+                var response = await client.PostAsync(requestUri, requestContent);
 
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<TOutput>(responseContent);

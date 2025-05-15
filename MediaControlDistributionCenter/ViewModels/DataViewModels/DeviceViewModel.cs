@@ -175,6 +175,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Volume = Volume,
                 StoragePercentage = StoragePercentage,
                 DeviceId = SNumber, 
+                CurrentDataTime = CurrentTime.ToString()
             };
         }
 
@@ -206,6 +207,7 @@ namespace MediaControlDistributionCenter.ViewModels
             UsedStoragePercentage = 100 - model.StoragePercentage;
             MediaNames = string.Empty;
             MediaIds = new List<int>();
+            CurrentTime = string.IsNullOrEmpty(model.CurrentDataTime) ? DateTime.Now : DateTime.Parse(model.CurrentDataTime);
         }
 
         public void RefreshStatus() 

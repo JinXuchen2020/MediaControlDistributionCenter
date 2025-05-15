@@ -77,7 +77,10 @@ namespace MediaControlDistributionCenter.Services
                 }
 
                 onlineDevices = devicesList;
-                InvokeDevicesChanged?.Invoke(this, null);
+                if(onlineDevices.Count > 0)
+                {
+                    InvokeDevicesChanged?.Invoke(this, null);
+                }
             }).Wait();
         }
     }

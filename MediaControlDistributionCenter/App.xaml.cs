@@ -4,6 +4,7 @@ using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
@@ -52,6 +53,8 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<IDetectService, DetectServiceLocal>();
             services.AddSingleton<IDetectService, DetectService>();
             services.AddSingleton<IDeviceInteractService, DeviceInteractServiceLocal>();
+            services.AddSingleton<IDeviceInteractService, DeviceInteractService>();
+            services.AddSingleton<IConnectService, ConnectService>();
 
             services.AddLocalServices();
             services.AddRemoteServices();
