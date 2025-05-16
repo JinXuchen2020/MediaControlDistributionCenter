@@ -96,7 +96,7 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
 
-            string path = CommunicationCmd.CmdVerifySnCode + monitor.SnCode;
+            string path = CommunicationCmd.CmdVerifySnCode + monitor.SNumber;
             bool result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {
@@ -652,7 +652,7 @@ namespace MediaControlDistributionCenter.Services
                 foreach (var item in syncResult)
                 {
                     await programService.Save(item);
-                    var model = new PlaybackRecordDto { MediaName = item.Name, MediaType = item.MediaType, MonitorSnCode = monitor.SnCode };
+                    var model = new PlaybackRecordDto { MediaName = item.Name, MediaType = item.MediaType, MonitorSnCode = monitor.SNumber };
                     var existRecord = (await playRecordService.GetAll(model)).Data?.FirstOrDefault();
                     if (existRecord == null)
                     {

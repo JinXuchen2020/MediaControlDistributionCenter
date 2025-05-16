@@ -103,7 +103,7 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
 
-            string path = CommunicationCmd.CmdVerifySnCode + monitor.SnCode;
+            string path = CommunicationCmd.CmdVerifySnCode + monitor.SNumber;
             bool result = await connectService.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (!result)
             {

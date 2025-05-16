@@ -17,13 +17,16 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 显示器SN码
         /// </summary>
         [JsonProperty("snCode", NullValueHandling = NullValueHandling.Ignore)]
-        public string SnCode { get; set; }
+        public string SNumber { get; set; }
 
         /// <summary>
         /// 显示器状态（OFFLINE: 离线, ONLINE: 在线）
         /// </summary>
         [JsonProperty("status")]
         public int Status { get; set; }
+
+        [JsonProperty("connectStatus", NullValueHandling = NullValueHandling.Ignore)]
+        public int ConnectStatus { get; set; }
 
         /// <summary>
         /// 显示器启用状态（0: 禁用, 1: 启用）
@@ -134,7 +137,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
             {
                 Id = (int)Id,
                 Name = Name,
-                SnCode = SnCode,                
+                SNumber = SNumber,                
                 Enabled = Enabled,
                 Status = Status,
                 UserAccount = UserAccount,

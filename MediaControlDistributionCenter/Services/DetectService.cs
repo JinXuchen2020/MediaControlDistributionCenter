@@ -61,21 +61,26 @@ namespace MediaControlDistributionCenter.Services
             Task.Run(async () => 
             {
                 var monitorService = Utility.GetService<IMonitorService>();
-                var devices = (await monitorService.GetAll(new MonitorDto { Status = 1, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
+                var devices = (await monitorService.GetAll(new MonitorDto { ConnectStatus = 1, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
                 var devicesList = new List<InternetDevice>();
                 foreach (var c in devices)
                 {
                     var device = new InternetDevice
                     {
-                        SnCode = c.SnCode,
+                        SnCode = c.SNumber,
                         IpAddress = string.Empty,
-                        Status = c.Status,
+                        Status = c.ConnectStatus,
                         IsInternet = true,
                     };
 
-                    device.DeviceViewModel = new DeviceViewModel();
-                    device.DeviceViewModel.Binding(c);
-                    device.DeviceViewModel.ConnectRemoteCommand.Execute(null);
+                    if (device.Status == 1)
+                    {
+                        device.DeviceViewModel = new DeviceViewModel();
+                        device.DeviceViewModel.Binding(c);
+                        device.DeviceViewModel.ConnectRemoteCommand.Execute(null);
+                    }
+
+                    devicesList.Add(device);
                 }
 
                 onlineDevices = devicesList;

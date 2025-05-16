@@ -58,7 +58,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     var deviceResponse = (await monitorService.GetAll(new MonitorDto { Enabled = 1})).Data?.ToList() ?? new List<MonitorDto>();
                     foreach (var c in deviceResponse)
                     {
-                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                         if (viewModel == null)
                         {
                             viewModel = new DeviceViewModel();
@@ -91,7 +91,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                     foreach (var c in deviceResponse)
                     {
-                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                         if (viewModel == null)
                         {
                             viewModel = new DeviceViewModel();
@@ -123,7 +123,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     
                     foreach (var c in deviceResponse)
                     {
-                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                        var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                         if (viewModel == null)
                         {
                             viewModel = new DeviceViewModel();

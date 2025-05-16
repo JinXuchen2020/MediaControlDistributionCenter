@@ -157,12 +157,12 @@ namespace MediaControlDistributionCenter.ViewModels
                                     response = await monitorService.Save(item.Monitor.Monitor);
                                     if (response.Code == 200)
                                     {
-                                        var device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
+                                        var device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SNumber);
                                         if (device == null)
                                         {
                                             device = new InternetDevice()
                                             {
-                                                SnCode = item.Monitor.Monitor.SnCode,
+                                                SnCode = item.Monitor.Monitor.SNumber,
                                                 IpAddress = communication.IpAddr,
                                                 Status = 1,
                                                 StatusText = GetStatus(1),

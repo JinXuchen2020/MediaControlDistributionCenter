@@ -375,6 +375,11 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_105}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
+                                    <DataGridTextColumn Width="160" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding SNumber}">
+                                        <DataGridTextColumn.Header>
+                                            <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_104}" />
+                                        </DataGridTextColumn.Header>
+                                    </DataGridTextColumn>
                                     <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding StatusText}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_101}" />

@@ -180,7 +180,7 @@ namespace MediaControlDistributionCenter.Services
                 {
                     var monitorService = Utility.GetService<IMonitorService>();
                     var userService = Utility.GetService<IUserService>();
-                    var connectedDevice = (await monitorService.GetAll(new MonitorDto { SnCode = device.SnCode })).Data?.FirstOrDefault();
+                    var connectedDevice = (await monitorService.GetAll(new MonitorDto { SNumber = device.SnCode })).Data?.FirstOrDefault();
                     if (connectedDevice == null)
                     {
                         Log.Debug($"Start to Sync user from device with IP {device.IpAddress}!");
@@ -202,7 +202,7 @@ namespace MediaControlDistributionCenter.Services
                                             response = await monitorService.Save(item.Monitor.Monitor);
                                             if (response.Code == 200)
                                             {
-                                                Log.Debug($"Save monitor: {item.Monitor.Monitor.SnCode} to local db !");
+                                                Log.Debug($"Save monitor: {item.Monitor.Monitor.SNumber} to local db !");
                                                 device.DeviceViewModel = new DeviceViewModel();
                                                 device.DeviceViewModel.Binding(item.Monitor.Monitor);
                                                 device.DeviceViewModel.ConnectCommand.Execute(communication);

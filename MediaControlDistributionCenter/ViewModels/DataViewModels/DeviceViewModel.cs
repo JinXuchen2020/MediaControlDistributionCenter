@@ -27,6 +27,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.ValidateAccount))]
         private string sNumber;
 
         [ObservableProperty]
@@ -160,7 +161,7 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Id = Id,
                 Name = Name,
-                SnCode = SNumber,
+                SNumber = SNumber,
                 Status = Status,
                 GroupId = GroupId,
                 UserAccount = UserId,
@@ -183,7 +184,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             Id = model.Id;
             Name = model.Name;
-            SNumber = model.SnCode;
+            SNumber = model.SNumber;
             Resolution = $"{model.Width}*{model.Height}";
             LastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
             Status = model.Status;

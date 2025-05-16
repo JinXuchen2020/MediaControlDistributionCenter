@@ -86,7 +86,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var devicesList = new List<DeviceViewModel>();
             foreach (var c in devices.Where(c => c.Enabled == int.Parse(SelectDisabled)).OrderByDescending(c => c.Id)) 
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
@@ -234,7 +234,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     await ShowConfirmDialogCommand.ExecuteAsync(null);
                 }
 
-                var response = await monitorService.EnableById(viewModel.Id, viewModel.Enabled == 1);
+                var response = await monitorService.Save(viewModel.ToModel());
                 if (response.Code == 200)
                 {
                     await LoadData();
@@ -340,13 +340,13 @@ namespace MediaControlDistributionCenter.ViewModels
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var nameDevices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true)).Data?.ToList() ?? new List<MonitorDto>();
-            var snDevices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SnCode = SearchString, GroupId = groupId })).Data?.ToList() ?? new List<MonitorDto>();
+            var snDevices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, SNumber = SearchString, GroupId = groupId })).Data?.ToList() ?? new List<MonitorDto>();
 
             nameDevices.AddRange(snDevices);
             var devicesList = new List<DeviceViewModel>();
             foreach (var c in nameDevices)
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();

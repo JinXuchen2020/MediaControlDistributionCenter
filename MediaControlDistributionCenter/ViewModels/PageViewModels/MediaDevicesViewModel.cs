@@ -50,14 +50,14 @@ namespace MediaControlDistributionCenter.ViewModels
             var devicesList = new List<DeviceViewModel>();
             foreach (var c in devices)
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
 
-                viewModel.IsSelected = viewModel.IsSelected || (viewModel.IsConnected && publishedSNCode.Contains(c.SnCode));
+                viewModel.IsSelected = viewModel.IsSelected || (viewModel.IsConnected && publishedSNCode.Contains(c.SNumber));
                 viewModel.RefreshStatus();
                 await viewModel.GetPrograms();
                 devicesList.Add(viewModel);
