@@ -36,6 +36,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                 request.Method = WebRequestMethods.Ftp.UploadFile;
                 request.UsePassive = false;
                 request.UseBinary = true;
+                request.KeepAlive = false;
                 request.Credentials = new NetworkCredential(ftpServer._userName, ftpServer._userPwd);
                 byte[] fileContents = File.ReadAllBytes(filePath);
 

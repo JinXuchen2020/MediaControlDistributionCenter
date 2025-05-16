@@ -245,6 +245,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                             {
                                 SyncFileProgressResult = data[2];
                                 Log.Information(SyncFileProgressResult);
+                                if(SyncFileProgressResult == "Successful")
+                                {
+                                    SyncFileProgressResult = string.Empty;
+                                }
                             }
                         }
                     }

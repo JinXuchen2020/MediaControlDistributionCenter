@@ -166,6 +166,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 if (device.DeviceViewModel != null)
                 {
                     device.DeviceViewModel.DisconnectCommand.Execute(null);
+                    device.DeviceViewModel = null;
                 }
             }
 

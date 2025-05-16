@@ -175,8 +175,9 @@ namespace MediaControlDistributionCenter.ViewModels
                 Brightness = Brightness,
                 Volume = Volume,
                 StoragePercentage = StoragePercentage,
-                DeviceId = SNumber, 
-                CurrentDataTime = CurrentTime.ToString()
+                DeviceId = SNumber,
+                CurrentDataTime = CurrentTime.ToString(),
+                ConnectStatus = IsConnected ? 1 : 0
             };
         }
 
@@ -464,21 +465,37 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     UploadProgress = 0;
                 }
-                interactService.InvokeProgressChanged += (sender, e) =>
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        UploadProgress = e.Progress;
-                    });
-                };
+                interactService.InvokeProgressChanged += InteractService_InvokeProgressChanged;
 
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
+                Log.Information($"媒体文件上传结果为：{UploadResult}");
                 IsUploading = false;
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
             }
+        }
+
+        private void InteractService_InvokeProgressChanged(object? sender, Helpers.FTP.Client.ProgressEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (IsUploading)
+                {
+                    Log.Information($"Current Upload progress:{e.Progress}%");
+                    UploadProgress = e.Progress;
+                }
+
+                if (IsDownloading)
+                {
+                    if (DownloadProgress != e.Progress)
+                    {
+                        Log.Information($"Current Download progress:{e.Progress}%");
+                        DownloadProgress = e.Progress;
+                    }
+                }
+            });
         }
 
         [RelayCommand]
@@ -548,17 +565,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     DownloadProgress = 0;
                 }
-                interactService.InvokeProgressChanged += (sender, e) =>
-                {
-                    if (DownloadProgress != e.Progress)
-                    {
-                        Log.Information($"Current Download progress:{e.Progress}%");
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            DownloadProgress = e.Progress;
-                        });
-                    }
-                };
+                interactService.InvokeProgressChanged += InteractService_InvokeProgressChanged;
                 SendResult = await interactService.SendSyncFile(this.ToModel(), fileName, client);
 
                 Log.Information($"媒体文件发布结果为：{SendResult}");

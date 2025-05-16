@@ -27,7 +27,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task<bool> SendUser(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -67,7 +67,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task VerifyUser(MonitorDto monitor, UserDto user, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -91,7 +91,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task VerifySnCode(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -118,7 +118,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task ChangeBrightness(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -157,7 +157,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task ChangeVolume(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -196,7 +196,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task Restart(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -235,7 +235,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task ChangePower(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -274,7 +274,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task TimeSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -304,7 +304,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task TimeGPSSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -334,7 +334,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task<string> SendSyncFile(MonitorDto monitor, string fileName, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -376,7 +376,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task<string> UploadFile(MonitorDto monitor, string filePath, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -402,7 +402,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task SendProgram(MonitorDto monitor, ProgramDto program, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -425,7 +425,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task ChangeProgram(MonitorDto monitor, ProgramDto program, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -447,7 +447,7 @@ namespace MediaControlDistributionCenter.Services
         }
         public async Task EnableMonitor(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -470,7 +470,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task DeleteProgram(MonitorDto monitor, string value, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -492,7 +492,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task<DateTime> SyncCurrentTime(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -518,7 +518,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task SyncBrightness(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -544,7 +544,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task SyncVolume(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -570,7 +570,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task SyncDeviceControl(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
@@ -592,7 +592,7 @@ namespace MediaControlDistributionCenter.Services
 
         public async Task SyncPrograms(MonitorDto monitor, Communication? client = null)
         {
-            if (monitor.Status == 0)
+            if (monitor.ConnectStatus == 0)
             {
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
