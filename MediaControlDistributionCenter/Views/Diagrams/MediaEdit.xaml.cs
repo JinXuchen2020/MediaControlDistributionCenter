@@ -70,6 +70,7 @@ namespace MediaControlDistributionCenter.Views
             Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.LoadData();
+                LoadCanvasComponents(manageViewModel);
             });
             MainCanvas.MouseLeftButtonDown += (sender, e) =>
             {
@@ -79,8 +80,6 @@ namespace MediaControlDistributionCenter.Views
                     resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
                 }
             };
-            LoadCanvasComponents(manageViewModel);
-            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
