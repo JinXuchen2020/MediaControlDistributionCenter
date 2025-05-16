@@ -278,7 +278,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }                    
 
                 var response = await programService.Save(viewModel.ToModel());
-                if (response.Code == 200 && response.Data)
+                if (response.Code == 200)
                 {
                     if (dbModel != null)
                     {

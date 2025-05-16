@@ -128,7 +128,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var newViewModel = manageViewModel.CreateProgram();
-            newViewModel.CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User");
+            newViewModel.CreatedSource = userManageViewModel.CurrentUser.Role.ToString();
             manageViewModel.ShowDialogCommand.Execute(newViewModel);
         }
 

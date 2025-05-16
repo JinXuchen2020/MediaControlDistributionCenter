@@ -67,6 +67,7 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
 
                 using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
                 {
+                    Log.Information(response.StatusCode.ToString());
                     return response.StatusCode == FtpStatusCode.ClosingData;
                 }
             }

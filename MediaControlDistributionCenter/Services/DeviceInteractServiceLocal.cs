@@ -371,13 +371,8 @@ namespace MediaControlDistributionCenter.Services
                 }
                 syncResult = client.SyncFileProgressResult;
             }
-            if (syncResult == "Successful")
+            if (progress == 100)
             {
-                if(progress != 100)
-                {
-                    progress = 100;
-                    InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
-                }
                 sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_120");
             }
             else

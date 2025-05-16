@@ -51,6 +51,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private string createdSource;
 
         [ObservableProperty]
+        private string createdSourceText;
+
+        [ObservableProperty]
         private int status;
 
         [ObservableProperty]
@@ -119,7 +122,8 @@ namespace MediaControlDistributionCenter.ViewModels
             Size = model.Size;
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
-            CreatedSource = string.IsNullOrEmpty(model.CreatedSource) ? null : LanguageTool.Instance.GetResourceTextValue(model.CreatedSource);
+            CreatedSource = model.CreatedSource;
+            CreatedSourceText = model.CreatedSource == "user" ? FindResource("LanguageKey_Code_Role_User") : FindResource("LanguageKey_Code_Role_Admin");
             Status = model.Status;
             StatusText = GetStatus();
             GroupId = model.GroupId;

@@ -87,7 +87,7 @@ namespace MediaControlDistributionCenter.Views
             MainCanvas.Children.Clear();
             if (viewModel.SelectedPage != null)
             {
-                foreach (var component in viewModel.SelectedPage.Components)
+                foreach (var component in viewModel.SelectedPage.Components.Where(c => !c.IsDeleted))
                 {
                     if (component == null) continue;
                     switch (component.Type)
@@ -535,9 +535,18 @@ namespace MediaControlDistributionCenter.Views
                     MainCanvas.Children.Remove(currentCom.FrameworkElement);
                     var resizableControl = new ResizableControl();
                     resizableControl.ClearResizable(currentCom.FrameworkElement, MainCanvas);
+                    currentCom.DisposeCommand.Execute(null);
                 }
                 manageViewModel.SelectedComponent = null;
                 manageViewModel.SelectedElement = null;
+
+                LoadCanvasComponents(manageViewModel);
+            }
+            else
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_147");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
             }
         }
 
@@ -703,7 +712,7 @@ namespace MediaControlDistributionCenter.Views
                     MainCanvas.Children.Remove(viewModel.FrameworkElement);
                     var resizableControl = new ResizableControl();
                     resizableControl.ClearResizable(viewModel.FrameworkElement, MainCanvas);
-                    viewModel.FrameworkElement = null;
+                    viewModel.DisposeCommand.Execute(null);
                     manageViewModel.SelectedElement = null;
                     viewModel.Source = null;
                     viewModel.FileName = null;

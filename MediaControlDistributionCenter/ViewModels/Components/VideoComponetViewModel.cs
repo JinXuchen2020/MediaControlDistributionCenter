@@ -170,6 +170,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 _timer = null;
                 currentPlayCount = 0;
             }
+
+            if (FrameworkElement is Border)
+            {
+                Timeline = 0;
+                TotalTimeline = 0;
+                thumbnail = null;
+            }
         }
 
         private void Video_LayoutUpdated(object sender, EventArgs e)

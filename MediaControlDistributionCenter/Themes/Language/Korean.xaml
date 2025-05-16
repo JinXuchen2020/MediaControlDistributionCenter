@@ -448,7 +448,7 @@
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">该账号已经存在</sys:String>
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">账号密码不能为空！</sys:String>
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">公司名不能为空！</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">保存失败</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">保存成功</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Totip_100">매개변수가 유효하지 않거나 누락됨</sys:String>
 <sys:String x:Key="LanguageKey_Code_Totip_102">관련 데이터가 없음</sys:String>

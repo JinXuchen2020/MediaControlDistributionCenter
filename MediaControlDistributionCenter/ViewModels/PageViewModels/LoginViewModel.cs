@@ -371,6 +371,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorService = Utility.GetService<IMonitorService>();
             this.programService = Utility.GetService<IProgramService>();
             this.detectService = Utility.GetService<IDetectService>();
+            detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
 
             if (detectService.IsStarted)
             {

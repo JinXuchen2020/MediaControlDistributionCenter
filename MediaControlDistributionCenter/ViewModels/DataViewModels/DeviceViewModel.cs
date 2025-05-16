@@ -219,7 +219,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public string GetStatus()
         {
-            return EndDate < DateTime.Now ? FindResource("LanguageKey_Code_Invalid") : this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : Status == 1 ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
+            return EndDate.Date < DateTime.Now.Date ? FindResource("LanguageKey_Code_Invalid") : this.Enabled == 0 ? FindResource("LanguageKey_Code_Disable") : Status == 1 ? FindResource("LanguageKey_Code_Online") : FindResource("LanguageKey_Code_Offline");
         }
 
         public string GetConnectedStatus()
