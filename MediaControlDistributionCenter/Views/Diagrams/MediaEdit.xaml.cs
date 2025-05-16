@@ -80,6 +80,7 @@ namespace MediaControlDistributionCenter.Views
                 }
             };
             LoadCanvasComponents(manageViewModel);
+            manageViewModel.CaptureCommand.Execute(MainCanvas);
         }
 
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
@@ -539,8 +540,6 @@ namespace MediaControlDistributionCenter.Views
                 }
                 manageViewModel.SelectedComponent = null;
                 manageViewModel.SelectedElement = null;
-
-                LoadCanvasComponents(manageViewModel);
             }
             else
             {
@@ -670,7 +669,12 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.SelectedComponent.IsSelected = false;
                 }
 
-                manageViewModel.SelectedElement = null;
+                if (manageViewModel.SelectedElement != null)
+                {
+                    var resizableControl = new ResizableControl();
+                    resizableControl.ClearResizable(manageViewModel.SelectedElement, MainCanvas);
+                    manageViewModel.SelectedElement = null;
+                }
 
                 manageViewModel.SelectedComponent = manageViewModel.CreateComponent((MediaType)type, maxId + 1);
 
