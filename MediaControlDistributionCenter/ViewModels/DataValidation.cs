@@ -27,10 +27,9 @@ namespace MediaControlDistributionCenter.ViewModels
                         property.SetValue(query, input);
                     }
                     var userService = Utility.GetService<IUserService>();
-                    var response = Task.Run(async () => await userService.GetAll(query)).Result?.Data?.ToList() ?? new List<UserDto>(); // (await userService.GetAll(new UserDto { Account = account })).Data?.ToList() ?? new List<UserDto>();
-                    bool isValid = response.Where(c => c.Id != userViewModel.Id).Count() == 0;
+                    var response = Task.Run(async () => await userService.GetAll(query)).Result?.Data?.ToList() ?? new List<UserDto>();
 
-                    if (isValid)
+                    if (!response.Any(c => c.Id != userViewModel.Id))
                     {
                         return ValidationResult.Success;
                     }
@@ -45,14 +44,34 @@ namespace MediaControlDistributionCenter.ViewModels
                         proDevice.SetValue(queryDevice, input);
                     }
                     var monitorService = Utility.GetService<IMonitorService>();
-                    var responseDevice = Task.Run(async () => await monitorService.GetAll(queryDevice)).Result?.Data?.ToList() ?? new List<MonitorDto>(); // (await userService.GetAll(new UserDto { Account = account })).Data?.ToList() ?? new List<UserDto>();
+                    var responseDevice = Task.Run(async () => await monitorService.GetAll(queryDevice)).Result?.Data?.ToList() ?? new List<MonitorDto>();
 
                     if (!responseDevice.Any(c => c.Id != deviceViewModel.Id))
                     {
                         return ValidationResult.Success;
                     }
 
-                    errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_101");
+                    errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_105");
+                    break;
+                case var o when o is ProgramViewModel programViewModel:
+                    var queryProgram = new ProgramDto()
+                    {
+                        UserAccount = programViewModel.UserId
+                    };
+                    var proProgram = queryProgram.GetType().GetProperty(context.MemberName!);
+                    if (proProgram != null)
+                    {
+                        proProgram.SetValue(queryProgram, input);
+                    }
+                    var programService = Utility.GetService<IProgramService>();
+                    var responseProgram = Task.Run(async () => await programService.GetAll(queryProgram)).Result?.Data?.ToList() ?? new List<ProgramDto>();
+
+                    if (!responseProgram.Any(c => c.Id != programViewModel.Id))
+                    {
+                        return ValidationResult.Success;
+                    }
+
+                    errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_105");
                     break;
             }
 
@@ -69,20 +88,62 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             string errorMessage = string.Empty;
-            if (context.ObjectInstance is UserViewModel)
+            switch (context.ObjectInstance)
             {
-                switch (context.MemberName)
-                {
-                    case "Account":
-                        errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_100");
-                        break;
-                    case "Name":
-                        errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_103");
-                        break;
-                    case "Password":
-                        errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_102");
-                        break;
-                }
+                case var o when o is UserViewModel userViewModel:
+                    switch (context.MemberName)
+                    {
+                        case "Account":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_100");
+                            break;
+                        case "Name":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_103");
+                            break;
+                        case "Password":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_102");
+                            break;
+                    }
+                    break;
+                case var o when o is DeviceViewModel deviceViewModel:
+                    switch (context.MemberName)
+                    {
+                        case "Name":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_106");
+                            break;
+                        case "SNumber":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_107");
+                            break;
+                        case "Width":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_108");
+                            break;
+                        case "Height":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_109");
+                            break;
+                        case "StartDate":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_110");
+                            break;
+                        case "EndDate":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_111");
+                            break;
+                    }
+                    break;
+                case var o when o is ProgramViewModel programViewModel:
+                    switch (context.MemberName)
+                    {
+                        case "Name":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_106");
+                            break;
+                        case "Type":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_112");
+                            break;
+                        case "Width":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_108");
+                            break;
+                        case "Height":
+                            errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Error_Tooltip_109");
+                            break;
+                    }
+                    break;
             }
 
             return new(errorMessage);

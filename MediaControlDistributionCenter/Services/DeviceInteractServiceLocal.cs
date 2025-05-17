@@ -359,19 +359,15 @@ namespace MediaControlDistributionCenter.Services
             };
             string fileSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
             string path = CommunicationCmd.CmdSyncFile + fileSyncString;
+            client.InvokeProgressChanged += InvokeProgressChanged;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             var syncResult = client.SyncFileProgressResult;
-            double progress = 0;
-            while (string.IsNullOrEmpty(syncResult) || (double.TryParse(syncResult, out progress) && progress <= 100))
+            while (syncResult != "Successful")
             {
-                InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
-                if(progress == 100)
-                {
-                    break;
-                }
+                await Task.Delay(500);
                 syncResult = client.SyncFileProgressResult;
             }
-            if (progress == 100)
+            if (syncResult == "Successful")
             {
                 sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_120");
             }
@@ -379,6 +375,8 @@ namespace MediaControlDistributionCenter.Services
             {
                 sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_121");
             }
+
+            client.InvokeProgressChanged -= InvokeProgressChanged;
 
             return sendResult;
         }

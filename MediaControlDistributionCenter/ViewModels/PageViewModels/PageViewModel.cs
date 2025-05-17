@@ -22,6 +22,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -221,7 +222,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                             if (method != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task))
                             {
-                                Task.Run(async () =>
+                                Application.Current.Dispatcher.Invoke(async () =>
                                 {
                                     if (method.Invoke(typeObj, [.. parameterValues]) is Task methodTask)
                                     {

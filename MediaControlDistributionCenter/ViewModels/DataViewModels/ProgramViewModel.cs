@@ -19,23 +19,23 @@ namespace MediaControlDistributionCenter.ViewModels
         private long id;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目名称!")]
-        [CustomValidation(typeof(ProgramViewModel), nameof(ValidateAccount))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.ValidateAccount))]
         private string name;
 
         [ObservableProperty]
-        [Required(ErrorMessage ="请选择节目类型!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string type;
 
         [ObservableProperty]
         private string resolution;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目高度!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string width;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目宽度!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string height;
 
         [ObservableProperty]
@@ -143,22 +143,6 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
-        }
-
-        public static ValidationResult ValidateAccount(string name, ValidationContext context)
-        {
-            ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
-            var programService = Utility.GetService<IProgramService>();
-            var response = Task.Run(async () => await programService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name })).Result?.Data?.ToList() ?? new List<ProgramDto>();
-            bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
-
-            if (isValid)
-            {
-                return ValidationResult.Success;
-            }
-
-            var errorMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
-            return new(errorMessage);
         }
 
         public string GetStatus()

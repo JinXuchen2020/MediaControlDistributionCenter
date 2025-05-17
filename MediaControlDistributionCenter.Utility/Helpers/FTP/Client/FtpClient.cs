@@ -66,11 +66,12 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                     //requestStream.Write(fileContents, 0, fileContents.Length);
                 }
 
-                using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
-                {
-                    Log.Information(response.StatusCode.ToString());
-                    return response.StatusCode == FtpStatusCode.ClosingData;
-                }
+                return true;
+                //using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
+                //{
+                //    Log.Information(response.StatusCode.ToString());
+                //    return response.StatusCode == FtpStatusCode.ClosingData;
+                //}
             }
             catch (Exception ex) 
             {

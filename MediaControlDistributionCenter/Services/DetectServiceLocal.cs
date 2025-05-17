@@ -16,6 +16,7 @@ using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using MediaControlDistributionCenter.Services.DTO;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.Services
 {

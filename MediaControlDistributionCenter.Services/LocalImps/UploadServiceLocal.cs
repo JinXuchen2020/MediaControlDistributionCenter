@@ -32,6 +32,11 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             }
             var result = await ftpClient.UploadFileToFtpServer(filePath, fileName);
 
+            if (hasProgress)
+            {
+                ftpClient.InvokeProgressChanged -= InvokeProgressChanged;
+            }
+
             return new ResultResponse<bool>
             {
                 Code = 200,

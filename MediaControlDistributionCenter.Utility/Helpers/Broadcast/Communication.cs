@@ -1,8 +1,10 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using Newtonsoft.Json;
 using Serilog;
+using System;
 using System.Net;
 using System.Text;
 
@@ -45,6 +47,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
+
+        public event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
         private int retryCount = 0;
 
         private readonly FtpServer ftpServer;
@@ -245,9 +249,9 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                             {
                                 SyncFileProgressResult = data[2];
                                 Log.Information(SyncFileProgressResult);
-                                if(SyncFileProgressResult == "Successful")
+                                if ((double.TryParse(SyncFileProgressResult, out var progress) && progress <= 100))
                                 {
-                                    SyncFileProgressResult = string.Empty;
+                                    InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
                                 }
                             }
                         }
@@ -326,6 +330,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
             netClient.Send(utf8Bytes);
             Log.Information($"Command: {Cmd} is sent!");
+
+            if(CommunicationCmd.CmdSyncFile.Contains(CmdArr[1]))
+            {
+                SyncFileProgressResult = string.Empty;
+            }
 
             while (true)
             {

@@ -22,11 +22,11 @@ namespace MediaControlDistributionCenter.ViewModels
         private long id;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string name;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         [CustomValidation(typeof(DataValidation), nameof(DataValidation.ValidateAccount))]
         private string sNumber;
 
@@ -67,27 +67,25 @@ namespace MediaControlDistributionCenter.ViewModels
         private string ownerName;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private double width;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private double height;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private DateTime startDate;
 
         [ObservableProperty]
-        [Required]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private DateTime endDate;
 
         [ObservableProperty]
-        [Required]
         private string contactName;
 
         [ObservableProperty]
-        [Required]
         private string contactNumber;
 
         [ObservableProperty]
@@ -470,6 +468,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
                 Log.Information($"媒体文件上传结果为：{UploadResult}");
                 IsUploading = false;
+                interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
             }
             catch (Exception ex)
             {
@@ -489,11 +488,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 if (IsDownloading)
                 {
-                    if (DownloadProgress != e.Progress)
-                    {
-                        Log.Information($"Current Download progress:{e.Progress}%");
-                        DownloadProgress = e.Progress;
-                    }
+                    Log.Information($"Current Download progress:{e.Progress}%");
+                    DownloadProgress = e.Progress;
                 }
             });
         }
@@ -570,6 +566,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 Log.Information($"媒体文件发布结果为：{SendResult}");
                 IsDownloading = false;
+                interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
             }
             catch (Exception ex)
             {

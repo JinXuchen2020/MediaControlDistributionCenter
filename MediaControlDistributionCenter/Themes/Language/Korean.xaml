@@ -449,6 +449,14 @@
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">账号密码不能为空！</sys:String>
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">公司名不能为空！</sys:String>
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">保存成功</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_105">SNCode已经存在</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_106">名称不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_107">SNCode不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_108">宽度不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_109">高度不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_110">开始时间不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_111">结束时间不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_112">节目类型不能为空</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Totip_100">매개변수가 유효하지 않거나 누락됨</sys:String>
 <sys:String x:Key="LanguageKey_Code_Totip_102">관련 데이터가 없음</sys:String>
