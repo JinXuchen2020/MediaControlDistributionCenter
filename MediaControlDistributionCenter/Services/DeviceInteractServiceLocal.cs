@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Services.LocalImps;
+using MediaControlDistributionCenter.ViewModels;
 using Newtonsoft.Json;
 using Serilog;
 using System.IO;
@@ -22,6 +23,8 @@ namespace MediaControlDistributionCenter.Services
                 Log.Error($"Device:{monitor.Name} didn't set client!");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
             }
+
+            await VerifySnCode(monitor, client);
 
             var userInfo = new UsersSync();
             var users = new List<UserSync>();
@@ -331,7 +334,7 @@ namespace MediaControlDistributionCenter.Services
             }
         }
 
-        public async Task<string> SendSyncFile(MonitorDto monitor, string fileName, Communication? client = null)
+        public async Task<string> SendSyncFile(MonitorDto monitor, ProgramDto program, Communication? client = null)
         {
             var sendResult = string.Empty;
             if (client == null)
@@ -346,7 +349,9 @@ namespace MediaControlDistributionCenter.Services
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
+            await SendProgram(monitor, program, client);
 
+            string fileName = $"{program.Name}.zip";
             var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, monitor.UserAccount, fileName)).LongLength;
             var syncObj = new FileSync
             {
@@ -427,6 +432,8 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
 
+            await VerifySnCode(monitor, client);
+
             string syncString = JsonConvert.SerializeObject(program, Formatting.Indented);
             string path = CommunicationCmd.CmdSendProgram + syncString;
             var result = await client.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
@@ -473,6 +480,8 @@ namespace MediaControlDistributionCenter.Services
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
+
+            await VerifySnCode(monitor, client);
 
             string syncString = JsonConvert.SerializeObject(monitor, Formatting.Indented);
             string path = CommunicationCmd.CmdEnableMonitor + syncString;

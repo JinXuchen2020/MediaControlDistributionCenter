@@ -51,7 +51,10 @@
 
                                 <StackPanel Grid.Row="2" HorizontalAlignment="Center">
                                     <StackPanel Margin="10" Orientation="Horizontal"  HorizontalAlignment="Left" Visibility="{Binding IsShow, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" >
-                                        <TextBlock VerticalAlignment="Center" FontSize="16" Width="100" Text="{Binding CommandTypeColumnName}" />
+                                        <StackPanel>
+                                            <TextBlock Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Brightness}" VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_119}" />
+                                            <TextBlock Visibility="{Binding Type, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Volume}" VerticalAlignment="Center" FontSize="16" Width="100" Text="{DynamicResource LanguageKey_Code_Control_Tooltip_120}" />
+                                        </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Slider VerticalAlignment="Center" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="10" Width="500" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
                                             <TextBox 
@@ -258,9 +261,9 @@
                                 IsReadOnly="True" 
                                 SelectionMode="Single" 
                                 FrozenColumnCount="1"
-                                Background="Transparent" 
-                                SelectedItem="{Binding CurrentDevice}"
+                                Name="dgDevices"
                                 SelectionChanged="DevicesDataGrid_SelectionChanged"
+                                Background="Transparent"
                                 ItemsSource="{Binding Devices}"
                             >
                                 <DataGrid.Resources>

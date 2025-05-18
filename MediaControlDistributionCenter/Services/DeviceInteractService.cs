@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
@@ -332,7 +333,7 @@ namespace MediaControlDistributionCenter.Services
             }
         }
 
-        public async Task<string> SendSyncFile(MonitorDto monitor, string fileName, Communication? client = null)
+        public async Task<string> SendSyncFile(MonitorDto monitor, ProgramDto program, Communication? client = null)
         {
             if (monitor.ConnectStatus == 0)
             {
@@ -348,18 +349,8 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
 
-            var fileSize = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, monitor.UserAccount, fileName)).LongLength;
-            var syncObj = new FileSync
-            {
-                //HostName = client.FtpServer._Ip,
-                //ServerPort = client.FtpServer._port,
-                //UserName = client.FtpServer._userName,
-                //Password = client.FtpServer._userPwd,
-                FileName = fileName,
-                FileSize = fileSize
-            };
-            string fileSyncString = JsonConvert.SerializeObject(syncObj, Formatting.Indented);
-            string path = CommunicationCmd.CmdSyncFile + fileSyncString;
+            string syncString = JsonConvert.SerializeObject(program, Formatting.Indented);
+            string path = CommunicationCmd.CmdSendProgram + syncString;
             var result = await connectService.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
             if (result)
             {
@@ -458,6 +449,8 @@ namespace MediaControlDistributionCenter.Services
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
+
+            await VerifySnCode(monitor, client);
 
             string syncString = JsonConvert.SerializeObject(monitor, Formatting.Indented);
             string path = CommunicationCmd.CmdEnableMonitor + syncString;

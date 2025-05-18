@@ -41,6 +41,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? size;
 
         [ObservableProperty]
+        private string? sizeText;
+
+        [ObservableProperty]
         [Required]
         private string src;
 
@@ -98,6 +101,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Width = string.IsNullOrEmpty(model.Resolution) ? 0 : double.Parse(model.Resolution.Split("*")[0]);
             Height = string.IsNullOrEmpty(model.Resolution) ? 0 : double.Parse(model.Resolution.Split("*")[1]);
             Size = model.Size;
+            SizeText = Utility.GetSizeText(model.Size);
             GroupId = model.GroupId;
             MediaGroupName = model.MediaGroupName ?? FindResource("LanguageKey_Code_NoGroup");
             Src = model.Src; 

@@ -346,9 +346,8 @@ namespace MediaControlDistributionCenter.Views
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, manageViewModel.CurrentMedia.Name + ".zip");
             fileService.CreateZip(sourceDic, desZipFilePath);
 
-            var fileSize = (double)new FileInfo(desZipFilePath).Length / 1024 /1024;
-
-            manageViewModel.CurrentMedia.Size = Math.Round(fileSize, 2);
+            manageViewModel.CurrentMedia.Size = new FileInfo(desZipFilePath).Length;
+            manageViewModel.CurrentMedia.SizeText = Utility.GetSizeText(manageViewModel.CurrentMedia.Size);
             manageViewModel.SaveCommand.Execute(null);
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();

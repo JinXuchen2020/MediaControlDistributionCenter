@@ -47,13 +47,37 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
 
-        protected IDetectService detectService;
+        private IDetectService _detectService;
+
+        protected IDetectService DetectService
+        {
+            get
+            {
+                if (_detectService == null)
+                {
+                    _detectService = Utility.GetService<IDetectService>();
+                }
+
+                if (!_detectService.IsStarted)
+                {
+                    _detectService.InvokeDevicesChanged -= (sender, e) => InvokeDevicesChanged();
+                    _detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
+                }
+
+                return _detectService;
+            }
+
+            set
+            {
+                _detectService = value;
+            }
+        }
 
         public List<InternetDevice> OnlineDevices 
         {
             get
             {
-                var devices = detectService.GetOnlineDevices();
+                var devices = DetectService.GetOnlineDevices();
                 foreach (var item in devices)
                 {
                     item.StatusText = GetStatus(item.Status);
@@ -65,8 +89,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public PageViewModel()
         {
-            detectService = Utility.GetService<IDetectService>();
-            detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
         }
 
         public virtual async Task LoadData()
@@ -341,19 +363,19 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DetectInternetDevices()
         {
-            await detectService.StartDetect();            
+            await DetectService.StartDetect();            
         }
 
         [RelayCommand]
         private async Task SendBroadcastMessage()
         {
-            await detectService.SendBroadcastMessage();
+            await DetectService.SendBroadcastMessage();
         }
 
         [RelayCommand]
         private async Task ConnectInternetDevice(InternetDevice device)
         {
-            await detectService.ConnectDevice(device);
+            await DetectService.ConnectDevice(device);
             if(device.DeviceViewModel != null && !string.IsNullOrEmpty(device.DeviceViewModel.ErrorMessage))
             {
                 ErrorMessage = FindResource(device.DeviceViewModel.ErrorMessage);

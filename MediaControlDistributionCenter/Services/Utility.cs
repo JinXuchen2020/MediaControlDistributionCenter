@@ -35,5 +35,9 @@ namespace MediaControlDistributionCenter.Services
         {
             return (string)LanguageTool.Instance.FindResource(key);
         }
+        public static string GetSizeText(double? fileSize)
+        {
+            return fileSize != null && fileSize > 0 ? $"{Math.Round(fileSize.Value / 1024 / 1024, 2)}MB" : string.Empty;
+        }
     }
 }

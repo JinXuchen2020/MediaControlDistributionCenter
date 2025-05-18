@@ -51,6 +51,7 @@ namespace MediaControlDistributionCenter.Views
             {
                 //await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
                 await manageViewModel.LoadData();
+                dgDevices.SelectedItem = manageViewModel.CurrentDevice;
                 await manageViewModel.SyncDeviceTimeControls();
                 InitPage("Brightness");
             });
@@ -541,25 +542,28 @@ namespace MediaControlDistributionCenter.Views
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            if(dgDevices.SelectedItem != null)
             {
+                manageViewModel.CurrentDevice = dgDevices.SelectedItem as DeviceViewModel;
+                if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+                {
+                    this.Dispatcher.Invoke(async () =>
+                    {
+                        await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                        {
+                            manageViewModel.CurrentDevice.ErrorMessage = null;
+                        }
+                    });
+                    manageViewModel.RefreshTimeZone();
+                }
+
                 this.Dispatcher.Invoke(async () =>
                 {
-                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
-                    {
-                        manageViewModel.CurrentDevice.ErrorMessage = null;
-                    }
+                    await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+                    await manageViewModel.GetDeviceTimeControls();
                 });
-                manageViewModel.RefreshTimeZone();
             }
-
-            this.Dispatcher.Invoke(async () =>
-            {
-                await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
-                await manageViewModel.GetDeviceTimeControls();
-            });
-
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)

@@ -208,8 +208,8 @@ namespace MediaControlDistributionCenter.Views
                 // 获取所选文件的路径
                 string filePath = openFileDialog.FileName;
                 viewModel.Extension = Path.GetExtension(filePath);
-                var fileSize = (double)new FileInfo(filePath).Length / 1024 / 1024;
-                viewModel.Size = Math.Round(fileSize, 2);
+                viewModel.Size = new FileInfo(filePath).Length;
+                viewModel.SizeText = Utility.GetSizeText(viewModel.Size);
                 var fileName = Path.GetFileName(filePath);
 
                 this.Dispatcher.Invoke(async () =>

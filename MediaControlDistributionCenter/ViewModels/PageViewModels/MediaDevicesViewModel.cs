@@ -92,50 +92,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    await item.VerifySnCodeCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                       ErrorMessage = item.ErrorMessage;
-                       await ShowConfirmDialogCommand.ExecuteAsync(null);
-                       item.ErrorMessage = null;
-                       item.DisconnectCommand.Execute(null);
-                       continue;
-                    }
-
-                    string filePath = $"{CurrentMedia.Name}.zip";
-                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        continue;
-                    }
-
-                    Log.Information("上传媒体文件FTP服务器成功");
-
-
-                    CurrentMedia.Status = 1;
-                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                       ErrorMessage = item.ErrorMessage;
-                       await ShowConfirmDialogCommand.ExecuteAsync(null);
-                       item.ErrorMessage = null;
-                       continue;
-                    }
-
-                    Log.Information("发送媒体信息到设备成功");
-
-                    await item.SyncFileSyncCommand.ExecuteAsync(filePath);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                       ErrorMessage = item.ErrorMessage;
-                       await ShowConfirmDialogCommand.ExecuteAsync(null);
-                       item.ErrorMessage = null;
-                       continue;
-                    }
-
+                    await item.PublishProgramCommand.ExecuteAsync(CurrentMedia);
                     Log.Information("发送媒体文件信息到设备成功");
 
                     if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))

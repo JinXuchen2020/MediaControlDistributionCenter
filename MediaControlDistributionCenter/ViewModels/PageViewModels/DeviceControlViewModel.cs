@@ -86,7 +86,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 return viewModel;
             }));
 
-            CurrentDevice = CurrentDevice ?? Devices.FirstOrDefault(c => c.IsConnected);
+
+            if (CurrentDevice == null)
+            {
+                CurrentDevice = Devices.FirstOrDefault(c => c.IsConnected);
+            }
         }
 
         public async Task SyncDeviceTimeControls()

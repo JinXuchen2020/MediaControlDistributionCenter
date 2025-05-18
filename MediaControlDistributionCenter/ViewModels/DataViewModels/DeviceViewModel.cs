@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
+using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
@@ -453,6 +454,24 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
+        private async Task PublishProgram(ProgramViewModel programViewModel)
+        {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                string filePath = $"{programViewModel.Name}.zip";
+                await UploadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, filePath));
+
+                programViewModel.Status = 1;
+                await SyncFileSync(programViewModel);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        [RelayCommand]
         private async Task UploadFile(string filePath)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
@@ -501,6 +520,7 @@ namespace MediaControlDistributionCenter.ViewModels
             try
             {
                 await interactService.SendProgram(this.ToModel(), program.ToModel(), client);
+                Log.Information("发送媒体信息到设备成功");
             }
             catch (Exception ex)
             {
@@ -551,7 +571,7 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private async Task SyncFileSync(string fileName)
+        private async Task SyncFileSync(ProgramViewModel program)
         {
             var interactService = Utility.GetService<IDeviceInteractService>();
             try
@@ -562,7 +582,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     DownloadProgress = 0;
                 }
                 interactService.InvokeProgressChanged += InteractService_InvokeProgressChanged;
-                SendResult = await interactService.SendSyncFile(this.ToModel(), fileName, client);
+                SendResult = await interactService.SendSyncFile(this.ToModel(), program.ToModel(), client);
 
                 Log.Information($"媒体文件发布结果为：{SendResult}");
                 IsDownloading = false;

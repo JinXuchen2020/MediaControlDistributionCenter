@@ -370,10 +370,9 @@ namespace MediaControlDistributionCenter.ViewModels
             this.userGroupService = Utility.GetService<IUserGroupService>();
             this.monitorService = Utility.GetService<IMonitorService>();
             this.programService = Utility.GetService<IProgramService>();
-            this.detectService = Utility.GetService<IDetectService>();
-            detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
+            this.DetectService = Utility.GetService<IDetectService>();
 
-            if (detectService.IsStarted)
+            if (DetectService.IsStarted)
             {
                 SendBroadcastMessageCommand.Execute(null);
             }

@@ -203,16 +203,6 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (ConnectionMode.Mode == "Remote" && viewModel.IsConnected)
             {
-                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                {
-                    ErrorMessage = viewModel.ErrorMessage;
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                    viewModel.ErrorMessage = null;
-                    viewModel.DisconnectCommand.Execute(null);
-                    return;
-                }
-
                 await viewModel.EnableMonitorCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                 {
@@ -247,16 +237,6 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (ConnectionMode.Mode == "Remote" && viewModel.IsConnected)
             {
-                //await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                //if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                //{
-                //    ErrorMessage = viewModel.ErrorMessage;
-                //    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                //    viewModel.ErrorMessage = null;
-                //    viewModel.DisconnectCommand.Execute(null);
-                //    return;
-                //}
-
                 viewModel.Status = 1;
                 await viewModel.SendUserCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
@@ -293,16 +273,6 @@ namespace MediaControlDistributionCenter.ViewModels
 
             if (viewModel.Id != 0 && viewModel.IsConnected)
             {
-                await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                {
-                    ErrorMessage = viewModel.ErrorMessage;
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                    viewModel.ErrorMessage = null;
-                    viewModel.DisconnectCommand.Execute(null);
-                    return;
-                }
-
                 await viewModel.SendUserCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
                 {

@@ -42,6 +42,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private double? size;
 
         [ObservableProperty]
+        private string? sizeText;
+
+        [ObservableProperty]
         private int screensCount;
 
         [ObservableProperty]
@@ -120,6 +123,7 @@ namespace MediaControlDistributionCenter.ViewModels
             Width = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[0];
             Height = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[1];
             Size = model.Size;
+            SizeText = Utility.GetSizeText(Size);
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
             CreatedSource = model.CreatedSource;

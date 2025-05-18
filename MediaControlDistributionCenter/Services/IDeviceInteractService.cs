@@ -21,7 +21,7 @@ namespace MediaControlDistributionCenter.Services
         Task ChangePower(MonitorDto monitor, List<DeviceControlDto> deviceControls, Communication? client = null);
         Task TimeSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null);
         Task TimeGPSSync(MonitorDto monitor, TimeSyncConfigDto model, Communication? client = null);
-        Task<string> SendSyncFile(MonitorDto monitor, string fileName, Communication? client = null);
+        Task<string> SendSyncFile(MonitorDto monitor, ProgramDto program, Communication? client = null);
         Task<string> UploadFile(MonitorDto monitor, string filePath, Communication? client = null);
         Task SendProgram(MonitorDto monitor, ProgramDto program, Communication? client = null);
         Task ChangeProgram(MonitorDto monitor, ProgramDto program, Communication? client = null);
