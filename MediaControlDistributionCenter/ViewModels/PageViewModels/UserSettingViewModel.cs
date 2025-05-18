@@ -104,15 +104,15 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (viewModel.IsConnected)
                     {
-                        await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                        {
-                            ErrorMessage = viewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            viewModel.ErrorMessage = null;
-                            viewModel.DisconnectCommand.Execute(null);
-                            continue;
-                        }
+                        //await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                        //if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        //{
+                        //    ErrorMessage = viewModel.ErrorMessage;
+                        //    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        //    viewModel.ErrorMessage = null;
+                        //    viewModel.DisconnectCommand.Execute(null);
+                        //    continue;
+                        //}
 
                         await viewModel.SendUserCommand.ExecuteAsync(null);
                         if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
