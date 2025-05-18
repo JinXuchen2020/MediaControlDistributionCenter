@@ -60,7 +60,7 @@
 <sys:String x:Key="LanguageKey_Code_Start">시작</sys:String>
 <sys:String x:Key="LanguageKey_Code_End">종료</sys:String>
 <sys:String x:Key="LanguageKey_Code_Connect">연결</sys:String>
-<sys:String x:Key="LanguageKey_Code_Disconnect">断开</sys:String>
+<sys:String x:Key="LanguageKey_Code_Disconnect">연결 끊기</sys:String>
 <sys:String x:Key="LanguageKey_Code_Activate">활성화</sys:String>
 <sys:String x:Key="LanguageKey_Code_Upgrade">업그레이드</sys:String>
 <sys:String x:Key="LanguageKey_Code_Online">활성화됨</sys:String>
@@ -139,12 +139,12 @@
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_115">네트워크 장치 탐색</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_116">탐색 중지</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Tooltip_117">네트워크 설정</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_118">网络设备</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_119">本地设备</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_120">设备类型</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_121">当前设备已断开</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_122">当前设备已连接</sys:String>
-<sys:String x:Key="LanguageKey_Code_Device_Tooltip_123">本地设备无法手动连接</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_118">네트워크 장치</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_119">로컬 장치</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_120">장치 유형</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_121">현재 장치 연결이 해제되었습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_122">현재 장치가 연결되었습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Device_Tooltip_123">로컬 장치는 수동으로 연결할 수 없습니다</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Dashboard">대시보드</sys:String>
 <sys:String x:Key="LanguageKey_Code_Dashboard_Tooltip_100">미디어를 효과적으로 운영/관리</sys:String>
@@ -421,10 +421,10 @@
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_208">입력 값</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_209">값</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_210">기본 설정 색상</sys:String>
-<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_211">上传中...</sys:String>
-<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_212">进度</sys:String>
-<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_213">发布中...</sys:String>
-    
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_211">업로드 중...</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_212">진행률</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_213">배포 중...</sys:String>
+
 <sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
 
 <sys:String x:Key="LanguageKey_Code_MediaStore">미디어 라이브러리</sys:String>
@@ -444,19 +444,19 @@
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">미디어 주소</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">미디어 이름을 입력하지 않음!</sys:String>
 
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">账号不能为空！</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">该账号已经存在</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">账号密码不能为空！</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">公司名不能为空！</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">保存成功</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_105">SNCode已经存在</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_106">名称不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_107">SNCode不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_108">宽度不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_109">高度不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_110">开始时间不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_111">结束时间不能为空</sys:String>
-<sys:String x:Key="LanguageKey_Code_Error_Tooltip_112">节目类型不能为空</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">계정은 비어 있을 수 없습니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">해당 계정이 이미 존재합니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">계정 비밀번호는 비어 있을 수 없습니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">회사명은 비어 있을 수 없습니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">저장 성공</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_105">SNCode가 이미 존재합니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_106">이름은 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_107">SNCode는 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_108">너비는 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_109">높이는 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_110">시작 시간은 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_111">종료 시간은 비어 있을 수 없습니다</sys:String>
+<sys:String x:Key="LanguageKey_Code_Error_Tooltip_112">프로그램 유형은 비어 있을 수 없습니다</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Totip_100">매개변수가 유효하지 않거나 누락됨</sys:String>
 <sys:String x:Key="LanguageKey_Code_Totip_102">관련 데이터가 없음</sys:String>
