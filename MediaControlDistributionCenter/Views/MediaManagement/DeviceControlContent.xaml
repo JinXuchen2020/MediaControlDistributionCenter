@@ -572,7 +572,7 @@
                                                     IsReadOnly="False"
                                                     CanUserSort="False">
                                                     <DataGridCheckBoxColumn.Header>
-                                                        <CheckBox HorizontalAlignment="Center" />
+                                                        <CheckBox Unchecked="SelectAll_Click" Checked="SelectAll_Click"/>
                                                     </DataGridCheckBoxColumn.Header>
                                                 </DataGridCheckBoxColumn>
                                                 <DataGridTemplateColumn Width="60">
