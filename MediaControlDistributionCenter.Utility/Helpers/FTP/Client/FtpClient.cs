@@ -61,17 +61,20 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                             // 计算并显示进度
                             double progressPercentage = (bytesSent * 100.0) / totalBytes;
                             InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progressPercentage));
+                            if (progressPercentage == 100)
+                            {
+                                break;
+                            }
                         }
                     }
                     //requestStream.Write(fileContents, 0, fileContents.Length);
                 }
 
-                return true;
-                //using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
-                //{
-                //    Log.Information(response.StatusCode.ToString());
-                //    return response.StatusCode == FtpStatusCode.ClosingData;
-                //}
+                using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
+                {
+                    Log.Information(response.StatusCode.ToString());
+                    return response.StatusCode == FtpStatusCode.ClosingData;
+                }
             }
             catch (Exception ex) 
             {
