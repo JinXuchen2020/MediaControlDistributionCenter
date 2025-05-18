@@ -30,7 +30,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 return false;
             }
 
-            return result.Data;
+            return result.Code == 200;
         }
     }
 

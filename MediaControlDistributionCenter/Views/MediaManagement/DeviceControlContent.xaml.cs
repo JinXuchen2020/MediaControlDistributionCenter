@@ -542,7 +542,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(dgDevices.SelectedItem != null)
+            if(dgDevices.SelectedItem != null && dgDevices.SelectedItem != manageViewModel.CurrentDevice)
             {
                 manageViewModel.CurrentDevice = dgDevices.SelectedItem as DeviceViewModel;
                 if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
