@@ -242,7 +242,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var viewModels = DeviceTimeControls.ToList();
             if (CurrentDevice != null && viewModels.Count > 0)
             {
-                var modelList = viewModels.Select(c => c.ToModel());
+                var modelList = viewModels.Select(c => c.ToModel()).ToList();
                 switch (viewModels[0].Type)
                 {
                     case "Brightness":

@@ -568,6 +568,14 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
+            var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            if (selectedItems.Count == 0)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_118");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             manageViewModel.ExecuteScheduleControlCommand.Execute(null);
         }
 
