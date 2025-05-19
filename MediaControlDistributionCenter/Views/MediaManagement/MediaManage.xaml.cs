@@ -242,6 +242,12 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             if (!File.Exists(desZipFilePath))
             {
                 var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
+                if (!Directory.Exists(sourceDic))
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_151");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
 
                 fileService.CreateZip(sourceDic, desZipFilePath);
 

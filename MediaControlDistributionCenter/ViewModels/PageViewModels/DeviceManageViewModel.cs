@@ -316,16 +316,19 @@ namespace MediaControlDistributionCenter.ViewModels
             var devicesList = new List<DeviceViewModel>();
             foreach (var c in nameDevices)
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
-                if (viewModel == null)
+                if(!devicesList.Any(t=> t.SNumber == c.SNumber))
                 {
-                    viewModel = new DeviceViewModel();
-                    viewModel.Binding(c);
-                }
+                    var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
+                    if (viewModel == null)
+                    {
+                        viewModel = new DeviceViewModel();
+                        viewModel.Binding(c);
+                    }
 
-                viewModel.RefreshStatus();
-                await viewModel.GetPrograms();
-                devicesList.Add(viewModel);
+                    viewModel.RefreshStatus();
+                    await viewModel.GetPrograms();
+                    devicesList.Add(viewModel);
+                }
             }
             this.Devices = new ObservableCollection<DeviceViewModel>(devicesList);
         }
