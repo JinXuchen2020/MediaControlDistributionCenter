@@ -83,7 +83,7 @@ namespace MediaControlDistributionCenter.Services
                     devicesList.Add(device);
                 }
 
-                if (!onlineDevices.Select(c => c.SnCode).SequenceEqual(devicesList.Select(c => c.SnCode)))
+                if (!onlineDevices.SequenceEqual(devicesList))
                 {
                     onlineDevices = devicesList;
                     if (onlineDevices.Count > 0)

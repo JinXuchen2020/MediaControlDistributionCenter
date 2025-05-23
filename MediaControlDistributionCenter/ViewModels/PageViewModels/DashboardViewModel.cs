@@ -46,6 +46,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.monitorService = GetService<IMonitorService>();
             this.programService = GetService<IProgramService>();
             this.userService = GetService<IUserService>();
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 

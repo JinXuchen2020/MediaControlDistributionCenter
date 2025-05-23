@@ -42,7 +42,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
-            //RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
+            RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
         public override async Task LoadData()

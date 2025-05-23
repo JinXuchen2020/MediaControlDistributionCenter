@@ -177,6 +177,10 @@ namespace MediaControlDistributionCenter.ViewModels
                         await monitorService.Save(item);
                     }
                 }
+                if(viewModel.Id == SelectedGroup?.Id)
+                {
+                    SelectedGroup = null;
+                }
 
                 await LoadData();
             }

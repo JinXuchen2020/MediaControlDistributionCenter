@@ -58,6 +58,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)
         {
             manageViewModel.SelectDisabled = "1";
+            manageViewModel.SelectedGroup = null;
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
