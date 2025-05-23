@@ -381,11 +381,11 @@ namespace MediaControlDistributionCenter.Services
             if (result.Data)
             {
                 InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(100));
-                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
+                uploadResult = "Successful";// Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
             }
             else
             {
-                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
+                uploadResult = "Fail"; //Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
             }
 
             return uploadResult;
@@ -449,8 +449,6 @@ namespace MediaControlDistributionCenter.Services
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
-
-            await VerifySnCode(monitor, client);
 
             string syncString = JsonConvert.SerializeObject(monitor, Formatting.Indented);
             string path = CommunicationCmd.CmdEnableMonitor + syncString;

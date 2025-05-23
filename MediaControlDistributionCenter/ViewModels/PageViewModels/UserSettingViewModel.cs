@@ -85,6 +85,7 @@ namespace MediaControlDistributionCenter.ViewModels
             });
 
             RegisterLanguageProperty(this.GetType(), nameof(DetectStatus));
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 

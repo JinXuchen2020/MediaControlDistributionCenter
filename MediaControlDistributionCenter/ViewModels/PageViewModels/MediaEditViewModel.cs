@@ -105,9 +105,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     new() {
                         Id = 1,
                         Order = 1,
+                        Type = "normal",
                         PlayCount = 1,
+                        PlayGap = 10,
+                        AdPlayMode = "perday",
                         Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{1}",
-                        Schedulers = [new() { Id = 1, ScheduleDays = [1, 2, 3, 4, 5, 6, 7] }],
+                        Schedulers = [new Scheduler { Id = 1, ScheduleDays = [1, 2, 3, 4, 5, 6, 7] }],
                         Components = []
                     }
                 ]

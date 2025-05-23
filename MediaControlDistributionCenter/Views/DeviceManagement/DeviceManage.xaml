@@ -427,7 +427,11 @@
                                                     </StackPanel>
                                                     <StackPanel Visibility="{Binding Status, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
                                                         <Button IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{DynamicResource LanguageKey_Code_Upgrade}" Background="#30479C" Foreground="White" Click="btnEdit_Click" Margin="3" Height="28" />
-                                                        <Button IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{Binding EnableBtnContent}" Background="#30479C" Foreground="White" Name="btnDelete" Click="btnEnable_Click" Margin="3" Height="28" />
+                                                        <StackPanel>
+                                                            <Button Visibility="{Binding Enabled, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=0}" IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{DynamicResource LanguageKey_Code_Enable}" Background="#30479C" Foreground="White" Click="btnEnable_Click" Margin="3" Height="28" />
+                                                            <Button Visibility="{Binding Enabled, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=1}" IsEnabled="{Binding IsConnected, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=true}" Content="{DynamicResource LanguageKey_Code_Disable}" Background="#30479C" Foreground="White" Click="btnEnable_Click" Margin="3" Height="28" />
+
+                                                        </StackPanel>
                                                         <Button Visibility="{Binding Data.Role, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=admin}" Content="{DynamicResource LanguageKey_Code_Delete}" Background="#30479C" Foreground="White" Click="btnDelete_Click" Margin="3" Height="28" />
                                                     </StackPanel>
                                                 </StackPanel>

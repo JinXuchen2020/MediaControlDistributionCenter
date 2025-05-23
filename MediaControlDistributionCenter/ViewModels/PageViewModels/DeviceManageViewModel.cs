@@ -314,7 +314,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
             nameDevices.AddRange(snDevices);
             var devicesList = new List<DeviceViewModel>();
-            foreach (var c in nameDevices)
+            foreach (var c in nameDevices.OrderByDescending(c => c.Id))
             {
                 if(!devicesList.Any(t=> t.SNumber == c.SNumber))
                 {

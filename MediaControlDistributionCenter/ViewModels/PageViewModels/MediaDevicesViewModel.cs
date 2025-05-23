@@ -26,6 +26,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isCover;
 
         [ObservableProperty]
+        private bool isPublishing;
+
+        [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
@@ -86,6 +89,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Publish()
         {
             this.PublishDevices.Clear();
+            IsPublishing = true;
             //await DetectCommunication(CurrentMedia.UserId);
             foreach (var item in Devices)
             {
@@ -125,6 +129,8 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
                 }
             }
+
+            IsPublishing = false;
         }
     }
 }

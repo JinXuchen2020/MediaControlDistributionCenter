@@ -354,7 +354,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var medias = (await programService.GetAll(new ProgramDto { UserAccount = CurrentUser.Account, Name = SearchString, GroupId = groupId }, true)).Data?.ToList() ?? new List<ProgramDto>();
-            this.Medias = new ObservableCollection<ProgramViewModel>(medias.Select(c =>
+            this.Medias = new ObservableCollection<ProgramViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new ProgramViewModel();
                 viewModel.Binding(c);

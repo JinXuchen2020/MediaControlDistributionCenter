@@ -235,7 +235,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }))?.Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var record in playRecords) 
             {
-                var program = (await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" })).Data?.FirstOrDefault();
+                var program = (await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" }))?.Data?.FirstOrDefault();
                 if(program != null)
                 {
                     MediaNames = program.Name;
@@ -462,6 +462,11 @@ namespace MediaControlDistributionCenter.ViewModels
                 string filePath = $"{programViewModel.Name}.zip";
                 await UploadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, UserId, filePath));
 
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    return;
+                }
+
                 programViewModel.Status = 1;
                 await SyncFileSync(programViewModel);
             }
@@ -486,6 +491,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 UploadResult = await interactService.UploadFile(this.ToModel(), filePath, client);
                 Log.Information($"媒体文件上传结果为：{UploadResult}");
+                if (UploadResult == "Fail")
+                {
+                    throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119"));
+                }
                 IsUploading = false;
                 interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
             }

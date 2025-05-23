@@ -122,12 +122,12 @@
                                     <DataTemplate>
                                         <StackPanel>
                                             <StackPanel Visibility="{Binding IsUploading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
-                                                <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_211}"></TextBlock>
+                                                <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_211}" />
                                                 <ProgressBar Orientation="Horizontal" BorderThickness="0" Width="80" Height="10"
-                                                Background="Transparent"
-                                                Foreground="#538AF0"
-                                                Value="{Binding UploadProgress, UpdateSourceTrigger=PropertyChanged}"
-                                                Style="{StaticResource MaterialDesignLinearProgressBar}">
+                                                    Background="Transparent"
+                                                    Foreground="#538AF0"
+                                                    Value="{Binding UploadProgress, UpdateSourceTrigger=PropertyChanged}"
+                                                    Style="{StaticResource MaterialDesignLinearProgressBar}">
                                                     <ProgressBar.Resources>
                                                         <Style TargetType="Rectangle">
                                                             <Setter Property="RadiusX" Value="5"/>
@@ -136,6 +136,9 @@
                                                         </Style>
                                                     </ProgressBar.Resources>
                                                 </ProgressBar>
+                                                <StackPanel Visibility="{Binding UploadResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Fail}">
+                                                    <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_119}"/>
+                                                </StackPanel>
                                             </StackPanel>
                                             <StackPanel Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
                                                 <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_213}"></TextBlock>
@@ -171,7 +174,7 @@
                     <!--<CheckBox Margin="30,0,0,0" FontSize="14" VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_114}" IsChecked="{Binding IsCover, Converter={StaticResource IsEditingValueConverter}}" />-->
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />
+                    <Button IsEnabled="{Binding IsPublishing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />
                     <Button Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
                 </StackPanel>
             </Grid>
