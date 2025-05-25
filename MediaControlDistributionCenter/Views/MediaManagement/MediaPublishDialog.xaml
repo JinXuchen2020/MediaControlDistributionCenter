@@ -155,6 +155,9 @@
                                                         </Style>
                                                     </ProgressBar.Resources>
                                                 </ProgressBar>
+                                                <StackPanel Visibility="{Binding SendResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Fail}">
+                                                    <TextBlock FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_121}"/>
+                                                </StackPanel>
                                             </StackPanel>
 
                                         </StackPanel>

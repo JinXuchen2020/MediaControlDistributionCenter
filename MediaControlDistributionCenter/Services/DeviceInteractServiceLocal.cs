@@ -383,7 +383,7 @@ namespace MediaControlDistributionCenter.Services
 
             client.InvokeProgressChanged -= InvokeProgressChanged;
 
-            return sendResult;
+            return syncResult;
         }
 
         public async Task<string> UploadFile(MonitorDto monitor, string filePath, Communication? client = null)
@@ -405,11 +405,11 @@ namespace MediaControlDistributionCenter.Services
             var result = await uploadService.UploadFile(filePath, string.Empty, true);
             if (result.Data)
             {
-                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
+                uploadResult = "Successful"; // Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_118");
             }
             else
             {
-                uploadResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
+                uploadResult = "Fail"; // Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_119");
             }
 
             uploadService.InvokeProgressChanged -= InvokeProgressChanged;

@@ -355,11 +355,11 @@ namespace MediaControlDistributionCenter.Services
             if (result)
             {
                 InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(100));
-                sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_120");
+                sendResult = "Successful";
             }
             else
             {
-                sendResult = Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_121");
+                sendResult = "Fail";
             }
 
             return sendResult;

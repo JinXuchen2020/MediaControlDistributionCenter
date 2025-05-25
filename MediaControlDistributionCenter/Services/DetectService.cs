@@ -61,7 +61,7 @@ namespace MediaControlDistributionCenter.Services
             Task.Run(async () => 
             {
                 var monitorService = Utility.GetService<IMonitorService>();
-                var devices = (await monitorService.GetAll(new MonitorDto { ConnectStatus = 1, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
+                var devices = (await monitorService.GetAll(new MonitorDto { ConnectStatus = 1 })).Data?.ToList() ?? new List<MonitorDto>();
                 var devicesList = new List<InternetDevice>();
                 foreach (var c in devices)
                 {
@@ -83,7 +83,7 @@ namespace MediaControlDistributionCenter.Services
                     devicesList.Add(device);
                 }
 
-                if (!onlineDevices.SequenceEqual(devicesList))
+                if (!onlineDevices.SequenceEqual(devicesList, new OnlineDeviceComparer()))
                 {
                     onlineDevices = devicesList;
                     if (onlineDevices.Count > 0)

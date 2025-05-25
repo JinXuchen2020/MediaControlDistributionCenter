@@ -96,10 +96,26 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
                 if (item.IsSelected)
                 {
-                    await item.PublishProgramCommand.ExecuteAsync(CurrentMedia);
+                    string filePath = $"{CurrentMedia.Name}.zip";
+                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
+
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        item.ErrorMessage = null;
+                        continue;
+                    }
+
+                    CurrentMedia.Status = 1;
+                    await item.SyncFileSyncCommand.ExecuteAsync(CurrentMedia);
+                    if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    {
+                        item.ErrorMessage = null;
+                        continue;
+                    }
+
                     Log.Information("发送媒体文件信息到设备成功");
 
-                    if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
+                    if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == "Successful")
                     {
                         var response = await playbackRecordService.Save(model);
                         if (response.Code == 200)

@@ -206,6 +206,7 @@ namespace MediaControlDistributionCenter.Views
             if (openFileDialog.ShowDialog() == true)
             {
                 // 获取所选文件的路径
+                viewModel.IsUploading = true;
                 string filePath = openFileDialog.FileName;
                 viewModel.Extension = Path.GetExtension(filePath);
                 viewModel.Size = new FileInfo(filePath).Length;
@@ -223,9 +224,11 @@ namespace MediaControlDistributionCenter.Views
 
                     fileName = string.IsNullOrEmpty(viewModel.Name) ? fileName : $"{viewModel.Name}{viewModel.Extension}";
 
+
                     await uploadService.UploadFile(filePath, fileName);
 
                     viewModel.Src = fileName;
+                    viewModel.IsUploading = false;
                 });
             }
         }

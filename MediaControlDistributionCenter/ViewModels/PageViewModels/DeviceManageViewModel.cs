@@ -94,7 +94,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
 
                 viewModel.RefreshStatus();
-                await viewModel.GetPrograms();
+                //await viewModel.GetPrograms();
                 devicesList.Add(viewModel);
             }
             this.Devices = new ObservableCollection<DeviceViewModel>(devicesList);

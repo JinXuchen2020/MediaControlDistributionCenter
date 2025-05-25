@@ -235,10 +235,14 @@ namespace MediaControlDistributionCenter.ViewModels
             var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }))?.Data?.ToList() ?? new List<PlaybackRecordDto>();
             foreach (var record in playRecords) 
             {
-                var program = (await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" }))?.Data?.FirstOrDefault();
-                if(program != null)
+                var response = await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" });
+                if (response != null)
                 {
-                    MediaNames = program.Name;
+                    var program = response.Data?.FirstOrDefault();
+                    if (program != null)
+                    {
+                        MediaNames = program.Name;
+                    }
                 }
             }
         }
@@ -594,6 +598,10 @@ namespace MediaControlDistributionCenter.ViewModels
                 SendResult = await interactService.SendSyncFile(this.ToModel(), program.ToModel(), client);
 
                 Log.Information($"媒体文件发布结果为：{SendResult}");
+                if (SendResult == "Fail")
+                {
+                    throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_121"));
+                }
                 IsDownloading = false;
                 interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
             }

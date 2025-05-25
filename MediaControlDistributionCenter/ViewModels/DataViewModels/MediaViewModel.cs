@@ -68,7 +68,10 @@ namespace MediaControlDistributionCenter.ViewModels
         private double height;
 
         [ObservableProperty]
-        private BitmapImage? thumbnail;        
+        private BitmapImage? thumbnail;
+
+        [ObservableProperty]
+        private bool isUploading;
 
         [ObservableProperty]
         private ObservableCollection<MediaGroupViewModel> groups;
