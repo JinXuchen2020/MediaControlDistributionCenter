@@ -108,6 +108,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                     BaseAddress = HttpClientBaseAddress
                 };
                 client.DefaultRequestHeaders.Accept.Clear();
+                client.Timeout = TimeSpan.FromSeconds(3600);
                 //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
                 if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
                 {

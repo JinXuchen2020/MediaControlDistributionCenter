@@ -424,6 +424,7 @@
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_211">업로드 중...</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_212">진행률</sys:String>
 <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_213">배포 중...</sys:String>
+<sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_214">프로그램이 배포 중입니다!</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Preview_Title">프로그램 프리뷰</sys:String>    
 
@@ -443,6 +444,7 @@
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">미디어를 선택하지 않음!</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">미디어 주소</sys:String>
 <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">미디어 이름을 입력하지 않음!</sys:String>
+<sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_110">미디어 파일이 업로드 중입니다!</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">계정은 비어 있을 수 없습니다!</sys:String>
 <sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">해당 계정이 이미 존재합니다</sys:String>

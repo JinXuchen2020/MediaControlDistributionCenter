@@ -428,6 +428,7 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_211">上传中...</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_212">进度</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_213">发布中...</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_214">节目正在发布中!</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
@@ -448,6 +449,7 @@
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">未选择媒体！</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">媒体地址</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">未填写媒体名！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_110">媒体文件正在上传中!</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">账号不能为空！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">该账号已经存在</sys:String>

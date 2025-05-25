@@ -487,6 +487,7 @@ namespace MediaControlDistributionCenter.ViewModels
             try
             {
                 IsUploading = true;
+                UploadResult = "Successful";
                 if (UploadProgress > 0)
                 {
                     UploadProgress = 0;
@@ -590,6 +591,7 @@ namespace MediaControlDistributionCenter.ViewModels
             try
             {
                 IsDownloading = true;
+                SendResult = "Successful";
                 if (DownloadProgress > 0)
                 {
                     DownloadProgress = 0;

@@ -75,6 +75,13 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnMediaCancel_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+            if (viewModel.IsUploading)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_MediaStore_Tooltip_110");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
             manageViewModel.CloseDialogCommand.Execute(null);
         }
 

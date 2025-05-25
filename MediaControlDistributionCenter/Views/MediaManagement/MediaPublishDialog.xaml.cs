@@ -113,5 +113,17 @@ namespace MediaControlDistributionCenter.Views
                 }
             }
         }
+
+        private void btnPublishCancel_Click(object sender, RoutedEventArgs e)
+        {
+            if(manageViewModel.IsPublishing)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_214");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
+            MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
+        }
     }
 }
