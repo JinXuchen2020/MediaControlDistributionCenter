@@ -8,6 +8,6 @@ namespace MediaControlDistributionCenter.Services
 {
     public interface IConnectService
     {
-        public Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime);
+        public Task<bool> ExecuteCmdAsync(string Cmd, string deviceSnCode, TimeSpan waitExecTime);
     }
 }

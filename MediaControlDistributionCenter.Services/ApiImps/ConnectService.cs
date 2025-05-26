@@ -15,7 +15,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
         }
 
-        public async Task<bool> ExecuteCmdAsync(string Cmd, TimeSpan waitExecTime)
+        public async Task<bool> ExecuteCmdAsync(string Cmd, string deviceSnCode, TimeSpan waitExecTime)
         {
             // 设置
             if (!Cmd.EndsWith("##End##"))
@@ -24,7 +24,7 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             }
 
             var url = "/monitor/sendCmd";
-            var result = await Post<ResultResponse<bool>, Command>(url, new Command { Cmd = Cmd });
+            var result = await Post<ResultResponse<bool>, Command>(url, new Command { Cmd = Cmd, DeviceSnCode = deviceSnCode });
             if (result == null)
             {
                 return false;
@@ -38,5 +38,8 @@ namespace MediaControlDistributionCenter.Services.ApiImps
     {
         [JsonProperty("cmd", NullValueHandling = NullValueHandling.Ignore)]
         public string Cmd { get; set; }
+
+        [JsonProperty("deviceSnCode", NullValueHandling = NullValueHandling.Ignore)]
+        public string DeviceSnCode { get; set; }
     }
 }
