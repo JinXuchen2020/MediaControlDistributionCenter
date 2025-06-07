@@ -7,8 +7,7 @@
              xmlns:CustomControls="clr-namespace:MediaControlDistributionCenter.Views.CustomControls"
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:local="clr-namespace:MediaControlDistributionCenter.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             mc:Ignorable="d" >
     <UserControl.Resources>
         <converters:IsEditingValueConverter x:Key="IsEditingValueConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -40,7 +39,7 @@
 
             <Border Grid.Row="1" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
 
-            <Border Grid.Row="2" Margin="20,24,20,24" Height="400" BorderThickness="0,2,0,0" Background="#16171D">
+            <Border Grid.Row="2" Margin="20,24,20,24" Height="350" BorderThickness="0,2,0,0" Background="#16171D">
                 <Grid>
                     <Border Background="#1A1E30" Height="40" VerticalAlignment="Top" />
                     <DataGrid 
@@ -175,10 +174,19 @@
 
             <Border Grid.Row="3" Width="auto" Grid.ColumnSpan="2" Background="#40476F"/>
             <Grid Grid.Row="4">
-                <StackPanel VerticalAlignment="Center" Margin="20,12,0,12" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBlock  FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
-                    <TextBlock  FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
-                    <!--<CheckBox Margin="30,0,0,0" FontSize="14" VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_114}" IsChecked="{Binding IsCover, Converter={StaticResource IsEditingValueConverter}}" />-->
+                <StackPanel Margin="20,12,0,12" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock  FontSize="16" Text="{DynamicResource LanguageKey_Code_Program_Tooltip_100}" />
+                        <TextBlock  FontSize="16" Margin="10,0,0,0" Text="{Binding CurrentMedia.Name}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0" VerticalAlignment="Center">
+                        <CheckBox  FontSize="14" VerticalAlignment="Center" Content="{DynamicResource LanguageKey_Code_Program_Tooltip_114}" IsChecked="{Binding IsTimerPlay, Converter={StaticResource IsEditingValueConverter}}" />
+                        <StackPanel Margin="0,5,0,0" Orientation="Horizontal" Visibility="{Binding IsTimerPlay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}">
+                            <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_119}" FontSize="14" Width="110" VerticalAlignment="Center"/>
+                            <DatePicker Width="150" Height="28" SelectedDateFormat="Short" Padding="5" VerticalAlignment="Center" BorderBrush="#404870" BorderThickness="1" SelectedDate="{Binding NextPlayTime}" />
+                            <materialDesign:TimePicker Width="150" Is24Hours="True" WithSeconds="True" VerticalAlignment="Center" Margin="8,0,0,0" Height="28" Foreground="White" BorderBrush="#404870" BorderThickness="1" Background="#2A3255" Padding="5" SelectedTime="{Binding NextPlayTime}" />
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button IsEnabled="{Binding IsPublishing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" x:Name="btnPublishSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Media_Send}" Click="btnPublishSave_Click" />

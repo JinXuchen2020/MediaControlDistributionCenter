@@ -232,19 +232,8 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var playbackRecordService = Utility.GetService<IPlaybackRecordService>();
             var programService = Utility.GetService<IProgramService>();
-            var playRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber }))?.Data?.ToList() ?? new List<PlaybackRecordDto>();
-            foreach (var record in playRecords) 
-            {
-                var response = await programService.GetAll(new ProgramDto { Name = record.MediaName, Status = 1, MediaType = "PROGRAM" });
-                if (response != null)
-                {
-                    var program = response.Data?.FirstOrDefault();
-                    if (program != null)
-                    {
-                        MediaNames = program.Name;
-                    }
-                }
-            }
+            var playRecord = (await playbackRecordService.GetAll(new PlaybackRecordDto { MonitorSnCode = SNumber, PlaySuccess = true }))?.Data?.FirstOrDefault();
+            MediaNames = playRecord?.MediaName ?? string.Empty;
         }
 
         public async Task GetThumbnail()
@@ -606,6 +595,20 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
                 IsDownloading = false;
                 interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SendPlayTime(PlaybackRecordDto nextPlay)
+        {
+            var interactService = Utility.GetService<IDeviceInteractService>();
+            try
+            {
+                await interactService.SendPlayTime(this.ToModel(), nextPlay, client);
             }
             catch (Exception ex)
             {

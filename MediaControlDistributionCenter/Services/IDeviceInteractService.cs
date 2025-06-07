@@ -32,5 +32,6 @@ namespace MediaControlDistributionCenter.Services
         Task SyncVolume(MonitorDto monitor, Communication? client = null);
         Task SyncDeviceControl(MonitorDto monitor, Communication? client = null);
         Task SyncPrograms(MonitorDto monitor, Communication? client = null);
+        Task SendPlayTime(MonitorDto monitor, PlaybackRecordDto nextPlay, Communication? client = null);
     }
 }

@@ -209,11 +209,12 @@
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_111">영구적</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_112">매시간 재생 횟수</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_113">프로그램 이름이 이미 존재합니다!</sys:String>
-<sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">강제 게시</sys:String>
+<sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">정시 재생</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_115">미게시</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">게시 및 상장됨</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_117">게시되었으나 상장되지 않음</sys:String>
 <sys:String x:Key="LanguageKey_Code_Program_Tooltip_118">이 장치가 현재 프로그램을 재생 중입니다!</sys:String>
+<sys:String x:Key="LanguageKey_Code_Program_Tooltip_119">다음 재생 시간</sys:String>
 
 <sys:String x:Key="LanguageKey_Code_Management_Device">장치 관리</sys:String>
 <sys:String x:Key="LanguageKey_Code_Device_Create">새 디스플레이 추가</sys:String>

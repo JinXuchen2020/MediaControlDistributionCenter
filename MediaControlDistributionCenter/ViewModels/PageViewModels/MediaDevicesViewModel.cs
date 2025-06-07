@@ -1,13 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
-using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using MediaControlDistributionCenter.Views;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -24,6 +19,12 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private bool isCover;
+
+        [ObservableProperty]
+        private bool isTimerPlay;
+
+        [ObservableProperty]
+        private DateTime? nextPlayTime = DateTime.Now;
 
         [ObservableProperty]
         private bool isPublishing;
@@ -91,9 +92,9 @@ namespace MediaControlDistributionCenter.ViewModels
             this.PublishDevices.Clear();
             IsPublishing = true;
             //await DetectCommunication(CurrentMedia.UserId);
-            foreach (var item in Devices)
+            var tasks = Devices.Select(async item =>
             {
-                var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
+                var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber, IsTimerPlay = IsTimerPlay, NextPlayTime = NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") };
                 if (item.IsSelected)
                 {
                     string filePath = $"{CurrentMedia.Name}.zip";
@@ -102,7 +103,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         item.ErrorMessage = null;
-                        continue;
+                        return;
                     }
 
                     CurrentMedia.Status = 1;
@@ -110,13 +111,21 @@ namespace MediaControlDistributionCenter.ViewModels
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
                         item.ErrorMessage = null;
-                        continue;
+                        return;
                     }
 
                     Log.Information("发送媒体文件信息到设备成功");
 
                     if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == "Successful")
                     {
+                        model.PlaySuccess = true;
+
+                        var playingRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { PlaySuccess = true, MonitorSnCode = item.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                        foreach (var record in playingRecords)
+                        {
+                            record.PlaySuccess = false;
+                            await playbackRecordService.Save(record);
+                        }
                         var response = await playbackRecordService.Save(model);
                         if (response.Code == 200)
                         {
@@ -144,8 +153,9 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                     }
                 }
-            }
+            }).ToList();
 
+            await Task.WhenAll(tasks);
             IsPublishing = false;
         }
     }

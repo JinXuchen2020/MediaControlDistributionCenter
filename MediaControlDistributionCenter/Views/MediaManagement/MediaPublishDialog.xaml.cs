@@ -3,6 +3,7 @@ using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Helpers.Broadcast;
+using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
@@ -76,7 +77,17 @@ namespace MediaControlDistributionCenter.Views
                 if (manageViewModel.PublishDevices.Count > 0)
                 {
                     MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
-                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                    foreach (var device in manageViewModel.Devices.Where(c => c.IsSelected))
+                    {
+                        var model = new PlaybackRecordDto
+                        {
+                            IsTimerPlay = manageViewModel.IsTimerPlay,
+                            NextPlayTime = manageViewModel.NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        };
+                        await device.SendPlayTimeCommand.ExecuteAsync(model);
+                    }
 
                     if (dashboardViewModel.CurrentUser.Role == "user")
                     {

@@ -157,5 +157,10 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// </summary>
         public readonly static string CmdEnableMonitor = "CMD|EnableMonitor|";
 
+        /// <summary>
+        /// 下次开始播放时间 
+        /// </summary>
+        public readonly static string CmdPlayTime = "CMD|PlayTime|";
+
     }
 }

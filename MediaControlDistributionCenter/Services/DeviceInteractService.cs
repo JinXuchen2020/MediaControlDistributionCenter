@@ -604,5 +604,28 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception($"{CommunicationCmd.CmdSyncProgram} {Utility.FindResource("LanguageKey_Code_Device_Tooltip_101")}");
             }
         }
+
+        public async Task SendPlayTime(MonitorDto monitor, PlaybackRecordDto model, Communication? client = null)
+        {
+            if (monitor.ConnectStatus == 0)
+            {
+                throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_116"));
+            }
+
+            var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
+            if (endDate < DateTime.Now)
+            {
+                Log.Error($"Device:{monitor.Name} is not valid");
+                throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
+            }
+
+            var modelString = JsonConvert.SerializeObject(model);
+            string path = CommunicationCmd.CmdPlayTime + modelString;
+            bool result = await connectService.ExecuteCmdAsync(path, monitor.SNumber, TimeSpan.FromMilliseconds(3000));
+            if (!result)
+            {
+                throw new Exception($"{CommunicationCmd.CmdPlayTime} {Utility.FindResource("LanguageKey_Code_Device_Tooltip_101")}");
+            }
+        }
     }
 }
