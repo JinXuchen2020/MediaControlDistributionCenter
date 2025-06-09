@@ -575,16 +575,15 @@ namespace MediaControlDistributionCenter.ViewModels
 
         protected Border CreateBorder(UIElement child)
         {
-            Border result = new Border
+            Border result = new()
             {
                 BorderThickness = new Thickness(4),
                 BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#30479C")),
                 Width = Width,
                 Height = Height,
                 DataContext = this,
+                Child = child
             };
-
-            result.Child = child;
 
             var mediaEditViewModel = App.ServicesProvider.GetRequiredService<MediaEditViewModel>();
             var converter = new ToMultipleConverter();

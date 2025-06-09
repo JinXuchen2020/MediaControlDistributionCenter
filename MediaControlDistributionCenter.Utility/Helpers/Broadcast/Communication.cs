@@ -1,8 +1,10 @@
 ﻿using MediaControlDistributionCenter.Helpers.Broadcast.Entity;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Helpers.SocketClient;
 using Newtonsoft.Json;
 using Serilog;
+using System;
 using System.Net;
 using System.Text;
 
@@ -34,6 +36,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
         public string SyncVolumeResult { get; private set; }
 
+        public string SyncFileProgressResult { get; private set; }
+
         public bool IsInternet { get; private set; }
 
         public FtpServer FtpServer => this.ftpServer;
@@ -43,6 +47,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public NetClient netClient = new NetClient(false); //链接信息
         public string IpAddr; //Ip地址
         public string Port; //端口
+
+        public event EventHandler<ProgressEventArgs>? InvokeProgressChanged;
         private int retryCount = 0;
 
         private readonly FtpServer ftpServer;
@@ -238,6 +244,16 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                                 SyncVolumeResult = data[2];
                                 Log.Information(SyncVolumeResult);
                             }
+
+                            if (data[1].Contains(CommunicationCmd.CmdSyncFile.Split("|")[1]))
+                            {
+                                SyncFileProgressResult = data[2];
+                                Log.Information(SyncFileProgressResult);
+                                if ((double.TryParse(SyncFileProgressResult, out var progress) && progress <= 100))
+                                {
+                                    InvokeProgressChanged?.Invoke(this, new ProgressEventArgs(progress));
+                                }
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -314,6 +330,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
             byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(Cmd);
             netClient.Send(utf8Bytes);
             Log.Information($"Command: {Cmd} is sent!");
+
+            if(CommunicationCmd.CmdSyncFile.Contains(CmdArr[1]))
+            {
+                SyncFileProgressResult = string.Empty;
+            }
 
             while (true)
             {

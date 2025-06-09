@@ -51,7 +51,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.SyncPrograms();
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
             });
         }
 
@@ -75,7 +75,10 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             var groupViewModel = ((sender as DockPanel).DataContext as ProgramGroupViewModel)!;
             groupViewModel.IsSelected = true;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnRacking_Click(object sender, RoutedEventArgs e)
@@ -115,7 +118,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                     var viewModel = ((sender as Button).DataContext as ProgramViewModel)!;
                     viewModel.IsSelected = true;
                     await manageViewModel.DeleteMediaCommand.ExecuteAsync(null);
-                    manageViewModel.LoadData();
+                    await manageViewModel.LoadData();
                 }
 
                 manageViewModel.CanDelete = null;
@@ -125,7 +128,7 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private void btnCreate_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var newViewModel = manageViewModel.CreateProgram();
-            newViewModel.CreatedSource = userManageViewModel.CurrentUser.Role == "admin" ? (string)FindResource("LanguageKey_Code_Role_Admin") : (string)FindResource("LanguageKey_Code_Role_User");
+            newViewModel.CreatedSource = userManageViewModel.CurrentUser.Role.ToString();
             manageViewModel.ShowDialogCommand.Execute(newViewModel);
         }
 
@@ -235,10 +238,23 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             var selectedMedia = selectedMedias.First();
 
-            var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
             var desZipFilePath = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name + ".zip");
+            if (!File.Exists(desZipFilePath))
+            {
+                var sourceDic = System.IO.Path.Combine(Helpers.Constants.OutPath, manageViewModel.CurrentUser.Account, selectedMedia.Name);
+                if (!Directory.Exists(sourceDic))
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_ProgramEdit_Tooltip_151");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                    return;
+                }
 
-            fileService.CreatZip(sourceDic, desZipFilePath);
+                fileService.CreateZip(sourceDic, desZipFilePath);
+
+                selectedMedia.Size = new FileInfo(desZipFilePath).Length;
+                selectedMedia.SizeText = Utility.GetSizeText(selectedMedia.Size);
+                manageViewModel.SaveMediaCommand.Execute(selectedMedia);
+            }
 
             var viewModel = serviceProvider.GetRequiredService<MediaDevicesViewModel>();
             viewModel.CurrentMedia = selectedMedia;
@@ -256,9 +272,17 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
             manageViewModel.SaveMediaCommand.Execute(viewModel);
             if (!viewModel.HasErrors)
             {
-                manageViewModel.SelectedMedia = viewModel;
-                var content = serviceProvider.GetRequiredService<MediaEdit>();
-                (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                if (viewModel.Id == 0)
+                {
+                    manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Error_Tooltip_104");
+                    manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                }
+                else
+                {
+                    manageViewModel.SelectedMedia = viewModel;
+                    var content = serviceProvider.GetRequiredService<MediaEdit>();
+                    (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                }
             }
         }
 
@@ -269,7 +293,10 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
 
             if (viewModel.Id != 0)
             {
-                manageViewModel.LoadData();
+                Dispatcher.Invoke(async () =>
+                {
+                    await manageViewModel.LoadData();
+                });
                 manageViewModel.SelectedMedia = manageViewModel.Medias.First(c => c.Id == viewModel.Id);
                 var content = serviceProvider.GetRequiredService<MediaEdit>();
                 (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);

@@ -55,10 +55,10 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
-            var groups = mediaGroupService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaGroupDto> ();
+            var groups = (await mediaGroupService.GetAll(null))?.Data?.ToList() ?? new List<MediaGroupDto> ();
             groups.Insert(0, new MediaGroupDto
             {
                 Id = -1,
@@ -72,15 +72,18 @@ namespace MediaControlDistributionCenter.ViewModels
             }));
 
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId })).Data?.ToList() ?? new List<MediaDto>();
+            var mediaList = new List<MediaViewModel>();
+            foreach (var c in medias.OrderByDescending(t => t.Id))
             {
                 var result = new MediaViewModel();
                 result.Binding(c);
-                return result;
-            }));
+                mediaList.Add(result);
+            }
 
-            var allMedias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            this.Medias = new ObservableCollection<MediaViewModel>(mediaList);
+
+            var allMedias = (await mediaService.GetAll(null)).Data?.ToList() ?? new List<MediaDto>();
             AllCount = allMedias.Count;
             VideoCount = allMedias.Where(c => c.Type == "Video").Count();
             ImageCount = allMedias.Where(c => c.Type == "Image").Count();
@@ -99,7 +102,7 @@ namespace MediaControlDistributionCenter.ViewModels
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var groupId = SelectedGroup?.Id == -1 ? null : SelectedGroup?.Id;
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId, Name = SearchString }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type, GroupId = groupId, Name = SearchString }, true)).Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new MediaViewModel();
@@ -133,7 +136,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await mediaGroupService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
                 CloseDialog();
             }
         }
@@ -144,7 +147,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await mediaGroupService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                var agentUsers = mediaService.GetAll(new MediaDto { GroupId = viewModel.Id }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+                var agentUsers = (await mediaService.GetAll(new MediaDto { GroupId = viewModel.Id })).Data?.ToList() ?? new List<MediaDto>();
                 foreach (var item in agentUsers)
                 {
                     item.GroupId = null;
@@ -152,7 +155,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 }
             }
 
-            LoadData();
+            await LoadData();
         }
 
         [RelayCommand]
@@ -170,7 +173,7 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             SelectedGroupId = null;
-            LoadData();
+            await LoadData();
             CloseDialog();
         }
 
@@ -185,7 +188,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await mediaService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
                 CloseDialog();
             }
         }
@@ -197,7 +200,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await mediaService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
             }
         }
 
@@ -207,7 +210,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await mediaService.DeleteById(viewModel.Id);
             if (response.Code == 200)
             {
-                LoadData();
+                await LoadData();
             }
         }
     }

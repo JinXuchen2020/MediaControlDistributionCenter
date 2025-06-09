@@ -94,7 +94,7 @@
                                 <StackPanel Grid.Column="1" Margin="10">
                                     <StackPanel Orientation="Horizontal" Margin="10" Visibility="{Binding CurrentUser.Role, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=user}" >
                                         <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_Users_Tooltip_107}" />
-                                        <ComboBox Foreground="White" IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" materialDesign:HintAssist.Hint="{Binding CurrentUser.GroupId}" ItemsSource="{Binding CurrentUser.Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding CurrentUser.GroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
+                                        <ComboBox Foreground="White" IsEnabled="{Binding IsShelf, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" materialDesign:HintAssist.Hint="{Binding CurrentUser.SelectedGroupId}" ItemsSource="{Binding CurrentUser.Groups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding CurrentUser.SelectedGroupId}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Padding="5" Height="32" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="10">
                                         <TextBlock Foreground="White" Width="80" VerticalAlignment="Center" Text="{DynamicResource LanguageKey_Code_LoginPassword}" />
@@ -213,7 +213,7 @@
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Device_Tooltip_120}" />
                                             </DataGridTextColumn.Header>
                                         </DataGridTextColumn>
-                                        <DataGridTemplateColumn Width="160" >
+                                        <DataGridTemplateColumn Width="200" >
                                             <DataGridTemplateColumn.Header>
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Operation}"/>
                                             </DataGridTemplateColumn.Header>

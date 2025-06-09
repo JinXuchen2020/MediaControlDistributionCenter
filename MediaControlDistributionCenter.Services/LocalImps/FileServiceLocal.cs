@@ -61,7 +61,7 @@ namespace MediaControlDistributionCenter.Services.LocalImps
             return JsonConvert.DeserializeObject<T>(fileContent, converters);
         }
 
-        public void CreatZip(string sourceDirectoryName, string destinationArchiveFileName, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool includeBaseDirectory = true)
+        public void CreateZip(string sourceDirectoryName, string destinationArchiveFileName, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool includeBaseDirectory = true)
         {
             if (Directory.Exists(sourceDirectoryName))
             {

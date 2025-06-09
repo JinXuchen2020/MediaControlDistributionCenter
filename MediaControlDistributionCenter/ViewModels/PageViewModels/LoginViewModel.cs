@@ -18,6 +18,7 @@ using Serilog;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -86,16 +87,17 @@ namespace MediaControlDistributionCenter.ViewModels
             //this.ipAddresses = new ObservableCollection<string>(NetworkTool.GetGatewayIp());
             this.communication = communication;
             this.syncUsers = new ObservableCollection<string>();
-            RefreshLogo();
+            //RefreshLogo();
 
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             Devices = new ObservableCollection<InternetDevice>([.. OnlineDevices]);
             HasDevices = OnlineDevices.Count > 0;
             CurrentDevice = CurrentDevice ?? OnlineDevices.FirstOrDefault();
+            await base.LoadData();
         }
 
         public async Task DetectConnectedDevice()
@@ -155,12 +157,12 @@ namespace MediaControlDistributionCenter.ViewModels
                                     response = await monitorService.Save(item.Monitor.Monitor);
                                     if (response.Code == 200)
                                     {
-                                        var device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SnCode);
+                                        var device = OnlineDevices.FirstOrDefault(c => c.SnCode == item.Monitor.Monitor.SNumber);
                                         if (device == null)
                                         {
                                             device = new InternetDevice()
                                             {
-                                                SnCode = item.Monitor.Monitor.SnCode,
+                                                SnCode = item.Monitor.Monitor.SNumber,
                                                 IpAddress = communication.IpAddr,
                                                 Status = 1,
                                                 StatusText = GetStatus(1),
@@ -176,7 +178,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
                                             Log.Debug($"Device with IP {communication.IpAddr} is connected!");
 
-                                            LoadData();
+                                            await LoadData();
                                         }
 
                                         if (CurrentDevice == null)
@@ -190,7 +192,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
 
                     this.IsSync = true;
-                    RefreshLogo();
+                    await RefreshLogo();
                 }
             }
         }
@@ -216,31 +218,46 @@ namespace MediaControlDistributionCenter.ViewModels
                 var resultResponse = await authService.Login(request);
                 if (resultResponse.Code == 200)
                 {
-                    var userString = resultResponse.Data!;
+                    var tokenDto = resultResponse.Data!;
                     if (connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri))
                     {
-                        var loginUser = JsonConvert.DeserializeObject<UserDto>(userString);
+                        var loginUser = JsonConvert.DeserializeObject<UserDto>(tokenDto.Token);
                         CurrentUser.Binding(loginUser!);
                         IsLogin = true;
                     }
                     else
                     {
-                        connectionMode.RemoteToken = userString.Split(" ")[1];
-                        var userResponse = await userService.GetAll(new UserDto { Account = request.Account });
+                        connectionMode.RemoteToken = tokenDto.Token;
+                        var userResponse = await userService.GetById(tokenDto.UserId);
                         if (userResponse.Code == 200)
                         {
-                            var userResult = userResponse.Data?.FirstOrDefault();
+                            var userResult = userResponse.Data;
                             if (userResult != null)
                             {
                                 CurrentUser.Binding(userResult);
                                 IsLogin = true;
                             }
+                            else
+                            {
+                                ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_104");
+                            }
+                        }
+                        else
+                        {
+                            ErrorMessage = resultResponse.Message;
                         }
                     }
                 }
                 else
                 {
-                    ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
+                    if (resultResponse.Code == (int)System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");  //"账号或密码错误！";
+                    }
+                    else 
+                    {
+                        ErrorMessage = resultResponse.Message;
+                    }
                 }
             }
 
@@ -348,19 +365,29 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public void RefreshService()
         {
-            this.userService = GetService<IUserService>();
-            this.authService = GetService<IAuthService>();
-            this.userGroupService = GetService<IUserGroupService>();
-            this.monitorService = GetService<IMonitorService>();
-            this.programService = GetService<IProgramService>();
+            this.userService = Utility.GetService<IUserService>();
+            this.authService = Utility.GetService<IAuthService>();
+            this.userGroupService = Utility.GetService<IUserGroupService>();
+            this.monitorService = Utility.GetService<IMonitorService>();
+            this.programService = Utility.GetService<IProgramService>();
+            this.DetectService = Utility.GetService<IDetectService>();
+
+            if (DetectService.IsStarted)
+            {
+                SendBroadcastMessageCommand.Execute(null);
+            }
+            else
+            {
+                DetectInternetDevicesCommand.Execute(null);
+            }
         }
 
-        private void RefreshLogo()
+        private async Task RefreshLogo()
         {
             BitmapImage? result = null;
             if (ConnectionMode.Mode == "Local" && this.SyncUsers.Count > 0)
             {
-                var user = userService.GetAll(new UserDto { Account = this.SyncUsers.Last() }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                var user = (await userService.GetAll(new UserDto { Account = this.SyncUsers.Last() })).Data?.FirstOrDefault();
                 if (user != null) 
                 {
                     if (!string.IsNullOrEmpty(user.LogoSrc))
@@ -369,7 +396,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         {
                             UserViewModel viewModel = new UserViewModel();
                             viewModel.Binding(user);
-                            viewModel.LoadLogo();
+                            await viewModel.LoadLogo();
                             result = viewModel.LogoThumbnail;
                         }
                         catch

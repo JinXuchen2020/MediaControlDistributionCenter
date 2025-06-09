@@ -101,16 +101,16 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// <summary>
         /// 用户分组id
         /// </summary>
-        [JsonProperty("adminUserGroupId", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("adminGroupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? AdminUserGroupId { get; set; }
 
         /// <summary>
         /// 用户分组id
         /// </summary>
-        [JsonProperty("agentUserGroupId", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("userGroupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? AgentUserGroupId { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("userGroupName", NullValueHandling = NullValueHandling.Ignore)]
         public string? UserGroupName { get; set; }
 
         public void CreateMappings(Profile configuration)

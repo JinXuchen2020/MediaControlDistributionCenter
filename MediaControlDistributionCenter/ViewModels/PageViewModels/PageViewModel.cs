@@ -20,7 +20,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -45,13 +47,37 @@ namespace MediaControlDistributionCenter.ViewModels
 
         private static Dictionary<Type, List<string>> devicesChangedRegisterActions = new Dictionary<Type, List<string>>();
 
-        private readonly IDetectService detectService;
+        private IDetectService _detectService;
+
+        protected IDetectService DetectService
+        {
+            get
+            {
+                if (_detectService == null)
+                {
+                    _detectService = Utility.GetService<IDetectService>();
+                }
+
+                if (!_detectService.IsStarted)
+                {
+                    _detectService.InvokeDevicesChanged -= (sender, e) => InvokeDevicesChanged();
+                    _detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
+                }
+
+                return _detectService;
+            }
+
+            set
+            {
+                _detectService = value;
+            }
+        }
 
         public List<InternetDevice> OnlineDevices 
         {
             get
             {
-                var devices = detectService.GetOnlineDevices();
+                var devices = DetectService.GetOnlineDevices();
                 foreach (var item in devices)
                 {
                     item.StatusText = GetStatus(item.Status);
@@ -63,12 +89,11 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public PageViewModel()
         {
-            detectService = GetService<IDetectService>();
-            detectService.InvokeDevicesChanged += (sender, e) => InvokeDevicesChanged();
         }
 
-        public virtual void LoadData()
+        public virtual async Task LoadData()
         {
+            await Task.CompletedTask;
 
         }
 
@@ -164,7 +189,21 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
                             }
-                            method?.Invoke(typeObj, [.. parameterValues]);
+                            if (method != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task))
+                            {
+                                Task.Run(async () =>
+                                {
+                                    if (method.Invoke(typeObj, [.. parameterValues]) is Task methodTask)
+                                    {
+                                        await methodTask;
+                                    }
+
+                                }).Wait();
+                            }
+                            else
+                            {
+                                method?.Invoke(typeObj, [.. parameterValues]);
+                            }
                         }
                         else
                         {
@@ -202,7 +241,22 @@ namespace MediaControlDistributionCenter.ViewModels
                             {
                                 parameterValues.Add(Activator.CreateInstance(parameter.ParameterType));
                             }
-                            method?.Invoke(typeObj, [.. parameterValues]);
+
+                            if (method != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task))
+                            {
+                                Application.Current.Dispatcher.Invoke(async () =>
+                                {
+                                    if (method.Invoke(typeObj, [.. parameterValues]) is Task methodTask)
+                                    {
+                                        await methodTask;
+                                    }
+
+                                }).Wait();
+                            }
+                            else
+                            {
+                                method?.Invoke(typeObj, [.. parameterValues]);
+                            }
                         }
                         else
                         {
@@ -261,7 +315,7 @@ namespace MediaControlDistributionCenter.ViewModels
         //    var snCode = client.SyncSnCodeResult ?? string.Empty;
 
         //    var monitorService = GetService<IMonitorService>();
-        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+        //    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = snCode })).Data?.FirstOrDefault();
         //    if (connectedDevice != null)
         //    {
         //        if (localDevice == null)
@@ -309,19 +363,19 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DetectInternetDevices()
         {
-            await detectService.StartDetect();            
+            await DetectService.StartDetect();            
         }
 
         [RelayCommand]
         private async Task SendBroadcastMessage()
         {
-            await detectService.SendBroadcastMessage();
+            await DetectService.SendBroadcastMessage();
         }
 
         [RelayCommand]
         private async Task ConnectInternetDevice(InternetDevice device)
         {
-            await detectService.ConnectDevice(device);
+            await DetectService.ConnectDevice(device);
             if(device.DeviceViewModel != null && !string.IsNullOrEmpty(device.DeviceViewModel.ErrorMessage))
             {
                 ErrorMessage = FindResource(device.DeviceViewModel.ErrorMessage);

@@ -84,7 +84,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         [JsonProperty("groupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? GroupId { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("programGroupName", NullValueHandling = NullValueHandling.Ignore)]
         public string? ProgramGroupName { get; set; }
 
         public void CreateMappings(Profile configuration)

@@ -12,7 +12,11 @@ namespace MediaControlDistributionCenter.Services
     {
         event EventHandler InvokeDevicesChanged;
 
+        bool IsStarted { get; }
+
         public Task StartDetect();
+
+        public void StopDetect();
 
         public Task SendBroadcastMessage();
 

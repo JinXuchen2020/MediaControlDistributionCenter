@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaControlDistributionCen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaControlDistributionCenter.Services", "MediaControlDistributionCenter.Services\MediaControlDistributionCenter.Services.csproj", "{50A75775-4D5F-4F0A-A16B-684E8067705B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaControlDistributionCenter.Utility", "MediaControlDistributionCenter.Utility\MediaControlDistributionCenter.Utility.csproj", "{C2D7CF46-B767-4468-B494-5EF776559253}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaControlDistributionCenter.Utility", "MediaControlDistributionCenter.Utility\MediaControlDistributionCenter.Utility.csproj", "{C2D7CF46-B767-4468-B494-5EF776559253}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{243CF1F3-9363-4395-A1F6-DA34961A1F9C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,11 +1,14 @@
 ﻿
 
 using MaterialDesignThemes.Wpf;
+using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Services;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.Diagrams;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -27,9 +30,18 @@ namespace MediaControlDistributionCenter.Views
         {
             InitializeComponent();
             manageViewModel = mediaContentViewModel;
-            manageViewModel.LoadData();
             DataContext = mediaContentViewModel;
             this.fileService = fileService;
+
+            this.Loaded += MediaContent_Loaded;
+        }
+
+        private void MediaContent_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnGroupAdd_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -63,6 +75,13 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnMediaCancel_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            var viewModel = ((sender as Button).DataContext as MediaViewModel)!;
+            if (viewModel.IsUploading)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_MediaStore_Tooltip_110");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
             manageViewModel.CloseDialogCommand.Execute(null);
         }
 
@@ -70,7 +89,10 @@ namespace MediaControlDistributionCenter.Views
         {
             var groupViewModel = ((sender as DockPanel).DataContext as MediaGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnUploadStart_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -191,18 +213,30 @@ namespace MediaControlDistributionCenter.Views
             if (openFileDialog.ShowDialog() == true)
             {
                 // 获取所选文件的路径
+                viewModel.IsUploading = true;
                 string filePath = openFileDialog.FileName;
                 viewModel.Extension = Path.GetExtension(filePath);
-                var fileSize = (double)new FileInfo(filePath).Length / 1024 / 1024;
-                viewModel.Size = Math.Round(fileSize, 2);
+                viewModel.Size = new FileInfo(filePath).Length;
+                viewModel.SizeText = Utility.GetSizeText(viewModel.Size);
                 var fileName = Path.GetFileName(filePath);
 
-                var fileDic = Path.Combine(Helpers.Constants.MediaStorePath, viewModel.Name);
-                var fileContent = File.ReadAllBytes(filePath);
-                using var fileStream = new MemoryStream(fileContent);
-                var desPath = fileService.SaveFileContent(fileDic, fileName, fileStream);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    var uploadService = Utility.GetService<IUploadService>();
+                    if (uploadService is UploadServiceLocal local)
+                    {
+                        var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                        local.FtpClient = ftpClient;
+                    }
 
-                viewModel.Src = desPath;
+                    fileName = string.IsNullOrEmpty(viewModel.Name) ? fileName : $"{viewModel.Name}{viewModel.Extension}";
+
+
+                    await uploadService.UploadFile(filePath, fileName);
+
+                    viewModel.Src = fileName;
+                    viewModel.IsUploading = false;
+                });
             }
         }
 
@@ -211,7 +245,10 @@ namespace MediaControlDistributionCenter.Views
             var tag = ((sender as Border).Tag as string)!;
             manageViewModel.SelectedType = tag;
             manageViewModel.SearchString = null;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnGroupDelete_Click(object sender, RoutedEventArgs e)

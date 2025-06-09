@@ -30,7 +30,6 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
             }
 
             manageViewModel = deviceManageViewModel;
-            manageViewModel.LoadData();
             DataContext = deviceManageViewModel;
 
             this.Loaded += DeviceManage_Loaded;
@@ -41,6 +40,10 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
 
         private void DeviceManage_Loaded(object sender, RoutedEventArgs e)
         {
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
             //manageViewModel.DetectConnectedDeviceCommand.Execute(null);
             //if (manageViewModel.ConnectionMode.Mode == "Local")
             //{
@@ -55,6 +58,7 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         private void DeviceManage_Unloaded(object sender, RoutedEventArgs e)
         {
             manageViewModel.SelectDisabled = "1";
+            manageViewModel.SelectedGroup = null;
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
@@ -81,7 +85,10 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
         {
             var groupViewModel = ((sender as DockPanel).DataContext as DeviceGroupViewModel)!;
             manageViewModel.SelectedGroup = groupViewModel;
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -216,7 +223,10 @@ namespace MediaControlDistributionCenter.Views.DeviceManagement
                 manageViewModel.SelectDisabled = "0";
             }
 
-            manageViewModel.LoadData();
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+            });
         }
 
         //private void btnDetectConnectedDevice(object sender, MouseButtonEventArgs e)

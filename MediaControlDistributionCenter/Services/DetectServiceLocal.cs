@@ -16,6 +16,7 @@ using MediaControlDistributionCenter.Helpers.FTP;
 using MediaControlDistributionCenter.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using MediaControlDistributionCenter.Services.DTO;
+using System.Windows;
 
 namespace MediaControlDistributionCenter.Services
 {
@@ -31,6 +32,8 @@ namespace MediaControlDistributionCenter.Services
         private UdpClient _listener;
 
         public event EventHandler? InvokeDevicesChanged;
+
+        public bool IsStarted => _listener != null;
 
         public async Task StartDetect()
         {
@@ -52,8 +55,6 @@ namespace MediaControlDistributionCenter.Services
 
                 // 发送广播
                 await SendBroadcastMessage();
-
-                //DetectStatus = FindResource("LanguageKey_Code_Device_Tooltip_111");
             }
             catch (Exception ex)
             {
@@ -178,11 +179,12 @@ namespace MediaControlDistributionCenter.Services
                 }
                 else
                 {
-                    var monitorService = GetService<IMonitorService>();
-                    var userService = GetService<IUserService>();
-                    var connectedDevice = monitorService.GetAll(new MonitorDto { SnCode = device.SnCode }).GetAwaiter().GetResult().Data?.FirstOrDefault();
+                    var monitorService = Utility.GetService<IMonitorService>();
+                    var userService = Utility.GetService<IUserService>();
+                    var connectedDevice = (await monitorService.GetAll(new MonitorDto { SNumber = device.SnCode })).Data?.FirstOrDefault();
                     if (connectedDevice == null)
                     {
+                        Log.Debug($"Start to Sync user from device with IP {device.IpAddress}!");
                         string path = CommunicationCmd.CmdSyncUser + "Login";
                         bool result = await communication.ExecuteCmdAsync(path, TimeSpan.FromMilliseconds(3000));
                         if (result)
@@ -191,15 +193,17 @@ namespace MediaControlDistributionCenter.Services
                             if (syncUsers != null)
                             {
                                 foreach (var item in syncUsers.Users)
-                                {
+                                {                                    
                                     var response = await userService.Save(item.User);
                                     if (response.Code == 200)
                                     {
+                                        Log.Debug($"Save user: {item.User.Account} to local db !");
                                         if (item.Monitor != null)
                                         {
                                             response = await monitorService.Save(item.Monitor.Monitor);
                                             if (response.Code == 200)
                                             {
+                                                Log.Debug($"Save monitor: {item.Monitor.Monitor.SNumber} to local db !");
                                                 device.DeviceViewModel = new DeviceViewModel();
                                                 device.DeviceViewModel.Binding(item.Monitor.Monitor);
                                                 device.DeviceViewModel.ConnectCommand.Execute(communication);
@@ -267,30 +271,17 @@ namespace MediaControlDistributionCenter.Services
             return ftpServer;
         }
 
-        private TService GetService<TService>() where TService : class
-        {
-            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            switch (connectionMode.Mode)
-            {
-                case "Local":
-                    return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
-                case "Remote":
-                    if (string.IsNullOrEmpty(connectionMode.ServiceUri))
-                    {
-                        return App.ServicesProvider.GetServices<TService>().First(c => c.GetType().Name.EndsWith("Local"));
-                    }
-                    else
-                    {
-                        return App.ServicesProvider.GetServices<TService>().First(c => !c.GetType().Name.EndsWith("Local"));
-                    }
-                default:
-                    throw new ArgumentException("未知的服务名称");
-            }
-        }
-
         public IEnumerable<InternetDevice> GetOnlineDevices()
         {
             return [.. onlineDevices];
+        }
+
+        public void StopDetect()
+        {
+            _listener.Close();
+            _listener.Dispose();
+            _listener = null;
+            InvokeDevicesChanged = null;
         }
     }
 }

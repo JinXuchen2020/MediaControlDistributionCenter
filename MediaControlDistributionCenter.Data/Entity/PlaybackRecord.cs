@@ -26,5 +26,20 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// 显示器SN码
         /// </summary>
         public string MonitorSnCode { get; set; }
+
+        /// <summary>
+        /// 是否正在播放
+        /// </summary>
+        public bool PlaySuccess { get; set; } = false;
+
+        /// <summary>
+        /// 是否立即播放
+        /// </summary>
+        public bool IsTimerPlay { get; set; } = false;
+
+        /// <summary>
+        /// 下次播放时间
+        /// </summary>
+        public DateTime? NextPlayTime { get; set; }
     }
 }

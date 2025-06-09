@@ -70,28 +70,34 @@ namespace MediaControlDistributionCenter.ViewModels
             RegisterLanguageProperty(this.GetType(), nameof(RefreshTimeZone));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Enabled = 1 })).Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.OrderByDescending(c => c.Id).Select(c =>
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
+
+                viewModel.RefreshStatus();
                 return viewModel;
             }));
 
-            CurrentDevice = CurrentDevice ?? Devices.FirstOrDefault(c => c.IsConnected);
+
+            if (CurrentDevice == null)
+            {
+                CurrentDevice = Devices.FirstOrDefault(c => c.IsConnected);
+            }
         }
 
         public async Task SyncDeviceTimeControls()
         {
             if (ConnectionMode.Mode == "Local" && CurrentDevice != null && !isSynced)
             {
-                await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(deviceControlService);
+                await CurrentDevice.SyncDeviceControlCommand.ExecuteAsync(null);
                 if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                 {
                     ErrorMessage = CurrentDevice.ErrorMessage;
@@ -100,12 +106,12 @@ namespace MediaControlDistributionCenter.ViewModels
                     return;
                 }
 
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
                 isSynced = true;
             }
         }
 
-        public void GetDeviceTimeControls()
+        public async Task GetDeviceTimeControls()
         {
             if (CurrentDevice == null)
             {
@@ -113,7 +119,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 return;
             }
 
-            var results = deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" }).GetAwaiter().GetResult().Data?.ToList() ?? new List<DeviceControlDto>();
+            var results = (await deviceControlService.GetAll(new DeviceControlDto { DeviceId = CurrentDevice.DeviceId, ControlType = CommandType, ExecutionType = "SCHEDULED" })).Data?.ToList() ?? new List<DeviceControlDto>();
             DeviceTimeControls = new ObservableCollection<DeviceTimeControlViewModel>(results.Select(c =>
             {
                 var viewModel = new DeviceTimeControlViewModel();
@@ -192,11 +198,10 @@ namespace MediaControlDistributionCenter.ViewModels
 
                 var model = viewModel.ToModel();
                 modelList.Add(model);
-                var modelString = JsonConvert.SerializeObject(modelList);
                 switch (CommandType)
                 {
                     case "Brightness":
-                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -207,7 +212,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         CurrentDevice.Brightness = viewModel.Value;
                         break;
                     case "Volume":
-                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -218,7 +223,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         CurrentDevice.Volume = viewModel.Value;
                         break;
                     case "Restart":
-                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.RestartCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -227,12 +232,6 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
-                }
-                var response = await deviceControlService.Save(model);
-                if (response.Code == 200)
-                {
-                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_132");
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
                 }
             }
         }
@@ -243,12 +242,11 @@ namespace MediaControlDistributionCenter.ViewModels
             var viewModels = DeviceTimeControls.ToList();
             if (CurrentDevice != null && viewModels.Count > 0)
             {
-                var modelList = viewModels.Select(c => c.ToModel());
-                var modelString = JsonConvert.SerializeObject(modelList);
+                var modelList = viewModels.Select(c => c.ToModel()).ToList();
                 switch (viewModels[0].Type)
                 {
                     case "Brightness":
-                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.ChangeBrightnessCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -258,7 +256,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                         break;
                     case "Volume":
-                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.ChangeVolumeCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -268,7 +266,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                         break;
                     case "Restart":
-                        await CurrentDevice.RestartCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.RestartCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -278,7 +276,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                         break;
                     case "Power":
-                        await CurrentDevice.ChangePowerCommand.ExecuteAsync(modelString);
+                        await CurrentDevice.ChangePowerCommand.ExecuteAsync(modelList);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -289,12 +287,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         break;
                 }
 
-                foreach (var model in modelList)
-                {
-                    await deviceControlService.Save(model);
-                }
-
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
             }
         }
 
@@ -320,7 +313,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     case "manual":
                         model.Timezone = CommandRTValue;
                         model.CurrentDate = TimeZoneInfo.ConvertTime(timeZoneDateTime, TimeZoneInfo.FindSystemTimeZoneById(CommandRTValue)).ToString();
-                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                        await CurrentDevice.TimeSyncCommand.ExecuteAsync(model);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -330,7 +323,7 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                         break;
                     case "gps":
-                        await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(JsonConvert.SerializeObject(model));
+                        await CurrentDevice.TimeGPSSyncCommand.ExecuteAsync(model);
                         if (!string.IsNullOrEmpty(CurrentDevice.ErrorMessage))
                         {
                             ErrorMessage = CurrentDevice.ErrorMessage;
@@ -339,14 +332,6 @@ namespace MediaControlDistributionCenter.ViewModels
                             return;
                         }
                         break;
-                }
-
-                var response = await timeSyncConfigService.Save(model);
-                if (response.Code == 200)
-                {
-                    ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_132");
-                    await ShowConfirmDialogCommand.ExecuteAsync(null);
-                    return;
                 }
             }
         }
@@ -390,7 +375,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.DeleteBatch(selectedIds);
             if (response.Code == 200)
             {
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
             }
         }
 
@@ -426,7 +411,7 @@ namespace MediaControlDistributionCenter.ViewModels
             var response = await deviceControlService.Save(viewModel.ToModel());
             if (response.Code == 200)
             {
-                GetDeviceTimeControls();
+                await GetDeviceTimeControls();
                 CloseDialog();
             }
         }
@@ -434,10 +419,10 @@ namespace MediaControlDistributionCenter.ViewModels
         protected override async Task SearchContent()
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentUser.Account, Name = SearchString}, true)).Data?.ToList() ?? new List<MonitorDto>();
             this.Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();

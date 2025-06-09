@@ -50,7 +50,8 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 //await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-                manageViewModel.LoadData();
+                await manageViewModel.LoadData();
+                dgDevices.SelectedItem = manageViewModel.CurrentDevice;
                 await manageViewModel.SyncDeviceTimeControls();
                 InitPage("Brightness");
             });
@@ -67,7 +68,7 @@ namespace MediaControlDistributionCenter.Views
             ChangePage(border.Tag.ToString());
         }
 
-        private async void Restart_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Restart_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (manageViewModel.CurrentDevice == null)
             {
@@ -233,9 +234,9 @@ namespace MediaControlDistributionCenter.Views
             this.Dispatcher.Invoke(async () =>
             {
                 await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+                await manageViewModel.GetDeviceTimeControls();
             });
             //dgDevices.SelectedItem = dgDevices.SelectedItem ?? manageViewModel.Devices.FirstOrDefault();
-            manageViewModel.GetDeviceTimeControls();
         }
 
         private void btnTimeSyncReset_Click(object sender, RoutedEventArgs e)
@@ -485,9 +486,9 @@ namespace MediaControlDistributionCenter.Views
 
             while (parentObject != null)
             {
-                if (parentObject is FrameworkElement parent && parent.DataContext is DeviceTimeControlViewModel)
+                if (parentObject is FrameworkElement parent && parent.DataContext is DeviceTimeControlViewModel viewModel)
                 {
-                    return (parent.DataContext as DeviceTimeControlViewModel);
+                    return viewModel;
                 }
 
                 parentObject = VisualTreeHelper.GetParent(parentObject);
@@ -541,29 +542,40 @@ namespace MediaControlDistributionCenter.Views
 
         private void DevicesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+            if(dgDevices.SelectedItem != null && dgDevices.SelectedItem != manageViewModel.CurrentDevice)
             {
+                manageViewModel.CurrentDevice = dgDevices.SelectedItem as DeviceViewModel;
+                if (manageViewModel.CommandType == "TimeSync" && manageViewModel.CurrentDevice != null)
+                {
+                    this.Dispatcher.Invoke(async () =>
+                    {
+                        await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
+                        if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
+                        {
+                            manageViewModel.CurrentDevice.ErrorMessage = null;
+                        }
+                    });
+                    manageViewModel.RefreshTimeZone();
+                }
+
                 this.Dispatcher.Invoke(async () =>
                 {
-                    await manageViewModel.CurrentDevice.SyncCurrentTimeCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(manageViewModel.CurrentDevice.ErrorMessage))
-                    {
-                        manageViewModel.CurrentDevice.ErrorMessage = null;
-                    }
+                    await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
+                    await manageViewModel.GetDeviceTimeControls();
                 });
-                manageViewModel.RefreshTimeZone();
             }
-
-            this.Dispatcher.Invoke(async () =>
-            {
-                await manageViewModel.ExecuteRealTimeControlSyncCommand.ExecuteAsync(null);
-            });
-
-            manageViewModel.GetDeviceTimeControls();
         }
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
+            var selectedItems = manageViewModel.DeviceTimeControls.Where(c => c.IsSelected).ToList();
+            if (selectedItems.Count == 0)
+            {
+                manageViewModel.ErrorMessage = (string)FindResource("LanguageKey_Code_Control_Tooltip_118");
+                manageViewModel.ShowConfirmDialogCommand.Execute(null);
+                return;
+            }
+
             manageViewModel.ExecuteScheduleControlCommand.Execute(null);
         }
 

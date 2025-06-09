@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:MediaControlDistributionCenter.Converters"
              xmlns:local="clr-namespace:MediaControlDistributionCenter.Views"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodels="clr-namespace:MediaControlDistributionCenter.ViewModels" 
              mc:Ignorable="d"   d:DesignWidth="1440">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -309,15 +309,15 @@
                 <ItemsControl ItemsSource="{Binding Devices}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" ItemWidth="250" ItemHeight="140" />
+                            <WrapPanel Orientation="Horizontal" ItemWidth="280" ItemHeight="140" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Width="245" Height="118" Margin="10" Cursor="Hand" MouseDown="selectDevice_MouseDown" Orientation="Horizontal" HorizontalAlignment="Left" Background="#282931">
+                            <StackPanel Width="265" Height="118" Margin="10" Cursor="Hand" MouseDown="selectDevice_MouseDown" Orientation="Horizontal" HorizontalAlignment="Left" Background="#282931">
                                 <Image Width="130" Height="100" Source="{Binding Thumbnail}"/>
                                 <StackPanel Margin="0,5,0,0" VerticalAlignment="Center" >
-                                    <TextBlock Margin="0,0,10,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
+                                    <TextBlock ToolTip="{Binding Name}" TextTrimming="WordEllipsis" Width="135" Margin="0,0,10,0" FontSize="16" FontWeight="Black" Foreground="White" VerticalAlignment="Center" Text="{Binding Name}"/>
                                     <TextBlock FontSize="12" Foreground="White" VerticalAlignment="Center" Text="{Binding ConnectedText}"/>
                                 </StackPanel>
                             </StackPanel>

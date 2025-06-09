@@ -5,6 +5,7 @@ using MediaControlDistributionCenter.Helpers.FTP.Client;
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -158,16 +159,17 @@ namespace MediaControlDistributionCenter.ViewModels
             IsSelected = isSelected;
             IsUpload = Logo != null;
             TagLine = model.TagLine;
+            Status = model.Status;            
         }
 
-        public void LoadLogo()
+        public async Task LoadLogo()
         {
-            Logo = Logo ?? DownloadLogo();
+            Logo = Logo ?? await DownloadLogo();
             LogoThumbnail = LogoThumbnail ?? GetThumbnail();
             IsUpload = Logo != null;
         }
 
-        public string? DownloadLogo()
+        public async Task<string?> DownloadLogo()
         {
             if (string.IsNullOrEmpty(LogoFileName)) 
             {
@@ -175,11 +177,16 @@ namespace MediaControlDistributionCenter.ViewModels
             }
 
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, LogoFileName!);
-            if (!File.Exists(filePath)) 
+            if (!File.Exists(filePath))
             {
-                var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
-                var result = ftpClient.DownloadFile(LogoFileName!).GetAwaiter().GetResult();
-                if (!result)
+                var uploadService = Utility.GetService<IUploadService>();
+                if (uploadService is UploadServiceLocal local)
+                {
+                    var ftpClient = App.ServicesProvider.GetRequiredService<FtpClient>();
+                    local.FtpClient = ftpClient;
+                }
+                var result = await uploadService.DownloadFile(LogoFileName!);
+                if (!result.Data)
                 {
                     filePath = null;
                 }

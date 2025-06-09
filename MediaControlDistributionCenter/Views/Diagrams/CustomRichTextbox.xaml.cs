@@ -165,10 +165,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         // 行间距设置
         private void LineSpacing_Click(object sender, RoutedEventArgs e)
         {
-            var comobox = sender as ComboBox;
-            if (comobox.Visibility == Visibility.Visible && comobox.SelectedValue != null)
+            if (sender is ComboBox comboBox && comboBox.Visibility == Visibility.Visible && comboBox.SelectedValue != null)
             {
-                if (double.TryParse(comobox.SelectedValue.ToString(), out var spacing))
+                if (double.TryParse(comboBox.SelectedValue.ToString(), out var spacing))
                 {
                     var paragraph = rtbEditor.Selection.Start.Paragraph;
                     if (paragraph != null)
@@ -182,8 +181,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void LineSpacing_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var comobox = sender as ComboBox;
-            if (double.TryParse(comobox.Text.ToString(), out var spacing))
+            if (sender is ComboBox comboBox && double.TryParse(comboBox.Text.ToString(), out var spacing))
             {
                 var paragraph = rtbEditor.Selection.Start.Paragraph;
                 if (paragraph != null)

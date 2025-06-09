@@ -22,7 +22,7 @@ namespace MediaControlDistributionCenter.Data.Entity
         /// 显示器SN码
         /// </summary>
         [Required]
-        public string SnCode { get; set; }
+        public string SNumber { get; set; }
 
         /// <summary>
         /// 设备id

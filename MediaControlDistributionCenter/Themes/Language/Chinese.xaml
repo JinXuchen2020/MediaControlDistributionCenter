@@ -120,7 +120,8 @@
     <sys:String x:Key="LanguageKey_Code_Confirm_DialogTitle">结果</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_100">未同步机顶盒信息！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Login_Tooltip_101">该账号不可用！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>   
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_103">账号或密码错误！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Login_Tooltip_104">用户名不存在</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_100">无法连接机顶盒!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_101">命令无法被处理!</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Tooltip_102">同步机顶盒信息成功！可选择下列用户登录：</sys:String>
@@ -211,11 +212,12 @@
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_111">永久</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_112">每小时播放次数</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_113">节目名称已存在！</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">强制发布</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_114">定时播放</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_115">未发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_116">已发布</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_117">已发布未上架</sys:String>
     <sys:String x:Key="LanguageKey_Code_Program_Tooltip_118">此设备正在播放当前节目！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Program_Tooltip_119">下次播放时间</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Management_Device">设备管理</sys:String>
     <sys:String x:Key="LanguageKey_Code_Device_Create">新增显示器</sys:String>
@@ -424,6 +426,10 @@
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_208">输入值</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_209">值</sys:String>
     <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_210">预设颜色</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_211">上传中...</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_212">进度</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_213">发布中...</sys:String>
+    <sys:String x:Key="LanguageKey_Code_ProgramEdit_Tooltip_214">节目正在发布中!</sys:String>
 
 
     <sys:String x:Key="LanguageKey_Code_Preview_Title">节目预览</sys:String>    
@@ -444,12 +450,22 @@
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_107">未选择媒体！</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_108">媒体地址</sys:String>
     <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_109">未填写媒体名！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_MediaStore_Tooltip_110">媒体文件正在上传中!</sys:String>
 
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_100">账号不能为空！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_101">该账号已经存在</sys:String>
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_102">账号密码不能为空！</sys:String>
     <sys:String x:Key="LanguageKey_Code_Error_Tooltip_103">公司名不能为空！</sys:String>
-    
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_104">保存成功</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_105">SNCode已经存在</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_106">名称不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_107">SNCode不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_108">宽度不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_109">高度不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_110">开始时间不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_111">结束时间不能为空</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Error_Tooltip_112">节目类型不能为空</sys:String>
+
     <sys:String x:Key="LanguageKey_Code_Totip_100">参数无效或缺失</sys:String>
     <sys:String x:Key="LanguageKey_Code_Totip_102">没有相关数据</sys:String>
     <sys:String x:Key="LanguageKey_Code_Totip_104">调用端的IP未被授权</sys:String>

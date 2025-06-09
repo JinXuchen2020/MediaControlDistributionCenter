@@ -45,7 +45,7 @@
                                             materialDesign:ColorZoneAssist.Mode="Custom"
                                             materialDesign:ColorZoneAssist.Background="#090A0E"
                                             materialDesign:ButtonAssist.CornerRadius="5"
-                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                            Click="btnMediaCancel_Click"
                                             Content="{materialDesign:PackIcon Size=20,Kind=CloseCircleOutline}"/>
                                     </StackPanel>
 
@@ -86,12 +86,12 @@
                                             <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="White" Width="100" Text="{DynamicResource LanguageKey_Code_MediaStore_Tooltip_108}" />
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBox IsEnabled="False" Width="250" Height="32" Margin="0,0,0,0" Padding="5" BorderBrush="#404870" Background="#2A3255" BorderThickness="1" Text="{Binding Src}" />
-
-                                                <Button Background="#2A3255" Margin="5,0,0,0"
+                                                <Button IsEnabled="{Binding IsUploading, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false }" Background="#2A3255" Margin="5,0,0,0"
                                                     BorderBrush="#404870"
                                                     Click="btnUpload_Click"
                                                     Content="{materialDesign:PackIcon Size=20,Kind=Upload}"
                                                     Style="{StaticResource MaterialDesignFlatButton}" />
+                                                <TextBlock VerticalAlignment="Center" Visibility="{Binding IsUploading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" FontSize="12" Margin="5,0,0,0" Text="{DynamicResource LanguageKey_Code_ProgramEdit_Tooltip_211}"/>
                                             </StackPanel>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="10">
@@ -364,8 +364,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
-                                                    <TextBlock Text="{Binding Size}" />
-                                                    <TextBlock Text="MB" />
+                                                    <TextBlock Text="{Binding SizeText}" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

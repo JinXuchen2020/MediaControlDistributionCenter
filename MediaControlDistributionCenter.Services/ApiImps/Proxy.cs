@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediaControlDistributionCenter.Services.DTO.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,329 +44,260 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         protected async Task<T> GetResponse<T>(string requestUri, int timeOut)
         {
-            using var client = new HttpClient();
-            var webApiRequestTimeout = 5000;
-            if (timeOut > 0)
+            try
             {
-                webApiRequestTimeout = timeOut;
-            }
-            client.Timeout = TimeSpan.FromMilliseconds(webApiRequestTimeout);
-            client.BaseAddress = HttpClientBaseAddress;
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-
-            string encryptedUrl = GetEncryptedUrl(requestUri);
-            var response = await client.GetAsync(encryptedUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                try
+                using var client = new HttpClient();
+                var webApiRequestTimeout = 50000;
+                if (timeOut > 0)
                 {
-                    return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
+                    webApiRequestTimeout = timeOut;
                 }
-                catch (Exception ex)
+                client.Timeout = TimeSpan.FromMilliseconds(webApiRequestTimeout);
+                client.BaseAddress = HttpClientBaseAddress;
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
                 {
-                    throw ex;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
                 }
+
+                string encryptedUrl = GetEncryptedUrl(requestUri);
+                var response = await client.GetAsync(encryptedUrl);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseContent);
+
             }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            catch(Exception ex)
             {
+                Log.Error(ex.Message);
                 return default;
-            }
-            throw GetAPIException(response, requestUri);
-        }
-        protected async Task GetResponse(string requestUri, string token = null)
-        {
-            int timeOut = 0;
-            using var client = new HttpClient();
-            var webApiRequestTimeout = 3600;
-            if (timeOut > 0)
-            {
-                webApiRequestTimeout = timeOut;
-            }
-            client.Timeout = new TimeSpan(0, 0, webApiRequestTimeout);
-            client.BaseAddress = HttpClientBaseAddress;
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-
-            string encryptedUrl = GetEncryptedUrl(requestUri);
-            var response = await client.GetAsync(encryptedUrl);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw GetAPIException(response, requestUri);
-            }
+            }            
         }
 
-        protected async Task<T> PostMultipleFiles<T>(string requestUri, List<IFormFile> formFiles)
+        protected async Task<Stream> GetAttachedFile(string requestUri)
         {
-            var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-            byte[] data;
-            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
-            foreach (var FormFile in formFiles)
-            {
-                using (var br = new BinaryReader(FormFile.OpenReadStream()))
+                using var client = new HttpClient
                 {
-                    data = br.ReadBytes((int)FormFile.OpenReadStream().Length);
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
                 }
-                ByteArrayContent bytes = new ByteArrayContent(data);
+                string encryptedUrl = GetEncryptedUrl(requestUri);
+                var response = await client.GetAsync(encryptedUrl);
+                return await response.Content.ReadAsStreamAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return default;
+            }
+        }
 
-                multipartFormDataContent.Add(bytes, "FileName", FormFile.FileName);
-            }
-            var response = await client.PostAsync(requestUri, multipartFormDataContent);
-            if (response.IsSuccessStatusCode)
+        protected async Task<T> PostMultipleFiles<T>(string requestUri, params IFormFile[] formFiles)
+        {
+            try
             {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return default;
-            }
-            throw GetAPIException(response, requestUri);
+                var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.Timeout = TimeSpan.FromSeconds(3600);
+                //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                byte[] data;
+                MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
+                foreach (var FormFile in formFiles)
+                {
+                    using (var br = new BinaryReader(FormFile.OpenReadStream()))
+                    {
+                        data = br.ReadBytes((int)FormFile.OpenReadStream().Length);
+                    }
+                    ByteArrayContent bytes = new ByteArrayContent(data);
 
-        }
-        protected async Task<T> Post<T>(string requestUri, T parameter) where T : class
-        {
-            using var client = new HttpClient
-            {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                    multipartFormDataContent.Add(bytes, "file", FormFile.FileName);
+                }
+                var response = await client.PostAsync(requestUri, multipartFormDataContent);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseContent);
             }
-            var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-            var response =
-                await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
+            catch (Exception ex)
             {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
+                Log.Error(ex.Message);
                 return default;
             }
-            throw GetAPIException(response, requestUri);
         }
-        protected async Task<T> Post<T>(string requestUri) where T : class
-        {
-            using var client = new HttpClient
-            {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-            var content = JsonConvert.SerializeObject(JsonSerializerSettings);
-            var response =
-                await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return default;
-            }
-            throw GetAPIException(response, requestUri);
-        }
+
         protected async Task<TOutput> Post<TOutput, TInput>(string requestUri, TInput parameter) where TInput : class
         {
-            using var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                StringContent requestContent = null;
+                if(parameter is string strContent)
+                {
+                    requestContent = new StringContent(strContent);
+                }
+                else
+                {
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
+                    requestContent = new StringContent(content, Encoding.UTF8, "application/json");
+                }
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                var response = await client.PostAsync(requestUri, requestContent);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TOutput>(responseContent);
             }
-            var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-            var response = await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
+            catch(Exception ex)
             {
-                return JsonConvert.DeserializeObject<TOutput>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
+                Log.Error(ex.Message);
                 return default;
-            }
-            throw GetAPIException(response, requestUri);
+            }            
         }
 
-        protected async Task<Stream> PostAttachedFile<T>(string requestUri, T parameter) where T : class
-        {
-            using var client = new HttpClient
-            {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-            var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-            var response = await client.PostAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
-            {
-                return response.Content.ReadAsStreamAsync().Result;
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return default;
-            }
-            throw GetAPIException(response, requestUri);
-        }
         protected async Task<T> Put<T>(string requestUri, T parameter) where T : class
         {
-            using var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
+                var response =
+                    await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseContent);
             }
-            var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-            var response =
-                await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
+            catch (Exception ex)
             {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
+                Log.Error(ex.Message);
                 return default;
             }
-            throw GetAPIException(response, requestUri);
+
         }
         protected async Task<TOutput> Put<TOutput, TInput>(string requestUri, TInput parameter) where TInput : class
         {
-            using var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
+                var response =
+                    await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TOutput>(responseContent);
             }
-            var content = JsonConvert.SerializeObject(parameter, JsonSerializerSettings);
-            var response =
-                await client.PutAsync(requestUri, new StringContent(content, Encoding.UTF8, "application/json"));
-            if (response.IsSuccessStatusCode)
+            catch(Exception ex)
             {
-                return JsonConvert.DeserializeObject<TOutput>(response.Content.ReadAsStringAsync().Result);
-            }
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
+                Log.Error(ex.Message);
                 return default;
             }
-            throw GetAPIException(response, requestUri);
         }
         protected async Task<T> Delete<T>(string requestUri)
         {
-            using var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+                var response = await client.DeleteAsync(requestUri);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseContent);
             }
-            var response = await client.DeleteAsync(requestUri);
-            if (response.IsSuccessStatusCode)
+            catch (Exception ex)
             {
-                return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
-            }
-            throw GetAPIException(response, requestUri);
-        }
-        protected async Task Delete(string requestUri)
-        {
-            using var client = new HttpClient
-            {
-                BaseAddress = HttpClientBaseAddress
-            };
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
-            }
-            var response = await client.DeleteAsync(requestUri);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw GetAPIException(response, requestUri);
+                Log.Error(ex.Message);
+                return default;
             }
         }
+
         protected async Task<TOutput> DeleteWithBody<TOutput, TInput>(string requestUri, TInput requestBody) where TInput : class
         {
-            using var client = new HttpClient
+            try
             {
-                BaseAddress = HttpClientBaseAddress
-            };
+                using var client = new HttpClient
+                {
+                    BaseAddress = HttpClientBaseAddress
+                };
 
-            if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                if (!string.IsNullOrEmpty(connectionMode.RemoteToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", connectionMode.RemoteToken);
+                }
+
+                // 创建自定义请求
+                var content = JsonConvert.SerializeObject(requestBody, JsonSerializerSettings);
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(requestUri),
+                    Content = new StringContent(content, Encoding.UTF8, "application/json") // 设置Body
+                };
+
+                // 发送请求
+                HttpResponseMessage response = await client.SendAsync(request);
+
+                // 处理响应
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TOutput>(responseContent);
             }
-
-            // 创建自定义请求
-            var content = JsonConvert.SerializeObject(requestBody, JsonSerializerSettings);
-            var request = new HttpRequestMessage
+            catch (Exception ex)
             {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri(requestUri),
-                Content = new StringContent(content, Encoding.UTF8, "application/json") // 设置Body
-            };
-
-            // 发送请求
-            HttpResponseMessage response = await client.SendAsync(request);
-
-            // 处理响应
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<TOutput>(response.Content.ReadAsStringAsync().Result);
+                Log.Error(ex.Message);
+                return default;
             }
-            throw GetAPIException(response, requestUri);
         }
 
-        protected Exception GetAPIException(HttpResponseMessage response, string requestUri)
+        protected async Task<Exception> GetAPIException(HttpResponseMessage response, string requestUri)
         {
             if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {
-                return new Exception(requestUri);
+                var content = await response.Content.ReadAsStringAsync();
+                return new Exception($"Fail to access api: {requestUri}, error: {content}");
             }
             else
             {
-                return new Exception(requestUri);
+                return new Exception($"Fail to access api: {requestUri}, status: {response.StatusCode}");
             }
         }
         private string GetEncryptedUrl(string requestUri)

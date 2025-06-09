@@ -17,13 +17,16 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// 显示器SN码
         /// </summary>
         [JsonProperty("snCode", NullValueHandling = NullValueHandling.Ignore)]
-        public string SnCode { get; set; }
+        public string SNumber { get; set; }
 
         /// <summary>
         /// 显示器状态（OFFLINE: 离线, ONLINE: 在线）
         /// </summary>
         [JsonProperty("status")]
         public int Status { get; set; }
+
+        [JsonProperty("connectStatus", NullValueHandling = NullValueHandling.Ignore)]
+        public int ConnectStatus { get; set; }
 
         /// <summary>
         /// 显示器启用状态（0: 禁用, 1: 启用）
@@ -88,24 +91,27 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
         /// <summary>
         /// 分组id
         /// </summary>
-        [JsonProperty("groupId")]
+        [JsonProperty("groupId", NullValueHandling = NullValueHandling.Ignore)]
         public long? GroupId { get; set; }
 
 
-        [JsonIgnore]
+        [JsonProperty("monitorGroupName", NullValueHandling = NullValueHandling.Ignore)]
         public string? MonitorGroupName { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("userName", NullValueHandling = NullValueHandling.Ignore)]
         public string UserName { get; set; }
 
         /// <summary>
         /// 设备id
         /// </summary>
-        [JsonProperty("deviceId")]
+        [JsonProperty("deviceId", NullValueHandling = NullValueHandling.Ignore)]
         public string DeviceId { get; set; }
 
-        [JsonProperty("storagePercentage")]
+        [JsonProperty("storagePercentage", NullValueHandling = NullValueHandling.Ignore)]
         public double? StoragePercentage { get; set; }
+
+        [JsonProperty("currentDataTime", NullValueHandling = NullValueHandling.Ignore)]
+        public string? CurrentDataTime { get; set; }
 
         ///// <summary>
         ///// 显示器本地账号
@@ -131,7 +137,7 @@ namespace MediaControlDistributionCenter.Services.DTO.Models
             {
                 Id = (int)Id,
                 Name = Name,
-                SnCode = SnCode,                
+                SNumber = SNumber,                
                 Enabled = Enabled,
                 Status = Status,
                 UserAccount = UserAccount,

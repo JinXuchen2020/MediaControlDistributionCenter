@@ -478,8 +478,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
-                                                    <TextBlock Text="{Binding Size}" />
-                                                    <TextBlock Text="MB" />
+                                                    <TextBlock Text="{Binding SizeText}" />
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -494,7 +493,7 @@
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_106}" />
                                         </DataGridTextColumn.Header>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding CreatedSource}">
+                                    <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding CreatedSourceText}">
                                         <DataGridTextColumn.Header>
                                             <TextBlock Text="{DynamicResource LanguageKey_Code_Program_Tooltip_107}" />
                                         </DataGridTextColumn.Header>

@@ -2,6 +2,8 @@
 using MediaControlDistributionCenter.Services.DTO;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +20,18 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
         }
 
-        public async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
+        public virtual async Task<ResultResponse<IEnumerable<DTO>>> GetAll(DTO? request, bool isSearch = false)
         {
             var parameters = GetQueryByInput(request);
             var queryString = await GetQueryString(parameters);
 
             var uri = $"{ApiUrls["GetAll"]}{queryString}";
-            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
+            var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri.Trim());
+            if (result == null)
+            {
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Response error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<IEnumerable<DTO>>> GetPageAll(int pageSize, int page, DTO? request)
@@ -39,25 +46,45 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             var queryString = await GetQueryString(parameters);
 
             var uri = $"{ApiUrls["GetPageAll"]}{queryString}";
-            return await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
+            var result = await GetResponse<ResultResponse<IEnumerable<DTO>>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<IEnumerable<DTO>>.ErrorInstance("Response error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<DTO>> GetById(long id)
         {
             var uri = string.Format($"{ApiUrls["GetById"]}", id);
-            return await GetResponse<ResultResponse<DTO>>(uri);
+            var result = await GetResponse<ResultResponse<DTO>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<DTO>.ErrorInstance("Response error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> Save(DTO data)
         {
             var uri = ApiUrls["Save"];
-            return await Post<ResultResponse<bool>, DTO>(uri, data);
+            var result = await Post<ResultResponse<bool>, DTO>(uri, data);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Response error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> DeleteById(long id)
         {
             var uri = string.Format($"{ApiUrls["DeleteById"]}", id);
-            return await Delete<ResultResponse<bool>>(uri);
+            var result = await Delete<ResultResponse<bool>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Response error");
+            }
+            return result;
         }
 
         public async Task<ResultResponse<bool>> DeleteBatch(IList<long> ids)
@@ -80,12 +107,17 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             //    Data = result
             //};
 
-            var uri = ApiUrls["DeleteBatch"];
-            return await DeleteWithBody<ResultResponse<bool>, IList<long>>(uri, ids);
+            var uri = string.Format($"{ApiUrls["DeleteById"]}", string.Join(',', ids.ToArray()));
+            var result = await Delete<ResultResponse<bool>>(uri);
+            if (result == null)
+            {
+                result = ResultResponse<bool>.ErrorInstance("Response error");
+            }
+            return result;
 
         }
 
-        private List<Tuple<string, object>> GetQueryByInput(DTO? request)
+        protected List<Tuple<string, object>> GetQueryByInput(DTO? request)
         {
             var parameters = new List<Tuple<string, object>>();
             if (request != null)
@@ -94,9 +126,15 @@ namespace MediaControlDistributionCenter.Services.ApiImps
                 foreach (var property in properties)
                 {
                     var value = property.GetValue(request);
+                    var proName = property.Name;
+                    var attribute = property.CustomAttributes.Where(c => c.AttributeType == typeof(JsonPropertyAttribute)).FirstOrDefault();
+                    if(attribute != null)
+                    {
+                        proName = attribute.ConstructorArguments.First().Value?.ToString() ?? proName;
+                    }
                     if (value != null && !value.Equals(DefaultForType(property.PropertyType)))
                     {
-                        parameters.Add(new(property.Name, value));
+                        parameters.Add(new(proName, value));
                     }
                 }
             }

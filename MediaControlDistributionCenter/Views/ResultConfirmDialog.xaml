@@ -69,16 +69,32 @@
                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_102}" />
                                     </DataGridTextColumn.Header>
                                 </DataGridTextColumn>
-                                <DataGridTextColumn Width="1*" Binding="{Binding UploadResult}">
-                                    <DataGridTextColumn.Header>
+                                <DataGridTemplateColumn Width="1*">
+                                    <DataGridTemplateColumn.Header>
                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_122}" />
-                                    </DataGridTextColumn.Header>
-                                </DataGridTextColumn>
-                                <DataGridTextColumn Width="1*" Binding="{Binding SendResult}">
-                                    <DataGridTextColumn.Header>
+                                    </DataGridTemplateColumn.Header>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Visibility="{Binding UploadResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Successful}" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_118}" />
+                                                <TextBlock Visibility="{Binding UploadResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Fail}"  Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_119}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="1*">
+                                    <DataGridTemplateColumn.Header>
                                         <TextBlock Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_123}" />
-                                    </DataGridTextColumn.Header>
-                                </DataGridTextColumn>
+                                    </DataGridTemplateColumn.Header>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Visibility="{Binding SendResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Successful}" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_120}" />
+                                                <TextBlock Visibility="{Binding SendResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Fail}"  Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_121}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

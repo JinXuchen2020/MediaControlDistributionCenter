@@ -68,9 +68,9 @@ namespace MediaControlDistributionCenter
 
             //userManage.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
-            mainViewModel.LoadData();
-
             DataContext = mainViewModel;
+
+            this.Loaded += MainWindow_Loaded;
 
             var dashboard = serviceProvider.GetRequiredService<Dashboard>();
             GoContent(dashboard, 1);
@@ -84,6 +84,15 @@ namespace MediaControlDistributionCenter
             //}
 
         }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(async () =>
+            {
+                await mainViewModel.LoadData();
+            });
+        }
+
         private void SwitchLanguage_Click(object sender, RoutedEventArgs e)
         {
             //切换语音示例:后续变成 下拉列表切换  如示例：

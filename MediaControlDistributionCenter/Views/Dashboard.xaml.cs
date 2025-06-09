@@ -19,7 +19,6 @@ namespace MediaControlDistributionCenter.Views
         public Dashboard(DashboardViewModel dashboardViewModel, IServiceProvider serviceProvider)
         {
             manageViewModel = dashboardViewModel;
-            manageViewModel.LoadData();
             this.serviceProvider = serviceProvider;
             InitializeComponent();
 
@@ -30,10 +29,11 @@ namespace MediaControlDistributionCenter.Views
 
         private void Dashboard_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            //Dispatcher.Invoke(async () =>
-            //{
-            //    await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
-            //});
+            Dispatcher.Invoke(async () =>
+            {
+                await manageViewModel.LoadData();
+                //await manageViewModel.DetectConnectedDeviceCommand.ExecuteAsync(null);
+            });
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

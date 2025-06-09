@@ -1,13 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MediaControlDistributionCenter.Data;
-using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Helpers;
-using MediaControlDistributionCenter.Helpers.Broadcast;
 using MediaControlDistributionCenter.Services;
-using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
-using MediaControlDistributionCenter.Views;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -26,6 +21,15 @@ namespace MediaControlDistributionCenter.ViewModels
         private bool isCover;
 
         [ObservableProperty]
+        private bool isTimerPlay;
+
+        [ObservableProperty]
+        private DateTime? nextPlayTime = DateTime.Now;
+
+        [ObservableProperty]
+        private bool isPublishing;
+
+        [ObservableProperty]
         private ObservableCollection<DeviceViewModel> publishDevices;
 
         private readonly IMonitorService monitorService;
@@ -38,27 +42,32 @@ namespace MediaControlDistributionCenter.ViewModels
             this.programService = GetService<IProgramService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
             this.publishDevices = new ObservableCollection<DeviceViewModel>();
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            var devices = monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1}).GetAwaiter().GetResult().Data?.ToList() ?? new List<MonitorDto>();
-            var playbackRecords = playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<PlaybackRecordDto>();
+            var devices = (await monitorService.GetAll(new MonitorDto { UserAccount = CurrentMedia.UserId, Enabled = 1})).Data?.ToList() ?? new List<MonitorDto>();
+            var playbackRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type })).Data?.ToList() ?? new List<PlaybackRecordDto>();
             var publishedSNCode = playbackRecords.Select(c => c.MonitorSnCode).ToList();
-            Devices = new ObservableCollection<DeviceViewModel>(devices.Select(c =>
+            var devicesList = new List<DeviceViewModel>();
+            foreach (var c in devices)
             {
-                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SnCode)?.DeviceViewModel;
+                var viewModel = OnlineDevices.FirstOrDefault(t => t.SnCode == c.SNumber)?.DeviceViewModel;
                 if (viewModel == null)
                 {
                     viewModel = new DeviceViewModel();
                     viewModel.Binding(c);
                 }
-                viewModel.IsSelected = viewModel.IsConnected ? publishedSNCode.Contains(c.SnCode) : false;
+
+                viewModel.IsSelected = viewModel.IsSelected || (viewModel.IsConnected && publishedSNCode.Contains(c.SNumber));
                 viewModel.RefreshStatus();
-                viewModel.GetPrograms();
-                return viewModel;
-            }));
+                await viewModel.GetPrograms();
+                devicesList.Add(viewModel);
+            }
+
+            Devices = new ObservableCollection<DeviceViewModel>(devicesList);
         }
 
         [RelayCommand]
@@ -81,60 +90,42 @@ namespace MediaControlDistributionCenter.ViewModels
         private async Task Publish()
         {
             this.PublishDevices.Clear();
+            IsPublishing = true;
             //await DetectCommunication(CurrentMedia.UserId);
-            foreach (var item in Devices)
+            var tasks = Devices.Select(async item =>
             {
-                var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber };
+                var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber, IsTimerPlay = IsTimerPlay, NextPlayTime = NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") };
                 if (item.IsSelected)
                 {
-                    await item.VerifySnCodeCommand.ExecuteAsync(null);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        item.DisconnectCommand.Execute(null);
-                        continue;
-                    }
-
                     string filePath = $"{CurrentMedia.Name}.zip";
-                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, item.UserId, filePath));
+                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
+
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
                         item.ErrorMessage = null;
-                        continue;
+                        return;
                     }
-
-                    Log.Information("上传媒体文件FTP服务器成功");
-
 
                     CurrentMedia.Status = 1;
-                    await item.SendProgramCommand.ExecuteAsync(CurrentMedia);
+                    await item.SyncFileSyncCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
                         item.ErrorMessage = null;
-                        continue;
-                    }
-
-                    Log.Information("发送媒体信息到设备成功");
-
-                    await item.SyncFileSyncCommand.ExecuteAsync(filePath);
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                        ErrorMessage = item.ErrorMessage;
-                        await ShowConfirmDialogCommand.ExecuteAsync(null);
-                        item.ErrorMessage = null;
-                        continue;
+                        return;
                     }
 
                     Log.Information("发送媒体文件信息到设备成功");
 
-                    if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == FindResource("LanguageKey_Code_Monitor_Tooltip_120"))
+                    if (!string.IsNullOrEmpty(item.SendResult) && item.SendResult == "Successful")
                     {
+                        model.PlaySuccess = true;
+
+                        var playingRecords = (await playbackRecordService.GetAll(new PlaybackRecordDto { PlaySuccess = true, MonitorSnCode = item.SNumber })).Data?.ToList() ?? new List<PlaybackRecordDto>();
+                        foreach (var record in playingRecords)
+                        {
+                            record.PlaySuccess = false;
+                            await playbackRecordService.Save(record);
+                        }
                         var response = await playbackRecordService.Save(model);
                         if (response.Code == 200)
                         {
@@ -162,7 +153,10 @@ namespace MediaControlDistributionCenter.ViewModels
                         }
                     }
                 }
-            }
+            }).ToList();
+
+            await Task.WhenAll(tasks);
+            IsPublishing = false;
         }
     }
 }

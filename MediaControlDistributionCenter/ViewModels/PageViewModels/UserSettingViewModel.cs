@@ -85,12 +85,13 @@ namespace MediaControlDistributionCenter.ViewModels
             });
 
             RegisterLanguageProperty(this.GetType(), nameof(DetectStatus));
+            RegisterLanguageProperty(this.GetType(), nameof(LoadData));
             RegisterDevicesChangedAction(this.GetType(), nameof(LoadData));
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
-            CurrentUser.LoadLogo();
+            await CurrentUser.LoadLogo();
             Devices = new ObservableCollection<InternetDevice>([.. OnlineDevices]);
         }
 
@@ -104,15 +105,15 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     if (viewModel.IsConnected)
                     {
-                        await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
-                        if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
-                        {
-                            ErrorMessage = viewModel.ErrorMessage;
-                            await ShowConfirmDialogCommand.ExecuteAsync(null);
-                            viewModel.ErrorMessage = null;
-                            viewModel.DisconnectCommand.Execute(null);
-                            continue;
-                        }
+                        //await viewModel.VerifySnCodeCommand.ExecuteAsync(null);
+                        //if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                        //{
+                        //    ErrorMessage = viewModel.ErrorMessage;
+                        //    await ShowConfirmDialogCommand.ExecuteAsync(null);
+                        //    viewModel.ErrorMessage = null;
+                        //    viewModel.DisconnectCommand.Execute(null);
+                        //    continue;
+                        //}
 
                         await viewModel.SendUserCommand.ExecuteAsync(null);
                         if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
@@ -150,12 +151,24 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task DisconnectInternetDevice(InternetDevice device)
         {
-            if (device.DeviceViewModel != null)
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            if (connectionMode.Mode == "Local")
             {
-                device.DeviceViewModel.DisconnectCommand.Execute(null);
-                device.DeviceViewModel = null;
-                device.Status = 0;
-                device.StatusText = GetStatus(0);
+                if (device.DeviceViewModel != null)
+                {
+                    device.DeviceViewModel.DisconnectCommand.Execute(null);
+                    device.DeviceViewModel = null;
+                    device.Status = 0;
+                    device.StatusText = GetStatus(0);
+                }
+            }
+            else
+            {
+                if (device.DeviceViewModel != null)
+                {
+                    device.DeviceViewModel.DisconnectCommand.Execute(null);
+                    device.DeviceViewModel = null;
+                }
             }
 
             await Task.CompletedTask;

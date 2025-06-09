@@ -19,27 +19,30 @@ namespace MediaControlDistributionCenter.ViewModels
         private long id;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目名称!")]
-        [CustomValidation(typeof(ProgramViewModel), nameof(ValidateAccount))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.ValidateAccount))]
         private string name;
 
         [ObservableProperty]
-        [Required(ErrorMessage ="请选择节目类型!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string type;
 
         [ObservableProperty]
         private string resolution;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目高度!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string width;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "请填写节目宽度!")]
+        [CustomValidation(typeof(DataValidation), nameof(DataValidation.RequiredValidation))]
         private string height;
 
         [ObservableProperty]
         private double? size;
+
+        [ObservableProperty]
+        private string? sizeText;
 
         [ObservableProperty]
         private int screensCount;
@@ -49,6 +52,9 @@ namespace MediaControlDistributionCenter.ViewModels
 
         [ObservableProperty]
         private string createdSource;
+
+        [ObservableProperty]
+        private string createdSourceText;
 
         [ObservableProperty]
         private int status;
@@ -117,9 +123,11 @@ namespace MediaControlDistributionCenter.ViewModels
             Width = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[0];
             Height = string.IsNullOrEmpty(model.Resolution) ? "" : model.Resolution.Split("*")[1];
             Size = model.Size;
+            SizeText = Utility.GetSizeText(Size);
             ScreensCount = model.MonitorCount;
             LastUpdatedTime = model.LastUpdatedTime;
-            CreatedSource = string.IsNullOrEmpty(model.CreatedSource) ? null : LanguageTool.Instance.GetResourceTextValue(model.CreatedSource);
+            CreatedSource = model.CreatedSource;
+            CreatedSourceText = model.CreatedSource == "user" ? FindResource("LanguageKey_Code_Role_User") : FindResource("LanguageKey_Code_Role_Admin");
             Status = model.Status;
             StatusText = GetStatus();
             GroupId = model.GroupId;
@@ -139,22 +147,6 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             var dialog = new ResultConfirmDialog(this);
             await MaterialDesignThemes.Wpf.DialogHost.Show(dialog, Constants.DialogHostId);
-        }
-
-        public static ValidationResult ValidateAccount(string name, ValidationContext context)
-        {
-            ProgramViewModel instance = (ProgramViewModel)context.ObjectInstance;
-            var userService = GetService<IProgramService>();
-            var response = userService.GetAll(new ProgramDto { UserAccount = instance.UserId, Name = name }).GetAwaiter().GetResult().Data?.ToList() ?? new List<ProgramDto>();
-            bool isValid = response.Where(c => c.Id != instance.Id).Count() == 0;
-
-            if (isValid)
-            {
-                return ValidationResult.Success;
-            }
-
-            var erroMessage = (string)LanguageTool.Instance.FindResource("LanguageKey_Code_Program_Tooltip_113");
-            return new(erroMessage);
         }
 
         public string GetStatus()
@@ -179,7 +171,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             BitmapImage? bitmap = null;
             var filePath = string.Empty;
-            var fileService = GetService<IFileService>();
+            var fileService = Utility.GetService<IFileService>();
             var mediaConfigPath = Path.Combine(Constants.OutPath, UserId, Name);
             if (Directory.Exists(mediaConfigPath))
             {

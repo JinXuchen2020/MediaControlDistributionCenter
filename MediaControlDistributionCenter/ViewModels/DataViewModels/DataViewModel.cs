@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Windows;
 
 namespace MediaControlDistributionCenter.ViewModels
@@ -16,28 +17,7 @@ namespace MediaControlDistributionCenter.ViewModels
         private string? errorMessage;
 
         [ObservableProperty]
-        private ConnectionMode connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-
-        protected static T GetService<T>() where T : class
-        {
-            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            switch (connectionMode.Mode)
-            {
-                case "Local":
-                    return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
-                case "Remote":
-                    if (string.IsNullOrEmpty(connectionMode.ServiceUri))
-                    {
-                        return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
-                    }
-                    else
-                    {
-                        return App.ServicesProvider.GetServices<T>().First(c => !c.GetType().Name.EndsWith("Local"));
-                    }
-                default:
-                    throw new ArgumentException("未知的服务名称");
-            }
-        }
+        private ConnectionMode connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();        
 
         protected static string FindResource(string key)
         {

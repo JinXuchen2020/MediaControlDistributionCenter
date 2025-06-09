@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.ViewModels
             this.mediaService = GetService<IMediaService>();
         }
 
-        public override void LoadData()
+        public override async Task LoadData()
         {
             MediaConfig? config = null;
             double ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
@@ -100,7 +100,20 @@ namespace MediaControlDistributionCenter.ViewModels
             {
                 Ratio = ratio,
                 Program = CurrentMedia.ToModel(),
-                Pages = new List<MediaPage>()
+                Pages =
+                [
+                    new() {
+                        Id = 1,
+                        Order = 1,
+                        Type = "normal",
+                        PlayCount = 1,
+                        PlayGap = 10,
+                        AdPlayMode = "perday",
+                        Name = $"{FindResource("LanguageKey_Code_ProgramEdit_Page")}{1}",
+                        Schedulers = [new Scheduler { Id = 1, ScheduleDays = [1, 2, 3, 4, 5, 6, 7] }],
+                        Components = []
+                    }
+                ]
             };
             this.MediaConfig = new MediaConfigViewModel(config);
             this.MediaConfig.Program = CurrentMedia;
@@ -111,25 +124,35 @@ namespace MediaControlDistributionCenter.ViewModels
                 SelectedPage.IsSelected = true;
             }
 
-            var medias = mediaService.GetAll(null).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
-            Medias = new ObservableCollection<MediaViewModel>(medias.Select(c =>
+            var medias = (await mediaService.GetAll(null)).Data?.ToList() ?? new List<MediaDto>();
+            var mediaList = new List<MediaViewModel>();
+            foreach (var c in medias.OrderByDescending(t => t.Id))
             {
                 var result = new MediaViewModel();
                 result.Binding(c);
-                return result;
-            }));
+
+                await result.GetBitmap();
+                mediaList.Add(result);
+            }
+
+            this.Medias = new ObservableCollection<MediaViewModel>(mediaList);
         }
 
-        public void RefreshMedias()
+        public async Task RefreshMedias()
         {
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type }).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
-            this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type })).Data?.ToList() ?? new List<MediaDto>();
+            var mediaList = new List<MediaViewModel>();
+            foreach (var c in medias.OrderByDescending(t => t.Id))
             {
                 var result = new MediaViewModel();
                 result.Binding(c);
-                return result;
-            }));
+
+                await result.GetBitmap();
+                mediaList.Add(result);
+            }
+
+            this.Medias = new ObservableCollection<MediaViewModel>(mediaList);
         }
 
         public BaseComponentViewModel? CreateComponent(MediaType type, int id)
@@ -212,7 +235,7 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (string.IsNullOrEmpty(SearchString)) SearchString = null;
             var type = SelectedType == "All" ? null : SelectedType;
-            var medias = mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }, true).GetAwaiter().GetResult().Data?.ToList() ?? new List<MediaDto>();
+            var medias = (await mediaService.GetAll(new MediaDto { Type = type, Name = SearchString }, true)).Data?.ToList() ?? new List<MediaDto>();
             this.Medias = new ObservableCollection<MediaViewModel>(medias.OrderByDescending(c => c.Id).Select(c =>
             {
                 var viewModel = new MediaViewModel();

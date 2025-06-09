@@ -29,8 +29,6 @@ namespace MediaControlDistributionCenter.ViewModels
     {
         public override string Type => "Web";
 
-        private BitmapSource thumbnail;
-
         private DispatcherTimer? _timer;
         private int currentPlayCount = 0;
 
@@ -107,6 +105,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 Source = string.IsNullOrEmpty(Source) ? null : new Uri(Source),
                 Width = Width * Ratio,
                 Height = Height * Ratio,
+                IsHitTestVisible = false
             };
 
             IsRunningLoaded = false;
@@ -157,10 +156,11 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             if (currentPlayCount < PlayCount)
             {
-                currentPlayCount++;
+                target.CoreWebView2.Reload();
             }
             else
             {
+                currentPlayCount = 0;
                 var canvas = FindCanvasParent(target);
                 if (canvas != null)
                 {
