@@ -25,9 +25,22 @@ namespace MediaControlDistributionCenter
     {
         public static IServiceProvider ServicesProvider { get; private set; }
 
+        private static Mutex _mutex = null;
+
         //public static MainWindow MainWindow;
         protected override void OnStartup(StartupEventArgs e)
         {
+            bool createdNew;
+
+            _mutex = new Mutex(true, "Media Control", out createdNew);
+
+            if (!createdNew)
+            {
+                // 如果应用程序已经在运行，则退出
+                MessageBox.Show("Application is running!");
+                Current.Shutdown();
+                return;
+            }
             // 1. 创建并加载配置文件
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())  // 设置配置文件的基础路径
