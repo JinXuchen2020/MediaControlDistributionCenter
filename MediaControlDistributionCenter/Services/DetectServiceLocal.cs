@@ -207,6 +207,7 @@ namespace MediaControlDistributionCenter.Services
                                                 device.DeviceViewModel = new DeviceViewModel();
                                                 device.DeviceViewModel.Binding(item.Monitor.Monitor);
                                                 device.DeviceViewModel.ConnectCommand.Execute(communication);
+                                                device.UserAccount = item.User.Account;
                                             }
                                         }
                                     }
@@ -219,6 +220,7 @@ namespace MediaControlDistributionCenter.Services
                         device.DeviceViewModel = new DeviceViewModel();
                         device.DeviceViewModel.Binding(connectedDevice);
                         device.DeviceViewModel.ConnectCommand.Execute(communication);
+                        device.UserAccount = connectedDevice.UserAccount;
                     }
 
                     communication.StartHeart();

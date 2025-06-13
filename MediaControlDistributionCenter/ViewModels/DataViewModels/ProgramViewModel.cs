@@ -97,7 +97,7 @@ namespace MediaControlDistributionCenter.ViewModels
             return new ProgramDto
             {
                 Id = Id,
-                Name = Name,
+                Name = Name.Trim(),
                 MediaType = Type,
                 Resolution = Resolution,
                 Size = Size,

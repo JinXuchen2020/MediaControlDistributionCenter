@@ -457,15 +457,15 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (manageViewModel.MediaConfig.Pages.Where(c =>!c.IsDeleted).Count() > 1)
+            var currentPage = manageViewModel.SelectedPage;
+            currentPage.IsSelected = false;
+            currentPage.IsDeleted = true;
+            manageViewModel.SelectedPage = manageViewModel.MediaConfig.Pages.FirstOrDefault();
+            if (manageViewModel.SelectedPage != null)
             {
-                var currentPage = manageViewModel.SelectedPage;
-                currentPage.IsSelected = false;
-                currentPage.IsDeleted = true;
-                manageViewModel.SelectedPage = manageViewModel.MediaConfig.Pages.First();
                 manageViewModel.SelectedPage.IsSelected = true;
-                LoadCanvasComponents(manageViewModel);
             }
+            LoadCanvasComponents(manageViewModel);
         }
 
         private void btnPageUpOrder_Click(object sender, RoutedEventArgs e)

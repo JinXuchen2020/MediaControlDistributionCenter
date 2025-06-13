@@ -208,6 +208,11 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
+                                        <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding UserAccount}">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="{DynamicResource LanguageKey_Code_Dashboard_Tooltip_113}" />
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Width="1*" ElementStyle="{StaticResource LeftAlignedTextBlockStyle}" Binding="{Binding TypeText}">
                                             <DataGridTextColumn.Header>
                                                 <TextBlock Text="{DynamicResource LanguageKey_Code_Device_Tooltip_120}" />

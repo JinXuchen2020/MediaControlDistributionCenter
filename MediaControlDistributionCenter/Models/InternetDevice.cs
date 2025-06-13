@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.Models
 
         public string StatusText { get; set; }
 
+        public string UserAccount { get; set; }
+
         public bool IsInternet { get; set; }
 
         public string TypeText { get; set; }

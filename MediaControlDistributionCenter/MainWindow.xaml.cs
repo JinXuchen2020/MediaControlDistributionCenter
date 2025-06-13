@@ -206,7 +206,18 @@ namespace MediaControlDistributionCenter
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            this.Dispatcher.Invoke(async () =>
+            {
+                mainViewModel.CanDelete = false;
+                await mainViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+
+                if (mainViewModel.CanDelete.HasValue && mainViewModel.CanDelete.Value)
+                {
+                    Application.Current.Shutdown();
+                }
+
+                mainViewModel.CanDelete = null;
+            });
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)

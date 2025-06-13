@@ -78,6 +78,7 @@ namespace MediaControlDistributionCenter.Services
                         device.DeviceViewModel = new DeviceViewModel();
                         device.DeviceViewModel.Binding(c);
                         device.DeviceViewModel.ConnectRemoteCommand.Execute(null);
+                        device.UserAccount = c.UserAccount;
                     }
 
                     devicesList.Add(device);
