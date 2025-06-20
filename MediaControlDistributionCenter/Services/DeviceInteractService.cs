@@ -619,7 +619,7 @@ namespace MediaControlDistributionCenter.Services
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
             }
 
-            var modelString = JsonConvert.SerializeObject(model);
+            var modelString = JsonConvert.SerializeObject(model, Formatting.Indented);
             string path = CommunicationCmd.CmdPlayTime + modelString;
             bool result = await connectService.ExecuteCmdAsync(path, monitor.SNumber, TimeSpan.FromMilliseconds(3000));
             if (!result)

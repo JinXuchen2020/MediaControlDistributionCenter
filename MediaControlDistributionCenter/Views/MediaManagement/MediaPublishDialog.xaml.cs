@@ -77,7 +77,6 @@ namespace MediaControlDistributionCenter.Views
                 if (manageViewModel.PublishDevices.Count > 0)
                 {
                     MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
-                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
 
                     foreach (var device in manageViewModel.Devices.Where(c => c.IsSelected))
                     {
@@ -85,9 +84,22 @@ namespace MediaControlDistributionCenter.Views
                         {
                             IsTimerPlay = manageViewModel.IsTimerPlay,
                             NextPlayTime = manageViewModel.NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            MediaName = manageViewModel.CurrentMedia.Name,
+                            MediaType = manageViewModel.CurrentMedia.Type,
+                            MonitorSnCode = device.SNumber,
+                            PlaySuccess = true
                         };
                         await device.SendPlayTimeCommand.ExecuteAsync(model);
+                        if (!string.IsNullOrEmpty(device.ErrorMessage))
+                        {
+                            manageViewModel.ErrorMessage = device.ErrorMessage;
+                            await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
+                            device.ErrorMessage = null;
+                            continue;
+                        }
                     }
+
+                    await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);
 
                     if (dashboardViewModel.CurrentUser.Role == "user")
                     {
