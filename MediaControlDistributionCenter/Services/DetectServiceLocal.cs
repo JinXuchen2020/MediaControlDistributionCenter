@@ -208,11 +208,24 @@ namespace MediaControlDistributionCenter.Services
                                                 device.DeviceViewModel.Binding(item.Monitor.Monitor);
                                                 device.DeviceViewModel.ConnectCommand.Execute(communication);
                                                 device.UserAccount = item.User.Account;
+
+                                                communication.StartHeart();
+
+                                                device.Status = 1;
+                                                Log.Debug($"Device with IP {device.IpAddress} is connected!");
                                             }
                                         }
                                     }
                                 }
                             }
+                            else
+                            {
+                                Log.Debug($"Fail to sync user from device with IP {device.IpAddress}!");
+                            }
+                        }
+                        else
+                        {
+                            Log.Debug($"Fail to sync user from device with IP {device.IpAddress}!");
                         }
                     }
                     else
@@ -221,12 +234,12 @@ namespace MediaControlDistributionCenter.Services
                         device.DeviceViewModel.Binding(connectedDevice);
                         device.DeviceViewModel.ConnectCommand.Execute(communication);
                         device.UserAccount = connectedDevice.UserAccount;
+
+                        communication.StartHeart();
+
+                        device.Status = 1;
+                        Log.Debug($"Device with IP {device.IpAddress} is connected!");
                     }
-
-                    communication.StartHeart();
-
-                    device.Status = 1;
-                    Log.Debug($"Device with IP {device.IpAddress} is connected!");
                 }
             }
         }

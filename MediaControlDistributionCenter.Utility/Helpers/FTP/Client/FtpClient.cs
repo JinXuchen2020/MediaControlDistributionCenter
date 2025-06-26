@@ -29,10 +29,10 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
 
         public async Task<bool> UploadFileToFtpServer(string filePath, string fileName = "")
         {
+            fileName = string.IsNullOrEmpty(fileName) ? Path.GetFileName(filePath) : fileName;
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"ftp://{ftpServer._Ip}:{ftpServer._port}/{fileName}");
             try
             {
-                fileName = string.IsNullOrEmpty(fileName) ? Path.GetFileName(filePath) : fileName;
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"ftp://{ftpServer._Ip}:{ftpServer._port}/{fileName}");
                 request.Method = WebRequestMethods.Ftp.UploadFile;
                 request.UsePassive = false;
                 request.UseBinary = true;
@@ -41,7 +41,6 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                 byte[] fileContents = File.ReadAllBytes(filePath);
 
                 request.ContentLength = fileContents.Length;
-
                 using (var requestStream = await request.GetRequestStreamAsync())
                 {
                     int bufferSize = fileContents.Length / 100;
@@ -67,14 +66,17 @@ namespace MediaControlDistributionCenter.Helpers.FTP.Client
                             }
                         }
                     }
-                    //requestStream.Write(fileContents, 0, fileContents.Length);
+                }
+                return true;
+            }
+            catch(WebException web)
+            {
+                if (web.Status == WebExceptionStatus.ServerProtocolViolation)
+                {
+                    return true;
                 }
 
-                using (FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync()))
-                {
-                    Log.Information(response.StatusCode.ToString());
-                    return response.StatusCode == FtpStatusCode.ClosingData;
-                }
+                return false;
             }
             catch (Exception ex) 
             {
