@@ -247,6 +247,11 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
 
                             if (data[1].Contains(CommunicationCmd.CmdSyncFile.Split("|")[1]))
                             {
+                                var cmdOver = string.Join("|", CommunicationCmd.CmdSyncFile.Split('|').Take(2));
+                                if (data[2].Contains(cmdOver))
+                                {
+                                    data = data[2][data[2].IndexOf(cmdOver)..].Replace("\0", "").Split("|", 3);
+                                }
                                 SyncFileProgressResult = data[2];
                                 Log.Information(SyncFileProgressResult);
                                 if ((double.TryParse(SyncFileProgressResult, out var progress) && progress <= 100))

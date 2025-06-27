@@ -91,20 +91,38 @@ namespace MediaControlDistributionCenter.ViewModels
         {
             this.PublishDevices.Clear();
             IsPublishing = true;
-            //await DetectCommunication(CurrentMedia.UserId);
+
+            var selectDevice = Devices.FirstOrDefault(c => c.IsSelected);
+            if (selectDevice != null)
+            {
+                string filePath = $"{CurrentMedia.Name}.zip";
+                await selectDevice.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
+
+                if (!string.IsNullOrEmpty(selectDevice.ErrorMessage))
+                {
+                    selectDevice.ErrorMessage = null;
+
+                    Devices.Where(c => c.IsSelected).ToList().ForEach(c => 
+                    {
+                        c.UploadResult = "Fail";
+                    });
+                    return;
+                }
+            }
+
             var tasks = Devices.Select(async item =>
             {
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber, IsTimerPlay = IsTimerPlay, NextPlayTime = NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") };
                 if (item.IsSelected)
                 {
-                    string filePath = $"{CurrentMedia.Name}.zip";
-                    await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
+                    //string filePath = $"{CurrentMedia.Name}.zip";
+                    //await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
 
-                    if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    {
-                        item.ErrorMessage = null;
-                        return;
-                    }
+                    //if (!string.IsNullOrEmpty(item.ErrorMessage))
+                    //{
+                    //    item.ErrorMessage = null;
+                    //    return;
+                    //}
 
                     CurrentMedia.Status = 1;
                     await item.SyncFileSyncCommand.ExecuteAsync(CurrentMedia);
