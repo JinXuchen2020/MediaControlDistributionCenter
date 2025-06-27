@@ -108,6 +108,13 @@ namespace MediaControlDistributionCenter.ViewModels
                     });
                     return;
                 }
+                else
+                {
+                    Devices.Where(c => c.IsSelected).ToList().ForEach(c =>
+                    {
+                        c.UploadResult = "Successful";
+                    });
+                }
             }
 
             var tasks = Devices.Select(async item =>
@@ -115,14 +122,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 var model = new PlaybackRecordDto { MediaName = CurrentMedia.Name, MediaType = CurrentMedia.Type, MonitorSnCode = item.SNumber, IsTimerPlay = IsTimerPlay, NextPlayTime = NextPlayTime?.ToString("yyyy-MM-dd HH:mm:ss") };
                 if (item.IsSelected)
                 {
-                    //string filePath = $"{CurrentMedia.Name}.zip";
-                    //await item.UploadFileCommand.ExecuteAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.OutPath, CurrentMedia.UserId, filePath));
-
-                    //if (!string.IsNullOrEmpty(item.ErrorMessage))
-                    //{
-                    //    item.ErrorMessage = null;
-                    //    return;
-                    //}
+                    item.SendResult = string.Empty;
 
                     CurrentMedia.Status = 1;
                     await item.SyncFileSyncCommand.ExecuteAsync(CurrentMedia);

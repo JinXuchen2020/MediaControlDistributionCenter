@@ -8,6 +8,7 @@ using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.MediaManagement;
 using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +79,7 @@ namespace MediaControlDistributionCenter.Views
                 {
                     MaterialDesignThemes.Wpf.DialogHost.Close(Constants.DialogHostId);
 
-                    foreach (var device in manageViewModel.Devices.Where(c => c.IsSelected))
+                    foreach (var device in manageViewModel.PublishDevices)
                     {
                         var model = new PlaybackRecordDto
                         {
@@ -97,6 +98,8 @@ namespace MediaControlDistributionCenter.Views
                             device.ErrorMessage = null;
                             continue;
                         }
+
+                        Log.Information($"下发命令:{CommunicationCmd.CmdPlayTime}到设备:{device.SNumber}成功");
                     }
 
                     await manageViewModel.ShowConfirmDialogCommand.ExecuteAsync(null);

@@ -194,6 +194,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
                 case "CMD":
                     try
                     {
+                        Log.Debug($"Received over Command:{data[1]}");
                         ReceiveOverCmdStr.Add(data[1]);
                         if (data.Length == 3)
                         {

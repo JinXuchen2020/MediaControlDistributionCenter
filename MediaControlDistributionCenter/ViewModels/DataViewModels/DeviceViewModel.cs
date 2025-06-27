@@ -613,6 +613,7 @@ namespace MediaControlDistributionCenter.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
+                Log.Error(ErrorMessage);
             }
         }
 

@@ -21,11 +21,13 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 直接控制屏幕是否黑屏
         /// 参数： Black  黑屏 | Normal 正常
+        /// Ignore
         /// </summary>
         public readonly static string CmdScreen = "CMD|Screen|";
         /// <summary>
         /// 定时控制屏幕是否黑屏
         /// 参数：ScreenControl 类
+        /// Ignore
         /// </summary>
         public readonly static string CmdScreenScheduled = "CMD|ScreenScheduled|";
 
@@ -38,6 +40,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 定时控制 亮度调节 
         /// 参数：BrightnessControl 类
+        /// Ignore
         /// </summary>
         public readonly static string CmdBrightnessScheduled = "CMD|BrightnessScheduled|";
 
@@ -50,8 +53,9 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 直接控制 音量调节 
         /// 参数：VolumeControl 类
+        /// Ignore
         /// </summary>
-        public readonly static string CmdVolumeScheduled = "CMD|ReStart|";
+        public readonly static string CmdVolumeScheduled = "CMD|Volume|";
 
         /// <summary>
         /// 直接控制 对时配置 
@@ -80,6 +84,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 直接控制 重新启动 
         /// 参数：RestartControl 类
+        /// Ignore
         /// </summary>
         public readonly static string CmdReStartScheduled = "CMD|ReStart|";
 
@@ -92,18 +97,18 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         /// <summary>
         /// 发送用户信息并验证，返回机顶盒上现有配置文件 
         /// 参数：用户的账号与密码
+        /// Ignore
         /// </summary>
         public readonly static string CmdVerifyUser = "CMD|VerifyUser|";
 
         /// <summary>
-        /// 发送用户信息并验证，返回机顶盒上现有配置文件 
-        /// 参数：用户的账号与密码
+        /// 验证设备SN码 
         /// </summary>
         public readonly static string CmdVerifySnCode = "CMD|VerifySnCode|";
 
         /// <summary>
         /// 发送用户信息并验证，返回机顶盒上现有配置文件 
-        /// 参数：用户的账号与密码
+        /// Ignore
         /// </summary>
         public readonly static string CmdSyncSnCode = "CMD|SyncSnCode|";
 
@@ -118,17 +123,17 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdSyncDeviceControl = "CMD|SyncDeviceControl|";
 
         /// <summary>
-        /// 返回机顶盒上设备控制记录        
+        /// 返回机顶盒上设备亮度        
         /// </summary>
         public readonly static string CmdSyncBrightness = "CMD|SyncBrightness|";
 
         /// <summary>
-        /// 返回机顶盒上设备控制记录        
+        /// 返回机顶盒上设备音量        
         /// </summary>
         public readonly static string CmdSyncVolume = "CMD|SyncVolume|";
 
         /// <summary>
-        /// 发送用户信息到机顶盒上
+        /// 发送用户信息到机顶盒上(激活设备时用)
         /// </summary>
         public readonly static string CmdSendUser = "CMD|SendUser|";
 
@@ -138,7 +143,8 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdSendProgram = "CMD|SendProgram|";
 
         /// <summary>
-        /// 发送节目基础信息到机顶盒上
+        /// 更新节目基本信息
+        /// Ignore
         /// </summary>
         public readonly static string CmdChangeProgram = "CMD|ChangeProgram|";
 
@@ -153,7 +159,7 @@ namespace MediaControlDistributionCenter.Helpers.Broadcast
         public readonly static string CmdSyncProgram = "CMD|SyncProgram|";
 
         /// <summary>
-        ///从机顶盒上删除节目基础信息
+        /// 使设备可用或失效
         /// </summary>
         public readonly static string CmdEnableMonitor = "CMD|EnableMonitor|";
 
