@@ -141,11 +141,19 @@ namespace MediaControlDistributionCenter.Services.ApiImps
         {
             try
             {
-                using var client = new HttpClient
+                var handler = new HttpClientHandler
                 {
-                    BaseAddress = HttpClientBaseAddress
+                    AllowAutoRedirect = true,    // 允许自动重定向
+                    MaxAutomaticRedirections = 5, // 最大重定向次数
+                    //ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true // 忽略HTTPS证书错误（仅测试环境用）
+                };
+                using var client = new HttpClient(handler)
+                {
+                    BaseAddress = HttpClientBaseAddress                    
                 };
                 client.DefaultRequestHeaders.Accept.Clear();
+                client.Timeout = TimeSpan.FromMinutes(30);
+                client.DefaultRequestHeaders.Connection.Add("keep-alive");
                 StringContent requestContent = null;
                 if(parameter is string strContent)
                 {
