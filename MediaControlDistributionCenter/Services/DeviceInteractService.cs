@@ -74,7 +74,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -98,7 +98,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -125,7 +125,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -164,7 +164,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -203,7 +203,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -242,7 +242,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -281,7 +281,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -311,7 +311,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -343,7 +343,7 @@ namespace MediaControlDistributionCenter.Services
             var sendResult = string.Empty;
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -399,7 +399,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -422,7 +422,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -444,7 +444,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -467,7 +467,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -489,7 +489,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -515,7 +515,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -541,7 +541,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -567,7 +567,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -591,7 +591,7 @@ namespace MediaControlDistributionCenter.Services
             var syncResult = new List<ProgramDto>();
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
@@ -613,7 +613,7 @@ namespace MediaControlDistributionCenter.Services
             }
 
             var endDate = string.IsNullOrEmpty(monitor.ValidEnd) ? DateTime.Now : DateTime.Parse(monitor.ValidEnd);
-            if (endDate < DateTime.Now)
+            if (endDate.Date < DateTime.Now.Date)
             {
                 Log.Error($"Device:{monitor.Name} is not valid");
                 throw new Exception(Utility.FindResource("LanguageKey_Code_Device_Tooltip_109"));
