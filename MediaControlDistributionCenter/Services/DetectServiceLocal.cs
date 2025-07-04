@@ -116,7 +116,7 @@ namespace MediaControlDistributionCenter.Services
                                 {
                                     SnCode = snCode,
                                     IpAddress = endPoint.Address.ToString(),
-                                    Status = 0,
+                                    Status = 1,
                                     IsInternet = true,
                                 };
                                 onlineDevices.Add(device);
