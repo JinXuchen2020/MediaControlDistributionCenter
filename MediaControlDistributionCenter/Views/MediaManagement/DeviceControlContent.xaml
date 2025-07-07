@@ -164,7 +164,7 @@
                             </Grid>
                             <Grid DockPanel.Dock="Bottom">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,25" Width="209">
-                                    <Button x:Name="btnTimeControlSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Save}" Click="btnTimeControlSave_Click" />
+                                    <Button IsEnabled="{Binding IsSaving, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" x:Name="btnTimeControlSave" DockPanel.Dock="Left" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Save}" Click="btnTimeControlSave_Click" />
                                     <Button x:Name="btnTimeControlCancel" DockPanel.Dock="Right" Margin="25" Background="#090A0E" Foreground="WhiteSmoke" Content="{DynamicResource LanguageKey_Code_Cancel}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand }" />
                                 </StackPanel>
                             </Grid>
@@ -423,7 +423,7 @@
                                             <Image MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
                                         </StackPanel>
                                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,20,0" >
-                                            <Button Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
+                                            <Button IsEnabled="{Binding IsPublishing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
                                         </StackPanel>
 
                                     </DockPanel>
@@ -542,7 +542,7 @@
                                             <Image x:Name="btnDeleteTimeControl" MouseDown="btnDeleteTimeControl_MouseDown"  Width="32" Height="32" Source="/Assets/9.png" Margin="0,0,16,0" Cursor="Hand" HorizontalAlignment="Left" />
                                         </StackPanel>
                                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,20,0" >
-                                            <Button Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
+                                            <Button IsEnabled="{Binding IsPublishing, Converter={StaticResource IsEditingValueConverter}, ConverterParameter=false}" Click="btnPublish_Click" Background="#30479C" Foreground="White" BorderThickness="0" Content="{DynamicResource LanguageKey_Code_Media_Send}" />
                                         </StackPanel>
 
                                     </DockPanel>

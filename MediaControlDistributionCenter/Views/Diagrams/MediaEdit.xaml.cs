@@ -503,6 +503,11 @@ namespace MediaControlDistributionCenter.Views
         private void SelectPage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var viewModel = ((sender as StackPanel).DataContext as MediaPageViewModel)!;
+            if (manageViewModel.SelectedPage != null)
+            {
+                manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
+                manageViewModel.SelectedComponent = null;
+            }
             manageViewModel.MediaConfig.Pages.First(c => c.IsSelected).IsSelected = false;
             manageViewModel.SelectedPage = viewModel;
             manageViewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);

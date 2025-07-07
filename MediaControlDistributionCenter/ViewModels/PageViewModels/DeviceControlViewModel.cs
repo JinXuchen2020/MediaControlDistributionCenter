@@ -51,6 +51,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private string? commandRTValue;
 
+        [ObservableProperty]
+        private bool isPublishing;
+
         private bool isSynced;
         private readonly IMonitorService monitorService;
         private readonly IDeviceControlService deviceControlService;
@@ -239,6 +242,11 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task ExecuteScheduleControl()
         {
+            if (IsPublishing)
+            {
+                return;
+            }
+            IsPublishing = true;
             var viewModels = DeviceTimeControls.ToList();
             if (CurrentDevice != null && viewModels.Count > 0)
             {
@@ -252,6 +260,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             CurrentDevice.ErrorMessage = null;
+                            IsPublishing = false;
                             return;
                         }
                         break;
@@ -262,6 +271,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             CurrentDevice.ErrorMessage = null;
+                            IsPublishing = false;
                             return;
                         }
                         break;
@@ -272,6 +282,7 @@ namespace MediaControlDistributionCenter.ViewModels
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             CurrentDevice.ErrorMessage = null;
+                            IsPublishing = false;
                             return;
                         }
                         break;
@@ -282,12 +293,14 @@ namespace MediaControlDistributionCenter.ViewModels
                             ErrorMessage = CurrentDevice.ErrorMessage;
                             await ShowConfirmDialogCommand.ExecuteAsync(null);
                             CurrentDevice.ErrorMessage = null;
+                            IsPublishing = false;
                             return;
                         }
                         break;
                 }
 
                 await GetDeviceTimeControls();
+                IsPublishing = false;
             }
         }
 
@@ -382,9 +395,15 @@ namespace MediaControlDistributionCenter.ViewModels
         [RelayCommand]
         private async Task SaveTimeControl(DeviceTimeControlViewModel viewModel)
         {
+            if (viewModel.IsSaving)
+            {
+                return;
+            }
+            viewModel.IsSaving = true;
             viewModel.SubmitCommand.Execute(null);
             if (viewModel.HasErrors)
             {
+                viewModel.IsSaving = false;
                 return;
             }
 
@@ -394,6 +413,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_126");
                     await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.IsSaving = false;
                     return;
                 }
             }
@@ -404,6 +424,7 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     ErrorMessage = FindResource("LanguageKey_Code_Control_Tooltip_127");
                     await ShowConfirmDialogCommand.ExecuteAsync(null);
+                    viewModel.IsSaving = false;
                     return;
                 }
             }
@@ -414,6 +435,8 @@ namespace MediaControlDistributionCenter.ViewModels
                 await GetDeviceTimeControls();
                 CloseDialog();
             }
+
+            viewModel.IsSaving = false;
         }
 
         protected override async Task SearchContent()
