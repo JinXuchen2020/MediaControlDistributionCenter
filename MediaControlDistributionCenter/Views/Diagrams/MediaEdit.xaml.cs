@@ -705,6 +705,11 @@ namespace MediaControlDistributionCenter.Views
                 return;
             }
 
+            if (manageViewModel.IsPreviewing)
+            {
+                return;
+            }
+
             var previewWindow = new MediaPreview(manageViewModel);
             previewWindow.Show();
         }

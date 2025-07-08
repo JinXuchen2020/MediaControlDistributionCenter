@@ -52,6 +52,9 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private ObservableCollection<MediaViewModel> medias;
 
+        [ObservableProperty]
+        private bool isPreviewing;
+
         private readonly IFileService fileService;
         private readonly IProgramService programService;
         private readonly IMediaService mediaService;

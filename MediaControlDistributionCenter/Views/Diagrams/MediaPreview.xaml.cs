@@ -77,11 +77,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             this.Unloaded += MediaPreview_Unloaded;
 
             this.manageViewModel = viewModel;
+            this.manageViewModel.IsPreviewing = true;
         }
 
         private void MediaPreview_Unloaded(object sender, RoutedEventArgs e)
         {
             DisposeCanvasComponents();
+            this.manageViewModel.IsPreviewing = false;
         }
 
         private void MediaPreview_Loaded(object sender, RoutedEventArgs e)
