@@ -142,7 +142,7 @@ namespace MediaControlDistributionCenter.Services
                 var response = await deviceControlService.Save(deviceControl);
                 if (response.Code == 200)
                 {
-                    successFullResult = $"{deviceControl.ControlType} {Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}";
+                    successFullResult = string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdBrightness);
                 }
             }
 
@@ -182,7 +182,7 @@ namespace MediaControlDistributionCenter.Services
                 var response = await deviceControlService.Save(deviceControl);
                 if (response.Code == 200)
                 {
-                    successFullResult = $"{deviceControl.ControlType} {Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}";
+                    successFullResult = string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdVolume);
                 }
             }
 
@@ -222,7 +222,7 @@ namespace MediaControlDistributionCenter.Services
                 var response = await deviceControlService.Save(deviceControl);
                 if (response.Code == 200)
                 {
-                    successFullResult = $"{deviceControl.ControlType} {Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}";
+                    successFullResult = string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdReStart);
                 }
             }
 
@@ -262,7 +262,7 @@ namespace MediaControlDistributionCenter.Services
                 var response = await deviceControlService.Save(deviceControl);
                 if (response.Code == 200)
                 {
-                    successFullResult = $"{deviceControl.ControlType} {Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}";
+                    successFullResult = string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdScreen);
                 }
             }
 
@@ -299,7 +299,7 @@ namespace MediaControlDistributionCenter.Services
             var response = await timeSyncConfigService.Save(model);
             if (response.Code == 200)
             {
-                throw new Exception($"{Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}");
+                throw new Exception(string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdTime));
             }
         }
 
@@ -330,7 +330,7 @@ namespace MediaControlDistributionCenter.Services
             var response = await timeSyncConfigService.Save(model);
             if (response.Code == 200)
             {
-                throw new Exception($"{Utility.FindResource("LanguageKey_Code_Control_Tooltip_132")}");
+                throw new Exception(string.Format(Utility.FindResource("LanguageKey_Code_Control_Tooltip_132"), CommunicationCmd.CmdTime));
             }
         }
 

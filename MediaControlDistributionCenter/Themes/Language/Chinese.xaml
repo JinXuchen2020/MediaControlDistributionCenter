@@ -295,7 +295,7 @@
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_129">开  关机</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_130">开机</sys:String>
     <sys:String x:Key="LanguageKey_Code_Control_Tooltip_131">关机</sys:String>
-    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_132">实时控制成功！</sys:String>
+    <sys:String x:Key="LanguageKey_Code_Control_Tooltip_132">命令:{0} 执行成功！</sys:String>
 
     
     <sys:String x:Key="LanguageKey_Code_User_Config">用户设定</sys:String>

@@ -256,7 +256,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     }
                     else 
                     {
-                        ErrorMessage = resultResponse.Message;
+                        ErrorMessage = FindResource("LanguageKey_Code_Login_Tooltip_103");
                     }
                 }
             }
