@@ -593,11 +593,13 @@ namespace MediaControlDistributionCenter.ViewModels
                 {
                     throw new Exception(Utility.FindResource("LanguageKey_Code_Monitor_Tooltip_121"));
                 }
+
                 IsDownloading = false;
                 interactService.InvokeProgressChanged -= InteractService_InvokeProgressChanged;
             }
             catch (Exception ex)
             {
+                SendResult = "Fail";
                 ErrorMessage = ex.Message;
             }
         }

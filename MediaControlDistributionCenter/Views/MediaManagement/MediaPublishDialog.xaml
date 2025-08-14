@@ -159,7 +159,7 @@
                                                     </ProgressBar>
                                                 </StackPanel>
                                                 <StackPanel Visibility="{Binding SendResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Fail}">
-                                                    <TextBlock VerticalAlignment="Center" FontSize="12" Margin="0,0,0,5" Text="{DynamicResource LanguageKey_Code_Monitor_Tooltip_121}"/>
+                                                    <TextBlock VerticalAlignment="Center" FontSize="12" Margin="0,0,0,5" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </StackPanel>
                                             </StackPanel>
 

@@ -128,7 +128,7 @@ namespace MediaControlDistributionCenter.ViewModels
                     await item.SyncFileSyncCommand.ExecuteAsync(CurrentMedia);
                     if (!string.IsNullOrEmpty(item.ErrorMessage))
                     {
-                        item.ErrorMessage = null;
+                        //item.ErrorMessage = null;
                         return;
                     }
 
