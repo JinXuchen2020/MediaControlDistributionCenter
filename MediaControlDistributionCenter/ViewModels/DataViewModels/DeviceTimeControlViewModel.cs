@@ -144,9 +144,23 @@ namespace MediaControlDistributionCenter.ViewModels
                 case "week":
                 case "month":
                 case "year":
-                    return $"{RepeatString}|{ExecuteTime}";
+                    if(Type == "Power")
+                    {
+                        return $"{RepeatString}|{ExecuteTime}";
+                    }
+                    else
+                    {
+                        return $"{RepeatString}|{DateTime.Parse(ExecuteTime).TimeOfDay}";
+                    }
                 default:
-                    return ExecuteTime;
+                    if (Type == "Power")
+                    {
+                        return $"{ExecuteTime}";
+                    }
+                    else
+                    {
+                        return $"{DateTime.Parse(ExecuteTime).TimeOfDay}";
+                    }
             }
         }
 
