@@ -113,22 +113,8 @@ namespace MediaControlDistributionCenter.ViewModels
         protected T GetService<T>() where T : class
         {
             var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
-            switch (connectionMode.Mode)
-            {
-                case "Local":
-                    return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
-                case "Remote":
-                    if(string.IsNullOrEmpty(connectionMode.ServiceUri))
-                    {
-                        return App.ServicesProvider.GetServices<T>().First(c => c.GetType().Name.EndsWith("Local"));
-                    }
-                    else
-                    {
-                        return App.ServicesProvider.GetServices<T>().First(c => !c.GetType().Name.EndsWith("Local"));
-                    }
-                default:
-                    throw new ArgumentException("未知的服务名称");
-            }
+            var key = connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri) ? "Local" : "Remote";
+            return App.ServicesProvider.GetRequiredKeyedService<T>(key);
         }
 
         protected string FindResource(string key)

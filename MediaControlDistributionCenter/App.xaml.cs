@@ -63,10 +63,10 @@ namespace MediaControlDistributionCenter
             services.AddSingleton<FtpServer>();
             services.AddSingleton<FtpClient>();
             services.AddSingleton<Communication>();
-            services.AddSingleton<IDetectService, DetectServiceLocal>();
-            services.AddSingleton<IDetectService, DetectService>();
-            services.AddSingleton<IDeviceInteractService, DeviceInteractServiceLocal>();
-            services.AddSingleton<IDeviceInteractService, DeviceInteractService>();
+            services.AddKeyedSingleton<IDetectService, DetectServiceLocal>("Local");
+            services.AddKeyedSingleton<IDetectService, DetectService>("Remote");
+            services.AddKeyedSingleton<IDeviceInteractService, DeviceInteractServiceLocal>("Local");
+            services.AddKeyedSingleton<IDeviceInteractService, DeviceInteractService>("Remote");
             services.AddSingleton<IConnectService, ConnectService>();
 
             services.AddLocalServices();

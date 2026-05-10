@@ -10,33 +10,23 @@ namespace MediaControlDistributionCenter.Services
     {
         public static IServiceCollection AddLocalServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthService, AuthServiceLocal>();
-            services.AddScoped<IFileService, FileServiceLocal>();
-
-            var types = typeof(IService<,>).Assembly.DefinedTypes;
-            var interfaceTypes = types.Where(c => c.IsInterface && !c.IsGenericType);
-
-            foreach(var interfaceType in interfaceTypes)
-            {
-                var implementTypes = types.Where(c => c.ImplementedInterfaces.Count() > 0 && c.ImplementedInterfaces.Contains(interfaceType));
-                foreach (var implementType in implementTypes)
-                {
-                    if (implementType != null && implementType.Name.EndsWith("Local"))
-                    {
-                        services.AddScoped(interfaceType, implementType);
-                    }
-                }
-            }
-
+            services.AddKeyedScoped<IAuthService, AuthServiceLocal>("Local");
+            services.AddKeyedScoped<IFileService, FileServiceLocal>("Local");
+            AddKeyedServices(services, "Local");
             return services;
         }
 
         public static IServiceCollection AddRemoteServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IFileService, FileService>();
+            services.AddKeyedScoped<IAuthService, AuthService>("Remote");
+            services.AddKeyedScoped<IFileService, FileService>("Remote");
             services.AddHttpClient();
+            AddKeyedServices(services, "Remote");
+            return services;
+        }
 
+        private static void AddKeyedServices(IServiceCollection services, string key)
+        {
             var types = typeof(IService<,>).Assembly.DefinedTypes;
             var interfaceTypes = types.Where(c => c.IsInterface && !c.IsGenericType);
 
@@ -45,14 +35,13 @@ namespace MediaControlDistributionCenter.Services
                 var implementTypes = types.Where(c => c.ImplementedInterfaces.Count() > 0 && c.ImplementedInterfaces.Contains(interfaceType));
                 foreach (var implementType in implementTypes)
                 {
-                    if (implementType != null && !implementType.Name.EndsWith("Local"))
+                    bool isLocal = implementType.Name.EndsWith("Local");
+                    if ((key == "Local" && isLocal) || (key == "Remote" && !isLocal))
                     {
-                        services.AddScoped(interfaceType, implementType);
+                        services.AddKeyedScoped(interfaceType, key, implementType);
                     }
                 }
             }
-
-            return services;
         }
     }
 }
