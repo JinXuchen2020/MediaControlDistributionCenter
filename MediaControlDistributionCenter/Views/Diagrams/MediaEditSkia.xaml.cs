@@ -26,6 +26,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         public MediaEditSkia()
         {
             InitializeComponent();
+            this.Unloaded += MediaEditSkia_Unloaded;
             InitializeEngine();
         }
 
@@ -33,6 +34,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
+            this.Unloaded += MediaEditSkia_Unloaded;
             InitializeEngine();
         }
 
@@ -47,17 +49,50 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _lastFrameTime = DateTime.UtcNow;
             CompositionTarget.Rendering += OnRendering;
 
-            this.PreviewKeyDown += (s, e) =>
-            {
-                if (e.Key == Key.F11)
-                {
-                    _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
-                    if (_fpsCounter.IsVisible) _fpsCounter.Reset();
-                    e.Handled = true;
-                }
-            };
+            this.PreviewKeyDown += OnPreviewKeyDown;
+            SkCanvas.PaintSurface += SkCanvas_PaintSurface;
 
             InitializeFactories();
+        }
+
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F11)
+            {
+                _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
+                if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                e.Handled = true;
+            }
+        }
+
+        private void MediaEditSkia_Unloaded(object sender, RoutedEventArgs e)
+        {
+            CompositionTarget.Rendering -= OnRendering;
+            this.PreviewKeyDown -= OnPreviewKeyDown;
+            SkCanvas.PaintSurface -= SkCanvas_PaintSurface;
+            _renderEngine.Clear();
+        }
+
+        private void SkCanvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
+        {
+            var canvas = e.Surface.Canvas;
+            float deltaSeconds = (float)(DateTime.UtcNow - _lastFrameTime).TotalSeconds;
+            if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
+
+            canvas.Clear(new SKColor(0x00, 0x00, 0x00));
+            _renderEngine.RenderFrame(canvas, deltaSeconds);
+
+            if (_mouseHandler.SelectedRenderable != null)
+            {
+                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
+                _resizeHandles.Draw(canvas);
+            }
+            else
+            {
+                _resizeHandles.SetTarget(null);
+            }
+
+            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         private void InitializeFactories()
@@ -76,6 +111,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         public void SetViewModel(MediaEditViewModel viewModel)
         {
             _viewModel = viewModel;
+            _mouseHandler.ViewModel = viewModel;
             DataContext = viewModel;
 
             if (_viewModel.CurrentMedia != null)
@@ -130,28 +166,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
             _fpsCounter.Update(deltaSeconds);
             SkCanvas.InvalidateVisual();
-        }
-
-        private void SkCanvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
-        {
-            var canvas = e.Surface.Canvas;
-            float deltaSeconds = (float)(DateTime.UtcNow - _lastFrameTime).TotalSeconds;
-            if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
-
-            canvas.Clear(new SKColor(0x00, 0x00, 0x00));
-            _renderEngine.RenderFrame(canvas, deltaSeconds);
-
-            if (_mouseHandler.SelectedRenderable != null)
-            {
-                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
-                _resizeHandles.Draw(canvas);
-            }
-            else
-            {
-                _resizeHandles.SetTarget(null);
-            }
-
-            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         private SKPoint GetCanvasPosition(MouseEventArgs e)

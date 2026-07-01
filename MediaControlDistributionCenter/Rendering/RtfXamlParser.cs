@@ -1,3 +1,4 @@
+using SkiaSharp;
 using System.Xml.Linq;
 
 namespace MediaControlDistributionCenter.Rendering

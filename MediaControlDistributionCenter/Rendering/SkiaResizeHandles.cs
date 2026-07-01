@@ -1,4 +1,5 @@
 using SkiaSharp;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -91,6 +92,10 @@ namespace MediaControlDistributionCenter.Rendering
         }
 
         public void Invalidate() { }
+
+        public void Dispose()
+        {
+        }
 
         private void UpdateHandles() { }
     }

@@ -1,15 +1,18 @@
 using MediaControlDistributionCenter.ViewModels;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    public static class WordComponentFactory
+    public class WordComponentFactory : IComponentFactory
     {
-        public static WordPdfRenderable Create(BaseComponentViewModel vm)
+        public string Type => "Word";
+
+        public IRenderable Create(BaseComponentViewModel vm)
         {
             if (vm is WordComponentViewModel wordVm)
                 return new WordPdfRenderable(wordVm);
 
-            return null;
+            throw new ArgumentException($"Expected WordComponentViewModel, got {vm.GetType().Name}");
         }
     }
 }

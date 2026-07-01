@@ -16,7 +16,7 @@ namespace MediaControlDistributionCenter.Rendering
             if (_factories.TryGetValue(vm.Type, out var factory))
             {
                 var renderable = factory.Create(vm);
-                return renderable;
+                return renderable ?? throw new InvalidOperationException($"Factory for '{vm.Type}' returned null");
             }
             throw new KeyNotFoundException($"No factory registered for component type: {vm.Type}");
         }

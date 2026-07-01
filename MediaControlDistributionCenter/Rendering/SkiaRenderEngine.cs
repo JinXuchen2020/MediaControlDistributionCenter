@@ -33,11 +33,14 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void RemoveRenderable(IRenderable renderable)
         {
+            renderable.Dispose();
             _renderables.Remove(renderable);
         }
 
         public void Clear()
         {
+            foreach (var r in _renderables)
+                r.Dispose();
             _renderables.Clear();
         }
 
@@ -50,10 +53,12 @@ namespace MediaControlDistributionCenter.Rendering
                 if (!renderable.IsVisible)
                     continue;
 
+                int baseSaveCount = canvas.SaveCount;
                 canvas.Save();
                 _animationEngine.ApplyAnimations(canvas, renderable);
                 renderable.Draw(canvas);
-                canvas.Restore();
+                while (canvas.SaveCount > baseSaveCount)
+                    canvas.Restore();
             }
         }
 

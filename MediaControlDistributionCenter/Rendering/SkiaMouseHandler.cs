@@ -1,5 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
+using System;
+using System.Linq;
 using System.Windows.Input;
 
 namespace MediaControlDistributionCenter.Rendering
@@ -11,19 +13,30 @@ namespace MediaControlDistributionCenter.Rendering
         private SKPoint _lastMousePoint;
         private bool _isDragging;
         private bool _isResizing;
-        private int _resizeHandleIndex = -1; // 0-7 for 8 handles
+        private int _resizeHandleIndex = -1;
         private BaseComponentViewModel? _selectedVm;
 
         public IRenderable? SelectedRenderable => _selectedRenderable;
         public BaseComponentViewModel? SelectedViewModel => _selectedVm;
 
-        // Mouse state from WPF
         public bool IsLeftButtonPressed { get; set; }
         public SKPoint CurrentPosition { get; set; }
+
+        public MediaEditViewModel? ViewModel { get; set; }
 
         public SkiaMouseHandler(SkiaRenderEngine engine)
         {
             _engine = engine;
+        }
+
+        private BaseComponentViewModel? FindComponent(IRenderable renderable)
+        {
+            if (ViewModel?.MediaConfig?.SelectedPage == null) return null;
+            var bounds = renderable.Bounds;
+            return ViewModel.MediaConfig.SelectedPage.Components
+                .FirstOrDefault(c => !c.IsDeleted &&
+                    Math.Abs(c.Left * c.Ratio - bounds.Left) < 5 &&
+                    Math.Abs(c.Top * c.Ratio - bounds.Top) < 5);
         }
 
         public void OnMouseDown(SKPoint position)
@@ -32,25 +45,23 @@ namespace MediaControlDistributionCenter.Rendering
             CurrentPosition = position;
             IsLeftButtonPressed = true;
 
-            // Check resize handles first
             if (_selectedRenderable != null)
             {
                 _resizeHandleIndex = HitTestResizeHandles(position);
                 if (_resizeHandleIndex >= 0)
                 {
                     _isResizing = true;
+                    _selectedVm = FindComponent(_selectedRenderable);
                     return;
                 }
             }
 
-            // Check renderable hit test
             var hit = _engine.HitTest(position);
             if (hit != null)
             {
                 _selectedRenderable = hit;
+                _selectedVm = FindComponent(hit);
                 _isDragging = true;
-                // Find the BaseComponentViewModel - note: we can't directly access it
-                // The interaction will be handled via events/callbacks
             }
             else
             {
@@ -67,18 +78,34 @@ namespace MediaControlDistributionCenter.Rendering
                 position.X - _lastMousePoint.X,
                 position.Y - _lastMousePoint.Y);
 
-            if (_isDragging && _selectedRenderable != null)
+            float ratio = _selectedVm?.Ratio ?? 1f;
+
+            if (_isDragging && _selectedVm != null)
             {
-                // Update viewmodel position
-                var bounds = _selectedRenderable.Bounds;
-                // The actual position update needs viewmodel access
-                // This is a placeholder - actual implementation will use callbacks
-                _selectedRenderable.Invalidate();
+                _selectedVm.Left += delta.X / ratio;
+                _selectedVm.Top += delta.Y / ratio;
+                _selectedRenderable?.Invalidate();
             }
-            else if (_isResizing && _selectedRenderable != null)
+            else if (_isResizing && _selectedVm != null)
             {
-                // Resize logic - handle size changes
-                _selectedRenderable.Invalidate();
+                float dx = delta.X / ratio;
+                float dy = delta.Y / ratio;
+
+                switch (_resizeHandleIndex)
+                {
+                    case 0: _selectedVm.Left += dx; _selectedVm.Top += dy; _selectedVm.Width -= dx; _selectedVm.Height -= dy; break;
+                    case 1: _selectedVm.Top += dy; _selectedVm.Width += dx; _selectedVm.Height -= dy; break;
+                    case 2: _selectedVm.Left += dx; _selectedVm.Width -= dx; _selectedVm.Height += dy; break;
+                    case 3: _selectedVm.Width += dx; _selectedVm.Height += dy; break;
+                    case 4: _selectedVm.Left += dx; _selectedVm.Width -= dx; break;
+                    case 5: _selectedVm.Width += dx; break;
+                    case 6: _selectedVm.Top += dy; _selectedVm.Height -= dy; break;
+                    case 7: _selectedVm.Height += dy; break;
+                }
+
+                if (_selectedVm.Width < 10) _selectedVm.Width = 10;
+                if (_selectedVm.Height < 10) _selectedVm.Height = 10;
+                _selectedRenderable?.Invalidate();
             }
 
             _lastMousePoint = position;

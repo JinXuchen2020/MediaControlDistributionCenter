@@ -25,28 +25,17 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Update(float deltaSeconds)
         {
-            var completed = new List<(IRenderable, IAnimation)>();
+            var emptyTargets = new List<IRenderable>();
 
             foreach (var (target, anims) in _animations)
             {
-                foreach (var anim in anims)
-                {
-                    anim.Update(deltaSeconds);
-                    if (anim.IsCompleted)
-                        completed.Add((target, anim));
-                }
-            }
-
-            foreach (var (target, anim) in completed)
-            {
-                _animations[target].Remove(anim);
-            }
-
-            foreach (var (target, anims) in _animations)
-            {
+                anims.RemoveAll(a => { a.Update(deltaSeconds); return a.IsCompleted; });
                 if (anims.Count == 0)
-                    _animations.Remove(target);
+                    emptyTargets.Add(target);
             }
+
+            foreach (var target in emptyTargets)
+                _animations.Remove(target);
         }
 
         public void ApplyAnimations(SKCanvas canvas, IRenderable target)

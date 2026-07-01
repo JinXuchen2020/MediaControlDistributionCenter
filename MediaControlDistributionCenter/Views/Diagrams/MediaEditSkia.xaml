@@ -83,7 +83,6 @@
                           Background="#1D1E23">
                 <skia:SKElement
                     x:Name="SkCanvas"
-                    Background="Black"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Width="768" Height="576"

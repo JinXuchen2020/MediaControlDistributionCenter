@@ -70,8 +70,10 @@ namespace MediaControlDistributionCenter.Rendering
 
                     if (entry.Element is FrameworkElement fe)
                     {
-                        fe.Width = bounds.Width;
-                        fe.Height = bounds.Height;
+                        if (Math.Abs(fe.Width - bounds.Width) > 0.5f)
+                            fe.Width = bounds.Width;
+                        if (Math.Abs(fe.Height - bounds.Height) > 0.5f)
+                            fe.Height = bounds.Height;
                     }
                 }
                 else

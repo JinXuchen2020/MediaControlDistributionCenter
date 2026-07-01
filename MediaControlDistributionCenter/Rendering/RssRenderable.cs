@@ -3,6 +3,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace MediaControlDistributionCenter.Rendering
@@ -14,6 +15,8 @@ namespace MediaControlDistributionCenter.Rendering
         private float _scrollOffset;
         private List<RssItem> _items;
         private DateTime _lastFetch;
+        private bool _feedLoading;
+        private bool _disposed;
         private int _currentPage;
 
         private class RssItem
@@ -35,17 +38,22 @@ namespace MediaControlDistributionCenter.Rendering
             _items = new List<RssItem>();
             _currentPage = 0;
             UpdateBounds();
-            FetchFeed();
+            _ = FetchFeedAsync();
         }
 
-        private void FetchFeed()
+        private async Task FetchFeedAsync()
         {
+            if (_feedLoading || _disposed) return;
+            _feedLoading = true;
+
             try
             {
                 string url = _vm.Source ?? string.Empty;
                 if (string.IsNullOrEmpty(url)) return;
 
-                var doc = XDocument.Load(url);
+                var doc = await Task.Run(() => XDocument.Load(url));
+                if (_disposed) return;
+
                 _items = doc.Descendants("item").Select(item => new RssItem
                 {
                     Title = item.Element("title")?.Value ?? string.Empty,
@@ -55,96 +63,117 @@ namespace MediaControlDistributionCenter.Rendering
             }
             catch
             {
-                _items = new List<RssItem>();
+                if (!_disposed)
+                    _items = new List<RssItem>();
             }
             _lastFetch = DateTime.UtcNow;
+            _feedLoading = false;
         }
 
         public void Draw(SKCanvas canvas)
         {
-            if ((DateTime.UtcNow - _lastFetch).TotalMinutes > 5)
-                FetchFeed();
+            if ((DateTime.UtcNow - _lastFetch).TotalMinutes > 5 && !_feedLoading)
+                _ = FetchFeedAsync();
 
             if (_items.Count == 0) return;
 
-            using var bgPaint = new SKPaint
+            SKPaint? bgPaint = null;
+            SKPaint? textPaint = null;
+            try
             {
-                Color = new SKColor(0, 0, 0, 180),
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true,
-            };
-            canvas.DrawRect(_bounds, bgPaint);
-
-            var contentVms = _vm.Contents;
-            if (contentVms == null || contentVms.Count == 0) return;
-
-            float y = _bounds.Top + 8;
-            float x = _bounds.Left + 8;
-
-            if (_vm.PlayMode == "rollingLeft" || _vm.PlayMode == "rollingRight")
-            {
-                float speed = _vm.RollingSpeed * 2f;
-                float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
-                _scrollOffset += direction * speed;
-
-                foreach (var item in _items)
+                bgPaint = new SKPaint
                 {
-                    foreach (var content in contentVms)
+                    Color = new SKColor(0, 0, 0, 180),
+                    Style = SKPaintStyle.Fill,
+                    IsAntialias = true,
+                };
+                canvas.DrawRect(_bounds, bgPaint);
+
+                var contentVms = _vm.Contents;
+                if (contentVms == null || contentVms.Count == 0) return;
+
+                float y = _bounds.Top + 8;
+                float x = _bounds.Left + 8;
+
+                if (_vm.PlayMode == "rollingLeft" || _vm.PlayMode == "rollingRight")
+                {
+                    float speed = _vm.RollingSpeed * 2f;
+                    float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
+                    _scrollOffset += direction * speed;
+
+                    if (_scrollOffset > _bounds.Width * 2 || _scrollOffset < -_bounds.Width * 2)
+                        _scrollOffset = 0;
+
+                    foreach (var item in _items)
                     {
-                        string fieldValue = GetFieldValue(item, content.FieldName);
-                        if (string.IsNullOrEmpty(fieldValue)) continue;
-
-                        float fontSize = content.FontSize * (float)_vm.Ratio;
-                        using var textPaint = new SKPaint
+                        foreach (var content in contentVms)
                         {
-                            TextSize = fontSize,
-                            IsAntialias = true,
-                            SubpixelText = true,
-                            Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A),
-                            IsBold = content.IsBold,
-                            FakeBoldText = content.IsBold,
-                            TextSkewX = content.IsItalic ? -0.25f : 0f,
-                        };
+                            string fieldValue = GetFieldValue(item, content.FieldName);
+                            if (string.IsNullOrEmpty(fieldValue)) continue;
 
-                        float drawX = x + _scrollOffset;
-                        canvas.DrawText(fieldValue, drawX, y, textPaint);
-                        y += fontSize * 1.4f;
+                            float fontSize = content.FontSize * (float)_vm.Ratio;
+                            textPaint = new SKPaint
+                            {
+                                TextSize = fontSize,
+                                IsAntialias = true,
+                                SubpixelText = true,
+                                Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A),
+                                IsBold = content.IsBold,
+                                FakeBoldText = content.IsBold,
+                                TextSkewX = content.IsItalic ? -0.25f : 0f,
+                            };
+
+                            float drawX = x + _scrollOffset;
+                            canvas.DrawText(fieldValue, drawX, y, textPaint);
+                            y += fontSize * 1.4f;
+                            textPaint.Dispose();
+                            textPaint = null;
+                        }
+                        y += 8;
+                        if (y > _bounds.Bottom) break;
                     }
-                    y += 8;
-                    if (y > _bounds.Bottom) break;
+                }
+                else
+                {
+                    if (contentVms.Count == 0) return;
+                    float sumFontSize = contentVms.Sum(c => c.FontSize * 1.4f) * (float)_vm.Ratio + 8;
+                    int itemsPerPage = Math.Max(1, (int)((_bounds.Height - 16) / sumFontSize));
+                    int startIndex = _currentPage * itemsPerPage;
+
+                    for (int i = startIndex; i < _items.Count && i < startIndex + itemsPerPage; i++)
+                    {
+                        var item = _items[i];
+                        foreach (var content in contentVms)
+                        {
+                            string fieldValue = GetFieldValue(item, content.FieldName);
+                            if (string.IsNullOrEmpty(fieldValue)) continue;
+
+                            float fontSize = content.FontSize * (float)_vm.Ratio;
+                            textPaint = new SKPaint
+                            {
+                                TextSize = fontSize,
+                                IsAntialias = true,
+                                SubpixelText = true,
+                                Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A),
+                                IsBold = content.IsBold,
+                                FakeBoldText = content.IsBold,
+                                TextSkewX = content.IsItalic ? -0.25f : 0f,
+                            };
+
+                            canvas.DrawText(fieldValue, x, y, textPaint);
+                            y += fontSize * 1.4f;
+                            textPaint.Dispose();
+                            textPaint = null;
+                        }
+                        y += 8;
+                        if (y > _bounds.Bottom) break;
+                    }
                 }
             }
-            else
+            finally
             {
-                int itemsPerPage = Math.Max(1, (int)((_bounds.Height - 16) / (contentVms.Sum(c => c.FontSize * 1.4f) * (float)_vm.Ratio + 8)));
-                int startIndex = _currentPage * itemsPerPage;
-
-                for (int i = startIndex; i < _items.Count && i < startIndex + itemsPerPage; i++)
-                {
-                    var item = _items[i];
-                    foreach (var content in contentVms)
-                    {
-                        string fieldValue = GetFieldValue(item, content.FieldName);
-                        if (string.IsNullOrEmpty(fieldValue)) continue;
-
-                        float fontSize = content.FontSize * (float)_vm.Ratio;
-                        using var textPaint = new SKPaint
-                        {
-                            TextSize = fontSize,
-                            IsAntialias = true,
-                            SubpixelText = true,
-                            Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A),
-                            IsBold = content.IsBold,
-                            FakeBoldText = content.IsBold,
-                            TextSkewX = content.IsItalic ? -0.25f : 0f,
-                        };
-
-                        canvas.DrawText(fieldValue, x, y, textPaint);
-                        y += fontSize * 1.4f;
-                    }
-                    y += 8;
-                    if (y > _bounds.Bottom) break;
-                }
+                bgPaint?.Dispose();
+                textPaint?.Dispose();
             }
         }
 
@@ -161,9 +190,9 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void NextPage()
         {
-            int itemsPerPage = _vm.Contents?.Count > 0
-                ? Math.Max(1, (int)((_bounds.Height - 16) / (_vm.Contents.Sum(c => c.FontSize * 1.4f) * (float)_vm.Ratio + 8)))
-                : 1;
+            if (_vm.Contents == null || _vm.Contents.Count == 0) return;
+            float sumFontSize = _vm.Contents.Sum(c => c.FontSize * 1.4f) * (float)_vm.Ratio + 8;
+            int itemsPerPage = Math.Max(1, (int)((_bounds.Height - 16) / sumFontSize));
             int totalPages = Math.Max(1, (int)Math.Ceiling((double)_items.Count / itemsPerPage));
             _currentPage = (_currentPage + 1) % totalPages;
         }
@@ -185,6 +214,11 @@ namespace MediaControlDistributionCenter.Rendering
                 (float)(_vm.Top * _vm.Ratio),
                 (float)((_vm.Left + _vm.Width) * _vm.Ratio),
                 (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+        }
+
+        public void Dispose()
+        {
+            _disposed = true;
         }
     }
 }

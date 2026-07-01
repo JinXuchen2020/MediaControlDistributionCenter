@@ -24,11 +24,7 @@ namespace MediaControlDistributionCenter.Rendering
         public void Apply(SKCanvas canvas)
         {
             float alpha = Math.Clamp(_elapsed / _duration, 0f, 1f);
-            canvas.SaveLayer(new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, (byte)(255 * alpha)),
-                BlendMode = SKBlendMode.SrcOver
-            });
+            canvas.SaveLayerAlpha((byte)(255 * alpha));
         }
     }
 }

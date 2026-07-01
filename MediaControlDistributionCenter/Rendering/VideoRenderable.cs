@@ -70,6 +70,10 @@ namespace MediaControlDistributionCenter.Rendering
             UpdateBounds();
         }
 
+        public void Dispose()
+        {
+        }
+
         public void UpdateBounds()
         {
             _bounds = new SKRect(

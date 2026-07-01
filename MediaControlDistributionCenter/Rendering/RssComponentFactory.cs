@@ -1,15 +1,18 @@
 using MediaControlDistributionCenter.ViewModels;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    public static class RssComponentFactory
+    public class RssComponentFactory : IComponentFactory
     {
-        public static RssRenderable Create(BaseComponentViewModel vm)
+        public string Type => "Rss";
+
+        public IRenderable Create(BaseComponentViewModel vm)
         {
             if (vm is RssComponentViewModel rssVm)
                 return new RssRenderable(rssVm);
 
-            return null;
+            throw new ArgumentException($"Expected RssComponentViewModel, got {vm.GetType().Name}");
         }
     }
 }

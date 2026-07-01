@@ -1,8 +1,9 @@
 using SkiaSharp;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    public interface IRenderable
+    public interface IRenderable : IDisposable
     {
         string Type { get; }
         int ZIndex { get; set; }

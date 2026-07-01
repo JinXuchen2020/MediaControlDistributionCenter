@@ -1,5 +1,6 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -75,6 +76,10 @@ namespace MediaControlDistributionCenter.Rendering
         public void Invalidate()
         {
             UpdateBounds();
+        }
+
+        public void Dispose()
+        {
         }
 
         public void UpdateBounds()

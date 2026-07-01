@@ -8,6 +8,9 @@ namespace MediaControlDistributionCenter.Rendering
         private SKRect _bounds;
         private readonly BaseComponentViewModel _vm;
         private readonly ColorTextComponentViewModel _colorVm;
+        private readonly SKPaint _textPaint;
+        private readonly SKShader _gradientShader;
+        private readonly SKImageFilter _dropShadow;
 
         public string Type => "ColorText";
         public int ZIndex { get; set; }
@@ -20,36 +23,35 @@ namespace MediaControlDistributionCenter.Rendering
             _colorVm = vm;
             ZIndex = vm.ZIndex;
             UpdateBounds();
-        }
 
-        public void Draw(SKCanvas canvas)
-        {
-            using var textPaint = new SKPaint
-            {
-                TextSize = (float)(_colorVm.FontSize * _vm.Ratio),
-                IsAntialias = true,
-                SubpixelText = true,
-                Color = SKColors.White
-            };
-
-            using var gradientShader = SKShader.CreateLinearGradient(
-                new SKPoint(_bounds.Left, _bounds.Top),
-                new SKPoint(_bounds.Right, _bounds.Bottom),
+            _gradientShader = SKShader.CreateLinearGradient(
+                new SKPoint(0, 0),
+                new SKPoint(1, 1),
                 new[] { SKColors.Red, SKColors.Orange, SKColors.Yellow },
                 new float[] { 0f, 0.5f, 1f },
                 SKShaderTileMode.Clamp);
 
-            textPaint.Shader = gradientShader;
-
-            using var dropShadow = SKImageFilter.CreateDropShadow(
+            _dropShadow = SKImageFilter.CreateDropShadow(
                 2f, 2f, 5f, 5f, new SKColor(128, 0, 128, 128));
 
-            textPaint.ImageFilter = dropShadow;
+            _textPaint = new SKPaint
+            {
+                IsAntialias = true,
+                SubpixelText = true,
+                Color = SKColors.White,
+                Shader = _gradientShader,
+                ImageFilter = _dropShadow,
+            };
+        }
+
+        public void Draw(SKCanvas canvas)
+        {
+            _textPaint.TextSize = (float)(_colorVm.FontSize * _vm.Ratio);
 
             string text = _colorVm.Source ?? string.Empty;
             if (!string.IsNullOrEmpty(text))
             {
-                canvas.DrawText(text, _bounds.Left, _bounds.Top + textPaint.TextSize, textPaint);
+                canvas.DrawText(text, _bounds.Left, _bounds.Top + _textPaint.TextSize, _textPaint);
             }
         }
 
@@ -70,6 +72,13 @@ namespace MediaControlDistributionCenter.Rendering
                 (float)(_vm.Top * _vm.Ratio),
                 (float)((_vm.Left + _vm.Width) * _vm.Ratio),
                 (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+        }
+
+        public void Dispose()
+        {
+            _textPaint?.Dispose();
+            _gradientShader?.Dispose();
+            _dropShadow?.Dispose();
         }
     }
 }

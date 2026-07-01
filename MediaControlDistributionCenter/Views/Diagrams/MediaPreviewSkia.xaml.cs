@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using System;
 using System.Collections.Generic;
@@ -51,19 +52,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             InitializeAdTimer();
 
             this.Unloaded += MediaPreviewSkia_Unloaded;
+            this.Closed += MediaPreviewSkia_Closed;
             _viewModel.IsPreviewing = true;
             _isRunning = true;
             _lastFrameTime = DateTime.UtcNow;
 
-            this.PreviewKeyDown += (s, e) =>
-            {
-                if (e.Key == Key.F11)
-                {
-                    _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
-                    if (_fpsCounter.IsVisible) _fpsCounter.Reset();
-                    e.Handled = true;
-                }
-            };
+            this.PreviewKeyDown += OnPreviewKeyDown;
 
             CompositionTarget.Rendering += OnRendering;
         }
@@ -133,10 +127,30 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F11)
+            {
+                _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
+                if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                e.Handled = true;
+            }
+        }
+
         private void MediaPreviewSkia_Unloaded(object sender, RoutedEventArgs e)
         {
             _isRunning = false;
             CompositionTarget.Rendering -= OnRendering;
+            this.PreviewKeyDown -= OnPreviewKeyDown;
+            DisposeCanvasComponents();
+            _viewModel.IsPreviewing = false;
+        }
+
+        private void MediaPreviewSkia_Closed(object? sender, EventArgs e)
+        {
+            _isRunning = false;
+            CompositionTarget.Rendering -= OnRendering;
+            this.PreviewKeyDown -= OnPreviewKeyDown;
             DisposeCanvasComponents();
             _viewModel.IsPreviewing = false;
         }
@@ -196,7 +210,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             {
                 var pageTimeline = AdPage.Components.Count == 0
                     ? 5
-                    : CurrentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                    : AdPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
                 int delayTime = 0;
                 if (AdPage.AdPlayMode == "perday")
                     delayTime = 24 * 60 / AdPage.PlayGap;
@@ -206,9 +220,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayCount;
                 await Task.Delay(delayTime * 1000);
                 _adtimer = new DispatcherTimer();
-                _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
-                _timer.Tick += AdTimer_Tick;
-                _timer.Start();
+                _adtimer.Interval = TimeSpan.FromSeconds(pageTimeline);
+                _adtimer.Tick += AdTimer_Tick;
+                _adtimer.Start();
                 adPlayGap++;
             }
         }
@@ -299,7 +313,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _renderEngine.Clear();
             _animationEngine.StopAll();
             _timer?.Stop();
+            _timer = null;
             _adtimer?.Stop();
+            _adtimer = null;
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)
