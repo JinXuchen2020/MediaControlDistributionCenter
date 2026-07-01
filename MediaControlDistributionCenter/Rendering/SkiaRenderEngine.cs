@@ -73,6 +73,27 @@ namespace MediaControlDistributionCenter.Rendering
                 r.Invalidate();
         }
 
+        public byte[]? CaptureSnapshot(int width, int height)
+        {
+            if (_renderables.Count == 0) return null;
+
+            using var surface = SKSurface.Create(new SKImageInfo(width, height));
+            var canvas = surface.Canvas;
+            canvas.Clear(SKColors.Black);
+
+            foreach (var renderable in _renderables)
+            {
+                if (!renderable.IsVisible) continue;
+                canvas.Save();
+                renderable.Draw(canvas);
+                canvas.Restore();
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 80);
+            return data.ToArray();
+        }
+
         public void PlayAnimation(IRenderable target, IAnimation animation)
         {
             _animationEngine.Play(target, animation);

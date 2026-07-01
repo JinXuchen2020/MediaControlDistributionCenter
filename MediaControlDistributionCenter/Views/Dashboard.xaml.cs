@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.MediaManagement;
+using MediaControlDistributionCenter.Views.Diagrams;
 using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
@@ -130,8 +131,21 @@ namespace MediaControlDistributionCenter.Views
         {
             var viewModel = ((sender as StackPanel).DataContext as ProgramViewModel)!;
             manageViewModel.SelectedMedia = viewModel;
-            var content = serviceProvider.GetRequiredService<MediaEdit>();
-            (App.Current.MainWindow as MainWindow).GoContent(content, 2);
+            var config = serviceProvider.GetRequiredService<SkiaCanvasConfig>();
+            if (config.Enabled && config.UseSkiaEditor)
+            {
+                var skiaContent = serviceProvider.GetRequiredService<MediaEditSkia>();
+                var editVm = serviceProvider.GetRequiredService<MediaEditViewModel>();
+                editVm.CurrentMedia = viewModel;
+                editVm.CurrentUser = serviceProvider.GetRequiredService<DashboardViewModel>().CurrentUser;
+                skiaContent.SetViewModel(editVm);
+                (App.Current.MainWindow as MainWindow).GoContent(skiaContent, 2);
+            }
+            else
+            {
+                var content = serviceProvider.GetRequiredService<MediaEdit>();
+                (App.Current.MainWindow as MainWindow).GoContent(content, 2);
+            }
         }
 
         private void selectDevice_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

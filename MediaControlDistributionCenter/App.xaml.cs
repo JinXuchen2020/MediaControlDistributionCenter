@@ -6,6 +6,7 @@ using MediaControlDistributionCenter.Helpers.FTP.Server;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.LocalImps;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +60,10 @@ namespace MediaControlDistributionCenter
             var ftpConnection = new FtpConnection();
             configuration.Bind("FtpConnection", ftpConnection);
             services.AddSingleton(ftpConnection);
+
+            var skiaCanvasConfig = new SkiaCanvasConfig();
+            configuration.Bind("SkiaCanvas", skiaCanvasConfig);
+            services.AddSingleton(skiaCanvasConfig);
 
             services.AddSingleton<FtpServer>();
             services.AddSingleton<FtpClient>();

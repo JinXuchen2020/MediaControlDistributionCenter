@@ -1,7 +1,9 @@
 ﻿using MaterialDesignThemes.Wpf;
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.Views.Diagrams;
 using MediaControlDistributionCenter.Views.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
@@ -280,8 +282,21 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                 else
                 {
                     manageViewModel.SelectedMedia = viewModel;
-                    var content = serviceProvider.GetRequiredService<MediaEdit>();
-                    (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                    var skiaConfig = serviceProvider.GetRequiredService<SkiaCanvasConfig>();
+                    if (skiaConfig.Enabled && skiaConfig.UseSkiaEditor)
+                    {
+                        var skiaContent = serviceProvider.GetRequiredService<MediaEditSkia>();
+                        var editVm = serviceProvider.GetRequiredService<MediaEditViewModel>();
+                        editVm.CurrentMedia = manageViewModel.SelectedMedia;
+                        editVm.CurrentUser = manageViewModel.CurrentUser;
+                        skiaContent.SetViewModel(editVm);
+                        (App.Current.MainWindow as MainWindow)!.GoContent(skiaContent, 2);
+                    }
+                    else
+                    {
+                        var content = serviceProvider.GetRequiredService<MediaEdit>();
+                        (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                    }
                 }
             }
         }
@@ -298,8 +313,21 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
                     await manageViewModel.LoadData();
                 });
                 manageViewModel.SelectedMedia = manageViewModel.Medias.First(c => c.Id == viewModel.Id);
-                var content = serviceProvider.GetRequiredService<MediaEdit>();
-                (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                var skiaConfig = serviceProvider.GetRequiredService<SkiaCanvasConfig>();
+                if (skiaConfig.Enabled && skiaConfig.UseSkiaEditor)
+                {
+                    var skiaContent = serviceProvider.GetRequiredService<MediaEditSkia>();
+                    var editVm = serviceProvider.GetRequiredService<MediaEditViewModel>();
+                    editVm.CurrentMedia = manageViewModel.SelectedMedia;
+                    editVm.CurrentUser = manageViewModel.CurrentUser;
+                    skiaContent.SetViewModel(editVm);
+                    (App.Current.MainWindow as MainWindow)!.GoContent(skiaContent, 2);
+                }
+                else
+                {
+                    var content = serviceProvider.GetRequiredService<MediaEdit>();
+                    (App.Current.MainWindow as MainWindow)!.GoContent(content, 2);
+                }
             }
         }
 

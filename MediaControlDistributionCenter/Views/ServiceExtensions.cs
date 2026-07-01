@@ -21,6 +21,8 @@ namespace MediaControlDistributionCenter.Views
 
             services.AddTransient<MediaEdit>();
             services.AddTransient<MediaPreview>();
+            services.AddTransient<MediaEditSkia>();
+            services.AddTransient<MediaPreviewSkia>();
 
             services.AddTransient<DeviceControlContent>();
             services.AddTransient<MediaManage>();

@@ -1,3 +1,4 @@
+using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
@@ -5,6 +6,7 @@ using SkiaSharp.Views.WPF;
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace MediaControlDistributionCenter.Views.Diagrams
@@ -17,12 +19,24 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private SkiaMouseHandler _mouseHandler;
         private SkiaResizeHandles _resizeHandles;
         private MediaEditViewModel? _viewModel;
+        private IServiceProvider? _serviceProvider;
         private DateTime _lastFrameTime;
 
         public MediaEditSkia()
         {
             InitializeComponent();
+            InitializeEngine();
+        }
 
+        public MediaEditSkia(IServiceProvider serviceProvider)
+        {
+            InitializeComponent();
+            _serviceProvider = serviceProvider;
+            InitializeEngine();
+        }
+
+        private void InitializeEngine()
+        {
             _animationEngine = new AnimationEngine();
             _renderEngine = new SkiaRenderEngine(_animationEngine);
             _registry = new RenderableRegistry();
@@ -39,16 +53,31 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             _registry.Register(new ImageComponentFactory());
             _registry.Register(new ColorTextComponentFactory());
+            _registry.Register(new TextComponentFactory());
+            _registry.Register(new RssComponentFactory());
+            _registry.Register(new WordComponentFactory());
+            _registry.Register(new VideoComponentFactory());
+            _registry.Register(new WebComponentFactory());
+            _registry.Register(new StreamComponentFactory());
+            _registry.Register(new HdmiComponentFactory());
         }
 
         public void SetViewModel(MediaEditViewModel viewModel)
         {
             _viewModel = viewModel;
             DataContext = viewModel;
-            LoadComponents();
+
+            if (_viewModel.CurrentMedia != null)
+            {
+                Dispatcher.Invoke(async () =>
+                {
+                    await _viewModel.LoadData();
+                    LoadComponents();
+                });
+            }
         }
 
-        public void LoadComponents()
+        public async void LoadComponents()
         {
             if (_viewModel?.MediaConfig?.SelectedPage == null) return;
 
@@ -75,14 +104,19 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             SkCanvas.InvalidateVisual();
         }
 
+        public byte[]? CaptureSnapshot()
+        {
+            var width = (int)_renderEngine.CanvasRatio * 768;
+            var height = (int)_renderEngine.CanvasRatio * 576;
+            return _renderEngine.CaptureSnapshot(width, height);
+        }
+
         private void OnRendering(object? sender, EventArgs e)
         {
             var now = DateTime.UtcNow;
             float deltaSeconds = (float)(now - _lastFrameTime).TotalSeconds;
             _lastFrameTime = now;
-
             if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
-
             SkCanvas.InvalidateVisual();
         }
 
@@ -93,10 +127,17 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
 
             canvas.Clear(new SKColor(0x00, 0x00, 0x00));
-
             _renderEngine.RenderFrame(canvas, deltaSeconds);
 
-            _resizeHandles.Draw(canvas);
+            if (_mouseHandler.SelectedRenderable != null)
+            {
+                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
+                _resizeHandles.Draw(canvas);
+            }
+            else
+            {
+                _resizeHandles.SetTarget(null);
+            }
         }
 
         private SKPoint GetCanvasPosition(MouseEventArgs e)
@@ -109,6 +150,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             var pos = GetCanvasPosition(e);
             _mouseHandler.OnMouseDown(pos);
+            UpdateSelection();
             SkCanvas.InvalidateVisual();
         }
 
@@ -134,16 +176,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void SkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _mouseHandler.OnMouseUp();
-
-            if (_viewModel != null)
-            {
-                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
-                if (_mouseHandler.SelectedRenderable != null)
-                {
-                    _renderEngine.AddRenderable(_resizeHandles);
-                }
-            }
-
             SkCanvas.InvalidateVisual();
         }
 
@@ -151,6 +183,32 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             _mouseHandler.OnMouseWheel(e.Delta);
             SkCanvas.InvalidateVisual();
+        }
+
+        private void UpdateSelection()
+        {
+            if (_viewModel == null) return;
+            if (_mouseHandler.SelectedRenderable != null)
+            {
+                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
+
+                var components = _viewModel.MediaConfig?.SelectedPage?.Components;
+                if (components != null)
+                {
+                    var bounds = _mouseHandler.SelectedRenderable.Bounds;
+                    var matched = components.FirstOrDefault(c =>
+                        Math.Abs(c.Left * c.Ratio - bounds.Left) < 5 &&
+                        Math.Abs(c.Top * c.Ratio - bounds.Top) < 5);
+                    if (matched != null)
+                        _viewModel.SelectedComponent = matched;
+                }
+            }
+            else
+            {
+                _resizeHandles.SetTarget(null);
+                if (_viewModel != null)
+                    _viewModel.SelectedComponent = null;
+            }
         }
 
         private void SkCanvas_DragEnter(object sender, DragEventArgs e)
@@ -171,9 +229,28 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Length > 0)
                 {
-                    // File drop handling - placeholder for now
-                    // Will be connected to the existing file handling logic
                     LoadComponents();
+                }
+            }
+        }
+
+        private void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            if (_serviceProvider != null && _viewModel != null)
+            {
+                var mainWindow = App.Current.MainWindow as MainWindow;
+                if (mainWindow != null)
+                {
+                    if (_viewModel.ShowNavigation)
+                    {
+                        var content = _serviceProvider.GetRequiredService<MediaManage>();
+                        mainWindow.GoContent(content, 2);
+                    }
+                    else
+                    {
+                        var content = _serviceProvider.GetRequiredService<UserControllers>();
+                        mainWindow.GoContent(content, 2);
+                    }
                 }
             }
         }
