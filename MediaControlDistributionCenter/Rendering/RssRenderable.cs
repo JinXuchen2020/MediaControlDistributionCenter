@@ -18,6 +18,7 @@ namespace MediaControlDistributionCenter.Rendering
         private bool _feedLoading;
         private bool _disposed;
         private int _currentPage;
+        private readonly object _itemsLock = new();
 
         private class RssItem
         {
@@ -54,17 +55,22 @@ namespace MediaControlDistributionCenter.Rendering
                 var doc = await Task.Run(() => XDocument.Load(url));
                 if (_disposed) return;
 
-                _items = doc.Descendants("item").Select(item => new RssItem
+                var newItems = doc.Descendants("item").Select(item => new RssItem
                 {
                     Title = item.Element("title")?.Value ?? string.Empty,
                     PublishDate = item.Element("pubDate")?.Value ?? string.Empty,
                     Body = item.Element("description")?.Value ?? string.Empty
                 }).ToList();
+                lock (_itemsLock)
+                    _items = newItems;
             }
             catch
             {
                 if (!_disposed)
-                    _items = new List<RssItem>();
+                {
+                    lock (_itemsLock)
+                        _items = new List<RssItem>();
+                }
             }
             _lastFetch = DateTime.UtcNow;
             _feedLoading = false;
@@ -75,7 +81,10 @@ namespace MediaControlDistributionCenter.Rendering
             if ((DateTime.UtcNow - _lastFetch).TotalMinutes > 5 && !_feedLoading)
                 _ = FetchFeedAsync();
 
-            if (_items.Count == 0) return;
+            List<RssItem> items;
+            lock (_itemsLock)
+                items = _items;
+            if (items.Count == 0) return;
 
             SKPaint? bgPaint = null;
             SKPaint? textPaint = null;
@@ -104,7 +113,7 @@ namespace MediaControlDistributionCenter.Rendering
                     if (_scrollOffset > _bounds.Width * 2 || _scrollOffset < -_bounds.Width * 2)
                         _scrollOffset = 0;
 
-                    foreach (var item in _items)
+                    foreach (var item in items)
                     {
                         foreach (var content in contentVms)
                         {
@@ -140,9 +149,9 @@ namespace MediaControlDistributionCenter.Rendering
                     int itemsPerPage = Math.Max(1, (int)((_bounds.Height - 16) / sumFontSize));
                     int startIndex = _currentPage * itemsPerPage;
 
-                    for (int i = startIndex; i < _items.Count && i < startIndex + itemsPerPage; i++)
+                    for (int i = startIndex; i < items.Count && i < startIndex + itemsPerPage; i++)
                     {
-                        var item = _items[i];
+                        var item = items[i];
                         foreach (var content in contentVms)
                         {
                             string fieldValue = GetFieldValue(item, content.FieldName);
@@ -193,7 +202,10 @@ namespace MediaControlDistributionCenter.Rendering
             if (_vm.Contents == null || _vm.Contents.Count == 0) return;
             float sumFontSize = _vm.Contents.Sum(c => c.FontSize * 1.4f) * (float)_vm.Ratio + 8;
             int itemsPerPage = Math.Max(1, (int)((_bounds.Height - 16) / sumFontSize));
-            int totalPages = Math.Max(1, (int)Math.Ceiling((double)_items.Count / itemsPerPage));
+            int count;
+            lock (_itemsLock)
+                count = _items.Count;
+            int totalPages = Math.Max(1, (int)Math.Ceiling((double)count / itemsPerPage));
             _currentPage = (_currentPage + 1) % totalPages;
         }
 

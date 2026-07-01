@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Views.Diagrams
 {
@@ -49,7 +50,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             InitializeCanvasSize();
 
             InitializeTimer();
-            InitializeAdTimer();
+            _ = InitializeAdTimerAsync();
 
             this.Unloaded += MediaPreviewSkia_Unloaded;
             this.Closed += MediaPreviewSkia_Closed;
@@ -199,31 +200,42 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             }
         }
 
-        private async void InitializeAdTimer()
+        private async Task InitializeAdTimerAsync()
         {
-            if (_adtimer != null)
+            try
             {
-                _adtimer.Stop();
+                if (_adtimer != null)
+                {
+                    _adtimer.Stop();
+                }
+
+                if (AdPage != null)
+                {
+                    var pageTimeline = AdPage.Components.Count == 0
+                        ? 5
+                        : AdPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                    int delayTime = 0;
+                    if (AdPage.AdPlayMode == "perday")
+                        delayTime = 24 * 60 / AdPage.PlayGap;
+                    if (AdPage.AdPlayMode == "perhour")
+                        delayTime = 60 / AdPage.PlayGap;
+
+                    delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayCount;
+                    if (delayTime < 0) delayTime = 0;
+                    await Task.Delay(delayTime * 1000).ConfigureAwait(false);
+                    await this.Dispatcher.InvokeAsync(() =>
+                    {
+                        _adtimer = new DispatcherTimer();
+                        _adtimer.Interval = TimeSpan.FromSeconds(pageTimeline);
+                        _adtimer.Tick += AdTimer_Tick;
+                        _adtimer.Start();
+                        adPlayGap++;
+                    });
+                }
             }
-
-            if (AdPage != null)
+            catch
             {
-                var pageTimeline = AdPage.Components.Count == 0
-                    ? 5
-                    : AdPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
-                int delayTime = 0;
-                if (AdPage.AdPlayMode == "perday")
-                    delayTime = 24 * 60 / AdPage.PlayGap;
-                if (AdPage.AdPlayMode == "perhour")
-                    delayTime = 60 / AdPage.PlayGap;
-
-                delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayCount;
-                await Task.Delay(delayTime * 1000);
-                _adtimer = new DispatcherTimer();
-                _adtimer.Interval = TimeSpan.FromSeconds(pageTimeline);
-                _adtimer.Tick += AdTimer_Tick;
-                _adtimer.Start();
-                adPlayGap++;
+                // Swallow exceptions from async ad timer to prevent process crash
             }
         }
 
@@ -240,7 +252,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             {
                 adPlayCount = 0;
                 if (adPlayGap < AdPage.PlayGap)
-                    InitializeAdTimer();
+                    _ = InitializeAdTimerAsync();
 
                 var nextPage = _viewModel.MediaConfig.Pages
                     .OrderByDescending(c => c.Order)

@@ -39,7 +39,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 _frameTimes[_index] = deltaSeconds;
                 _accumulator += deltaSeconds;
-                _index++;
+                _index = (_index + 1) % 120;
                 _count++;
             }
             else
