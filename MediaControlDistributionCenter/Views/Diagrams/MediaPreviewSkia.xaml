@@ -1,0 +1,56 @@
+<Window x:Class="MediaControlDistributionCenter.Views.Diagrams.MediaPreviewSkia"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" Width="1280" Height="960"
+        WindowStyle="None"
+        WindowStartupLocation="Manual"
+    >
+    <Grid>
+        <Grid Background="#090A0E" MouseDown="DragMove_MouseDown">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="10">
+                <TextBlock VerticalAlignment="Center" FontSize="20" Height="38" Foreground="White"
+                           Text="{DynamicResource LanguageKey_Code_Preview_Title}" />
+            </StackPanel>
+
+            <Button Width="80" Height="60" HorizontalAlignment="Right"
+                Background="#090A0E" Foreground="WhiteSmoke"
+                BorderThickness="0"
+                HorizontalContentAlignment="Center"
+                materialDesign:ColorZoneAssist.Mode="Custom"
+                materialDesign:ColorZoneAssist.Background="#090A0E"
+                materialDesign:ButtonAssist.CornerRadius="5"
+                Click="ExitButton_Click"
+                Content="{materialDesign:PackIcon Size=35,Kind=Power}"/>
+
+            <Border Grid.Row="1" Width="auto" Background="#40476F"/>
+
+            <skia:SKElement
+                Grid.Row="2"
+                x:Name="SkCanvas"
+                HorizontalAlignment="Center"
+                Margin="10"
+                VerticalAlignment="Center"
+                PaintSurface="SkCanvas_PaintSurface"
+            />
+
+            <Border Grid.Row="3" Width="auto" Background="#40476F"/>
+        </Grid>
+
+        <Grid x:Name="LoadingOverlay" Visibility="Collapsed">
+            <Border Background="Black" Opacity="0.5" />
+            <TextBlock Text="{DynamicResource LanguageKey_Code_Loading}" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" Foreground="White" FontSize="24"/>
+        </Grid>
+    </Grid>
+</Window>
