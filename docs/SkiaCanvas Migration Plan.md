@@ -131,9 +131,11 @@ SKElement (Skia 渲染)
   - `SKPaint` 设置字体/大小/颜色
   - 自动换行逻辑（`SKTextAlign` + 测量）
   - 选中框 + 拖拽
-- [ ] ⬜ 3.2 RTF→SKPaint 转换器
-  - 解析 RTF XAML 为 `List<(string text, SKPaint paint)>`
-  - 分段 `DrawText` 渲染（播放态；编辑态保留 WPF RichTextBox 覆盖层）
+- [x] ✅ 3.2 RTF→SKPaint 转换器
+  - `RtfXamlParser.cs` 解析 WPF XAML FlowDocument 格式
+  - `FormattedRun.cs` 格式化文本段数据模型
+  - `TextRenderable.cs` 更新：支持逐段格式化渲染、滚动模式多段布局、自动换行
+  - `TextComponentFactory.cs` 修复：实现 IComponentFactory 接口
 - [x] ✅ 3.3 实现 `RssRenderable`
   - 数据模型：`List<RssItem>`
   - `Draw`: 遍历渲染标题行（`DrawText`），无需创建 WPF 控件
@@ -202,7 +204,7 @@ SKElement (Skia 渲染)
 |-------|------|--------|------|
 | 1 | 基础设施 + 预览页 | 2-3 | ✅ 100%（22/22 子任务） |
 | 2 | 交互系统 | 3 | ✅ 100%（7/7 子任务） |
-| 3 | 文字/RSS/PDF 组件 | 3-4 | ✅ 80%（4/5 子任务 *RTF→SKPaint 待实现*） |
+| 3 | 文字/RSS/PDF 组件 | 3-4 | ✅ 100% |
 | 4 | 视频/Web 覆盖层 | 3 | ✅ 100%（9/9 文件） |
 | 5 | 集成 + 截图 + 切换 | 2-3 | ✅ 80%（4/6 子任务完成） |
 | **合计** | | **13-16** | **✅ 95%** |

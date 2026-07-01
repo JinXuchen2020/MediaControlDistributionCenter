@@ -61,6 +61,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             _registry.Register(new ImageComponentFactory());
             _registry.Register(new ColorTextComponentFactory());
+            _registry.Register(new TextComponentFactory());
+            _registry.Register(new RssComponentFactory());
+            _registry.Register(new WordComponentFactory());
+            _registry.Register(new VideoComponentFactory());
+            _registry.Register(new WebComponentFactory());
+            _registry.Register(new StreamComponentFactory());
+            _registry.Register(new HdmiComponentFactory());
         }
 
         private void InitializeCanvasSize()

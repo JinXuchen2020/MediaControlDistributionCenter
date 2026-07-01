@@ -2,14 +2,15 @@ using MediaControlDistributionCenter.ViewModels;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    public static class TextComponentFactory
+    public class TextComponentFactory : IComponentFactory
     {
-        public static TextRenderable Create(BaseComponentViewModel vm)
+        public string Type => "Text";
+
+        public IRenderable Create(BaseComponentViewModel vm)
         {
             if (vm is TextComponentViewModel textVm)
                 return new TextRenderable(textVm);
-
-            return null;
+            throw new ArgumentException($"Expected TextComponentViewModel, got {vm.GetType().Name}");
         }
     }
 }

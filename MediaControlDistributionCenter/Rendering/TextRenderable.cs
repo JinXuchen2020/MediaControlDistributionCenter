@@ -8,6 +8,8 @@ namespace MediaControlDistributionCenter.Rendering
         private SKRect _bounds;
         private readonly TextComponentViewModel _vm;
         private float _scrollOffset;
+        private List<FormattedRun>? _runs;
+        private bool _runsLoaded;
 
         public string Type => "Text";
         public int ZIndex { get; set; }
@@ -21,12 +23,29 @@ namespace MediaControlDistributionCenter.Rendering
             UpdateBounds();
         }
 
+        private void EnsureRunsLoaded()
+        {
+            if (_runsLoaded) return;
+            _runsLoaded = true;
+
+            if (!string.IsNullOrEmpty(_vm.RtfFilePath) && File.Exists(_vm.RtfFilePath))
+            {
+                _runs = RtfXamlParser.Parse(_vm.RtfFilePath);
+                if (_runs.Count == 0)
+                    _runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
+            }
+            else
+            {
+                _runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
+            }
+        }
+
         public void Draw(SKCanvas canvas)
         {
-            string text = _vm.Source ?? string.Empty;
-            if (string.IsNullOrEmpty(text)) return;
+            EnsureRunsLoaded();
+            if (_runs == null || _runs.Count == 0) return;
 
-            float fontSize = (float)(_vm.TextSize * _vm.Ratio);
+            float scale = (float)_vm.Ratio;
 
             using var bgPaint = new SKPaint
             {
@@ -36,49 +55,126 @@ namespace MediaControlDistributionCenter.Rendering
             };
             canvas.DrawRect(_bounds, bgPaint);
 
-            using var textPaint = new SKPaint
+            float padding = 4 * scale;
+            float x = _bounds.Left + padding;
+            float y = _bounds.Top + padding;
+            float maxX = _bounds.Right - padding;
+            float maxY = _bounds.Bottom - padding;
+
+            if (_vm.PlayMode == "rollingLeft" || _vm.PlayMode == "rollingRight")
+            {
+                DrawScrolling(canvas, scale);
+            }
+            else
+            {
+                DrawWrapped(canvas, x, y, maxX, maxY, scale);
+            }
+        }
+
+        private void DrawScrolling(SKCanvas canvas, float scale)
+        {
+            if (_runs == null || _runs.Count == 0) return;
+
+            float fontSize = (float)_vm.TextSize * scale;
+            float lineHeight = fontSize * 1.4f;
+            float speed = _vm.RollingSpeed * 1.5f;
+            float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
+            _scrollOffset += direction * speed;
+
+            float totalWidth = 0;
+            foreach (var run in _runs)
+            {
+                if (run.Text == "\n") continue;
+                using var paint = CreatePaint(run, fontSize, scale);
+                totalWidth += paint.MeasureText(run.Text);
+            }
+
+            if (_vm.IsLoopEnabled)
+            {
+                if (_scrollOffset > _bounds.Width)
+                    _scrollOffset -= _bounds.Width + totalWidth;
+                if (_scrollOffset < -(totalWidth + _bounds.Width))
+                    _scrollOffset += _bounds.Width + totalWidth;
+            }
+
+            float drawX = _bounds.Left + 4 + _scrollOffset;
+            float y = _bounds.Top + (_bounds.Height + fontSize * scale * 1.4f) / 2;
+
+            foreach (var run in _runs)
+            {
+                if (run.Text == "\n") continue;
+                using var paint = CreatePaint(run, fontSize, scale);
+                canvas.DrawText(run.Text, drawX, y, paint);
+                drawX += paint.MeasureText(run.Text);
+            }
+
+            if (_vm.IsLoopEnabled)
+            {
+                float secondX = _bounds.Left + 4 + _scrollOffset + totalWidth + _bounds.Width;
+                foreach (var run in _runs)
+                {
+                    if (run.Text == "\n") continue;
+                    using var paint = CreatePaint(run, fontSize, scale);
+                    canvas.DrawText(run.Text, secondX, y, paint);
+                    secondX += paint.MeasureText(run.Text);
+                }
+            }
+        }
+
+        private void DrawWrapped(SKCanvas canvas, float startX, float startY, float maxX, float maxY, float scale)
+        {
+            if (_runs == null) return;
+
+            float baseFontSize = (float)_vm.TextSize * scale;
+            float lineHeight = baseFontSize * 1.4f;
+            float lineSpacing = (float)_vm.LineSpacing * scale;
+            float x = startX;
+            float y = startY + baseFontSize;
+
+            foreach (var run in _runs)
+            {
+                if (run.Text == "\n")
+                {
+                    x = startX;
+                    y += lineHeight + lineSpacing;
+                    if (y > maxY) break;
+                    continue;
+                }
+
+                float runFontSize = run.FontSize * scale;
+                using var paint = CreatePaint(run, runFontSize, scale);
+                float textWidth = paint.MeasureText(run.Text);
+
+                if (x + textWidth > maxX && x > startX)
+                {
+                    x = startX;
+                    y += lineHeight + lineSpacing;
+                    if (y > maxY) break;
+                }
+
+                canvas.DrawText(run.Text, x, y, paint);
+                x += textWidth;
+            }
+        }
+
+        private SKPaint CreatePaint(FormattedRun run, float fontSize, float scale)
+        {
+            var paint = new SKPaint
             {
                 TextSize = fontSize,
                 IsAntialias = true,
                 SubpixelText = true,
-                Color = new SKColor(_vm.Foreground.R, _vm.Foreground.G, _vm.Foreground.B, _vm.Foreground.A),
+                Color = run.Foreground,
                 TextAlign = SKTextAlign.Left,
             };
 
-            float lineHeight = fontSize * 1.4f;
-            float x = _bounds.Left + 4;
-            float y = _bounds.Top + fontSize;
+            if (run.IsBold)
+                paint.FakeBoldText = true;
 
-            if (_vm.PlayMode == "rollingLeft" || _vm.PlayMode == "rollingRight")
-            {
-                float textWidth = textPaint.MeasureText(text);
-                float speed = _vm.RollingSpeed * 1.5f;
-                float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
-                _scrollOffset += direction * speed;
+            if (run.IsItalic)
+                paint.TextSkewX = -0.25f;
 
-                if (_vm.IsLoopEnabled)
-                {
-                    if (_scrollOffset > _bounds.Width) _scrollOffset -= _bounds.Width + textWidth;
-                    if (_scrollOffset < -(textWidth + _bounds.Width)) _scrollOffset += _bounds.Width + textWidth;
-                }
-
-                float drawX = x + _scrollOffset;
-                canvas.DrawText(text, drawX, y, textPaint);
-
-                if (_vm.IsLoopEnabled && drawX + textWidth < _bounds.Right)
-                    canvas.DrawText(text, drawX + _bounds.Width + textWidth, y, textPaint);
-            }
-            else
-            {
-                var lines = text.Split('\n');
-                float lineSpacing = (float)_vm.LineSpacing * (float)_vm.Ratio;
-                foreach (var line in lines)
-                {
-                    canvas.DrawText(line, x, y, textPaint);
-                    y += lineHeight + lineSpacing;
-                    if (y > _bounds.Bottom) break;
-                }
-            }
+            return paint;
         }
 
         public bool HitTest(SKPoint point)
@@ -88,6 +184,8 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
+            _runsLoaded = false;
+            _runs = null;
             UpdateBounds();
         }
 
