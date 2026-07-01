@@ -21,6 +21,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private MediaEditViewModel? _viewModel;
         private IServiceProvider? _serviceProvider;
         private DateTime _lastFrameTime;
+        private readonly FpsCounter _fpsCounter = new();
 
         public MediaEditSkia()
         {
@@ -45,6 +46,16 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             _lastFrameTime = DateTime.UtcNow;
             CompositionTarget.Rendering += OnRendering;
+
+            this.PreviewKeyDown += (s, e) =>
+            {
+                if (e.Key == Key.F11)
+                {
+                    _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
+                    if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                    e.Handled = true;
+                }
+            };
 
             InitializeFactories();
         }
@@ -117,6 +128,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             float deltaSeconds = (float)(now - _lastFrameTime).TotalSeconds;
             _lastFrameTime = now;
             if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
+            _fpsCounter.Update(deltaSeconds);
             SkCanvas.InvalidateVisual();
         }
 
@@ -138,6 +150,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             {
                 _resizeHandles.SetTarget(null);
             }
+
+            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         private SKPoint GetCanvasPosition(MouseEventArgs e)

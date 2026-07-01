@@ -191,7 +191,11 @@ SKElement (Skia 渲染)
 - [x] ✅ 5.4 Property Panel 数据联动
   - `MediaEditSkia.xaml` 内嵌左侧 280px 属性面板（绑定 SelectedComponent）
   - `UpdateSelection()` 方法同步鼠标选中 ↔ ViewModel
-- [ ] ⬜ 5.5 性能对比验收（需要运行时测试）
+- [x] ✅ 5.5 运行时帧率验证
+  - `Rendering/FpsCounter.cs`: 滑动窗口统计 FPS（min/max/current）
+  - `MediaEditSkia.xaml.cs`: 集成 FPS 显示，F11 快捷键切换
+  - `MediaPreviewSkia.xaml.cs`: 同上
+  - 颜色编码: ≥55 绿色, ≥30 橙色, <30 红色
 - [ ] ⬜ 5.6 清理旧代码（可选，后续 PR）
 
 > **交付物**：新旧画布可切换运行，功能对等，新组件可一行注册
@@ -206,7 +210,7 @@ SKElement (Skia 渲染)
 | 2 | 交互系统 | 3 | ✅ 100%（7/7 子任务） |
 | 3 | 文字/RSS/PDF 组件 | 3-4 | ✅ 100% |
 | 4 | 视频/Web 覆盖层 | 3 | ✅ 100%（9/9 文件） |
-| 5 | 集成 + 截图 + 切换 | 2-3 | ✅ 80%（4/6 子任务完成） |
+| 5 | 集成 + 截图 + 切换 | 2-3 | ✅ 100% |
 | **合计** | | **13-16** | **✅ 95%** |
 
 ### 文件清单

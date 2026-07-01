@@ -28,6 +28,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private readonly RenderableRegistry _registry;
         private DateTime _lastFrameTime;
         private bool _isRunning;
+        private readonly FpsCounter _fpsCounter = new();
 
         public MediaPreviewSkia(MediaEditViewModel viewModel)
         {
@@ -53,6 +54,16 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _viewModel.IsPreviewing = true;
             _isRunning = true;
             _lastFrameTime = DateTime.UtcNow;
+
+            this.PreviewKeyDown += (s, e) =>
+            {
+                if (e.Key == Key.F11)
+                {
+                    _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
+                    if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                    e.Handled = true;
+                }
+            };
 
             CompositionTarget.Rendering += OnRendering;
         }
@@ -104,6 +115,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (deltaSeconds > 0.1f)
                 deltaSeconds = 0.016f;
 
+            _fpsCounter.Update(deltaSeconds);
             SkCanvas.InvalidateVisual();
         }
 
@@ -117,6 +129,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
             canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
             _renderEngine.RenderFrame(canvas, deltaSeconds);
+
+            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         private void MediaPreviewSkia_Unloaded(object sender, RoutedEventArgs e)
