@@ -66,6 +66,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void MediaEditSkia_Unloaded(object sender, RoutedEventArgs e)
         {
+            if (_controller == null) return;
             _controller.RenderEngine.IsInteracting = false;
             CompositionTarget.Rendering -= OnRendering;
             this.PreviewKeyDown -= OnPreviewKeyDown;
@@ -93,7 +94,14 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             {
                 Dispatcher.Invoke(async () =>
                 {
-                    await _viewModel.LoadData();
+                    try
+                    {
+                        await _viewModel.LoadData();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "LoadData failed");
+                    }
                     LoadComponents();
                 });
             }
@@ -101,31 +109,38 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         public async void LoadComponents()
         {
-            if (_viewModel?.SelectedPage == null) return;
-
-            _controller.RenderEngine.Clear();
-
-            var components = _viewModel.SelectedPage.Components
-                .Where(c => !c.IsDeleted);
-
-            foreach (var component in components)
+            try
             {
-                if (component == null) continue;
-                try
+                if (_viewModel?.SelectedPage == null) return;
+
+                _controller.RenderEngine.Clear();
+
+                var components = _viewModel.SelectedPage.Components
+                    .Where(c => !c.IsDeleted);
+
+                foreach (var component in components)
                 {
-                    if (_controller.Registry.CanCreate(component.Type))
+                    if (component == null) continue;
+                    try
                     {
-                        var renderable = _controller.Registry.Create(component);
-                        _controller.RenderEngine.AddRenderable(renderable);
+                        if (_controller.Registry.CanCreate(component.Type))
+                        {
+                            var renderable = _controller.Registry.Create(component);
+                            _controller.RenderEngine.AddRenderable(renderable);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Failed to create renderable for component type: {Type}", component.Type);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Failed to create renderable for component type: {Type}", component.Type);
-                }
-            }
 
-            SkCanvas.InvalidateVisual();
+                SkCanvas.InvalidateVisual();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to load components");
+            }
         }
 
         public byte[]? CaptureSnapshot()
@@ -250,22 +265,21 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
         {
-            if (_serviceProvider != null && _viewModel != null)
+            if (_viewModel == null) return;
+            if (_serviceProvider == null) return;
+
+            var mainWindow = App.Current.MainWindow as MainWindow;
+            if (mainWindow == null) return;
+
+            if (_viewModel.ShowNavigation)
             {
-                var mainWindow = App.Current.MainWindow as MainWindow;
-                if (mainWindow != null)
-                {
-                    if (_viewModel.ShowNavigation)
-                    {
-                        var content = _serviceProvider.GetRequiredService<MediaManage>();
-                        mainWindow.GoContent(content, 2);
-                    }
-                    else
-                    {
-                        var content = _serviceProvider.GetRequiredService<UserControllers>();
-                        mainWindow.GoContent(content, 2);
-                    }
-                }
+                var content = _serviceProvider.GetRequiredService<MediaManage>();
+                mainWindow.GoContent(content, 2);
+            }
+            else
+            {
+                var content = _serviceProvider.GetRequiredService<UserControllers>();
+                mainWindow.GoContent(content, 2);
             }
         }
     }

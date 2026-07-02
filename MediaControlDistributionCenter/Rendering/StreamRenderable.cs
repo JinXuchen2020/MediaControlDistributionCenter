@@ -8,6 +8,9 @@ namespace MediaControlDistributionCenter.Rendering
     {
         private SKRect _bounds;
         private readonly BaseComponentViewModel _vm;
+        private SKPath? _cachedPath1;
+        private SKPath? _cachedPath2;
+        private float _cachedSize;
 
         public string Type => "Stream";
         public int ZIndex { get; set; }
@@ -20,6 +23,25 @@ namespace MediaControlDistributionCenter.Rendering
             _vm = vm;
             ZIndex = vm.ZIndex;
             UpdateBounds();
+        }
+
+        private void EnsureCachedPaths(float cx, float cy, float size)
+        {
+            if (_cachedPath1 != null && Math.Abs(_cachedSize - size) <= 0.5f)
+                return;
+
+            _cachedPath1?.Dispose();
+            _cachedPath2?.Dispose();
+
+            float r = size * 0.35f;
+            _cachedPath1 = new SKPath();
+            _cachedPath1.AddArc(new SKRect(cx - r, cy - r, cx + r, cy + r), -60, 120);
+
+            float r2 = size * 0.55f;
+            _cachedPath2 = new SKPath();
+            _cachedPath2.AddArc(new SKRect(cx - r2, cy - r2, cx + r2, cy + r2), -60, 120);
+
+            _cachedSize = size;
         }
 
         public void Draw(SKCanvas canvas)
@@ -44,18 +66,11 @@ namespace MediaControlDistributionCenter.Rendering
                 arcPaint.Color = new SKColor(80, 220, 120, 100);
                 arcPaint.Style = SKPaintStyle.Stroke;
                 arcPaint.StrokeWidth = size * 0.08f;
-                float r = size * 0.35f;
-                var path = new SKPath();
-                path.AddArc(new SKRect(cx - r, cy - r, cx + r, cy + r), -60, 120);
-                canvas.DrawPath(path, arcPaint);
 
-                float r2 = size * 0.55f;
-                var path2 = new SKPath();
-                path2.AddArc(new SKRect(cx - r2, cy - r2, cx + r2, cy + r2), -60, 120);
-                canvas.DrawPath(path2, arcPaint);
+                EnsureCachedPaths(cx, cy, size);
+                canvas.DrawPath(_cachedPath1, arcPaint);
+                canvas.DrawPath(_cachedPath2, arcPaint);
 
-                path.Dispose();
-                path2.Dispose();
                 RenderResourcePool.Shared.ReturnPaint(dotPaint);
                 RenderResourcePool.Shared.ReturnPaint(arcPaint);
             }
@@ -75,20 +90,22 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
+            _cachedPath1?.Dispose();
+            _cachedPath1 = null;
+            _cachedPath2?.Dispose();
+            _cachedPath2 = null;
             UpdateBounds();
         }
 
         public void Dispose()
         {
+            _cachedPath1?.Dispose();
+            _cachedPath2?.Dispose();
         }
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
     }
 }

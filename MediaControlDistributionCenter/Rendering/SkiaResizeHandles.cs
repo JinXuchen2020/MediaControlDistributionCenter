@@ -84,7 +84,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (handle.Contains(point)) return true;
             }
-            return _target?.Bounds.Contains(point) ?? false;
+            return false;
         }
 
         public int HitTestHandleIndex(SKPoint point)

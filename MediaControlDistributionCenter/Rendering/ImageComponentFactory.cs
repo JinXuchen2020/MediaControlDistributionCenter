@@ -36,8 +36,14 @@ namespace MediaControlDistributionCenter.Rendering
                 if (File.Exists(fullPath))
                     return fullPath;
             }
-            if (!string.IsNullOrEmpty(vm.Source) && File.Exists(vm.Source))
-                return vm.Source;
+            if (!string.IsNullOrEmpty(vm.Source))
+            {
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var assetsDir = Path.GetFullPath(Path.Combine(baseDir, "Assets"));
+                var fullPath = Path.GetFullPath(Path.Combine(baseDir, "Assets", vm.Source));
+                if (fullPath.StartsWith(assetsDir, StringComparison.OrdinalIgnoreCase) && File.Exists(fullPath))
+                    return fullPath;
+            }
             return string.Empty;
         }
     }

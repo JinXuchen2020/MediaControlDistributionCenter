@@ -10,6 +10,8 @@ namespace MediaControlDistributionCenter.Rendering
         private SKBitmap? _bitmap;
         private SKRect _bounds;
         private readonly BaseComponentViewModel _vm;
+        private readonly BitmapCache? _cache;
+        private readonly string _filePath;
 
         public string Type => "Image";
         public int ZIndex { get; set; }
@@ -24,11 +26,15 @@ namespace MediaControlDistributionCenter.Rendering
         public ImageRenderable(BaseComponentViewModel vm, string filePath, BitmapCache? cache)
         {
             _vm = vm;
+            _cache = cache;
+            _filePath = filePath ?? string.Empty;
             ZIndex = vm.ZIndex;
             try
             {
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                {
                     _bitmap = cache?.GetOrDecode(filePath) ?? SKBitmap.Decode(filePath);
+                }
             }
             catch (Exception ex)
             {
@@ -58,16 +64,21 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
 
         public void Dispose()
         {
-            _bitmap?.Dispose();
+            if (_cache != null && !string.IsNullOrEmpty(_filePath))
+            {
+                _cache.Release(_filePath);
+                _bitmap = null;
+            }
+            else
+            {
+                _bitmap?.Dispose();
+                _bitmap = null;
+            }
         }
     }
 }

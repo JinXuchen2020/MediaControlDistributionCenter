@@ -21,8 +21,8 @@ namespace MediaControlDistributionCenter.Rendering
         public BaseComponentViewModel? SelectedViewModel => _selectedVm;
         public SkiaResizeHandles ResizeHandles => _resizeHandles;
 
-        public bool IsLeftButtonPressed { get; set; }
-        public SKPoint CurrentPosition { get; set; }
+        public bool IsLeftButtonPressed { get; private set; }
+        public SKPoint CurrentPosition { get; private set; }
 
         public MediaEditViewModel? ViewModel { get; set; }
 
@@ -174,15 +174,7 @@ namespace MediaControlDistributionCenter.Rendering
             _isDragging = false;
             _isResizing = false;
         }
-    }
 
-    public enum CursorType
-    {
-        Arrow,
-        SizeAll,
-        SizeWE,
-        SizeNS,
-        SizeNWSE,
-        SizeNESW
     }
 }
+

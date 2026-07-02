@@ -12,18 +12,21 @@ namespace MediaControlDistributionCenter.Rendering
 {
     public class RssRenderable : IRenderable
     {
+        private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
+
         private SKRect _bounds;
         private readonly RssComponentViewModel _vm;
         private float _scrollOffset;
         private List<RssItem> _items;
         private DateTime _lastFetch;
-        private bool _feedLoading;
-        private bool _disposed;
+        private volatile bool _feedLoading;
+        private volatile bool _disposed;
         private int _retryCount;
         private DateTime _lastRetry = DateTime.MinValue;
         private CancellationTokenSource? _cts;
         private int _currentPage;
         private readonly object _itemsLock = new();
+        private DateTime _lastScrollTime = DateTime.UtcNow;
 
         private class RssItem
         {
@@ -58,30 +61,37 @@ namespace MediaControlDistributionCenter.Rendering
             }
             _feedLoading = true;
 
-            _cts = new CancellationTokenSource();
-            var token = _cts.Token;
+            var fetchCts = new CancellationTokenSource();
+            var token = fetchCts.Token;
+            var old = Interlocked.Exchange(ref _cts, fetchCts);
+            try { old?.Cancel(); } catch { }
+            old?.Dispose();
 
             try
             {
                 string url = _vm.Source ?? string.Empty;
                 if (string.IsNullOrEmpty(url)) return;
 
-                using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-                cts.CancelAfter(TimeSpan.FromSeconds(10));
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+                timeoutCts.CancelAfter(TimeSpan.FromSeconds(10));
 
-                var response = await httpClient.GetAsync(url, cts.Token);
+                var response = await _httpClient.GetAsync(url, timeoutCts.Token);
                 response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync(cts.Token);
+                var content = await response.Content.ReadAsStringAsync(timeoutCts.Token);
                 if (_disposed || token.IsCancellationRequested) return;
 
-                var doc = XDocument.Parse(content);
-                var newItems = doc.Descendants("item").Select(item => new RssItem
+                var newItems = await Task.Run(() =>
                 {
-                    Title = item.Element("title")?.Value ?? string.Empty,
-                    PublishDate = item.Element("pubDate")?.Value ?? string.Empty,
-                    Body = item.Element("description")?.Value ?? string.Empty
-                }).ToList();
+                    var doc = XDocument.Parse(content);
+                    return doc.Descendants("item").Select(item => new RssItem
+                    {
+                        Title = item.Element("title")?.Value ?? string.Empty,
+                        PublishDate = item.Element("pubDate")?.Value ?? string.Empty,
+                        Body = item.Element("description")?.Value ?? string.Empty
+                    }).ToList();
+                });
+                _retryCount = 0;
+                _lastFetch = DateTime.UtcNow;
                 lock (_itemsLock)
                     _items = newItems;
             }
@@ -89,9 +99,9 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 // Expected when disposed or timeout
             }
-            catch
+            catch (Exception)
             {
-                _retryCount++;
+                Interlocked.Increment(ref _retryCount);
                 _lastRetry = DateTime.UtcNow;
                 if (!_disposed)
                 {
@@ -99,8 +109,6 @@ namespace MediaControlDistributionCenter.Rendering
                         _items = new List<RssItem>();
                 }
             }
-            _retryCount = 0;
-            _lastFetch = DateTime.UtcNow;
             _feedLoading = false;
         }
 
@@ -130,7 +138,11 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 float speed = _vm.RollingSpeed * 2f;
                 float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
-                _scrollOffset += direction * speed;
+                var now = DateTime.UtcNow;
+                float elapsed = (float)(now - _lastScrollTime).TotalSeconds;
+                _lastScrollTime = now;
+                if (elapsed > 0.1f) elapsed = 0.016f;
+                _scrollOffset += direction * speed * elapsed;
 
                 if (_scrollOffset > _bounds.Width * 2 || _scrollOffset < -_bounds.Width * 2)
                     _scrollOffset = 0;
@@ -145,11 +157,9 @@ namespace MediaControlDistributionCenter.Rendering
                         float fontSize = content.FontSize * (float)_vm.Ratio;
                         var paint = RenderResourcePool.Shared.RentPaint();
                         paint.Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A);
-                        var font = content.IsItalic
-                            ? RenderResourcePool.Shared.RentFont(fontSize)
-                            : RenderResourcePool.Shared.RentFont(fontSize);
+                        var font = RenderResourcePool.Shared.RentFont(fontSize);
                         if (content.IsBold)
-                            font.Typeface = SKTypeface.FromFamilyName(SKTypeface.Default.FamilyName, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+                            font.Typeface = RenderResourcePool.BoldTypeface;
                         if (content.IsItalic)
                             font.SkewX = -0.25f;
 
@@ -180,11 +190,9 @@ namespace MediaControlDistributionCenter.Rendering
                         float fontSize = content.FontSize * (float)_vm.Ratio;
                         var paint = RenderResourcePool.Shared.RentPaint();
                         paint.Color = new SKColor(content.FontColor.R, content.FontColor.G, content.FontColor.B, content.FontColor.A);
-                        var font = content.IsItalic
-                            ? RenderResourcePool.Shared.RentFont(fontSize)
-                            : RenderResourcePool.Shared.RentFont(fontSize);
+                        var font = RenderResourcePool.Shared.RentFont(fontSize);
                         if (content.IsBold)
-                            font.Typeface = SKTypeface.FromFamilyName(SKTypeface.Default.FamilyName, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+                            font.Typeface = RenderResourcePool.BoldTypeface;
                         if (content.IsItalic)
                             font.SkewX = -0.25f;
 
@@ -234,11 +242,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
 
         public void Dispose()

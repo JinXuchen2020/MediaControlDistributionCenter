@@ -6,8 +6,6 @@ namespace MediaControlDistributionCenter.Rendering
     {
         public int DrawCallsPerFrame { get; set; }
         public int LayerSavesPerFrame { get; set; }
-        public int PoolHitsPerFrame { get; set; }
-        public int PoolMissesPerFrame { get; set; }
         public int AnimatedElements { get; set; }
         public float FrameTimeMs { get; set; }
 
@@ -15,8 +13,6 @@ namespace MediaControlDistributionCenter.Rendering
         {
             DrawCallsPerFrame = 0;
             LayerSavesPerFrame = 0;
-            PoolHitsPerFrame = 0;
-            PoolMissesPerFrame = 0;
             AnimatedElements = 0;
             FrameTimeMs = 0;
         }
@@ -24,7 +20,6 @@ namespace MediaControlDistributionCenter.Rendering
         public override string ToString()
         {
             return $"Draw:{DrawCallsPerFrame} Layer:{LayerSavesPerFrame} " +
-                   $"Pool(H:{PoolHitsPerFrame}/M:{PoolMissesPerFrame}) " +
                    $"Anim:{AnimatedElements} {FrameTimeMs:F1}ms";
         }
     }

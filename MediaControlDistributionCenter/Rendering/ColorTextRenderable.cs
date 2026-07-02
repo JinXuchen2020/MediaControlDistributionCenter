@@ -11,6 +11,8 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly SKPaint _textPaint;
         private SKShader _gradientShader;
         private readonly SKImageFilter _dropShadow;
+        private bool _disposed;
+        private SKRect _lastGradientBounds;
 
         public string Type => "ColorText";
         public int ZIndex { get; set; }
@@ -57,21 +59,21 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
+            if (_disposed) return;
             UpdateBounds();
         }
 
         private void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
             UpdateGradientShader();
         }
 
         private void UpdateGradientShader()
         {
+            if (_disposed) return;
+            if (_lastGradientBounds == _bounds) return;
+            _lastGradientBounds = _bounds;
             _gradientShader?.Dispose();
             _gradientShader = SKShader.CreateLinearGradient(
                 new SKPoint(_bounds.Left, _bounds.Top),
@@ -84,6 +86,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Dispose()
         {
+            _disposed = true;
             _textPaint?.Dispose();
             _gradientShader?.Dispose();
             _dropShadow?.Dispose();

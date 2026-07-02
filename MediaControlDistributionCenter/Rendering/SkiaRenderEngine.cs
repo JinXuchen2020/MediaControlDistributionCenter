@@ -85,11 +85,18 @@ namespace MediaControlDistributionCenter.Rendering
                 Statistics.DrawCallsPerFrame++;
                 int baseSaveCount = canvas.SaveCount;
                 canvas.Save();
-                Statistics.LayerSavesPerFrame += baseSaveCount - canvas.SaveCount + 1;
-                _animationEngine.ApplyAnimations(canvas, renderable);
-                renderable.Draw(canvas);
+                try
+                {
+                    _animationEngine.ApplyAnimations(canvas, renderable);
+                    renderable.Draw(canvas);
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Error(ex, "RenderFrame: exception in {Type}", renderable.Type);
+                }
                 while (canvas.SaveCount > baseSaveCount)
                     canvas.Restore();
+                Statistics.LayerSavesPerFrame += canvas.SaveCount - baseSaveCount;
             }
 
             Statistics.AnimatedElements = HasActiveAnimations ? _renderables.Count : 0;
@@ -128,8 +135,15 @@ namespace MediaControlDistributionCenter.Rendering
                 if (!renderable.IsVisible) continue;
                 int baseSaveCount = canvas.SaveCount;
                 canvas.Save();
-                _animationEngine.ApplyAnimations(canvas, renderable);
-                renderable.Draw(canvas);
+                try
+                {
+                    _animationEngine.ApplyAnimations(canvas, renderable);
+                    renderable.Draw(canvas);
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Error(ex, "CaptureSnapshot: exception in {Type}", renderable.Type);
+                }
                 while (canvas.SaveCount > baseSaveCount)
                     canvas.Restore();
             }
@@ -170,8 +184,7 @@ namespace MediaControlDistributionCenter.Rendering
                 if (a == null && b == null) return 0;
                 if (a == null) return -1;
                 if (b == null) return 1;
-                int result = a.ZIndex.CompareTo(b.ZIndex);
-                return result != 0 ? result : a.GetHashCode().CompareTo(b.GetHashCode());
+                return a.ZIndex.CompareTo(b.ZIndex);
             }
         }
     }

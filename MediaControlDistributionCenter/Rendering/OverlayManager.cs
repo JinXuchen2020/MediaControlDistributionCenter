@@ -16,6 +16,7 @@ namespace MediaControlDistributionCenter.Rendering
 
     public class OverlayManager
     {
+        private const float SizeThreshold = 0.5f;
         private readonly Canvas _hostCanvas;
         private readonly List<OverlayEntry> _entries = new();
         private SkiaRenderEngine? _renderEngine;
@@ -56,7 +57,7 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
-        public void SyncPositions(float canvasScale = 1f)
+        public void SyncPositions()
         {
             foreach (var entry in _entries)
             {
@@ -70,9 +71,9 @@ namespace MediaControlDistributionCenter.Rendering
 
                     if (entry.Element is FrameworkElement fe)
                     {
-                        if (Math.Abs(fe.Width - bounds.Width) > 0.5f)
+                        if (Math.Abs(fe.Width - bounds.Width) > SizeThreshold)
                             fe.Width = bounds.Width;
-                        if (Math.Abs(fe.Height - bounds.Height) > 0.5f)
+                        if (Math.Abs(fe.Height - bounds.Height) > SizeThreshold)
                             fe.Height = bounds.Height;
                     }
                 }

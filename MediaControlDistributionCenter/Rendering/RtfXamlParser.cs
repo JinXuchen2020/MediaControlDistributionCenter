@@ -132,18 +132,6 @@ namespace MediaControlDistributionCenter.Rendering
                     }
                 }
 
-                // Try WPF color format: #RRGGBB
-                if (colorValue.Length >= 7 && colorValue[0] == '#')
-                {
-                    var hex = colorValue.TrimStart('#');
-                    if (hex.Length >= 6)
-                    {
-                        var r = Convert.ToByte(hex[..2], 16);
-                        var g = Convert.ToByte(hex.Substring(2, 2), 16);
-                        var b = Convert.ToByte(hex.Substring(4, 2), 16);
-                        return new SKColor(r, g, b);
-                    }
-                }
             }
             catch (Exception ex)
             {

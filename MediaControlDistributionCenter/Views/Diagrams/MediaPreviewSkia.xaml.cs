@@ -5,7 +5,6 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -21,11 +20,11 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private DispatcherTimer _adtimer;
         private double _ratio;
         private double _oldRatio;
-        private int currentPlayCount;
-        private int adPlayCount;
-        private int adPlayGap;
-        private MediaPageViewModel CurrentPage;
-        private MediaPageViewModel? AdPage;
+        private int _currentPlayCount;
+        private int _adPlayCount;
+        private int _adPlayGap;
+        private MediaPageViewModel _currentPage;
+        private MediaPageViewModel? _adPage;
         private readonly MediaEditViewModel _viewModel;
         private readonly SkiaCanvasController _controller;
         private readonly IServiceProvider? _serviceProvider;
@@ -41,8 +40,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _serviceProvider = serviceProvider;
 
             _viewModel = viewModel;
-            CurrentPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted && c.Type == "normal");
-            AdPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => !c.IsDeleted && c.Type == "ad");
+            _currentPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => !c.IsDeleted && c.Type == "normal")
+                ?? throw new InvalidOperationException("No normal page found in media config");
+            _adPage = viewModel.MediaConfig.Pages.FirstOrDefault(c => !c.IsDeleted && c.Type == "ad");
             DataContext = viewModel;
 
             _oldRatio = viewModel.MediaConfig.Ratio;
@@ -90,11 +90,10 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             if (!_isRunning) return;
 
-            _controller.UpdateDeltaTime();
-            _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
-
             if (_controller.FpsCounter.IsVisible || _controller.RenderEngine.HasActiveAnimations)
             {
+                _controller.UpdateDeltaTime();
+                _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
                 SkCanvas.InvalidateVisual();
             }
         }
@@ -150,34 +149,32 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 _timer.Stop();
             }
             _timer = new DispatcherTimer();
-            var pageTimeline = CurrentPage.Components.Count == 0
+            var pageTimeline = _currentPage.Components.Count == 0
                 ? 5
-                : CurrentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                : _currentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
             _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
             _timer.Tick += Timer_Tick;
             _timer.Start();
-            currentPlayCount++;
+            _currentPlayCount++;
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            if (currentPlayCount < CurrentPage.PlayCount)
+            if (_currentPlayCount < _currentPage.PlayCount)
             {
-                LoadCanvasComponents(CurrentPage);
+                LoadCanvasComponents(_currentPage);
                 InitializeTimer();
             }
             else
             {
-                currentPlayCount = 0;
+                _currentPlayCount = 0;
                 var nextPage = _viewModel.MediaConfig.Pages
-                    .FirstOrDefault(c => c.Order > CurrentPage.Order && !c.IsDeleted && c.Type == "normal");
-                if (nextPage == null)
-                {
-                    nextPage = _viewModel.MediaConfig.Pages
-                        .First(c => !c.IsDeleted && c.Type == "normal");
-                }
-                CurrentPage = nextPage;
-                LoadCanvasComponents(CurrentPage);
+                    .FirstOrDefault(c => c.Order > _currentPage.Order && !c.IsDeleted && c.Type == "normal");
+                nextPage ??= _viewModel.MediaConfig.Pages
+                    .FirstOrDefault(c => !c.IsDeleted && c.Type == "normal");
+                if (nextPage == null) return;
+                _currentPage = nextPage;
+                LoadCanvasComponents(_currentPage);
                 InitializeTimer();
             }
         }
@@ -191,27 +188,29 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     _adtimer.Stop();
                 }
 
-                if (AdPage != null)
+                if (_adPage != null)
                 {
-                    var pageTimeline = AdPage.Components.Count == 0
+                    var pageTimeline = _adPage.Components.Count == 0
                         ? 5
-                        : AdPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                        : _adPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
                     int delayTime = 0;
-                    if (AdPage.AdPlayMode == "perday")
-                        delayTime = 24 * 60 / AdPage.PlayGap;
-                    if (AdPage.AdPlayMode == "perhour")
-                        delayTime = 60 / AdPage.PlayGap;
+                    if (_adPage.AdPlayMode == "perday" && _adPage.PlayGap > 0)
+                        delayTime = 24 * 60 / _adPage.PlayGap;
+                    if (_adPage.AdPlayMode == "perhour" && _adPage.PlayGap > 0)
+                        delayTime = 60 / _adPage.PlayGap;
 
-                    delayTime = delayTime * 60 - (int)pageTimeline * AdPage.PlayCount;
+                    delayTime = delayTime * 60 - (int)pageTimeline * _adPage.PlayCount;
                     if (delayTime < 0) delayTime = 0;
                     await Task.Delay(delayTime * 1000).ConfigureAwait(false);
+                    if (!_isRunning) return;
                     await this.Dispatcher.InvokeAsync(() =>
                     {
+                        if (!_isRunning) return;
                         _adtimer = new DispatcherTimer();
                         _adtimer.Interval = TimeSpan.FromSeconds(pageTimeline);
                         _adtimer.Tick += AdTimer_Tick;
                         _adtimer.Start();
-                        adPlayGap++;
+                        _adPlayGap++;
                     });
                 }
             }
@@ -223,29 +222,29 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void AdTimer_Tick(object? sender, EventArgs e)
         {
-            if (AdPage == null) return;
+            if (_adPage == null) return;
 
-            if (adPlayCount < AdPage.PlayCount)
+            if (_adPlayCount < _adPage.PlayCount)
             {
-                LoadCanvasComponents(AdPage);
-                adPlayCount++;
+                LoadCanvasComponents(_adPage);
+                _adPlayCount++;
             }
             else
             {
-                adPlayCount = 0;
-                if (adPlayGap < AdPage.PlayGap)
+                _adPlayCount = 0;
+                if (_adPlayGap < _adPage.PlayGap)
                     _ = InitializeAdTimerAsync();
+                else
+                    _adPlayGap = 0;
 
                 var nextPage = _viewModel.MediaConfig.Pages
                     .OrderByDescending(c => c.Order)
-                    .FirstOrDefault(c => c.Order < AdPage.Order && !c.IsDeleted && c.Type == "normal");
-                if (nextPage == null)
-                {
-                    nextPage = _viewModel.MediaConfig.Pages
-                        .First(c => !c.IsDeleted && c.Type == "normal");
-                }
-                CurrentPage = nextPage;
-                LoadCanvasComponents(CurrentPage);
+                    .FirstOrDefault(c => c.Order < _adPage.Order && !c.IsDeleted && c.Type == "normal");
+                nextPage ??= _viewModel.MediaConfig.Pages
+                    .FirstOrDefault(c => !c.IsDeleted && c.Type == "normal");
+                if (nextPage == null) return;
+                _currentPage = nextPage;
+                LoadCanvasComponents(_currentPage);
                 InitializeTimer();
             }
         }
@@ -294,6 +293,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     Log.Error(ex, "Failed to create renderable for component type: {Type}", component.Type);
                 }
             }
+
+            SkCanvas.InvalidateVisual();
         }
 
         private void DisposeCanvasComponents()

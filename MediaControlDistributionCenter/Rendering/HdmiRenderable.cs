@@ -84,11 +84,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
     }
 }

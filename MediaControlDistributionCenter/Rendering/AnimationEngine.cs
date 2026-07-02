@@ -15,11 +15,19 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Stop(IRenderable target)
         {
-            _animations.Remove(target);
+            if (_animations.TryGetValue(target, out var anims))
+            {
+                foreach (var anim in anims)
+                    anim.Dispose();
+                _animations.Remove(target);
+            }
         }
 
         public void StopAll()
         {
+            foreach (var anims in _animations.Values)
+                foreach (var anim in anims)
+                    anim.Dispose();
             _animations.Clear();
         }
 
@@ -31,7 +39,16 @@ namespace MediaControlDistributionCenter.Rendering
 
             foreach (var (target, anims) in _animations)
             {
-                anims.RemoveAll(a => { a.Update(deltaSeconds); return a.IsCompleted; });
+                var completed = new List<IAnimation>();
+                anims.RemoveAll(a =>
+                {
+                    a.Update(deltaSeconds);
+                    if (a.IsCompleted)
+                        completed.Add(a);
+                    return a.IsCompleted;
+                });
+                foreach (var c in completed)
+                    c.Dispose();
                 if (anims.Count == 0)
                     emptyTargets.Add(target);
             }
@@ -47,7 +64,14 @@ namespace MediaControlDistributionCenter.Rendering
 
             foreach (var anim in anims)
             {
-                anim.Apply(canvas);
+                try
+                {
+                    anim.Apply(canvas);
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Error(ex, "ApplyAnimations: exception in animation for {Type}", target.Type);
+                }
             }
         }
     }

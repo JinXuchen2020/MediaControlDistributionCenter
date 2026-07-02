@@ -11,7 +11,9 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly TextComponentViewModel _vm;
         private float _scrollOffset;
         private List<FormattedRun>? _runs;
-        private bool _runsLoaded;
+        private volatile bool _runsLoaded;
+        private float _totalWidth;
+        private DateTime _lastScrollTime = DateTime.UtcNow;
 
         public string Type => "Text";
         public int ZIndex { get; set; }
@@ -40,6 +42,22 @@ namespace MediaControlDistributionCenter.Rendering
             else
             {
                 _runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
+            }
+
+            ComputeTotalWidth();
+        }
+
+        private void ComputeTotalWidth()
+        {
+            _totalWidth = 0;
+            if (_runs == null) return;
+            float scale = (float)_vm.Ratio;
+            float fontSize = (float)_vm.TextSize * scale;
+            foreach (var run in _runs)
+            {
+                if (run.Text == "\n") continue;
+                using var font = CreateFont(run, fontSize, scale);
+                _totalWidth += font.Value.MeasureText(run.Text);
             }
         }
 
@@ -79,27 +97,22 @@ namespace MediaControlDistributionCenter.Rendering
             float fontSize = (float)_vm.TextSize * scale;
             float speed = _vm.RollingSpeed * 1.5f;
             float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
-            _scrollOffset += direction * speed;
-
-            float totalWidth = 0;
-            foreach (var run in _runs)
-            {
-                if (run.Text == "\n") continue;
-                using var paint = CreatePaint(run, fontSize, scale);
-                using var font = CreateFont(run, fontSize, scale);
-                totalWidth += font.Value.MeasureText(run.Text);
-            }
+            var now = DateTime.UtcNow;
+            float elapsed = (float)(now - _lastScrollTime).TotalSeconds;
+            _lastScrollTime = now;
+            if (elapsed > 0.1f) elapsed = 0.016f;
+            _scrollOffset += direction * speed * elapsed;
 
             if (_vm.IsLoopEnabled)
             {
                 if (_scrollOffset > _bounds.Width)
-                    _scrollOffset -= _bounds.Width + totalWidth;
-                if (_scrollOffset < -(totalWidth + _bounds.Width))
-                    _scrollOffset += _bounds.Width + totalWidth;
+                    _scrollOffset -= _bounds.Width + _totalWidth;
+                if (_scrollOffset < -(_totalWidth + _bounds.Width))
+                    _scrollOffset += _bounds.Width + _totalWidth;
             }
             else
             {
-                _scrollOffset = Math.Clamp(_scrollOffset, -(totalWidth + 10), _bounds.Width);
+                _scrollOffset = Math.Clamp(_scrollOffset, -(_totalWidth + 10), _bounds.Width);
             }
 
             float drawX = _bounds.Left + 4 + _scrollOffset;
@@ -116,7 +129,7 @@ namespace MediaControlDistributionCenter.Rendering
 
             if (_vm.IsLoopEnabled)
             {
-                float secondX = _bounds.Left + 4 + _scrollOffset + totalWidth + _bounds.Width;
+                float secondX = _bounds.Left + 4 + _scrollOffset + _totalWidth + _bounds.Width;
                 foreach (var run in _runs)
                 {
                     if (run.Text == "\n") continue;
@@ -190,7 +203,7 @@ namespace MediaControlDistributionCenter.Rendering
         {
             var font = RenderResourcePool.Shared.RentFont(fontSize);
             if (run.IsBold)
-                font.Typeface = SKTypeface.FromFamilyName(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+                font.Typeface = RenderResourcePool.BoldTypeface;
             if (run.IsItalic)
                 font.SkewX = -0.25f;
             return new PooledFont(font);
@@ -214,11 +227,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
     }
 }

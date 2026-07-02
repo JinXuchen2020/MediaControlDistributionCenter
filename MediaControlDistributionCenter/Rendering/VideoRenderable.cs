@@ -7,6 +7,8 @@ namespace MediaControlDistributionCenter.Rendering
     {
         private SKRect _bounds;
         private readonly BaseComponentViewModel _vm;
+        private SKPath? _cachedPath;
+        private float _cachedSize;
 
         public string Type => "Video";
         public int ZIndex { get; set; }
@@ -38,13 +40,17 @@ namespace MediaControlDistributionCenter.Rendering
             float size = Math.Min(_bounds.Width, _bounds.Height) * 0.3f;
             if (size > 4f)
             {
-                var path = new SKPath();
-                path.MoveTo(cx - size * 0.4f, cy - size * 0.5f);
-                path.LineTo(cx - size * 0.4f, cy + size * 0.5f);
-                path.LineTo(cx + size * 0.5f, cy);
-                path.Close();
-                canvas.DrawPath(path, iconPaint);
-                path.Dispose();
+                if (_cachedPath == null || Math.Abs(_cachedSize - size) > 0.5f)
+                {
+                    _cachedPath?.Dispose();
+                    _cachedPath = new SKPath();
+                    _cachedPath.MoveTo(cx - size * 0.4f, cy - size * 0.5f);
+                    _cachedPath.LineTo(cx - size * 0.4f, cy + size * 0.5f);
+                    _cachedPath.LineTo(cx + size * 0.5f, cy);
+                    _cachedPath.Close();
+                    _cachedSize = size;
+                }
+                canvas.DrawPath(_cachedPath, iconPaint);
             }
 
             var borderPaint = RenderResourcePool.Shared.RentPaint();
@@ -63,20 +69,19 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
+            _cachedPath?.Dispose();
+            _cachedPath = null;
             UpdateBounds();
         }
 
         public void Dispose()
         {
+            _cachedPath?.Dispose();
         }
 
         public void UpdateBounds()
         {
-            _bounds = new SKRect(
-                (float)(_vm.Left * _vm.Ratio),
-                (float)(_vm.Top * _vm.Ratio),
-                (float)((_vm.Left + _vm.Width) * _vm.Ratio),
-                (float)((_vm.Top + _vm.Height) * _vm.Ratio));
+            _bounds = BoundsHelper.ComputeBounds(_vm);
         }
     }
 }

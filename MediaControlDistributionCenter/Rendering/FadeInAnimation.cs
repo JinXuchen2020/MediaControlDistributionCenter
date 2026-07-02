@@ -1,4 +1,5 @@
 using SkiaSharp;
+using System;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -9,12 +10,12 @@ namespace MediaControlDistributionCenter.Rendering
 
         private readonly float _duration;
         private float _elapsed;
-        private readonly SKPaint _layerPaint = new();
+        private readonly SKPaint _layerPaint;
 
         public FadeInAnimation(float durationSeconds = 0.5f)
         {
             _duration = durationSeconds;
-            _layerPaint.Color = SKColors.White;
+            _layerPaint = new SKPaint { Color = SKColors.White };
         }
 
         public void Update(float deltaSeconds)
@@ -25,9 +26,15 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Apply(SKCanvas canvas)
         {
+            if (IsCompleted) return;
             float alpha = Math.Clamp(_elapsed / _duration, 0f, 1f);
             _layerPaint.Color = new SKColor(255, 255, 255, (byte)(255 * alpha));
             canvas.SaveLayer(_layerPaint);
+        }
+
+        public void Dispose()
+        {
+            _layerPaint?.Dispose();
         }
     }
 }

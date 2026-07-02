@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    public interface IAnimation
+    public interface IAnimation : IDisposable
     {
         bool IsCompleted { get; }
         float Duration { get; }

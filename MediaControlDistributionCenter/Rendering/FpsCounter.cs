@@ -17,7 +17,7 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly SKPaint _bgPaint;
         private readonly SKPaint _fgPaint;
         private readonly SKFont _font;
-        private string? _lastText;
+        private string _lastText = string.Empty;
         private float _lastTextWidth;
 
         public FpsCounter()
@@ -79,10 +79,9 @@ namespace MediaControlDistributionCenter.Rendering
             var text = $"FPS: {CurrentFps:F1}  (min: {MinFps:F1}  max: {MaxFps:F1})";
             if (text != _lastText)
             {
-                _lastTextWidth = _font.MeasureText(text);
                 _lastText = text;
+                _lastTextWidth = _font.MeasureText(text);
             }
-
             canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, _font, _fgPaint);
         }
 
@@ -95,6 +94,12 @@ namespace MediaControlDistributionCenter.Rendering
             CurrentFps = 0;
             MinFps = float.MaxValue;
             MaxFps = 0;
+        }
+        public void Dispose()
+        {
+            _font?.Dispose();
+            _bgPaint?.Dispose();
+            _fgPaint?.Dispose();
         }
     }
 }

@@ -30,18 +30,23 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void ReturnPaint(SKPaint paint)
         {
+            paint.Color = default;
+            paint.Style = SKPaintStyle.Fill;
+            paint.StrokeWidth = 0;
+            paint.IsAntialias = true;
             paint.Shader = null;
             paint.ImageFilter = null;
             paint.ColorFilter = null;
             paint.MaskFilter = null;
             paint.PathEffect = null;
-            if (_paintCount < _maxPerType)
+            int count = Interlocked.Increment(ref _paintCount);
+            if (count <= _maxPerType)
             {
                 _paints.Add(paint);
-                Interlocked.Increment(ref _paintCount);
             }
             else
             {
+                Interlocked.Decrement(ref _paintCount);
                 paint.Dispose();
             }
         }
@@ -63,13 +68,14 @@ namespace MediaControlDistributionCenter.Rendering
         {
             font.Typeface = null;
             font.SkewX = 0;
-            if (_fontCount < _maxPerType)
+            int count = Interlocked.Increment(ref _fontCount);
+            if (count <= _maxPerType)
             {
                 _fonts.Add(font);
-                Interlocked.Increment(ref _fontCount);
             }
             else
             {
+                Interlocked.Decrement(ref _fontCount);
                 font.Dispose();
             }
         }
@@ -80,6 +86,11 @@ namespace MediaControlDistributionCenter.Rendering
             while (_fonts.TryTake(out var font)) font.Dispose();
             _paintCount = 0;
             _fontCount = 0;
+            _boldTypeface?.Dispose();
         }
+
+        private static readonly SKTypeface _boldTypeface = SKTypeface.FromFamilyName(
+            null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+        internal static SKTypeface BoldTypeface => _boldTypeface;
     }
 }
