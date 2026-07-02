@@ -1,4 +1,6 @@
+using Serilog;
 using SkiaSharp;
+using System.IO;
 using System.Xml.Linq;
 
 namespace MediaControlDistributionCenter.Rendering
@@ -76,9 +78,9 @@ namespace MediaControlDistributionCenter.Rendering
                         runs.Add(new FormattedRun { Text = text });
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Return empty on parse failure
+                Log.Error(ex, "Failed to parse RTF XAML file: {FilePath}", filePath);
             }
 
             return runs;
@@ -143,7 +145,10 @@ namespace MediaControlDistributionCenter.Rendering
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to parse color value: {ColorValue}", colorValue);
+            }
 
             return SKColors.White;
         }

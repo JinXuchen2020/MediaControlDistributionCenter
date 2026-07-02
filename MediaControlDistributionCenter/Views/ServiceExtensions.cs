@@ -1,4 +1,5 @@
-﻿using MediaControlDistributionCenter.Services.ApiImps;
+﻿using MediaControlDistributionCenter.Rendering;
+using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.LocalImps;
 using MediaControlDistributionCenter.Views.DeviceManagement;
 using MediaControlDistributionCenter.Views.Diagrams;
@@ -31,7 +32,6 @@ namespace MediaControlDistributionCenter.Views
 
             services.AddTransient<MediaPublishDialog>();
             services.AddTransient<UserChangeGroupDialog>();
-            
 
             services.AddTransient<UserControllers>();
 
@@ -42,6 +42,18 @@ namespace MediaControlDistributionCenter.Views
             services.AddTransient<ResultConfirmDialog>();
 
             services.AddTransient<MediaContent>();
+            return services;
+        }
+
+        public static IServiceCollection AddRenderingServices(this IServiceCollection services)
+        {
+            services.AddSingleton<BitmapCache>();
+            services.AddTransient<AnimationEngine>();
+            services.AddTransient<SkiaRenderEngine>();
+            services.AddTransient<RenderableRegistry>();
+            services.AddTransient<SkiaMouseHandler>();
+            services.AddTransient<SkiaResizeHandles>();
+            services.AddTransient<SkiaCanvasController>();
             return services;
         }
     }

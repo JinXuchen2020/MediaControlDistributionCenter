@@ -1,3 +1,4 @@
+using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
 
@@ -9,6 +10,7 @@ namespace MediaControlDistributionCenter.Rendering
         int ZIndex { get; set; }
         SKRect Bounds { get; }
         bool IsVisible { get; set; }
+        BaseComponentViewModel? ViewModel { get; }
         void Draw(SKCanvas canvas);
         bool HitTest(SKPoint point);
         void Invalidate();

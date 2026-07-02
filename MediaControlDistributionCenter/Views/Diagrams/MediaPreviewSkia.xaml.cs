@@ -1,5 +1,6 @@
 using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.ViewModels;
+using Serilog;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using System.Threading.Tasks;
 
@@ -25,16 +27,18 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private MediaPageViewModel CurrentPage;
         private MediaPageViewModel? AdPage;
         private readonly MediaEditViewModel _viewModel;
-        private readonly SkiaRenderEngine _renderEngine;
-        private readonly AnimationEngine _animationEngine;
-        private readonly RenderableRegistry _registry;
-        private DateTime _lastFrameTime;
+        private readonly SkiaCanvasController _controller;
+        private readonly IServiceProvider? _serviceProvider;
         private bool _isRunning;
-        private readonly FpsCounter _fpsCounter = new();
 
-        public MediaPreviewSkia(MediaEditViewModel viewModel)
+        public MediaPreviewSkia(MediaEditViewModel viewModel) : this(viewModel, null)
+        {
+        }
+
+        public MediaPreviewSkia(MediaEditViewModel viewModel, IServiceProvider? serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
 
             _viewModel = viewModel;
             CurrentPage = viewModel.MediaConfig.Pages.First(c => !c.IsDeleted && c.Type == "normal");
@@ -42,11 +46,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             DataContext = viewModel;
 
             _oldRatio = viewModel.MediaConfig.Ratio;
-            _animationEngine = new AnimationEngine();
-            _renderEngine = new SkiaRenderEngine(_animationEngine);
-            _registry = new RenderableRegistry();
+            _controller = new SkiaCanvasController(serviceProvider);
 
-            InitializeFactories();
             InitializeCanvasSize();
 
             InitializeTimer();
@@ -56,24 +57,10 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             this.Closed += MediaPreviewSkia_Closed;
             _viewModel.IsPreviewing = true;
             _isRunning = true;
-            _lastFrameTime = DateTime.UtcNow;
 
             this.PreviewKeyDown += OnPreviewKeyDown;
 
             CompositionTarget.Rendering += OnRendering;
-        }
-
-        private void InitializeFactories()
-        {
-            _registry.Register(new ImageComponentFactory());
-            _registry.Register(new ColorTextComponentFactory());
-            _registry.Register(new TextComponentFactory());
-            _registry.Register(new RssComponentFactory());
-            _registry.Register(new WordComponentFactory());
-            _registry.Register(new VideoComponentFactory());
-            _registry.Register(new WebComponentFactory());
-            _registry.Register(new StreamComponentFactory());
-            _registry.Register(new HdmiComponentFactory());
         }
 
         private void InitializeCanvasSize()
@@ -103,15 +90,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             if (!_isRunning) return;
 
-            var now = DateTime.UtcNow;
-            float deltaSeconds = (float)(now - _lastFrameTime).TotalSeconds;
-            _lastFrameTime = now;
+            _controller.UpdateDeltaTime();
+            _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
 
-            if (deltaSeconds > 0.1f)
-                deltaSeconds = 0.016f;
-
-            _fpsCounter.Update(deltaSeconds);
-            SkCanvas.InvalidateVisual();
+            if (_controller.FpsCounter.IsVisible || _controller.RenderEngine.HasActiveAnimations)
+            {
+                SkCanvas.InvalidateVisual();
+            }
         }
 
         private void SkCanvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
@@ -119,21 +104,18 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (!_isRunning) return;
 
             var canvas = e.Surface.Canvas;
-            float deltaSeconds = (float)(DateTime.UtcNow - _lastFrameTime).TotalSeconds;
-            if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
 
             canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
-            _renderEngine.RenderFrame(canvas, deltaSeconds);
+            _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
 
-            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
+            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F11)
             {
-                _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
-                if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                _controller.ToggleFps();
                 e.Handled = true;
             }
         }
@@ -233,9 +215,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     });
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Swallow exceptions from async ad timer to prevent process crash
+                Log.Error(ex, "Async ad timer initialization failed");
             }
         }
 
@@ -270,20 +252,27 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void LoadCanvasComponents(MediaPageViewModel mediaPage)
         {
-            _renderEngine.Clear();
-            _animationEngine.StopAll();
+            _controller.RenderEngine.Clear();
+            _controller.AnimationEngine.StopAll();
+
+            float effectiveRatio = (float)(_oldRatio * _ratio);
 
             foreach (var component in mediaPage.Components.Where(c => !c.IsDeleted))
             {
                 if (component == null) continue;
-                component.Ratio = _oldRatio * _ratio;
 
                 try
                 {
-                    if (_registry.CanCreate(component.Type))
+                    float savedRatio = (float)component.Ratio;
+                    component.Ratio = effectiveRatio;
+
+                    if (_controller.Registry.CanCreate(component.Type))
                     {
-                        var renderable = _registry.Create(component);
-                        _renderEngine.AddRenderable(renderable);
+                        var renderable = _controller.Registry.Create(component);
+
+                        component.Ratio = savedRatio;
+
+                        _controller.RenderEngine.AddRenderable(renderable);
 
                         if (component.Effects.Any())
                         {
@@ -295,35 +284,21 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                                     (float)(component.EffectDuration > 0
                                         ? component.EffectDuration / 1000.0
                                         : 0.5));
-                                _renderEngine.PlayAnimation(renderable, fade);
+                                _controller.RenderEngine.PlayAnimation(renderable, fade);
                             }
                         }
                     }
                 }
-                catch { }
-
-                component.Ratio = _oldRatio;
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to create renderable for component type: {Type}", component.Type);
+                }
             }
-
-            this.Dispatcher.Invoke(async () =>
-            {
-                while (mediaPage.Components.Where(c => !c.IsDeleted)
-                    .Any(c => !c.IsRunningLoaded))
-                {
-                    await Task.Delay(1000);
-                }
-
-                foreach (var component in mediaPage.Components.Where(c => !c.IsDeleted))
-                {
-                    component.EffectExecution();
-                }
-            });
         }
 
         private void DisposeCanvasComponents()
         {
-            _renderEngine.Clear();
-            _animationEngine.StopAll();
+            _controller.Dispose();
             _timer?.Stop();
             _timer = null;
             _adtimer?.Stop();

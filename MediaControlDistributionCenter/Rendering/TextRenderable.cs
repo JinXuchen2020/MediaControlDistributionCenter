@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
+using System.IO;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -16,6 +17,7 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
+        public BaseComponentViewModel? ViewModel => _vm;
 
         public TextRenderable(TextComponentViewModel vm)
         {
@@ -48,13 +50,11 @@ namespace MediaControlDistributionCenter.Rendering
 
             float scale = (float)_vm.Ratio;
 
-            using var bgPaint = new SKPaint
-            {
-                Color = new SKColor(_vm.Background.R, _vm.Background.G, _vm.Background.B, _vm.Background.A),
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true,
-            };
+            var bgPaint = RenderResourcePool.Shared.RentPaint();
+            bgPaint.Color = new SKColor(_vm.Background.R, _vm.Background.G, _vm.Background.B, _vm.Background.A);
+            bgPaint.Style = SKPaintStyle.Fill;
             canvas.DrawRect(_bounds, bgPaint);
+            RenderResourcePool.Shared.ReturnPaint(bgPaint);
 
             float padding = 4 * scale;
             float x = _bounds.Left + padding;
@@ -77,7 +77,6 @@ namespace MediaControlDistributionCenter.Rendering
             if (_runs == null || _runs.Count == 0) return;
 
             float fontSize = (float)_vm.TextSize * scale;
-            float lineHeight = fontSize * 1.4f;
             float speed = _vm.RollingSpeed * 1.5f;
             float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
             _scrollOffset += direction * speed;
@@ -87,7 +86,8 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (run.Text == "\n") continue;
                 using var paint = CreatePaint(run, fontSize, scale);
-                totalWidth += paint.MeasureText(run.Text);
+                using var font = CreateFont(run, fontSize, scale);
+                totalWidth += font.Value.MeasureText(run.Text);
             }
 
             if (_vm.IsLoopEnabled)
@@ -97,16 +97,21 @@ namespace MediaControlDistributionCenter.Rendering
                 if (_scrollOffset < -(totalWidth + _bounds.Width))
                     _scrollOffset += _bounds.Width + totalWidth;
             }
+            else
+            {
+                _scrollOffset = Math.Clamp(_scrollOffset, -(totalWidth + 10), _bounds.Width);
+            }
 
             float drawX = _bounds.Left + 4 + _scrollOffset;
-            float y = _bounds.Top + (_bounds.Height + fontSize * scale * 1.4f) / 2;
+            float y = _bounds.Top + (_bounds.Height + fontSize * 1.4f) / 2;
 
             foreach (var run in _runs)
             {
                 if (run.Text == "\n") continue;
                 using var paint = CreatePaint(run, fontSize, scale);
-                canvas.DrawText(run.Text, drawX, y, paint);
-                drawX += paint.MeasureText(run.Text);
+                using var font = CreateFont(run, fontSize, scale);
+                canvas.DrawText(run.Text, drawX, y, font.Value, paint.Value);
+                drawX += font.Value.MeasureText(run.Text);
             }
 
             if (_vm.IsLoopEnabled)
@@ -116,8 +121,9 @@ namespace MediaControlDistributionCenter.Rendering
                 {
                     if (run.Text == "\n") continue;
                     using var paint = CreatePaint(run, fontSize, scale);
-                    canvas.DrawText(run.Text, secondX, y, paint);
-                    secondX += paint.MeasureText(run.Text);
+                    using var font = CreateFont(run, fontSize, scale);
+                    canvas.DrawText(run.Text, secondX, y, font.Value, paint.Value);
+                    secondX += font.Value.MeasureText(run.Text);
                 }
             }
         }
@@ -144,7 +150,8 @@ namespace MediaControlDistributionCenter.Rendering
 
                 float runFontSize = run.FontSize * scale;
                 using var paint = CreatePaint(run, runFontSize, scale);
-                float textWidth = paint.MeasureText(run.Text);
+                using var font = CreateFont(run, runFontSize, scale);
+                float textWidth = font.Value.MeasureText(run.Text);
 
                 if (x + textWidth > maxX && x > startX)
                 {
@@ -153,29 +160,40 @@ namespace MediaControlDistributionCenter.Rendering
                     if (y > maxY) break;
                 }
 
-                canvas.DrawText(run.Text, x, y, paint);
+                canvas.DrawText(run.Text, x, y, font.Value, paint.Value);
                 x += textWidth;
             }
         }
 
-        private SKPaint CreatePaint(FormattedRun run, float fontSize, float scale)
+        private struct PooledPaint : IDisposable
         {
-            var paint = new SKPaint
-            {
-                TextSize = fontSize,
-                IsAntialias = true,
-                SubpixelText = true,
-                Color = run.Foreground,
-                TextAlign = SKTextAlign.Left,
-            };
+            public SKPaint Value { get; }
+            public PooledPaint(SKPaint paint) => Value = paint;
+            public void Dispose() => RenderResourcePool.Shared.ReturnPaint(Value);
+        }
 
+        private struct PooledFont : IDisposable
+        {
+            public SKFont Value { get; }
+            public PooledFont(SKFont font) => Value = font;
+            public void Dispose() => RenderResourcePool.Shared.ReturnFont(Value);
+        }
+
+        private PooledPaint CreatePaint(FormattedRun run, float fontSize, float scale)
+        {
+            var paint = RenderResourcePool.Shared.RentPaint();
+            paint.Color = run.Foreground;
+            return new PooledPaint(paint);
+        }
+
+        private PooledFont CreateFont(FormattedRun run, float fontSize, float scale)
+        {
+            var font = RenderResourcePool.Shared.RentFont(fontSize);
             if (run.IsBold)
-                paint.FakeBoldText = true;
-
+                font.Typeface = SKTypeface.FromFamilyName(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
             if (run.IsItalic)
-                paint.TextSkewX = -0.25f;
-
-            return paint;
+                font.SkewX = -0.25f;
+            return new PooledFont(font);
         }
 
         public bool HitTest(SKPoint point)

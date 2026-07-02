@@ -11,7 +11,9 @@ using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+#if NETFRAMEWORK
 using NetFwTypeLib;
+#endif
 using Serilog;
 using Syncfusion.Licensing;
 using System.IO;
@@ -87,6 +89,7 @@ namespace MediaControlDistributionCenter
 
             services.AddPageViewServices();
             services.AddPageViewModelServices();
+            services.AddRenderingServices();
 
             ServicesProvider = services.BuildServiceProvider();
 
@@ -113,12 +116,14 @@ namespace MediaControlDistributionCenter
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+#if NETFRAMEWORK
             INetFwMgr netFwMgr = (INetFwMgr)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwMgr"));
             INetFwAuthorizedApplication app = (INetFwAuthorizedApplication)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwAuthorizedApplication"));
             app.Name = nameof(MediaControlDistributionCenter);
             app.ProcessImageFileName = Environment.ProcessPath;
             app.Enabled = true;
             netFwMgr.LocalPolicy.CurrentProfile.AuthorizedApplications.Add(app);
+#endif
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

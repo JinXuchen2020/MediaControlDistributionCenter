@@ -81,6 +81,8 @@ namespace MediaControlDistributionCenter.ViewModels
         [ObservableProperty]
         private bool isDeleted;
 
+        public virtual int EffectDuration => 0;
+
         public bool IsDragging { get; private set; }
 
         private Point startPoint;

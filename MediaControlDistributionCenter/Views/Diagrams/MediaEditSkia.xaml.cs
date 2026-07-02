@@ -1,27 +1,28 @@
 using MediaControlDistributionCenter.Models;
 using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.ViewModels;
+using MediaControlDistributionCenter.Views.MediaManagement;
+using MediaControlDistributionCenter.Views.UserManagement;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MediaControlDistributionCenter.Views.Diagrams
 {
     public partial class MediaEditSkia : UserControl
     {
-        private SkiaRenderEngine _renderEngine;
-        private AnimationEngine _animationEngine;
-        private RenderableRegistry _registry;
+        private SkiaCanvasController _controller;
         private SkiaMouseHandler _mouseHandler;
-        private SkiaResizeHandles _resizeHandles;
         private MediaEditViewModel? _viewModel;
         private IServiceProvider? _serviceProvider;
-        private DateTime _lastFrameTime;
-        private readonly FpsCounter _fpsCounter = new();
 
         public MediaEditSkia()
         {
@@ -40,72 +41,46 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void InitializeEngine()
         {
-            _animationEngine = new AnimationEngine();
-            _renderEngine = new SkiaRenderEngine(_animationEngine);
-            _registry = new RenderableRegistry();
-            _mouseHandler = new SkiaMouseHandler(_renderEngine);
-            _resizeHandles = new SkiaResizeHandles();
+            _controller = new SkiaCanvasController(_serviceProvider);
+            var resizeHandles = _serviceProvider != null
+                ? _serviceProvider.GetRequiredService<SkiaResizeHandles>()
+                : new SkiaResizeHandles();
+            _mouseHandler = new SkiaMouseHandler(_controller.RenderEngine, resizeHandles);
 
-            _lastFrameTime = DateTime.UtcNow;
             CompositionTarget.Rendering += OnRendering;
-
             this.PreviewKeyDown += OnPreviewKeyDown;
             SkCanvas.PaintSurface += SkCanvas_PaintSurface;
 
-            InitializeFactories();
+            _controller.RenderEngine.SurfacePool = _controller.SurfacePool;
+            _controller.InitializeFactories();
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F11)
             {
-                _fpsCounter.IsVisible = !_fpsCounter.IsVisible;
-                if (_fpsCounter.IsVisible) _fpsCounter.Reset();
+                _controller.ToggleFps();
                 e.Handled = true;
             }
         }
 
         private void MediaEditSkia_Unloaded(object sender, RoutedEventArgs e)
         {
+            _controller.RenderEngine.IsInteracting = false;
             CompositionTarget.Rendering -= OnRendering;
             this.PreviewKeyDown -= OnPreviewKeyDown;
             SkCanvas.PaintSurface -= SkCanvas_PaintSurface;
-            _renderEngine.Clear();
+            _controller.Dispose();
         }
 
         private void SkCanvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
-            float deltaSeconds = (float)(DateTime.UtcNow - _lastFrameTime).TotalSeconds;
-            if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
 
             canvas.Clear(new SKColor(0x00, 0x00, 0x00));
-            _renderEngine.RenderFrame(canvas, deltaSeconds);
+            _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
 
-            if (_mouseHandler.SelectedRenderable != null)
-            {
-                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
-                _resizeHandles.Draw(canvas);
-            }
-            else
-            {
-                _resizeHandles.SetTarget(null);
-            }
-
-            _fpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
-        }
-
-        private void InitializeFactories()
-        {
-            _registry.Register(new ImageComponentFactory());
-            _registry.Register(new ColorTextComponentFactory());
-            _registry.Register(new TextComponentFactory());
-            _registry.Register(new RssComponentFactory());
-            _registry.Register(new WordComponentFactory());
-            _registry.Register(new VideoComponentFactory());
-            _registry.Register(new WebComponentFactory());
-            _registry.Register(new StreamComponentFactory());
-            _registry.Register(new HdmiComponentFactory());
+            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
         }
 
         public void SetViewModel(MediaEditViewModel viewModel)
@@ -126,12 +101,11 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         public async void LoadComponents()
         {
-            if (_viewModel?.MediaConfig?.SelectedPage == null) return;
+            if (_viewModel?.SelectedPage == null) return;
 
-            _renderEngine.Clear();
-            _resizeHandles.SetTarget(null);
+            _controller.RenderEngine.Clear();
 
-            var components = _viewModel.MediaConfig.SelectedPage.Components
+            var components = _viewModel.SelectedPage.Components
                 .Where(c => !c.IsDeleted);
 
             foreach (var component in components)
@@ -139,13 +113,16 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 if (component == null) continue;
                 try
                 {
-                    if (_registry.CanCreate(component.Type))
+                    if (_controller.Registry.CanCreate(component.Type))
                     {
-                        var renderable = _registry.Create(component);
-                        _renderEngine.AddRenderable(renderable);
+                        var renderable = _controller.Registry.Create(component);
+                        _controller.RenderEngine.AddRenderable(renderable);
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to create renderable for component type: {Type}", component.Type);
+                }
             }
 
             SkCanvas.InvalidateVisual();
@@ -153,19 +130,22 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         public byte[]? CaptureSnapshot()
         {
-            var width = (int)_renderEngine.CanvasRatio * 768;
-            var height = (int)_renderEngine.CanvasRatio * 576;
-            return _renderEngine.CaptureSnapshot(width, height);
+            var width = (int)_controller.RenderEngine.CanvasRatio * 768;
+            var height = (int)_controller.RenderEngine.CanvasRatio * 576;
+            return _controller.RenderEngine.CaptureSnapshot(width, height);
         }
 
         private void OnRendering(object? sender, EventArgs e)
         {
-            var now = DateTime.UtcNow;
-            float deltaSeconds = (float)(now - _lastFrameTime).TotalSeconds;
-            _lastFrameTime = now;
-            if (deltaSeconds > 0.1f) deltaSeconds = 0.016f;
-            _fpsCounter.Update(deltaSeconds);
-            SkCanvas.InvalidateVisual();
+            _controller.UpdateDeltaTime();
+            _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
+
+            if (_controller.FpsCounter.IsVisible ||
+                _controller.RenderEngine.HasActiveAnimations ||
+                _controller.RenderEngine.IsInteracting)
+            {
+                SkCanvas.InvalidateVisual();
+            }
         }
 
         private SKPoint GetCanvasPosition(MouseEventArgs e)
@@ -179,6 +159,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             var pos = GetCanvasPosition(e);
             _mouseHandler.OnMouseDown(pos);
             UpdateSelection();
+            _controller.RenderEngine.IsInteracting = true;
             SkCanvas.InvalidateVisual();
         }
 
@@ -190,11 +171,11 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             var cursor = _mouseHandler.GetCursor(pos);
             SkCanvas.Cursor = cursor switch
             {
-                CursorType.SizeAll => Cursors.SizeAll,
-                CursorType.SizeWE => Cursors.SizeWE,
-                CursorType.SizeNS => Cursors.SizeNS,
-                CursorType.SizeNWSE => Cursors.SizeNWSE,
-                CursorType.SizeNESW => Cursors.SizeNESW,
+                Rendering.CursorType.SizeAll => Cursors.SizeAll,
+                Rendering.CursorType.SizeWE => Cursors.SizeWE,
+                Rendering.CursorType.SizeNS => Cursors.SizeNS,
+                Rendering.CursorType.SizeNWSE => Cursors.SizeNWSE,
+                Rendering.CursorType.SizeNESW => Cursors.SizeNESW,
                 _ => Cursors.Arrow,
             };
 
@@ -204,6 +185,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void SkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _mouseHandler.OnMouseUp();
+            _controller.RenderEngine.IsInteracting = false;
             SkCanvas.InvalidateVisual();
         }
 
@@ -216,27 +198,31 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void UpdateSelection()
         {
             if (_viewModel == null) return;
-            if (_mouseHandler.SelectedRenderable != null)
-            {
-                _resizeHandles.SetTarget(_mouseHandler.SelectedRenderable);
+            var engine = _controller.RenderEngine;
+            var resizeHandles = _mouseHandler.ResizeHandles;
 
-                var components = _viewModel.MediaConfig?.SelectedPage?.Components;
-                if (components != null)
+            var selected = _mouseHandler.SelectedRenderable;
+            if (selected != null)
+            {
+                if (!engine.Renderables.Contains(resizeHandles))
                 {
-                    var bounds = _mouseHandler.SelectedRenderable.Bounds;
-                    var matched = components.FirstOrDefault(c =>
-                        Math.Abs(c.Left * c.Ratio - bounds.Left) < 5 &&
-                        Math.Abs(c.Top * c.Ratio - bounds.Top) < 5);
-                    if (matched != null)
-                        _viewModel.SelectedComponent = matched;
+                    resizeHandles.SetTarget(selected);
+                    engine.AddRenderable(resizeHandles);
                 }
             }
             else
             {
-                _resizeHandles.SetTarget(null);
-                if (_viewModel != null)
-                    _viewModel.SelectedComponent = null;
+                if (engine.Renderables.Contains(resizeHandles))
+                {
+                    engine.RemoveRenderable(resizeHandles);
+                    resizeHandles.SetTarget(null);
+                }
             }
+
+            if (selected?.ViewModel != null)
+                _viewModel.SelectedComponent = selected.ViewModel;
+            else
+                _viewModel.SelectedComponent = null;
         }
 
         private void SkCanvas_DragEnter(object sender, DragEventArgs e)

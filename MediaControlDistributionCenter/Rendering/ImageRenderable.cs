@@ -1,5 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
+using Serilog;
 using SkiaSharp;
+using System.IO;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -13,17 +15,25 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
+        public BaseComponentViewModel? ViewModel => _vm;
 
-        public ImageRenderable(BaseComponentViewModel vm, string filePath)
+        public ImageRenderable(BaseComponentViewModel vm, string filePath) : this(vm, filePath, null)
+        {
+        }
+
+        public ImageRenderable(BaseComponentViewModel vm, string filePath, BitmapCache? cache)
         {
             _vm = vm;
             ZIndex = vm.ZIndex;
             try
             {
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                    _bitmap = SKBitmap.Decode(filePath);
+                    _bitmap = cache?.GetOrDecode(filePath) ?? SKBitmap.Decode(filePath);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to decode image: {FilePath}", filePath);
+            }
             UpdateBounds();
         }
 
@@ -31,12 +41,9 @@ namespace MediaControlDistributionCenter.Rendering
         {
             if (_bitmap == null) return;
 
-            using var paint = new SKPaint
-            {
-                IsAntialias = true,
-            };
-
+            var paint = RenderResourcePool.Shared.RentPaint();
             canvas.DrawBitmap(_bitmap, _bounds, paint);
+            RenderResourcePool.Shared.ReturnPaint(paint);
         }
 
         public bool HitTest(SKPoint point)

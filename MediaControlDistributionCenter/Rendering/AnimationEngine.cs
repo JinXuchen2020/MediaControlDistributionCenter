@@ -23,6 +23,8 @@ namespace MediaControlDistributionCenter.Rendering
             _animations.Clear();
         }
 
+        public bool HasActiveAnimations => _animations.Count > 0;
+
         public void Update(float deltaSeconds)
         {
             var emptyTargets = new List<IRenderable>();

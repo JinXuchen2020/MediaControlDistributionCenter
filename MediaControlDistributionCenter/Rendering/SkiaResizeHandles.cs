@@ -1,3 +1,4 @@
+using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
 
@@ -20,12 +21,12 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
         public bool IsVisible { get; set; }
+        public BaseComponentViewModel? ViewModel => null;
 
         public void SetTarget(IRenderable? target)
         {
             _target = target;
             IsVisible = target != null;
-            UpdateHandles();
         }
 
         public void Draw(SKCanvas canvas)
@@ -34,28 +35,19 @@ namespace MediaControlDistributionCenter.Rendering
 
             var b = _target.Bounds;
 
-            using var fillPaint = new SKPaint
-            {
-                Color = new SKColor(0xD8, 0xE8, 0xFF),
-                IsAntialias = true,
-                Style = SKPaintStyle.Fill
-            };
+            var fillPaint = RenderResourcePool.Shared.RentPaint();
+            fillPaint.Color = new SKColor(0xD8, 0xE8, 0xFF);
+            fillPaint.Style = SKPaintStyle.Fill;
 
-            using var strokePaint = new SKPaint
-            {
-                Color = new SKColor(0x40, 0x48, 0x70),
-                IsAntialias = true,
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = 1
-            };
+            var strokePaint = RenderResourcePool.Shared.RentPaint();
+            strokePaint.Color = new SKColor(0x40, 0x48, 0x70);
+            strokePaint.Style = SKPaintStyle.Stroke;
+            strokePaint.StrokeWidth = 1;
 
-            // Selection border
-            using var borderPaint = new SKPaint
-            {
-                Color = new SKColor(0x30, 0x47, 0x9C),
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = 2
-            };
+            var borderPaint = RenderResourcePool.Shared.RentPaint();
+            borderPaint.Color = new SKColor(0x30, 0x47, 0x9C);
+            borderPaint.Style = SKPaintStyle.Stroke;
+            borderPaint.StrokeWidth = 2;
             canvas.DrawRect(b, borderPaint);
 
             float s = 10f;
@@ -79,6 +71,10 @@ namespace MediaControlDistributionCenter.Rendering
                 canvas.DrawRoundRect(roundRect, fillPaint);
                 canvas.DrawRoundRect(roundRect, strokePaint);
             }
+
+            RenderResourcePool.Shared.ReturnPaint(fillPaint);
+            RenderResourcePool.Shared.ReturnPaint(strokePaint);
+            RenderResourcePool.Shared.ReturnPaint(borderPaint);
         }
 
         public bool HitTest(SKPoint point)
@@ -91,12 +87,21 @@ namespace MediaControlDistributionCenter.Rendering
             return _target?.Bounds.Contains(point) ?? false;
         }
 
+        public int HitTestHandleIndex(SKPoint point)
+        {
+            if (!IsVisible) return -1;
+            for (int i = 0; i < _handles.Count; i++)
+            {
+                if (_handles[i].Contains(point))
+                    return i;
+            }
+            return -1;
+        }
+
         public void Invalidate() { }
 
         public void Dispose()
         {
         }
-
-        private void UpdateHandles() { }
     }
 }

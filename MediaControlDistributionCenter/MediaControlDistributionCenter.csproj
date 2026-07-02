@@ -92,7 +92,7 @@
     <Page Remove="Views\UserRegister.xaml" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(MSBuildRuntimeType)' != 'Core'">
     <COMReference Include="NetFwTypeLib">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -197,6 +197,7 @@
     <PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="SkiaSharp" Version="4.148.0" />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="4.148.0" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="4.148.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />

@@ -12,8 +12,7 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
-
-        public bool UseOverlay => true;
+        public BaseComponentViewModel? ViewModel => _vm;
 
         public VideoRenderable(BaseComponentViewModel vm)
         {
@@ -24,40 +23,37 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Draw(SKCanvas canvas)
         {
-            using var paint = new SKPaint
-            {
-                Color = SKColors.Black,
-                Style = SKPaintStyle.Fill
-            };
+            var paint = RenderResourcePool.Shared.RentPaint();
+            paint.Color = SKColors.Black;
+            paint.Style = SKPaintStyle.Fill;
             canvas.DrawRect(_bounds, paint);
+            RenderResourcePool.Shared.ReturnPaint(paint);
 
-            using var iconPaint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, 80),
-                IsAntialias = true,
-                Style = SKPaintStyle.Fill
-            };
+            var iconPaint = RenderResourcePool.Shared.RentPaint();
+            iconPaint.Color = new SKColor(255, 255, 255, 80);
+            iconPaint.Style = SKPaintStyle.Fill;
 
             float cx = _bounds.MidX;
             float cy = _bounds.MidY;
             float size = Math.Min(_bounds.Width, _bounds.Height) * 0.3f;
             if (size > 4f)
             {
-                using var path = new SKPath();
+                var path = new SKPath();
                 path.MoveTo(cx - size * 0.4f, cy - size * 0.5f);
                 path.LineTo(cx - size * 0.4f, cy + size * 0.5f);
                 path.LineTo(cx + size * 0.5f, cy);
                 path.Close();
                 canvas.DrawPath(path, iconPaint);
+                path.Dispose();
             }
 
-            using var borderPaint = new SKPaint
-            {
-                Color = new SKColor(60, 60, 60),
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = 1
-            };
+            var borderPaint = RenderResourcePool.Shared.RentPaint();
+            borderPaint.Color = new SKColor(60, 60, 60);
+            borderPaint.Style = SKPaintStyle.Stroke;
+            borderPaint.StrokeWidth = 1;
             canvas.DrawRect(_bounds, borderPaint);
+            RenderResourcePool.Shared.ReturnPaint(iconPaint);
+            RenderResourcePool.Shared.ReturnPaint(borderPaint);
         }
 
         public bool HitTest(SKPoint point)

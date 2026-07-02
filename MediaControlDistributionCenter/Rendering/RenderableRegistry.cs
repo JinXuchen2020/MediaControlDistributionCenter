@@ -23,4 +23,20 @@ namespace MediaControlDistributionCenter.Rendering
 
         public bool CanCreate(string type) => _factories.ContainsKey(type);
     }
+
+    public static class RenderableRegistryExtensions
+    {
+        public static void RegisterDefaultFactories(this RenderableRegistry registry, BitmapCache? cache = null)
+        {
+            registry.Register(new ImageComponentFactory(cache));
+            registry.Register(new ColorTextComponentFactory());
+            registry.Register(new TextComponentFactory());
+            registry.Register(new RssComponentFactory());
+            registry.Register(new WordComponentFactory());
+            registry.Register(new VideoComponentFactory());
+            registry.Register(new WebComponentFactory());
+            registry.Register(new StreamComponentFactory());
+            registry.Register(new HdmiComponentFactory());
+        }
+    }
 }

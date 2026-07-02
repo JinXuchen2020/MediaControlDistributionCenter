@@ -16,11 +16,13 @@ namespace MediaControlDistributionCenter.Rendering
 
         private readonly SKPaint _bgPaint;
         private readonly SKPaint _fgPaint;
+        private readonly SKFont _font;
         private string? _lastText;
         private float _lastTextWidth;
 
         public FpsCounter()
         {
+            _font = new SKFont(SKTypeface.Default, 14);
             _bgPaint = new SKPaint
             {
                 Color = new SKColor(0, 0, 0, 140),
@@ -28,7 +30,6 @@ namespace MediaControlDistributionCenter.Rendering
             };
             _fgPaint = new SKPaint
             {
-                TextSize = 14,
                 IsAntialias = true,
             };
         }
@@ -78,11 +79,11 @@ namespace MediaControlDistributionCenter.Rendering
             var text = $"FPS: {CurrentFps:F1}  (min: {MinFps:F1}  max: {MaxFps:F1})";
             if (text != _lastText)
             {
-                _lastTextWidth = _fgPaint.MeasureText(text);
+                _lastTextWidth = _font.MeasureText(text);
                 _lastText = text;
             }
 
-            canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, _fgPaint);
+            canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, _font, _fgPaint);
         }
 
         public void Reset()

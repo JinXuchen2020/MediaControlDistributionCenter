@@ -24,6 +24,7 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
+        public BaseComponentViewModel? ViewModel => _vm;
 
         public WordPdfRenderable(WordComponentViewModel vm)
         {
@@ -61,12 +62,9 @@ namespace MediaControlDistributionCenter.Rendering
             var bitmap = _pages[_currentPage];
             if (bitmap != null)
             {
-                using var paint = new SKPaint
-                {
-                    IsAntialias = true,
-                    FilterQuality = SKFilterQuality.High,
-                };
+                var paint = RenderResourcePool.Shared.RentPaint();
                 canvas.DrawBitmap(bitmap, _bounds, paint);
+                RenderResourcePool.Shared.ReturnPaint(paint);
             }
             else
             {
@@ -76,27 +74,26 @@ namespace MediaControlDistributionCenter.Rendering
 
         private void DrawPlaceholder(SKCanvas canvas)
         {
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(30, 30, 30),
-                Style = SKPaintStyle.Fill,
-            };
+            var paint = RenderResourcePool.Shared.RentPaint();
+            paint.Color = new SKColor(30, 30, 30);
+            paint.Style = SKPaintStyle.Fill;
             canvas.DrawRect(_bounds, paint);
+            RenderResourcePool.Shared.ReturnPaint(paint);
 
-            using var textPaint = new SKPaint
+            var textPaint = RenderResourcePool.Shared.RentPaint();
+            textPaint.Color = SKColors.Gray;
+            var textFont = RenderResourcePool.Shared.RentFont(16);
+            string[] lines = string.IsNullOrEmpty(_vm.Source)
+                ? new[] { "No document loaded" }
+                : new[] { $"Page {_currentPage + 1}/{_pages.Count}", Path.GetFileName(_vm.Source) };
+            float lineHeight = 16 * 1.4f;
+            float startY = _bounds.MidY - (lines.Length - 1) * lineHeight / 2;
+            for (int i = 0; i < lines.Length; i++)
             {
-                TextSize = 16,
-                IsAntialias = true,
-                Color = SKColors.Gray,
-                TextAlign = SKTextAlign.Center,
-            };
-            string label = string.IsNullOrEmpty(_vm.Source)
-                ? "No document loaded"
-                : $"Page {_currentPage + 1}/{_pages.Count}\n{Path.GetFileName(_vm.Source)}";
-            canvas.DrawText(label,
-                _bounds.MidX,
-                _bounds.MidY,
-                textPaint);
+                canvas.DrawText(lines[i], _bounds.MidX, startY + i * lineHeight, SKTextAlign.Center, textFont, textPaint);
+            }
+            RenderResourcePool.Shared.ReturnFont(textFont);
+            RenderResourcePool.Shared.ReturnPaint(textPaint);
         }
 
         public bool HitTest(SKPoint point)

@@ -9,6 +9,7 @@ namespace MediaControlDistributionCenter.Rendering
     public class SkiaMouseHandler
     {
         private readonly SkiaRenderEngine _engine;
+        private readonly SkiaResizeHandles _resizeHandles;
         private IRenderable? _selectedRenderable;
         private SKPoint _lastMousePoint;
         private bool _isDragging;
@@ -18,22 +19,32 @@ namespace MediaControlDistributionCenter.Rendering
 
         public IRenderable? SelectedRenderable => _selectedRenderable;
         public BaseComponentViewModel? SelectedViewModel => _selectedVm;
+        public SkiaResizeHandles ResizeHandles => _resizeHandles;
 
         public bool IsLeftButtonPressed { get; set; }
         public SKPoint CurrentPosition { get; set; }
 
         public MediaEditViewModel? ViewModel { get; set; }
 
-        public SkiaMouseHandler(SkiaRenderEngine engine)
+        public SkiaMouseHandler(SkiaRenderEngine engine) : this(engine, new SkiaResizeHandles())
+        {
+        }
+
+        public SkiaMouseHandler(SkiaRenderEngine engine, SkiaResizeHandles resizeHandles)
         {
             _engine = engine;
+            _resizeHandles = resizeHandles;
         }
 
         private BaseComponentViewModel? FindComponent(IRenderable renderable)
         {
-            if (ViewModel?.MediaConfig?.SelectedPage == null) return null;
+            if (ViewModel?.SelectedPage == null) return null;
+            var vm = renderable.ViewModel;
+            if (vm != null)
+                return ViewModel.SelectedPage.Components.FirstOrDefault(c => c.Id == vm.Id && !c.IsDeleted);
+
             var bounds = renderable.Bounds;
-            return ViewModel.MediaConfig.SelectedPage.Components
+            return ViewModel.SelectedPage.Components
                 .FirstOrDefault(c => !c.IsDeleted &&
                     Math.Abs(c.Left * c.Ratio - bounds.Left) < 5 &&
                     Math.Abs(c.Top * c.Ratio - bounds.Top) < 5);
@@ -47,7 +58,7 @@ namespace MediaControlDistributionCenter.Rendering
 
             if (_selectedRenderable != null)
             {
-                _resizeHandleIndex = HitTestResizeHandles(position);
+                _resizeHandleIndex = _resizeHandles.HitTestHandleIndex(position);
                 if (_resizeHandleIndex >= 0)
                 {
                     _isResizing = true;
@@ -78,7 +89,7 @@ namespace MediaControlDistributionCenter.Rendering
                 position.X - _lastMousePoint.X,
                 position.Y - _lastMousePoint.Y);
 
-            float ratio = _selectedVm?.Ratio ?? 1f;
+            float ratio = (float)(_selectedVm?.Ratio ?? 1.0);
 
             if (_isDragging && _selectedVm != null)
             {
@@ -131,45 +142,13 @@ namespace MediaControlDistributionCenter.Rendering
         {
             if (_selectedRenderable != null)
             {
-                int handle = HitTestResizeHandles(position);
+                int handle = _resizeHandles.HitTestHandleIndex(position);
                 if (handle >= 0)
                     return GetResizeCursor(handle);
                 if (_selectedRenderable.HitTest(position))
                     return CursorType.SizeAll;
             }
             return CursorType.Arrow;
-        }
-
-        private int HitTestResizeHandles(SKPoint position)
-        {
-            if (_selectedRenderable == null) return -1;
-            var bounds = _selectedRenderable.Bounds;
-            float handleSize = 10f;
-
-            // 8 handles: TL, TR, BL, BR, L, R, T, B
-            SKPoint[] handlePositions = new[]
-            {
-                new SKPoint(bounds.Left, bounds.Top),                          // TL
-                new SKPoint(bounds.Right, bounds.Top),                         // TR
-                new SKPoint(bounds.Left, bounds.Bottom),                       // BL
-                new SKPoint(bounds.Right, bounds.Bottom),                      // BR
-                new SKPoint(bounds.Left, bounds.MidY),                         // L
-                new SKPoint(bounds.Right, bounds.MidY),                        // R
-                new SKPoint(bounds.MidX, bounds.Top),                          // T
-                new SKPoint(bounds.MidX, bounds.Bottom),                       // B
-            };
-
-            for (int i = 0; i < handlePositions.Length; i++)
-            {
-                var rect = new SKRect(
-                    handlePositions[i].X - handleSize,
-                    handlePositions[i].Y - handleSize,
-                    handlePositions[i].X + handleSize,
-                    handlePositions[i].Y + handleSize);
-                if (rect.Contains(position))
-                    return i;
-            }
-            return -1;
         }
 
         private CursorType GetResizeCursor(int handle)
