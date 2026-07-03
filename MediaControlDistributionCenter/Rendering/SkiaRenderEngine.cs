@@ -74,10 +74,31 @@ namespace MediaControlDistributionCenter.Rendering
             _dirtyRect = null;
         }
 
+        public void AddRenderables(IEnumerable<IRenderable> renderables)
+        {
+            _rwLock.EnterWriteLock();
+            try
+            {
+                foreach (var r in renderables)
+                    _renderables.Add(r);
+                _renderables.Sort(ZIndexComparer.Instance);
+                UpdateRenderableIndex();
+            }
+            finally
+            {
+                _rwLock.ExitWriteLock();
+            }
+            foreach (var r in renderables)
+                r.Invalidated += OnRenderableInvalidated;
+            _needsRedraw = true;
+            _dirtyRect = null;
+        }
+
         public void ReplaceRenderables(IEnumerable<IRenderable> newRenderables)
         {
             var newSet = new List<IRenderable>(newRenderables);
             newSet.Sort(ZIndexComparer.Instance);
+            var newSetHash = new HashSet<IRenderable>(newSet);
 
             _rwLock.EnterWriteLock();
             try
@@ -87,7 +108,7 @@ namespace MediaControlDistributionCenter.Rendering
 
                 for (int i = _renderables.Count - 1; i >= 0; i--)
                 {
-                    if (!newSet.Contains(_renderables[i]))
+                    if (!newSetHash.Contains(_renderables[i]))
                     {
                         _animationEngine.Stop(_renderables[i]);
                         _renderables[i].Dispose();
@@ -107,8 +128,15 @@ namespace MediaControlDistributionCenter.Rendering
                     _renderables.AddRange(insertList);
                     _renderables.Sort(ZIndexComparer.Instance);
                 }
+
                 foreach (var item in newSet)
                     item.Invalidated += OnRenderableInvalidated;
+            }
+            catch
+            {
+                foreach (var r in _renderables)
+                    r.Invalidated += OnRenderableInvalidated;
+                throw;
             }
             finally
             {
@@ -400,7 +428,9 @@ namespace MediaControlDistributionCenter.Rendering
 
         private static void DrawChildren(SKCanvas canvas, IRenderable parent)
         {
-            if (parent.Children == null) return;
+            if (parent.Children == null || parent.Children.Count == 0) return;
+            canvas.Save();
+            canvas.ClipRect(parent.Bounds);
             foreach (var child in parent.Children)
             {
                 if (!child.IsVisible) continue;
@@ -410,6 +440,7 @@ namespace MediaControlDistributionCenter.Rendering
                 catch (Exception ex) { Serilog.Log.Error(ex, "RenderFrame: child exception"); }
                 while (canvas.SaveCount > baseCount) canvas.Restore();
             }
+            canvas.Restore();
         }
 
         private GRContext? _grContext;
@@ -441,6 +472,8 @@ namespace MediaControlDistributionCenter.Rendering
         public void Dispose()
         {
             _rwLock?.Dispose();
+            _grContext?.Dispose();
+            _grContext = null;
         }
 
         private sealed class ZIndexComparer : IComparer<IRenderable>

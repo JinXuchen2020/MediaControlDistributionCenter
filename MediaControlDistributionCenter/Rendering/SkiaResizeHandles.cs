@@ -26,6 +26,7 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => null;
         public IReadOnlyList<IRenderable>? Children => null;
+        public bool IsDecoding => false;
 
         public event Action<IRenderable, SKRect>? Invalidated;
 

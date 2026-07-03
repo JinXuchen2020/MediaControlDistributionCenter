@@ -5,7 +5,6 @@ namespace MediaControlDistributionCenter.Rendering
     public class AnimationEngine
     {
         private readonly Dictionary<IRenderable, List<IAnimation>> _animations = new();
-        internal static AnimationEngine? Global { get; set; }
         private int _activeFadeInCount;
         private float _maxFadeInAlpha = 1f;
         private readonly List<IRenderable> _emptyTargetBuffer = new();

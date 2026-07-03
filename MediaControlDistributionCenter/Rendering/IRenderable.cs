@@ -19,5 +19,6 @@ namespace MediaControlDistributionCenter.Rendering
         void Invalidate();
         event Action<IRenderable, SKRect>? Invalidated;
         IReadOnlyList<IRenderable>? Children { get; }
+        bool IsDecoding { get; }
     }
 }

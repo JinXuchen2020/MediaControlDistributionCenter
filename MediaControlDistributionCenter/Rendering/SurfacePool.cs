@@ -41,8 +41,7 @@ namespace MediaControlDistributionCenter.Rendering
         {
             _surface?.Dispose();
             _surface = null;
-            _grContext?.Dispose();
-            _grContext = null;
+            _grContext = null; // GRContext owned by SkiaRenderEngine, do not dispose
         }
     }
 }

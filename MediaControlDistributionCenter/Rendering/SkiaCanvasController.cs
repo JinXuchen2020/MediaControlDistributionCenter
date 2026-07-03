@@ -20,7 +20,7 @@ namespace MediaControlDistributionCenter.Rendering
         public SkiaCanvasController(IServiceProvider? services)
         {
             AnimationEngine = services?.GetRequiredService<AnimationEngine>() ?? new AnimationEngine();
-            AnimationEngine.Global = AnimationEngine;
+            TextRenderable.Instance = AnimationEngine;
             RenderEngine = services?.GetRequiredService<SkiaRenderEngine>() ?? new SkiaRenderEngine(AnimationEngine);
             Registry = services?.GetRequiredService<RenderableRegistry>() ?? new RenderableRegistry();
             _lastFrameTime = Stopwatch.GetTimestamp();

@@ -1,5 +1,6 @@
 using SkiaSharp;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -16,6 +17,14 @@ namespace MediaControlDistributionCenter.Rendering
         public static void Clear()
         {
             _widthCache.Clear();
+        }
+
+        public static void ClearForFontSize(float fontSize)
+        {
+            string suffix = $"|{fontSize}|";
+            var keysToRemove = _widthCache.Keys.Where(k => k.Contains(suffix)).ToList();
+            foreach (var key in keysToRemove)
+                _widthCache.TryRemove(key, out _);
         }
     }
 }

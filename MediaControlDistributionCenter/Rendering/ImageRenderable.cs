@@ -26,6 +26,8 @@ namespace MediaControlDistributionCenter.Rendering
         public BaseComponentViewModel? ViewModel => _vm;
         public IReadOnlyList<IRenderable>? Children => null;
 
+        public bool IsDecoding => _decodeTask != null && !_decodeTask.IsCompleted;
+
         internal static volatile int PendingDecodeCount;
 
         public event Action<IRenderable, SKRect>? Invalidated;
@@ -78,6 +80,24 @@ namespace MediaControlDistributionCenter.Rendering
                 }
                 else
                 {
+                    // loading placeholder
+                    var bg = RenderResourcePool.Shared.RentPaint();
+                    bg.Color = new SKColor(60, 60, 60, 180);
+                    bg.Style = SKPaintStyle.Fill;
+                    canvas.DrawRect(_bounds, bg);
+                    RenderResourcePool.Shared.ReturnPaint(bg);
+                    
+                    var font = RenderResourcePool.Shared.RentFont(14f);
+                    font.Typeface = RenderResourcePool.BoldTypeface;
+                    string label = "Loading...";
+                    float tw = font.MeasureText(label);
+                    float lx = _bounds.MidX - tw / 2;
+                    float ly = _bounds.MidY + 5;
+                    var textPaint = RenderResourcePool.Shared.RentPaint();
+                    textPaint.Color = new SKColor(200, 200, 200, 255);
+                    canvas.DrawText(label, lx, ly, font, textPaint);
+                    RenderResourcePool.Shared.ReturnPaint(textPaint);
+                    RenderResourcePool.Shared.ReturnFont(font);
                     return;
                 }
             }

@@ -17,6 +17,8 @@ namespace MediaControlDistributionCenter.Rendering
         private float _totalWidth;
         private ScrollAnimation? _scrollAnimation;
 
+        internal static AnimationEngine? Instance { get; set; }
+
         public string Type => "Text";
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
@@ -25,6 +27,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
         public IReadOnlyList<IRenderable>? Children => null;
+
+        public bool IsDecoding => false;
 
         public event Action<IRenderable, SKRect>? Invalidated;
 
@@ -111,7 +115,7 @@ namespace MediaControlDistributionCenter.Rendering
             if (_scrollAnimation == null)
             {
                 _scrollAnimation = new ScrollAnimation(_bounds.Width, _totalWidth, speed, direction, _vm.IsLoopEnabled);
-                AnimationEngine.Global?.Play(this, _scrollAnimation);
+                Instance?.Play(this, _scrollAnimation);
             }
             _scrollOffset = _scrollAnimation.ScrollOffset;
 
