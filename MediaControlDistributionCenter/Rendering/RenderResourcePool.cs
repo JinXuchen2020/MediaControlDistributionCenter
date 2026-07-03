@@ -1,5 +1,6 @@
 using SkiaSharp;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -14,10 +15,14 @@ namespace MediaControlDistributionCenter.Rendering
         private int _paintCount;
         private int _fontCount;
         private int _pathCount;
-        public int PaintHits { get; private set; }
-        public int PaintMisses { get; private set; }
-        public int FontHits { get; private set; }
-        public int FontMisses { get; private set; }
+        private int _paintHits;
+        private int _paintMisses;
+        private int _fontHits;
+        private int _fontMisses;
+        public int PaintHits => _paintHits;
+        public int PaintMisses => _paintMisses;
+        public int FontHits => _fontHits;
+        public int FontMisses => _fontMisses;
 
         public RenderResourcePool(int maxPerType = 32)
         {
@@ -29,10 +34,10 @@ namespace MediaControlDistributionCenter.Rendering
             if (_paints.TryTake(out var paint))
             {
                 Interlocked.Decrement(ref _paintCount);
-                Interlocked.Increment(ref PaintHits);
+                Interlocked.Increment(ref _paintHits);
                 return paint;
             }
-            Interlocked.Increment(ref PaintMisses);
+            Interlocked.Increment(ref _paintMisses);
             return new SKPaint { IsAntialias = true };
         }
 
@@ -64,13 +69,13 @@ namespace MediaControlDistributionCenter.Rendering
             if (_fonts.TryTake(out var font))
             {
                 Interlocked.Decrement(ref _fontCount);
-                Interlocked.Increment(ref FontHits);
+                Interlocked.Increment(ref _fontHits);
                 font.Size = size;
                 font.SkewX = 0;
                 font.Typeface = null;
                 return font;
             }
-            Interlocked.Increment(ref FontMisses);
+            Interlocked.Increment(ref _fontMisses);
             return new SKFont(null, size);
         }
 
@@ -118,10 +123,10 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void ResetStats()
         {
-            PaintHits = 0;
-            PaintMisses = 0;
-            FontHits = 0;
-            FontMisses = 0;
+            Interlocked.Exchange(ref _paintHits, 0);
+            Interlocked.Exchange(ref _paintMisses, 0);
+            Interlocked.Exchange(ref _fontHits, 0);
+            Interlocked.Exchange(ref _fontMisses, 0);
         }
 
         public void Dispose()

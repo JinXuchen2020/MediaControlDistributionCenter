@@ -5,8 +5,11 @@ namespace MediaControlDistributionCenter.Rendering
     public class AnimationEngine
     {
         private readonly Dictionary<IRenderable, List<IAnimation>> _animations = new();
+        internal static AnimationEngine? Global { get; set; }
         private int _activeFadeInCount;
         private float _maxFadeInAlpha = 1f;
+        private readonly List<IRenderable> _emptyTargetBuffer = new();
+        private readonly List<IAnimation> _completedBuffer = new();
 
         public void Play(IRenderable target, IAnimation animation)
         {
@@ -34,8 +37,6 @@ namespace MediaControlDistributionCenter.Rendering
                     anim.Dispose();
             _animations.Clear();
             RecalcFadeInAlpha();
-            if (_animations.Capacity > 16)
-                _animations.TrimExcess();
         }
 
         public bool HasActiveAnimations => _animations.Count > 0;
@@ -64,25 +65,25 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Update(float deltaSeconds)
         {
-            var emptyTargets = new List<IRenderable>();
+            _emptyTargetBuffer.Clear();
 
             foreach (var (target, anims) in _animations)
             {
-                var completed = new List<IAnimation>();
+                _completedBuffer.Clear();
                 anims.RemoveAll(a =>
                 {
                     a.Update(deltaSeconds);
                     if (a.IsCompleted)
-                        completed.Add(a);
+                        _completedBuffer.Add(a);
                     return a.IsCompleted;
                 });
-                foreach (var c in completed)
+                foreach (var c in _completedBuffer)
                     c.Dispose();
                 if (anims.Count == 0)
-                    emptyTargets.Add(target);
+                    _emptyTargetBuffer.Add(target);
             }
 
-            foreach (var target in emptyTargets)
+            foreach (var target in _emptyTargetBuffer)
                 _animations.Remove(target);
 
             RecalcFadeInAlpha();

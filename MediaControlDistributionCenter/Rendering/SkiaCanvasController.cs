@@ -20,11 +20,22 @@ namespace MediaControlDistributionCenter.Rendering
         public SkiaCanvasController(IServiceProvider? services)
         {
             AnimationEngine = services?.GetRequiredService<AnimationEngine>() ?? new AnimationEngine();
+            AnimationEngine.Global = AnimationEngine;
             RenderEngine = services?.GetRequiredService<SkiaRenderEngine>() ?? new SkiaRenderEngine(AnimationEngine);
             Registry = services?.GetRequiredService<RenderableRegistry>() ?? new RenderableRegistry();
             _lastFrameTime = Stopwatch.GetTimestamp();
             SurfacePool = new SurfacePool(RenderEngine.SharedGrContext);
             RenderEngine.SurfacePool = SurfacePool;
+            try
+            {
+                var grContext = GRContext.CreateGl();
+                if (grContext != null)
+                {
+                    RenderEngine.SetGrContext(grContext);
+                    SurfacePool.UpdateContext(grContext);
+                }
+            }
+            catch { }
         }
 
         public float UpdateDeltaTime()

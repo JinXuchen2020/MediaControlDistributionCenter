@@ -95,27 +95,17 @@ namespace MediaControlDistributionCenter.Rendering
                     }
                 }
 
-                int insertAfter = -1;
+                var insertList = new List<IRenderable>(newSet.Count);
                 foreach (var item in newSet)
                 {
-                    bool exists = _renderableIndex.TryGetValue(item, out int existing);
-                    if (exists)
-                    {
-                        insertAfter = existing;
-                        continue;
-                    }
+                    if (!_renderableIndex.ContainsKey(item))
+                        insertList.Add(item);
+                }
 
-                    int insertAt = insertAfter + 1;
-                    if (insertAt < _renderables.Count)
-                    {
-                        int idx = _renderables.BinarySearch(insertAt, _renderables.Count - insertAt, item, ZIndexComparer.Instance);
-                        if (idx < 0) idx = ~idx;
-                        _renderables.Insert(idx, item);
-                    }
-                    else
-                    {
-                        _renderables.Add(item);
-                    }
+                if (insertList.Count > 0)
+                {
+                    _renderables.AddRange(insertList);
+                    _renderables.Sort(ZIndexComparer.Instance);
                 }
                 foreach (var item in newSet)
                     item.Invalidated += OnRenderableInvalidated;
@@ -272,26 +262,40 @@ namespace MediaControlDistributionCenter.Rendering
             _rwLock.EnterReadLock();
             try
             {
-                for (int i = _renderables.Count - 1; i >= 0; i--)
-                {
-                    var r = _renderables[i];
-                    if (!r.IsVisible) continue;
-                    SKPoint transformed = point;
-                    if (r.ScaleX != 1f || r.ScaleY != 1f)
-                    {
-                        var b = r.Bounds;
-                        float cx = b.MidX, cy = b.MidY;
-                        transformed = new SKPoint(
-                            (point.X - cx) / r.ScaleX + cx,
-                            (point.Y - cy) / r.ScaleY + cy);
-                    }
-                    if (r.HitTest(transformed))
-                        return r;
-                }
+                return HitTestRecursive(_renderables, point);
             }
             finally
             {
                 _rwLock.ExitReadLock();
+            }
+        }
+
+        private static IRenderable? HitTestRecursive(IReadOnlyList<IRenderable> items, SKPoint point, int maxDepth = 16)
+        {
+            if (maxDepth <= 0) return null;
+            for (int i = items.Count - 1; i >= 0; i--)
+            {
+                var r = items[i];
+                if (!r.IsVisible) continue;
+
+                SKPoint transformed = point;
+                if (r.ScaleX != 1f || r.ScaleY != 1f)
+                {
+                    var b = r.Bounds;
+                    float cx = b.MidX, cy = b.MidY;
+                    transformed = new SKPoint(
+                        (point.X - cx) / r.ScaleX + cx,
+                        (point.Y - cy) / r.ScaleY + cy);
+                }
+
+                if (r.Children != null && r.Children.Count > 0)
+                {
+                    var child = HitTestRecursive(r.Children, transformed, maxDepth - 1);
+                    if (child != null) return child;
+                }
+
+                if (r.HitTest(transformed))
+                    return r;
             }
             return null;
         }
@@ -411,6 +415,12 @@ namespace MediaControlDistributionCenter.Rendering
         private GRContext? _grContext;
 
         internal GRContext? SharedGrContext => _grContext;
+
+        internal void SetGrContext(GRContext? context)
+        {
+            _grContext?.Dispose();
+            _grContext = context;
+        }
 
         public static SKSurface? TryCreateGpuSurface(int width, int height)
         {

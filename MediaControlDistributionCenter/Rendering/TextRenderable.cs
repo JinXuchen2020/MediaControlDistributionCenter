@@ -15,7 +15,7 @@ namespace MediaControlDistributionCenter.Rendering
         private volatile bool _runsLoaded;
         private List<float>? _measuredWidths;
         private float _totalWidth;
-        private DateTime _lastScrollTime = DateTime.UtcNow;
+        private ScrollAnimation? _scrollAnimation;
 
         public string Type => "Text";
         public int ZIndex { get; set; }
@@ -65,7 +65,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (run.Text == "\n") { _measuredWidths.Add(0); continue; }
                 using var font = CreateFont(run, fontSize, scale);
-                var w = font.Value.MeasureText(run.Text);
+                var w = TextLayoutCache.MeasureText(run.Text, font.Value);
                 _measuredWidths.Add(w);
                 _totalWidth += w;
             }
@@ -107,23 +107,13 @@ namespace MediaControlDistributionCenter.Rendering
             float fontSize = (float)_vm.TextSize * scale;
             float speed = _vm.RollingSpeed * 1.5f;
             float direction = _vm.PlayMode == "rollingRight" ? 1f : -1f;
-            var now = DateTime.UtcNow;
-            float elapsed = (float)(now - _lastScrollTime).TotalSeconds;
-            _lastScrollTime = now;
-            if (elapsed > 0.1f) elapsed = 0.016f;
-            _scrollOffset += direction * speed * elapsed;
 
-            if (_vm.IsLoopEnabled)
+            if (_scrollAnimation == null)
             {
-                if (_scrollOffset > _bounds.Width)
-                    _scrollOffset -= _bounds.Width + _totalWidth;
-                if (_scrollOffset < -(_totalWidth + _bounds.Width))
-                    _scrollOffset += _bounds.Width + _totalWidth;
+                _scrollAnimation = new ScrollAnimation(_bounds.Width, _totalWidth, speed, direction, _vm.IsLoopEnabled);
+                AnimationEngine.Global?.Play(this, _scrollAnimation);
             }
-            else
-            {
-                _scrollOffset = Math.Clamp(_scrollOffset, -(_totalWidth + 10), _bounds.Width);
-            }
+            _scrollOffset = _scrollAnimation.ScrollOffset;
 
             float drawX = _bounds.Left + 4 + _scrollOffset;
             float y = _bounds.Top + (_bounds.Height + fontSize * 1.4f) / 2;
@@ -149,8 +139,6 @@ namespace MediaControlDistributionCenter.Rendering
                     secondX += _measuredWidths[i];
                 }
             }
-
-            Invalidated?.Invoke(this, Bounds);
         }
 
         private void DrawWrapped(SKCanvas canvas, float startX, float startY, float maxX, float maxY, float scale)
@@ -176,7 +164,7 @@ namespace MediaControlDistributionCenter.Rendering
                 float runFontSize = run.FontSize * scale;
                 using var paint = CreatePaint(run, runFontSize, scale);
                 using var font = CreateFont(run, runFontSize, scale);
-                float textWidth = font.Value.MeasureText(run.Text);
+                float textWidth = TextLayoutCache.MeasureText(run.Text, font.Value);
 
                 if (x + textWidth > maxX && x > startX)
                 {
@@ -245,6 +233,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Dispose()
         {
+            _scrollAnimation?.Dispose();
             _runs = null;
             _measuredWidths = null;
         }
