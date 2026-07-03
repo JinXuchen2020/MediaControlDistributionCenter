@@ -13,6 +13,9 @@ namespace MediaControlDistributionCenter.Rendering
         private SKRect? _dirtyRect;
         private readonly ReaderWriterLockSlim _rwLock = new();
         private readonly SKPaint _globalAnimPaint = new() { Color = new SKColor(255, 255, 255, 255) };
+        private readonly Dictionary<IRenderable, int> _renderableIndex = new();
+        private int _lastPoolHits;
+        private int _lastPoolMisses;
 
         public float CanvasRatio
         {
@@ -28,7 +31,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public bool HasActiveAnimations => _animationEngine.HasActiveAnimations;
         public bool IsInteracting { get; set; }
-        public bool NeedsRedraw => _needsRedraw || HasActiveAnimations || IsInteracting;
+        public bool NeedsRedraw => _needsRedraw || HasActiveAnimations || IsInteracting || ImageRenderable.PendingDecodeCount > 0;
 
         public RenderStatistics Statistics { get; } = new();
 
@@ -60,11 +63,13 @@ namespace MediaControlDistributionCenter.Rendering
                 int index = _renderables.BinarySearch(renderable, ZIndexComparer.Instance);
                 if (index < 0) index = ~index;
                 _renderables.Insert(index, renderable);
+                UpdateRenderableIndex();
             }
             finally
             {
                 _rwLock.ExitWriteLock();
             }
+            renderable.Invalidated += OnRenderableInvalidated;
             _needsRedraw = true;
             _dirtyRect = null;
         }
@@ -90,8 +95,8 @@ namespace MediaControlDistributionCenter.Rendering
                 int insertAfter = -1;
                 foreach (var item in newSet)
                 {
-                    int existing = _renderables.IndexOf(item);
-                    if (existing >= 0)
+                    bool exists = _renderableIndex.TryGetValue(item, out int existing);
+                    if (exists)
                     {
                         insertAfter = existing;
                         continue;
@@ -108,7 +113,6 @@ namespace MediaControlDistributionCenter.Rendering
                     {
                         _renderables.Add(item);
                     }
-                    insertAfter = _renderables.IndexOf(item);
                 }
             }
             finally
@@ -116,6 +120,7 @@ namespace MediaControlDistributionCenter.Rendering
                 _rwLock.ExitWriteLock();
             }
 
+            UpdateRenderableIndex();
             _needsRedraw = true;
         }
 
@@ -126,11 +131,13 @@ namespace MediaControlDistributionCenter.Rendering
             try
             {
                 _renderables.Remove(renderable);
+                UpdateRenderableIndex();
             }
             finally
             {
                 _rwLock.ExitWriteLock();
             }
+            renderable.Invalidated -= OnRenderableInvalidated;
             _needsRedraw = true;
             _dirtyRect = null;
         }
@@ -142,8 +149,12 @@ namespace MediaControlDistributionCenter.Rendering
             try
             {
                 foreach (var r in _renderables)
+                {
+                    r.Invalidated -= OnRenderableInvalidated;
                     r.Dispose();
+                }
                 _renderables.Clear();
+                _renderableIndex.Clear();
             }
             finally
             {
@@ -240,6 +251,12 @@ namespace MediaControlDistributionCenter.Rendering
             }
 
             Statistics.AnimatedElements = hasAnims ? _renderables.Count : 0;
+            int currentHits = RenderResourcePool.Shared.PaintHits;
+            int currentMisses = RenderResourcePool.Shared.PaintMisses;
+            Statistics.PoolHitsPerFrame = currentHits - _lastPoolHits;
+            Statistics.PoolMissesPerFrame = currentMisses - _lastPoolMisses;
+            _lastPoolHits = currentHits;
+            _lastPoolMisses = currentMisses;
             Statistics.FrameTimeMs = deltaSeconds * 1000;
         }
 
@@ -250,8 +267,19 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 for (int i = _renderables.Count - 1; i >= 0; i--)
                 {
-                    if (_renderables[i].IsVisible && _renderables[i].HitTest(point))
-                        return _renderables[i];
+                    var r = _renderables[i];
+                    if (!r.IsVisible) continue;
+                    SKPoint transformed = point;
+                    if (r.ScaleX != 1f || r.ScaleY != 1f)
+                    {
+                        var b = r.Bounds;
+                        float cx = b.MidX, cy = b.MidY;
+                        transformed = new SKPoint(
+                            (point.X - cx) / r.ScaleX + cx,
+                            (point.Y - cy) / r.ScaleY + cy);
+                    }
+                    if (r.HitTest(transformed))
+                        return r;
                 }
             }
             finally
@@ -277,6 +305,12 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
+        private void OnRenderableInvalidated(IRenderable renderable)
+        {
+            _needsRedraw = true;
+            InvalidateRect(renderable.Bounds);
+        }
+
         public void InvalidateRect(SKRect rect)
         {
             if (_dirtyRect == null)
@@ -297,31 +331,7 @@ namespace MediaControlDistributionCenter.Rendering
             var canvas = surface.Canvas;
             canvas.Clear(SKColors.Black);
 
-            _rwLock.EnterReadLock();
-            try
-            {
-                foreach (var renderable in _renderables)
-                {
-                    if (!renderable.IsVisible) continue;
-                    int baseSaveCount = canvas.SaveCount;
-                    canvas.Save();
-                    try
-                    {
-                        _animationEngine.ApplyAnimations(canvas, renderable);
-                        renderable.Draw(canvas);
-                    }
-                    catch (Exception ex)
-                    {
-                        Serilog.Log.Error(ex, "CaptureSnapshot: exception in {Type}", renderable.Type);
-                    }
-                    while (canvas.SaveCount > baseSaveCount)
-                        canvas.Restore();
-                }
-            }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
+            RenderFrame(canvas, 0f);
 
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 80);
@@ -330,10 +340,52 @@ namespace MediaControlDistributionCenter.Rendering
             return result;
         }
 
+        private void UpdateRenderableIndex()
+        {
+            _renderableIndex.Clear();
+            for (int i = 0; i < _renderables.Count; i++)
+                _renderableIndex[_renderables[i]] = i;
+        }
+
         public void PlayAnimation(IRenderable target, IAnimation animation)
         {
             _animationEngine.Play(target, animation);
         }
+
+        public bool RenderFrameGpu(SKCanvas targetCanvas, int width, int height, float deltaSeconds, SKColor clearColor = default)
+        {
+            if (_grContext == null || _grContext.IsAbandoned)
+            {
+                try
+                {
+                    _grContext?.Dispose();
+                    _grContext = GRContext.CreateGl();
+                }
+                catch { _grContext = null; }
+            }
+            if (_grContext == null) { RenderFrame(targetCanvas, deltaSeconds); return false; }
+
+            try
+            {
+                var info = new SKImageInfo(width, height);
+                using var surface = SKSurface.Create(_grContext, false, info);
+                if (surface == null) { RenderFrame(targetCanvas, deltaSeconds); return false; }
+
+                var canvas = surface.Canvas;
+                canvas.Clear(clearColor);
+                RenderFrame(canvas, deltaSeconds);
+                targetCanvas.DrawSurface(surface, 0, 0);
+                _grContext.Flush();
+                return true;
+            }
+            catch
+            {
+                RenderFrame(targetCanvas, deltaSeconds);
+                return false;
+            }
+        }
+
+        private GRContext? _grContext;
 
         public static SKSurface? TryCreateGpuSurface(int width, int height)
         {

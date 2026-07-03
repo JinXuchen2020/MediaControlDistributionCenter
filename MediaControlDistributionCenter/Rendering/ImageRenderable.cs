@@ -2,6 +2,8 @@ using MediaControlDistributionCenter.ViewModels;
 using Serilog;
 using SkiaSharp;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -12,7 +14,7 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly BaseComponentViewModel _vm;
         private readonly BitmapCache? _cache = null;
         private string? _filePath;
-        private bool _loadStarted;
+        private Task<SKBitmap?>? _decodeTask;
 
         public string Type => "Image";
         public int ZIndex { get; set; }
@@ -21,6 +23,10 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleX { get; set; } = 1f;
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
+
+        internal static volatile int PendingDecodeCount;
+
+        public event Action<IRenderable>? Invalidated;
 
         public ImageRenderable(BaseComponentViewModel vm, string filePath) : this(vm, filePath, null)
         {
@@ -41,23 +47,32 @@ namespace MediaControlDistributionCenter.Rendering
                 Log.Error(ex, "Failed to decode image: {FilePath}", filePath);
             }
             if (_bitmap == null && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                _loadStarted = true;
+            {
+                Interlocked.Increment(ref PendingDecodeCount);
+                _decodeTask = Task.Run(() =>
+                {
+                    try { return SKBitmap.Decode(_filePath); }
+                    catch (Exception ex) { Log.Error(ex, "Async decode failed: {FilePath}", _filePath); return null; }
+                });
+            }
             UpdateBounds();
         }
 
         public void Draw(SKCanvas canvas)
         {
-            if (_loadStarted && _bitmap == null)
+            if (_decodeTask != null && _bitmap == null)
             {
-                try
+                if (_decodeTask.IsCompleted)
                 {
-                    _bitmap = SKBitmap.Decode(_filePath);
+                    _bitmap = _decodeTask.Result;
+                    _decodeTask = null;
+                    Interlocked.Decrement(ref PendingDecodeCount);
+                    Invalidated?.Invoke(this);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log.Error(ex, "Failed to decode image: {FilePath}", _filePath);
+                    return;
                 }
-                _loadStarted = false;
             }
 
             if (_bitmap == null) return;
@@ -75,6 +90,7 @@ namespace MediaControlDistributionCenter.Rendering
         public void Invalidate()
         {
             UpdateBounds();
+            Invalidated?.Invoke(this);
         }
 
         public void UpdateBounds()
@@ -94,6 +110,7 @@ namespace MediaControlDistributionCenter.Rendering
                 _bitmap?.Dispose();
                 _bitmap = null;
             }
+            _decodeTask = null;
         }
     }
 }

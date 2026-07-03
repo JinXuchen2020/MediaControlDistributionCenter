@@ -28,6 +28,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
+        public event Action<IRenderable>? Invalidated;
+
         public WordPdfRenderable(WordComponentViewModel vm)
         {
             _vm = vm;
@@ -106,6 +108,7 @@ namespace MediaControlDistributionCenter.Rendering
         public void Invalidate()
         {
             UpdateBounds();
+            Invalidated?.Invoke(this);
         }
 
         public void NextPage()

@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
+        public event Action<IRenderable>? Invalidated;
+
         public VideoRenderable(BaseComponentViewModel vm)
         {
             _vm = vm;
@@ -74,6 +76,7 @@ namespace MediaControlDistributionCenter.Rendering
             _cachedPath?.Dispose();
             _cachedPath = null;
             UpdateBounds();
+            Invalidated?.Invoke(this);
         }
 
         public void Dispose()

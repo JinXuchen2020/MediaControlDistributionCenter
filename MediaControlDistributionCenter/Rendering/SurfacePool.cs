@@ -6,6 +6,12 @@ namespace MediaControlDistributionCenter.Rendering
     {
         private SKSurface? _surface;
         private SKImageInfo _lastInfo;
+        private GRContext? _grContext;
+
+        public SurfacePool(GRContext? grContext = null)
+        {
+            _grContext = grContext;
+        }
 
         public SKSurface GetOrCreate(SKImageInfo info)
         {
@@ -16,7 +22,13 @@ namespace MediaControlDistributionCenter.Rendering
             }
             _surface?.Dispose();
             _lastInfo = info;
-            _surface = SKSurface.Create(info);
+
+            if (_grContext != null)
+            {
+                _surface = SKSurface.Create(_grContext, false, info);
+            }
+
+            _surface ??= SKSurface.Create(info);
             return _surface;
         }
 
@@ -24,6 +36,8 @@ namespace MediaControlDistributionCenter.Rendering
         {
             _surface?.Dispose();
             _surface = null;
+            _grContext?.Dispose();
+            _grContext = null;
         }
     }
 }

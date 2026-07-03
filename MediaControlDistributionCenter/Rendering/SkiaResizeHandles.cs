@@ -25,6 +25,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => null;
 
+        public event Action<IRenderable>? Invalidated;
+
         public void SetTarget(IRenderable? target)
         {
             _target = target;
@@ -100,7 +102,10 @@ namespace MediaControlDistributionCenter.Rendering
             return -1;
         }
 
-        public void Invalidate() { }
+        public void Invalidate()
+        {
+            Invalidated?.Invoke(this);
+        }
 
         public void Dispose()
         {

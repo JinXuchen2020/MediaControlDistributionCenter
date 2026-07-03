@@ -5,6 +5,8 @@ namespace MediaControlDistributionCenter.Rendering
     public class AnimationEngine
     {
         private readonly Dictionary<IRenderable, List<IAnimation>> _animations = new();
+        private int _activeFadeInCount;
+        private float _maxFadeInAlpha = 1f;
 
         public void Play(IRenderable target, IAnimation animation)
         {
@@ -35,42 +37,9 @@ namespace MediaControlDistributionCenter.Rendering
 
         public bool HasActiveAnimations => _animations.Count > 0;
 
-        public int ActiveFadeInCount
-        {
-            get
-            {
-                int count = 0;
-                foreach (var anims in _animations.Values)
-                {
-                    foreach (var anim in anims)
-                    {
-                        if (anim is FadeInAnimation fade && !fade.IsCompleted)
-                            count++;
-                    }
-                }
-                return count;
-            }
-        }
+        public int ActiveFadeInCount => _activeFadeInCount;
 
-        public float MaxFadeInAlpha
-        {
-            get
-            {
-                float maxAlpha = 1f;
-                foreach (var anims in _animations.Values)
-                {
-                    foreach (var anim in anims)
-                    {
-                        if (anim is FadeInAnimation fade && !fade.IsCompleted)
-                        {
-                            float alpha = Math.Clamp(fade.Elapsed / fade.Duration, 0f, 1f);
-                            if (alpha < maxAlpha) maxAlpha = alpha;
-                        }
-                    }
-                }
-                return maxAlpha;
-            }
-        }
+        public float MaxFadeInAlpha => _maxFadeInAlpha;
 
         public void Update(float deltaSeconds)
         {
@@ -94,6 +63,21 @@ namespace MediaControlDistributionCenter.Rendering
 
             foreach (var target in emptyTargets)
                 _animations.Remove(target);
+
+            _activeFadeInCount = 0;
+            _maxFadeInAlpha = 1f;
+            foreach (var (_, animList) in _animations)
+            {
+                foreach (var a in animList)
+                {
+                    if (a is FadeInAnimation fade && !fade.IsCompleted)
+                    {
+                        _activeFadeInCount++;
+                        float alpha = Math.Clamp(fade.Elapsed / fade.Duration, 0f, 1f);
+                        if (alpha < _maxFadeInAlpha) _maxFadeInAlpha = alpha;
+                    }
+                }
+            }
         }
 
         public void ApplyAnimations(SKCanvas canvas, IRenderable target)

@@ -16,5 +16,6 @@ namespace MediaControlDistributionCenter.Rendering
         void Draw(SKCanvas canvas);
         bool HitTest(SKPoint point);
         void Invalidate();
+        event Action<IRenderable>? Invalidated;
     }
 }

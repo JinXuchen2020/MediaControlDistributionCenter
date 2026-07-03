@@ -22,6 +22,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
+        public event Action<IRenderable>? Invalidated;
+
         public ColorTextRenderable(ColorTextComponentViewModel vm)
         {
             _vm = vm;
@@ -63,6 +65,7 @@ namespace MediaControlDistributionCenter.Rendering
         {
             if (_disposed) return;
             UpdateBounds();
+            Invalidated?.Invoke(this);
         }
 
         private void UpdateBounds()

@@ -104,9 +104,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             if (!_isRunning) return;
 
             var canvas = e.Surface.Canvas;
+            int w = e.Info.Width, h = e.Info.Height;
 
-            canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
-            _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
+            if (!_controller.RenderEngine.RenderFrameGpu(canvas, w, h, _controller.LastDeltaSeconds, new SKColor(0xFF, 0xFF, 0xFF)))
+            {
+                canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
+                _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
+            }
 
             _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth, _controller.RenderEngine.Statistics);
         }

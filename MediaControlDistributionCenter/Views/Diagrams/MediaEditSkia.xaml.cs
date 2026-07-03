@@ -77,9 +77,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void SkCanvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
+            int w = e.Info.Width, h = e.Info.Height;
 
-            canvas.Clear(new SKColor(0x00, 0x00, 0x00));
-            _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
+            if (!_controller.RenderEngine.RenderFrameGpu(canvas, w, h, _controller.LastDeltaSeconds, new SKColor(0x00, 0x00, 0x00)))
+            {
+                canvas.Clear(new SKColor(0x00, 0x00, 0x00));
+                _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
+            }
 
             _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth, _controller.RenderEngine.Statistics);
         }

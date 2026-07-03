@@ -24,6 +24,8 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
+        public event Action<IRenderable>? Invalidated;
+
         public TextRenderable(TextComponentViewModel vm)
         {
             _vm = vm;
@@ -145,6 +147,8 @@ namespace MediaControlDistributionCenter.Rendering
                     secondX += _measuredWidths[i];
                 }
             }
+
+            Invalidated?.Invoke(this);
         }
 
         private void DrawWrapped(SKCanvas canvas, float startX, float startY, float maxX, float maxY, float scale)
@@ -234,10 +238,13 @@ namespace MediaControlDistributionCenter.Rendering
             _runs = null;
             _measuredWidths = null;
             UpdateBounds();
+            Invalidated?.Invoke(this);
         }
 
         public void Dispose()
         {
+            _runs = null;
+            _measuredWidths = null;
         }
 
         public void UpdateBounds()
