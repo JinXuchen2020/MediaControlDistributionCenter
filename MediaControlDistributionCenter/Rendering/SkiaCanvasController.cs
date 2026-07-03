@@ -23,6 +23,7 @@ namespace MediaControlDistributionCenter.Rendering
             RenderEngine = services?.GetRequiredService<SkiaRenderEngine>() ?? new SkiaRenderEngine(AnimationEngine);
             Registry = services?.GetRequiredService<RenderableRegistry>() ?? new RenderableRegistry();
             _lastFrameTime = Stopwatch.GetTimestamp();
+            SurfacePool = new SurfacePool(RenderEngine.SharedGrContext);
             RenderEngine.SurfacePool = SurfacePool;
         }
 

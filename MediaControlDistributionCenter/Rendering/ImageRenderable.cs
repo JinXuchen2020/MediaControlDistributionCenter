@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using Serilog;
 using SkiaSharp;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,10 +24,11 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleX { get; set; } = 1f;
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
+        public IReadOnlyList<IRenderable>? Children => null;
 
         internal static volatile int PendingDecodeCount;
 
-        public event Action<IRenderable>? Invalidated;
+        public event Action<IRenderable, SKRect>? Invalidated;
 
         public ImageRenderable(BaseComponentViewModel vm, string filePath) : this(vm, filePath, null)
         {
@@ -37,24 +39,29 @@ namespace MediaControlDistributionCenter.Rendering
             _vm = vm;
             _filePath = filePath;
             ZIndex = vm.ZIndex;
-            try
+
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
-                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                    _bitmap = cache?.GetOrDecode(filePath);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Failed to decode image: {FilePath}", filePath);
-            }
-            if (_bitmap == null && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-            {
-                Interlocked.Increment(ref PendingDecodeCount);
-                _decodeTask = Task.Run(() =>
+                if (cache != null)
                 {
-                    try { return SKBitmap.Decode(_filePath); }
-                    catch (Exception ex) { Log.Error(ex, "Async decode failed: {FilePath}", _filePath); return null; }
-                });
+                    Interlocked.Increment(ref PendingDecodeCount);
+                    _decodeTask = cache.GetOrDecodeAsync(filePath).ContinueWith(t =>
+                    {
+                        try { return t.Result; }
+                        catch (Exception ex) { Log.Error(ex, "Cache decode failed: {FilePath}", _filePath); return null; }
+                    });
+                }
+                else
+                {
+                    Interlocked.Increment(ref PendingDecodeCount);
+                    _decodeTask = Task.Run(() =>
+                    {
+                        try { return SKBitmap.Decode(_filePath); }
+                        catch (Exception ex) { Log.Error(ex, "Async decode failed: {FilePath}", _filePath); return null; }
+                    });
+                }
             }
+
             UpdateBounds();
         }
 
@@ -67,7 +74,7 @@ namespace MediaControlDistributionCenter.Rendering
                     _bitmap = _decodeTask.Result;
                     _decodeTask = null;
                     Interlocked.Decrement(ref PendingDecodeCount);
-                    Invalidated?.Invoke(this);
+                    Invalidated?.Invoke(this, Bounds);
                 }
                 else
                 {
@@ -90,7 +97,7 @@ namespace MediaControlDistributionCenter.Rendering
         public void Invalidate()
         {
             UpdateBounds();
-            Invalidated?.Invoke(this);
+            Invalidated?.Invoke(this, Bounds);
         }
 
         public void UpdateBounds()

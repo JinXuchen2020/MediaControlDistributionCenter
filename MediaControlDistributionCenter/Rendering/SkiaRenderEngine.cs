@@ -82,6 +82,9 @@ namespace MediaControlDistributionCenter.Rendering
             _rwLock.EnterWriteLock();
             try
             {
+                foreach (var r in _renderables)
+                    r.Invalidated -= OnRenderableInvalidated;
+
                 for (int i = _renderables.Count - 1; i >= 0; i--)
                 {
                     if (!newSet.Contains(_renderables[i]))
@@ -114,6 +117,8 @@ namespace MediaControlDistributionCenter.Rendering
                         _renderables.Add(item);
                     }
                 }
+                foreach (var item in newSet)
+                    item.Invalidated += OnRenderableInvalidated;
             }
             finally
             {
@@ -207,6 +212,7 @@ namespace MediaControlDistributionCenter.Rendering
                             }
                             _animationEngine.ApplyAnimations(canvas, renderable);
                             renderable.Draw(canvas);
+                            DrawChildren(canvas, renderable);
                         }
                         catch (Exception ex)
                         {
@@ -237,6 +243,7 @@ namespace MediaControlDistributionCenter.Rendering
                                 canvas.Scale(renderable.ScaleX, renderable.ScaleY, cx, cy);
                             }
                             renderable.Draw(canvas);
+                            DrawChildren(canvas, renderable);
                         }
                         catch (Exception ex)
                         {
@@ -305,10 +312,10 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
-        private void OnRenderableInvalidated(IRenderable renderable)
+        private void OnRenderableInvalidated(IRenderable renderable, SKRect rect)
         {
             _needsRedraw = true;
-            InvalidateRect(renderable.Bounds);
+            InvalidateRect(rect);
         }
 
         public void InvalidateRect(SKRect rect)
@@ -360,6 +367,8 @@ namespace MediaControlDistributionCenter.Rendering
                 {
                     _grContext?.Dispose();
                     _grContext = GRContext.CreateGl();
+                    if (SurfacePool != null)
+                        SurfacePool.UpdateContext(_grContext);
                 }
                 catch { _grContext = null; }
             }
@@ -368,7 +377,7 @@ namespace MediaControlDistributionCenter.Rendering
             try
             {
                 var info = new SKImageInfo(width, height);
-                using var surface = SKSurface.Create(_grContext, false, info);
+                var surface = SurfacePool?.GetOrCreate(info);
                 if (surface == null) { RenderFrame(targetCanvas, deltaSeconds); return false; }
 
                 var canvas = surface.Canvas;
@@ -385,7 +394,23 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
+        private static void DrawChildren(SKCanvas canvas, IRenderable parent)
+        {
+            if (parent.Children == null) return;
+            foreach (var child in parent.Children)
+            {
+                if (!child.IsVisible) continue;
+                int baseCount = canvas.SaveCount;
+                canvas.Save();
+                try { child.Draw(canvas); }
+                catch (Exception ex) { Serilog.Log.Error(ex, "RenderFrame: child exception"); }
+                while (canvas.SaveCount > baseCount) canvas.Restore();
+            }
+        }
+
         private GRContext? _grContext;
+
+        internal GRContext? SharedGrContext => _grContext;
 
         public static SKSurface? TryCreateGpuSurface(int width, int height)
         {

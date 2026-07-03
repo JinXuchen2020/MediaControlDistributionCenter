@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MediaControlDistributionCenter.Rendering
@@ -23,8 +24,9 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleX { get; set; } = 1f;
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
+        public IReadOnlyList<IRenderable>? Children => null;
 
-        public event Action<IRenderable>? Invalidated;
+        public event Action<IRenderable, SKRect>? Invalidated;
 
         public TextRenderable(TextComponentViewModel vm)
         {
@@ -148,7 +150,7 @@ namespace MediaControlDistributionCenter.Rendering
                 }
             }
 
-            Invalidated?.Invoke(this);
+            Invalidated?.Invoke(this, Bounds);
         }
 
         private void DrawWrapped(SKCanvas canvas, float startX, float startY, float maxX, float maxY, float scale)
@@ -238,7 +240,7 @@ namespace MediaControlDistributionCenter.Rendering
             _runs = null;
             _measuredWidths = null;
             UpdateBounds();
-            Invalidated?.Invoke(this);
+            Invalidated?.Invoke(this, Bounds);
         }
 
         public void Dispose()

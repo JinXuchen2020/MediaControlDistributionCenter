@@ -32,6 +32,11 @@ namespace MediaControlDistributionCenter.Rendering
             return _surface;
         }
 
+        public void UpdateContext(GRContext? grContext)
+        {
+            _grContext = grContext;
+        }
+
         public void Dispose()
         {
             _surface?.Dispose();

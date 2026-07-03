@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -16,6 +17,7 @@ namespace MediaControlDistributionCenter.Rendering
         void Draw(SKCanvas canvas);
         bool HitTest(SKPoint point);
         void Invalidate();
-        event Action<IRenderable>? Invalidated;
+        event Action<IRenderable, SKRect>? Invalidated;
+        IReadOnlyList<IRenderable>? Children { get; }
     }
 }

@@ -17,8 +17,9 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleX { get; set; } = 1f;
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
+        public IReadOnlyList<IRenderable>? Children => null;
 
-        public event Action<IRenderable>? Invalidated;
+        public event Action<IRenderable, SKRect>? Invalidated;
 
         public VideoRenderable(BaseComponentViewModel vm)
         {
@@ -76,7 +77,7 @@ namespace MediaControlDistributionCenter.Rendering
             _cachedPath?.Dispose();
             _cachedPath = null;
             UpdateBounds();
-            Invalidated?.Invoke(this);
+            Invalidated?.Invoke(this, Bounds);
         }
 
         public void Dispose()

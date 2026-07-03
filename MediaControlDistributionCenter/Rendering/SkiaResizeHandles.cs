@@ -1,6 +1,7 @@
 using MediaControlDistributionCenter.ViewModels;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -24,8 +25,9 @@ namespace MediaControlDistributionCenter.Rendering
         public float ScaleX { get; set; } = 1f;
         public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => null;
+        public IReadOnlyList<IRenderable>? Children => null;
 
-        public event Action<IRenderable>? Invalidated;
+        public event Action<IRenderable, SKRect>? Invalidated;
 
         public void SetTarget(IRenderable? target)
         {
@@ -104,7 +106,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
-            Invalidated?.Invoke(this);
+            Invalidated?.Invoke(this, Bounds);
         }
 
         public void Dispose()
