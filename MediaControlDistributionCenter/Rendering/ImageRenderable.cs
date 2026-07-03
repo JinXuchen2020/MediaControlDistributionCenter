@@ -18,6 +18,8 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
+        public float ScaleX { get; set; } = 1f;
+        public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
         public ImageRenderable(BaseComponentViewModel vm, string filePath) : this(vm, filePath, null)

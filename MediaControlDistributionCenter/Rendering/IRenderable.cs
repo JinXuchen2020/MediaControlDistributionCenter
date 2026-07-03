@@ -10,6 +10,8 @@ namespace MediaControlDistributionCenter.Rendering
         int ZIndex { get; set; }
         SKRect Bounds { get; }
         bool IsVisible { get; set; }
+        float ScaleX { get; set; }
+        float ScaleY { get; set; }
         BaseComponentViewModel? ViewModel { get; }
         void Draw(SKCanvas canvas);
         bool HitTest(SKPoint point);

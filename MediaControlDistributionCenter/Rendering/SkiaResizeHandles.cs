@@ -21,6 +21,8 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
         public bool IsVisible { get; set; }
+        public float ScaleX { get; set; } = 1f;
+        public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => null;
 
         public void SetTarget(IRenderable? target)

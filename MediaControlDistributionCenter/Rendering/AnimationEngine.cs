@@ -35,6 +35,43 @@ namespace MediaControlDistributionCenter.Rendering
 
         public bool HasActiveAnimations => _animations.Count > 0;
 
+        public int ActiveFadeInCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var anims in _animations.Values)
+                {
+                    foreach (var anim in anims)
+                    {
+                        if (anim is FadeInAnimation fade && !fade.IsCompleted)
+                            count++;
+                    }
+                }
+                return count;
+            }
+        }
+
+        public float MaxFadeInAlpha
+        {
+            get
+            {
+                float maxAlpha = 1f;
+                foreach (var anims in _animations.Values)
+                {
+                    foreach (var anim in anims)
+                    {
+                        if (anim is FadeInAnimation fade && !fade.IsCompleted)
+                        {
+                            float alpha = Math.Clamp(fade.Elapsed / fade.Duration, 0f, 1f);
+                            if (alpha < maxAlpha) maxAlpha = alpha;
+                        }
+                    }
+                }
+                return maxAlpha;
+            }
+        }
+
         public void Update(float deltaSeconds)
         {
             var emptyTargets = new List<IRenderable>();

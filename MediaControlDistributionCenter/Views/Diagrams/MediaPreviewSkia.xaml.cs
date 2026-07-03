@@ -108,7 +108,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
             _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
 
-            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
+            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth, _controller.RenderEngine.Statistics);
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)

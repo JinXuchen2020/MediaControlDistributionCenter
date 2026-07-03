@@ -14,6 +14,10 @@ namespace MediaControlDistributionCenter.Rendering
         private int _paintCount;
         private int _fontCount;
         private int _pathCount;
+        public int PaintHits { get; private set; }
+        public int PaintMisses { get; private set; }
+        public int FontHits { get; private set; }
+        public int FontMisses { get; private set; }
 
         public RenderResourcePool(int maxPerType = 32)
         {
@@ -25,8 +29,10 @@ namespace MediaControlDistributionCenter.Rendering
             if (_paints.TryTake(out var paint))
             {
                 Interlocked.Decrement(ref _paintCount);
+                Interlocked.Increment(ref PaintHits);
                 return paint;
             }
+            Interlocked.Increment(ref PaintMisses);
             return new SKPaint { IsAntialias = true };
         }
 
@@ -58,11 +64,13 @@ namespace MediaControlDistributionCenter.Rendering
             if (_fonts.TryTake(out var font))
             {
                 Interlocked.Decrement(ref _fontCount);
+                Interlocked.Increment(ref FontHits);
                 font.Size = size;
                 font.SkewX = 0;
                 font.Typeface = null;
                 return font;
             }
+            Interlocked.Increment(ref FontMisses);
             return new SKFont(null, size);
         }
 
@@ -108,6 +116,14 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
+        public void ResetStats()
+        {
+            PaintHits = 0;
+            PaintMisses = 0;
+            FontHits = 0;
+            FontMisses = 0;
+        }
+
         public void Dispose()
         {
             while (_paints.TryTake(out var paint)) paint.Dispose();
@@ -121,6 +137,12 @@ namespace MediaControlDistributionCenter.Rendering
 
         private static readonly SKTypeface _boldTypeface = SKTypeface.FromFamilyName(
             null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
-        internal static SKTypeface BoldTypeface => _boldTypeface;
+        private static readonly ConcurrentDictionary<string, SKTypeface> _typefaceCache = new();
+        internal static SKTypeface BoldTypeface => GetCachedTypeface(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+        internal static SKTypeface GetCachedTypeface(string familyName, SKFontStyleWeight weight = SKFontStyleWeight.Normal, SKFontStyleWidth width = SKFontStyleWidth.Normal, SKFontStyleSlant slant = SKFontStyleSlant.Upright)
+        {
+            string key = $"{familyName}|{(int)weight}|{(int)width}|{(int)slant}";
+            return _typefaceCache.GetOrAdd(key, _ => SKTypeface.FromFamilyName(familyName, weight, width, slant));
+        }
     }
 }

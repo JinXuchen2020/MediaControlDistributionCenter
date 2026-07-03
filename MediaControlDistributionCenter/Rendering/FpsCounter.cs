@@ -63,7 +63,7 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
-        public void Draw(SKCanvas canvas, float canvasWidth)
+        public void Draw(SKCanvas canvas, float canvasWidth, RenderStatistics? stats = null)
         {
             if (!IsVisible) return;
 
@@ -83,6 +83,16 @@ namespace MediaControlDistributionCenter.Rendering
                 _lastTextWidth = _font.MeasureText(text);
             }
             canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, _font, _fgPaint);
+
+            if (stats != null)
+            {
+                var statText = stats.ToString();
+                _fgPaint.Color = SKColors.White;
+                float statY = 46;
+                var statBg = new SKRect(canvasWidth - 260, 30, canvasWidth - 4, 56);
+                canvas.DrawRoundRect(new SKRoundRect(statBg, 4), _bgPaint);
+                canvas.DrawText(statText, canvasWidth - 12 - _font.MeasureText(statText), statY, _font, _fgPaint);
+            }
         }
 
         public void Reset()

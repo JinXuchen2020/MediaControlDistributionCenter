@@ -20,6 +20,8 @@ namespace MediaControlDistributionCenter.Rendering
         public int ZIndex { get; set; }
         public SKRect Bounds => _bounds;
         public bool IsVisible { get; set; } = true;
+        public float ScaleX { get; set; } = 1f;
+        public float ScaleY { get; set; } = 1f;
         public BaseComponentViewModel? ViewModel => _vm;
 
         public TextRenderable(TextComponentViewModel vm)
@@ -206,10 +208,18 @@ namespace MediaControlDistributionCenter.Rendering
         private PooledFont CreateFont(FormattedRun run, float fontSize, float scale)
         {
             var font = RenderResourcePool.Shared.RentFont(fontSize);
-            if (run.IsBold)
+            if (run.IsBold && run.IsItalic)
+            {
+                font.Typeface = RenderResourcePool.GetCachedTypeface(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic);
+            }
+            else if (run.IsBold)
+            {
                 font.Typeface = RenderResourcePool.BoldTypeface;
-            if (run.IsItalic)
+            }
+            else if (run.IsItalic)
+            {
                 font.SkewX = -0.25f;
+            }
             return new PooledFont(font);
         }
 

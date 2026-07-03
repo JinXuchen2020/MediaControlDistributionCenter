@@ -11,6 +11,7 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly float _duration;
         private float _elapsed;
         private readonly SKPaint _layerPaint;
+        public float Elapsed => _elapsed;
 
         public FadeInAnimation(float durationSeconds = 0.5f)
         {
@@ -26,10 +27,6 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Apply(SKCanvas canvas)
         {
-            if (IsCompleted) return;
-            float alpha = Math.Clamp(_elapsed / _duration, 0f, 1f);
-            _layerPaint.Color = new SKColor(255, 255, 255, (byte)(255 * alpha));
-            canvas.SaveLayer(_layerPaint);
         }
 
         public void Dispose()

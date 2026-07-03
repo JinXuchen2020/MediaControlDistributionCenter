@@ -81,7 +81,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             canvas.Clear(new SKColor(0x00, 0x00, 0x00));
             _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
 
-            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth);
+            _controller.FpsCounter.Draw(canvas, (float)SkCanvas.ActualWidth, _controller.RenderEngine.Statistics);
         }
 
         public void SetViewModel(MediaEditViewModel viewModel)
