@@ -53,7 +53,7 @@ namespace MediaControlDistributionCenter.Rendering
             string text = _colorVm.Source ?? string.Empty;
             if (!string.IsNullOrEmpty(text))
             {
-                canvas.DrawText(text, _bounds.Left, _bounds.Top + fontSize, font, _textPaint);
+                canvas.DrawText(text, _bounds.Left, _bounds.Top + fontSize, SKTextAlign.Left, font, _textPaint);
             }
             RenderResourcePool.Shared.ReturnFont(font);
         }

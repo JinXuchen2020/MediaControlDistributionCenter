@@ -6,5 +6,6 @@ namespace MediaControlDistributionCenter.Rendering
     {
         IRenderable Create(BaseComponentViewModel vm);
         string Type { get; }
+        IRenderable Create(BaseComponentViewModel vm, AnimationEngine? animationEngine) => Create(vm);
     }
 }

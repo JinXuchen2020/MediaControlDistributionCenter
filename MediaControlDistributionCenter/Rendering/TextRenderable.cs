@@ -3,6 +3,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MediaControlDistributionCenter.Rendering
 {
@@ -12,12 +13,12 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly TextComponentViewModel _vm;
         private float _scrollOffset;
         private List<FormattedRun>? _runs;
-        private volatile bool _runsLoaded;
+        private Task? _loadTask;
         private List<float>? _measuredWidths;
         private float _totalWidth;
+        private float _lastMeasureFontSize = -1f;
         private ScrollAnimation? _scrollAnimation;
-
-        internal static AnimationEngine? Instance { get; set; }
+        private readonly AnimationEngine? _animationEngine;
 
         public string Type => "Text";
         public int ZIndex { get; set; }
@@ -32,38 +33,51 @@ namespace MediaControlDistributionCenter.Rendering
 
         public event Action<IRenderable, SKRect>? Invalidated;
 
-        public TextRenderable(TextComponentViewModel vm)
+        public TextRenderable(TextComponentViewModel vm, AnimationEngine? animationEngine = null)
         {
             _vm = vm;
+            _animationEngine = animationEngine;
             ZIndex = vm.ZIndex;
             UpdateBounds();
         }
 
         private void EnsureRunsLoaded()
         {
-            if (_runsLoaded) return;
-            _runsLoaded = true;
+            if (_loadTask != null) return;
 
-            if (!string.IsNullOrEmpty(_vm.RtfFilePath) && File.Exists(_vm.RtfFilePath))
+            _loadTask = Task.Run(() =>
             {
-                _runs = RtfXamlParser.Parse(_vm.RtfFilePath);
-                if (_runs.Count == 0)
-                    _runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
-            }
-            else
+                List<FormattedRun>? runs;
+                if (!string.IsNullOrEmpty(_vm.RtfFilePath) && File.Exists(_vm.RtfFilePath))
+                {
+                    runs = RtfXamlParser.Parse(_vm.RtfFilePath);
+                    if (runs.Count == 0)
+                        runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
+                }
+                else
+                {
+                    runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
+                }
+                return runs;
+            }).ContinueWith(t =>
             {
-                _runs = RtfXamlParser.CreateFromPlainText(_vm.Source ?? "", (float)_vm.TextSize);
-            }
-
-            ComputeTotalWidth();
+                if (t.IsCompletedSuccessfully)
+                {
+                    _runs = t.Result;
+                    ComputeTotalWidth();
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void ComputeTotalWidth()
         {
-            _totalWidth = 0;
             if (_runs == null) return;
             float scale = (float)_vm.Ratio;
             float fontSize = (float)_vm.TextSize * scale;
+            if (Math.Abs(fontSize - _lastMeasureFontSize) < 0.001f && _measuredWidths != null)
+                return;
+            _lastMeasureFontSize = fontSize;
+            _totalWidth = 0;
             _measuredWidths = new List<float>(_runs.Count);
             foreach (var run in _runs)
             {
@@ -78,7 +92,16 @@ namespace MediaControlDistributionCenter.Rendering
         public void Draw(SKCanvas canvas)
         {
             EnsureRunsLoaded();
-            if (_runs == null || _runs.Count == 0) return;
+            if (_runs == null)
+            {
+                var bg = RenderResourcePool.Shared.RentPaint();
+                bg.Color = new SKColor(50, 50, 50, 180);
+                bg.Style = SKPaintStyle.Fill;
+                canvas.DrawRect(_bounds, bg);
+                RenderResourcePool.Shared.ReturnPaint(bg);
+                return;
+            }
+            if (_runs.Count == 0) return;
 
             float scale = (float)_vm.Ratio;
 
@@ -115,7 +138,7 @@ namespace MediaControlDistributionCenter.Rendering
             if (_scrollAnimation == null)
             {
                 _scrollAnimation = new ScrollAnimation(_bounds.Width, _totalWidth, speed, direction, _vm.IsLoopEnabled);
-                Instance?.Play(this, _scrollAnimation);
+                _animationEngine?.Play(this, _scrollAnimation);
             }
             _scrollOffset = _scrollAnimation.ScrollOffset;
 
@@ -127,7 +150,7 @@ namespace MediaControlDistributionCenter.Rendering
                 if (_runs[i].Text == "\n") continue;
                 using var paint = CreatePaint(_runs[i], fontSize, scale);
                 using var font = CreateFont(_runs[i], fontSize, scale);
-                canvas.DrawText(_runs[i].Text, drawX, y, font.Value, paint.Value);
+                canvas.DrawText(_runs[i].Text, drawX, y, SKTextAlign.Left, font.Value, paint.Value);
                 drawX += _measuredWidths[i];
             }
 
@@ -139,7 +162,7 @@ namespace MediaControlDistributionCenter.Rendering
                     if (_runs[i].Text == "\n") continue;
                     using var paint = CreatePaint(_runs[i], fontSize, scale);
                     using var font = CreateFont(_runs[i], fontSize, scale);
-                    canvas.DrawText(_runs[i].Text, secondX, y, font.Value, paint.Value);
+                    canvas.DrawText(_runs[i].Text, secondX, y, SKTextAlign.Left, font.Value, paint.Value);
                     secondX += _measuredWidths[i];
                 }
             }
@@ -177,7 +200,7 @@ namespace MediaControlDistributionCenter.Rendering
                     if (y > maxY) break;
                 }
 
-                canvas.DrawText(run.Text, x, y, font.Value, paint.Value);
+                canvas.DrawText(run.Text, x, y, SKTextAlign.Left, font.Value, paint.Value);
                 x += textWidth;
             }
         }
@@ -228,7 +251,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Invalidate()
         {
-            _runsLoaded = false;
+            _loadTask = null;
             _runs = null;
             _measuredWidths = null;
             UpdateBounds();
@@ -238,6 +261,7 @@ namespace MediaControlDistributionCenter.Rendering
         public void Dispose()
         {
             _scrollAnimation?.Dispose();
+            _loadTask = null;
             _runs = null;
             _measuredWidths = null;
         }

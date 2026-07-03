@@ -41,12 +41,14 @@ namespace MediaControlDistributionCenter.Rendering
             _cachedPath2?.Dispose();
 
             float r = size * 0.35f;
-            _cachedPath1 = RenderResourcePool.Shared.RentPath();
-            _cachedPath1.AddArc(new SKRect(cx - r, cy - r, cx + r, cy + r), -60, 120);
+            var builder1 = new SKPathBuilder();
+            builder1.AddArc(new SKRect(cx - r, cy - r, cx + r, cy + r), -60, 120);
+            _cachedPath1 = builder1.Detach();
 
             float r2 = size * 0.55f;
-            _cachedPath2 = RenderResourcePool.Shared.RentPath();
-            _cachedPath2.AddArc(new SKRect(cx - r2, cy - r2, cx + r2, cy + r2), -60, 120);
+            var builder2 = new SKPathBuilder();
+            builder2.AddArc(new SKRect(cx - r2, cy - r2, cx + r2, cy + r2), -60, 120);
+            _cachedPath2 = builder2.Detach();
 
             _cachedSize = size;
         }

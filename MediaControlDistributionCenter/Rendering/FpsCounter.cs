@@ -82,7 +82,7 @@ namespace MediaControlDistributionCenter.Rendering
                 _lastText = text;
                 _lastTextWidth = _font.MeasureText(text);
             }
-            canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, _font, _fgPaint);
+            canvas.DrawText(text, canvasWidth - 12 - _lastTextWidth, 20, SKTextAlign.Left, _font, _fgPaint);
 
             if (stats != null)
             {
@@ -91,7 +91,7 @@ namespace MediaControlDistributionCenter.Rendering
                 float statY = 46;
                 var statBg = new SKRect(canvasWidth - 260, 30, canvasWidth - 4, 56);
                 canvas.DrawRoundRect(new SKRoundRect(statBg, 4), _bgPaint);
-                canvas.DrawText(statText, canvasWidth - 12 - _font.MeasureText(statText), statY, _font, _fgPaint);
+                canvas.DrawText(statText, canvasWidth - 12 - _font.MeasureText(statText), statY, SKTextAlign.Left, _font, _fgPaint);
             }
         }
 

@@ -20,9 +20,8 @@ namespace MediaControlDistributionCenter.Rendering
         public SkiaCanvasController(IServiceProvider? services)
         {
             AnimationEngine = services?.GetRequiredService<AnimationEngine>() ?? new AnimationEngine();
-            TextRenderable.Instance = AnimationEngine;
             RenderEngine = services?.GetRequiredService<SkiaRenderEngine>() ?? new SkiaRenderEngine(AnimationEngine);
-            Registry = services?.GetRequiredService<RenderableRegistry>() ?? new RenderableRegistry();
+            Registry = services?.GetRequiredService<RenderableRegistry>() ?? new RenderableRegistry(AnimationEngine);
             _lastFrameTime = Stopwatch.GetTimestamp();
             SurfacePool = new SurfacePool(RenderEngine.SharedGrContext);
             RenderEngine.SurfacePool = SurfacePool;

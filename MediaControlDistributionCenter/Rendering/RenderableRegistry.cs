@@ -5,6 +5,14 @@ namespace MediaControlDistributionCenter.Rendering
     public class RenderableRegistry
     {
         private readonly Dictionary<string, IComponentFactory> _factories = new();
+        private readonly AnimationEngine? _animationEngine;
+
+        public RenderableRegistry(AnimationEngine? animationEngine = null)
+        {
+            _animationEngine = animationEngine;
+        }
+
+        internal AnimationEngine? AnimationEngine => _animationEngine;
 
         public void Register(IComponentFactory factory)
         {
@@ -30,7 +38,7 @@ namespace MediaControlDistributionCenter.Rendering
         {
             registry.Register(new ImageComponentFactory(cache));
             registry.Register(new ColorTextComponentFactory());
-            registry.Register(new TextComponentFactory());
+            registry.Register(new TextComponentFactory(registry.AnimationEngine));
             registry.Register(new RssComponentFactory());
             registry.Register(new WordComponentFactory());
             registry.Register(new VideoComponentFactory());

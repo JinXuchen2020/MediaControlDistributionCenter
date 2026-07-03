@@ -170,7 +170,7 @@ namespace MediaControlDistributionCenter.Rendering
                             font.SkewX = -0.25f;
 
                         float drawX = x + _scrollOffset;
-                        canvas.DrawText(fieldValue, drawX, y, font, paint);
+                        canvas.DrawText(fieldValue, drawX, y, SKTextAlign.Left, font, paint);
                         y += fontSize * 1.4f;
                         RenderResourcePool.Shared.ReturnFont(font);
                         RenderResourcePool.Shared.ReturnPaint(paint);
@@ -202,7 +202,7 @@ namespace MediaControlDistributionCenter.Rendering
                         if (content.IsItalic)
                             font.SkewX = -0.25f;
 
-                        canvas.DrawText(fieldValue, x, y, font, paint);
+                        canvas.DrawText(fieldValue, x, y, SKTextAlign.Left, font, paint);
                         y += fontSize * 1.4f;
                         RenderResourcePool.Shared.ReturnFont(font);
                         RenderResourcePool.Shared.ReturnPaint(paint);

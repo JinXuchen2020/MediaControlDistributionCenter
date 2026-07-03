@@ -95,7 +95,7 @@ namespace MediaControlDistributionCenter.Rendering
                     float ly = _bounds.MidY + 5;
                     var textPaint = RenderResourcePool.Shared.RentPaint();
                     textPaint.Color = new SKColor(200, 200, 200, 255);
-                    canvas.DrawText(label, lx, ly, font, textPaint);
+                    canvas.DrawText(label, lx, ly, SKTextAlign.Left, font, textPaint);
                     RenderResourcePool.Shared.ReturnPaint(textPaint);
                     RenderResourcePool.Shared.ReturnFont(font);
                     return;
@@ -105,7 +105,7 @@ namespace MediaControlDistributionCenter.Rendering
             if (_bitmap == null) return;
 
             var paint = RenderResourcePool.Shared.RentPaint();
-            canvas.DrawBitmap(_bitmap, _bounds, paint);
+            canvas.DrawBitmap(_bitmap, _bounds, new SKSamplingOptions(), paint);
             RenderResourcePool.Shared.ReturnPaint(paint);
         }
 

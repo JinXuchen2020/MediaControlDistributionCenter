@@ -69,7 +69,7 @@ namespace MediaControlDistributionCenter.Rendering
             if (bitmap != null)
             {
                 var paint = RenderResourcePool.Shared.RentPaint();
-                canvas.DrawBitmap(bitmap, _bounds, paint);
+                canvas.DrawBitmap(bitmap, _bounds, new SKSamplingOptions(), paint);
                 RenderResourcePool.Shared.ReturnPaint(paint);
             }
             else
