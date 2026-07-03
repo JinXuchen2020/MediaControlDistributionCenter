@@ -10,8 +10,9 @@ namespace MediaControlDistributionCenter.Rendering
         private SKBitmap? _bitmap;
         private SKRect _bounds;
         private readonly BaseComponentViewModel _vm;
-        private readonly BitmapCache? _cache;
-        private readonly string _filePath;
+        private readonly BitmapCache? _cache = null;
+        private string? _filePath;
+        private bool _loadStarted;
 
         public string Type => "Image";
         public int ZIndex { get; set; }
@@ -26,25 +27,37 @@ namespace MediaControlDistributionCenter.Rendering
         public ImageRenderable(BaseComponentViewModel vm, string filePath, BitmapCache? cache)
         {
             _vm = vm;
-            _cache = cache;
-            _filePath = filePath ?? string.Empty;
+            _filePath = filePath;
             ZIndex = vm.ZIndex;
             try
             {
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                {
-                    _bitmap = cache?.GetOrDecode(filePath) ?? SKBitmap.Decode(filePath);
-                }
+                    _bitmap = cache?.GetOrDecode(filePath);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to decode image: {FilePath}", filePath);
             }
+            if (_bitmap == null && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                _loadStarted = true;
             UpdateBounds();
         }
 
         public void Draw(SKCanvas canvas)
         {
+            if (_loadStarted && _bitmap == null)
+            {
+                try
+                {
+                    _bitmap = SKBitmap.Decode(_filePath);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to decode image: {FilePath}", _filePath);
+                }
+                _loadStarted = false;
+            }
+
             if (_bitmap == null) return;
 
             var paint = RenderResourcePool.Shared.RentPaint();

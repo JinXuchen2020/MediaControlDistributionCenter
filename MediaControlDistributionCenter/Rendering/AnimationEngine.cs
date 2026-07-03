@@ -29,6 +29,8 @@ namespace MediaControlDistributionCenter.Rendering
                 foreach (var anim in anims)
                     anim.Dispose();
             _animations.Clear();
+            if (_animations.Capacity > 16)
+                _animations.TrimExcess();
         }
 
         public bool HasActiveAnimations => _animations.Count > 0;

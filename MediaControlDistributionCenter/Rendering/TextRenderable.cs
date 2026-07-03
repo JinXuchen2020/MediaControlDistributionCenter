@@ -12,6 +12,7 @@ namespace MediaControlDistributionCenter.Rendering
         private float _scrollOffset;
         private List<FormattedRun>? _runs;
         private volatile bool _runsLoaded;
+        private List<float>? _measuredWidths;
         private float _totalWidth;
         private DateTime _lastScrollTime = DateTime.UtcNow;
 
@@ -53,11 +54,14 @@ namespace MediaControlDistributionCenter.Rendering
             if (_runs == null) return;
             float scale = (float)_vm.Ratio;
             float fontSize = (float)_vm.TextSize * scale;
+            _measuredWidths = new List<float>(_runs.Count);
             foreach (var run in _runs)
             {
-                if (run.Text == "\n") continue;
+                if (run.Text == "\n") { _measuredWidths.Add(0); continue; }
                 using var font = CreateFont(run, fontSize, scale);
-                _totalWidth += font.Value.MeasureText(run.Text);
+                var w = font.Value.MeasureText(run.Text);
+                _measuredWidths.Add(w);
+                _totalWidth += w;
             }
         }
 
@@ -118,25 +122,25 @@ namespace MediaControlDistributionCenter.Rendering
             float drawX = _bounds.Left + 4 + _scrollOffset;
             float y = _bounds.Top + (_bounds.Height + fontSize * 1.4f) / 2;
 
-            foreach (var run in _runs)
+            for (int i = 0; i < _runs.Count; i++)
             {
-                if (run.Text == "\n") continue;
-                using var paint = CreatePaint(run, fontSize, scale);
-                using var font = CreateFont(run, fontSize, scale);
-                canvas.DrawText(run.Text, drawX, y, font.Value, paint.Value);
-                drawX += font.Value.MeasureText(run.Text);
+                if (_runs[i].Text == "\n") continue;
+                using var paint = CreatePaint(_runs[i], fontSize, scale);
+                using var font = CreateFont(_runs[i], fontSize, scale);
+                canvas.DrawText(_runs[i].Text, drawX, y, font.Value, paint.Value);
+                drawX += _measuredWidths[i];
             }
 
             if (_vm.IsLoopEnabled)
             {
                 float secondX = _bounds.Left + 4 + _scrollOffset + _totalWidth + _bounds.Width;
-                foreach (var run in _runs)
+                for (int i = 0; i < _runs.Count; i++)
                 {
-                    if (run.Text == "\n") continue;
-                    using var paint = CreatePaint(run, fontSize, scale);
-                    using var font = CreateFont(run, fontSize, scale);
-                    canvas.DrawText(run.Text, secondX, y, font.Value, paint.Value);
-                    secondX += font.Value.MeasureText(run.Text);
+                    if (_runs[i].Text == "\n") continue;
+                    using var paint = CreatePaint(_runs[i], fontSize, scale);
+                    using var font = CreateFont(_runs[i], fontSize, scale);
+                    canvas.DrawText(_runs[i].Text, secondX, y, font.Value, paint.Value);
+                    secondX += _measuredWidths[i];
                 }
             }
         }
@@ -218,6 +222,7 @@ namespace MediaControlDistributionCenter.Rendering
         {
             _runsLoaded = false;
             _runs = null;
+            _measuredWidths = null;
             UpdateBounds();
         }
 

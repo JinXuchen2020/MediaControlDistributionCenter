@@ -9,15 +9,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
-using System.Threading.Tasks;
+
 
 namespace MediaControlDistributionCenter.Views.Diagrams
 {
     public partial class MediaPreviewSkia : Window
     {
-        private DispatcherTimer _timer;
-        private DispatcherTimer _adtimer;
+        private float _pageTimer;
+        private float _adTimer;
         private double _ratio;
         private double _oldRatio;
         private int _currentPlayCount;
@@ -51,7 +50,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             InitializeCanvasSize();
 
             InitializeTimer();
-            _ = InitializeAdTimerAsync();
 
             this.Unloaded += MediaPreviewSkia_Unloaded;
             this.Closed += MediaPreviewSkia_Closed;
@@ -90,10 +88,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             if (!_isRunning) return;
 
-            if (_controller.FpsCounter.IsVisible || _controller.RenderEngine.HasActiveAnimations)
+            _controller.UpdateDeltaTime();
+            _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
+            CheckPageTimer(_controller.LastDeltaSeconds);
+            CheckAdTimer(_controller.LastDeltaSeconds);
+
+            if (_controller.RenderEngine.NeedsRedraw)
             {
-                _controller.UpdateDeltaTime();
-                _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
                 SkCanvas.InvalidateVisual();
             }
         }
@@ -144,109 +145,81 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void InitializeTimer()
         {
-            if (_timer != null)
-            {
-                _timer.Stop();
-            }
-            _timer = new DispatcherTimer();
-            var pageTimeline = _currentPage.Components.Count == 0
-                ? 5
-                : _currentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
-            _timer.Interval = TimeSpan.FromSeconds(pageTimeline);
-            _timer.Tick += Timer_Tick;
-            _timer.Start();
+            _pageTimer = 0;
             _currentPlayCount++;
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void CheckPageTimer(float deltaSeconds)
         {
+            if (_currentPage == null) return;
+
+            var pageTimeline = _currentPage.Components.Count == 0
+                ? 5
+                : _currentPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+            _pageTimer += deltaSeconds;
+
+            if (_pageTimer < pageTimeline) return;
+            _pageTimer = 0;
+
             if (_currentPlayCount < _currentPage.PlayCount)
             {
                 LoadCanvasComponents(_currentPage);
-                InitializeTimer();
+                _currentPlayCount++;
+                return;
             }
-            else
+
+            _currentPlayCount = 0;
+            var nextPage = _viewModel.MediaConfig.Pages
+                .FirstOrDefault(c => c.Order > _currentPage.Order && !c.IsDeleted && c.Type == "normal");
+            if (nextPage == null)
             {
-                _currentPlayCount = 0;
-                var nextPage = _viewModel.MediaConfig.Pages
-                    .FirstOrDefault(c => c.Order > _currentPage.Order && !c.IsDeleted && c.Type == "normal");
-                nextPage ??= _viewModel.MediaConfig.Pages
-                    .FirstOrDefault(c => !c.IsDeleted && c.Type == "normal");
-                if (nextPage == null) return;
-                _currentPage = nextPage;
-                LoadCanvasComponents(_currentPage);
-                InitializeTimer();
+                nextPage = _viewModel.MediaConfig.Pages
+                    .First(c => !c.IsDeleted && c.Type == "normal");
             }
+            _currentPage = nextPage;
+            LoadCanvasComponents(_currentPage);
+            InitializeTimer();
         }
 
-        private async Task InitializeAdTimerAsync()
-        {
-            try
-            {
-                if (_adtimer != null)
-                {
-                    _adtimer.Stop();
-                }
-
-                if (_adPage != null)
-                {
-                    var pageTimeline = _adPage.Components.Count == 0
-                        ? 5
-                        : _adPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
-                    int delayTime = 0;
-                    if (_adPage.AdPlayMode == "perday" && _adPage.PlayGap > 0)
-                        delayTime = 24 * 60 / _adPage.PlayGap;
-                    if (_adPage.AdPlayMode == "perhour" && _adPage.PlayGap > 0)
-                        delayTime = 60 / _adPage.PlayGap;
-
-                    delayTime = delayTime * 60 - (int)pageTimeline * _adPage.PlayCount;
-                    if (delayTime < 0) delayTime = 0;
-                    await Task.Delay(delayTime * 1000).ConfigureAwait(false);
-                    if (!_isRunning) return;
-                    await this.Dispatcher.InvokeAsync(() =>
-                    {
-                        if (!_isRunning) return;
-                        _adtimer = new DispatcherTimer();
-                        _adtimer.Interval = TimeSpan.FromSeconds(pageTimeline);
-                        _adtimer.Tick += AdTimer_Tick;
-                        _adtimer.Start();
-                        _adPlayGap++;
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Async ad timer initialization failed");
-            }
-        }
-
-        private void AdTimer_Tick(object? sender, EventArgs e)
+        private void CheckAdTimer(float deltaSeconds)
         {
             if (_adPage == null) return;
 
             if (_adPlayCount < _adPage.PlayCount)
             {
-                LoadCanvasComponents(_adPage);
-                _adPlayCount++;
+                var adTimeline = _adPage.Components.Count == 0
+                    ? 5
+                    : _adPage.Components.Select(c => c.Timeline * c.PlayCount).Max();
+                _adTimer += deltaSeconds;
+                if (_adTimer >= adTimeline)
+                {
+                    _adTimer = 0;
+                    LoadCanvasComponents(_adPage);
+                    _adPlayCount++;
+                }
+                return;
             }
-            else
-            {
-                _adPlayCount = 0;
-                if (_adPlayGap < _adPage.PlayGap)
-                    _ = InitializeAdTimerAsync();
-                else
-                    _adPlayGap = 0;
 
-                var nextPage = _viewModel.MediaConfig.Pages
-                    .OrderByDescending(c => c.Order)
-                    .FirstOrDefault(c => c.Order < _adPage.Order && !c.IsDeleted && c.Type == "normal");
-                nextPage ??= _viewModel.MediaConfig.Pages
-                    .FirstOrDefault(c => !c.IsDeleted && c.Type == "normal");
-                if (nextPage == null) return;
-                _currentPage = nextPage;
-                LoadCanvasComponents(_currentPage);
-                InitializeTimer();
+            _adPlayCount = 0;
+            _adPlayGap++;
+            if (_adPlayGap < _adPage.PlayGap)
+            {
+                _adTimer = 0;
+                return;
             }
+
+            _adPlayGap = 0;
+            var nextPage = _viewModel.MediaConfig.Pages
+                .OrderByDescending(c => c.Order)
+                .FirstOrDefault(c => c.Order < _adPage.Order && !c.IsDeleted && c.Type == "normal");
+            if (nextPage == null)
+            {
+                nextPage = _viewModel.MediaConfig.Pages
+                    .First(c => !c.IsDeleted && c.Type == "normal");
+            }
+            _currentPage = nextPage;
+            LoadCanvasComponents(_currentPage);
+            InitializeTimer();
         }
 
         private void LoadCanvasComponents(MediaPageViewModel mediaPage)
@@ -300,10 +273,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         private void DisposeCanvasComponents()
         {
             _controller.Dispose();
-            _timer?.Stop();
-            _timer = null;
-            _adtimer?.Stop();
-            _adtimer = null;
         }
 
         private void DragMove_MouseDown(object sender, MouseButtonEventArgs e)

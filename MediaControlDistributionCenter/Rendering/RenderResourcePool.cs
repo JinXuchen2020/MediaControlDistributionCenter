@@ -9,9 +9,11 @@ namespace MediaControlDistributionCenter.Rendering
 
         private readonly ConcurrentBag<SKPaint> _paints = new();
         private readonly ConcurrentBag<SKFont> _fonts = new();
+        private readonly ConcurrentBag<SKPath> _paths = new();
         private readonly int _maxPerType;
         private int _paintCount;
         private int _fontCount;
+        private int _pathCount;
 
         public RenderResourcePool(int maxPerType = 32)
         {
@@ -80,12 +82,40 @@ namespace MediaControlDistributionCenter.Rendering
             }
         }
 
+        public SKPath RentPath()
+        {
+            if (_paths.TryTake(out var path))
+            {
+                Interlocked.Decrement(ref _pathCount);
+                path.Reset();
+                return path;
+            }
+            return new SKPath();
+        }
+
+        public void ReturnPath(SKPath path)
+        {
+            path.Reset();
+            int count = Interlocked.Increment(ref _pathCount);
+            if (count <= _maxPerType)
+            {
+                _paths.Add(path);
+            }
+            else
+            {
+                Interlocked.Decrement(ref _pathCount);
+                path.Dispose();
+            }
+        }
+
         public void Dispose()
         {
             while (_paints.TryTake(out var paint)) paint.Dispose();
             while (_fonts.TryTake(out var font)) font.Dispose();
+            while (_paths.TryTake(out var path)) path.Dispose();
             _paintCount = 0;
             _fontCount = 0;
+            _pathCount = 0;
             _boldTypeface?.Dispose();
         }
 

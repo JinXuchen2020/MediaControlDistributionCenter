@@ -155,9 +155,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _controller.UpdateDeltaTime();
             _controller.FpsCounter.Update(_controller.LastDeltaSeconds);
 
-            if (_controller.FpsCounter.IsVisible ||
-                _controller.RenderEngine.HasActiveAnimations ||
-                _controller.RenderEngine.IsInteracting)
+            if (_controller.RenderEngine.NeedsRedraw)
             {
                 SkCanvas.InvalidateVisual();
             }

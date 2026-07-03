@@ -8,6 +8,8 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly AnimationEngine _animationEngine;
         private float _canvasRatio = 1f;
         private static readonly Lazy<bool> _gpuAvailable = new(CheckGpuAvailability);
+        private bool _needsRedraw = true;
+        private readonly SKPaint _globalAnimPaint = new() { Color = new SKColor(255, 255, 255, 255) };
 
         public float CanvasRatio
         {
@@ -23,6 +25,8 @@ namespace MediaControlDistributionCenter.Rendering
 
         public bool HasActiveAnimations => _animationEngine.HasActiveAnimations;
         public bool IsInteracting { get; set; }
+        public bool NeedsRedraw => _needsRedraw || HasActiveAnimations || IsInteracting;
+
         public RenderStatistics Statistics { get; } = new();
 
         public static bool IsGpuAvailable => _gpuAvailable.Value;
@@ -50,12 +54,14 @@ namespace MediaControlDistributionCenter.Rendering
             int index = _renderables.BinarySearch(renderable, ZIndexComparer.Instance);
             if (index < 0) index = ~index;
             _renderables.Insert(index, renderable);
+            _needsRedraw = true;
         }
 
         public void RemoveRenderable(IRenderable renderable)
         {
             _animationEngine.Stop(renderable);
             _renderables.Remove(renderable);
+            _needsRedraw = true;
         }
 
         public void Clear()
@@ -64,6 +70,7 @@ namespace MediaControlDistributionCenter.Rendering
             foreach (var r in _renderables)
                 r.Dispose();
             _renderables.Clear();
+            _needsRedraw = true;
         }
 
         public void DisposeRenderable(IRenderable renderable)
@@ -76,6 +83,14 @@ namespace MediaControlDistributionCenter.Rendering
         {
             Statistics.ResetFrame();
             _animationEngine.Update(deltaSeconds);
+            _needsRedraw = false;
+
+            int globalLayer = -1;
+            if (HasActiveAnimations)
+            {
+                globalLayer = canvas.Save();
+                Statistics.LayerSavesPerFrame++;
+            }
 
             foreach (var renderable in _renderables)
             {
@@ -96,7 +111,12 @@ namespace MediaControlDistributionCenter.Rendering
                 }
                 while (canvas.SaveCount > baseSaveCount)
                     canvas.Restore();
-                Statistics.LayerSavesPerFrame += canvas.SaveCount - baseSaveCount;
+            }
+
+            if (globalLayer >= 0)
+            {
+                while (canvas.SaveCount > globalLayer)
+                    canvas.Restore();
             }
 
             Statistics.AnimatedElements = HasActiveAnimations ? _renderables.Count : 0;
@@ -115,6 +135,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void InvalidateAll()
         {
+            _needsRedraw = true;
             foreach (var r in _renderables)
                 r.Invalidate();
         }
@@ -184,7 +205,8 @@ namespace MediaControlDistributionCenter.Rendering
                 if (a == null && b == null) return 0;
                 if (a == null) return -1;
                 if (b == null) return 1;
-                return a.ZIndex.CompareTo(b.ZIndex);
+                int result = a.ZIndex.CompareTo(b.ZIndex);
+                return result != 0 ? result : a.GetHashCode().CompareTo(b.GetHashCode());
             }
         }
     }

@@ -34,11 +34,11 @@ namespace MediaControlDistributionCenter.Rendering
             _cachedPath2?.Dispose();
 
             float r = size * 0.35f;
-            _cachedPath1 = new SKPath();
+            _cachedPath1 = RenderResourcePool.Shared.RentPath();
             _cachedPath1.AddArc(new SKRect(cx - r, cy - r, cx + r, cy + r), -60, 120);
 
             float r2 = size * 0.55f;
-            _cachedPath2 = new SKPath();
+            _cachedPath2 = RenderResourcePool.Shared.RentPath();
             _cachedPath2.AddArc(new SKRect(cx - r2, cy - r2, cx + r2, cy + r2), -60, 120);
 
             _cachedSize = size;

@@ -1,32 +1,23 @@
 using SkiaSharp;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 namespace MediaControlDistributionCenter.Rendering
 {
-    internal sealed class SharedBitmap
-    {
-        private int _refCount = 1;
-        public SKBitmap Bitmap { get; }
-        public SharedBitmap(SKBitmap bitmap) => Bitmap = bitmap;
-        public SKBitmap AddRef() { Interlocked.Increment(ref _refCount); return Bitmap; }
-        public void Release()
-        {
-            if (Interlocked.Decrement(ref _refCount) == 0)
-                Bitmap.Dispose();
-        }
-    }
-
     public class BitmapCache : IDisposable
     {
-        private readonly ConcurrentDictionary<string, SharedBitmap> _cache = new();
+        private readonly Dictionary<string, CacheEntry> _cache = new();
+        private readonly List<string> _accessOrder = new();
         private readonly int _maxEntries;
-        private readonly LinkedList<string> _accessOrder = [];
-        private readonly Dictionary<string, DateTime> _timestamps = new();
         private readonly TimeSpan _ttl;
+        private readonly object _lock = new();
+
+        private struct CacheEntry
+        {
+            public SKBitmap Bitmap;
+            public DateTime Timestamp;
+        }
 
         public BitmapCache(int maxEntries = 50, int ttlSeconds = 300)
         {
@@ -36,24 +27,21 @@ namespace MediaControlDistributionCenter.Rendering
 
         public SKBitmap? GetOrDecode(string filePath)
         {
-            lock (_accessOrder)
+            lock (_lock)
             {
-                if (_cache.TryGetValue(filePath, out var shared))
+                if (_cache.TryGetValue(filePath, out var entry))
                 {
-                    if (_timestamps.TryGetValue(filePath, out var ts) && (DateTime.UtcNow - ts) > _ttl)
+                    if ((DateTime.UtcNow - entry.Timestamp) > _ttl)
                     {
-                        _cache.TryRemove(filePath, out _);
+                        entry.Bitmap.Dispose();
+                        _cache.Remove(filePath);
                         _accessOrder.Remove(filePath);
-                        _timestamps.Remove(filePath);
-                        shared.Release();
-                        shared = null;
                     }
                     else
                     {
                         _accessOrder.Remove(filePath);
-                        _accessOrder.AddLast(filePath);
-                        _timestamps[filePath] = DateTime.UtcNow;
-                        return shared.AddRef();
+                        _accessOrder.Add(filePath);
+                        return entry.Bitmap;
                     }
                 }
             }
@@ -62,44 +50,43 @@ namespace MediaControlDistributionCenter.Rendering
             var decoded = SKBitmap.Decode(filePath);
             if (decoded == null) return null;
 
-            var wrapped = new SharedBitmap(decoded);
-
-            lock (_accessOrder)
+            lock (_lock)
             {
                 if (_cache.Count >= _maxEntries)
                 {
-                    var oldest = _accessOrder.First;
-                    if (oldest != null)
-                    {
-                        var key = oldest.Value;
-                        _accessOrder.RemoveFirst();
-                        if (_cache.TryRemove(key, out var old))
-                            old.Release();
-                    }
+                    var oldest = _accessOrder[0];
+                    _accessOrder.RemoveAt(0);
+                    if (_cache.Remove(oldest, out var old))
+                        old.Bitmap.Dispose();
                 }
-                _cache[filePath] = wrapped;
-                _accessOrder.AddLast(filePath);
-                _timestamps[filePath] = DateTime.UtcNow;
+                _cache[filePath] = new CacheEntry { Bitmap = decoded, Timestamp = DateTime.UtcNow };
+                _accessOrder.Add(filePath);
             }
-
-            return wrapped.AddRef();
+            return decoded;
         }
 
         public void Release(string filePath)
         {
-            if (_cache.TryGetValue(filePath, out var shared))
+            lock (_lock)
             {
-                shared.Release();
+                if (_cache.TryGetValue(filePath, out var entry))
+                {
+                    _cache.Remove(filePath);
+                    _accessOrder.Remove(filePath);
+                    entry.Bitmap.Dispose();
+                }
             }
         }
 
         public void Dispose()
         {
-            foreach (var kvp in _cache)
-                kvp.Value.Release();
-            _cache.Clear();
-            _accessOrder.Clear();
-            _timestamps.Clear();
+            lock (_lock)
+            {
+                foreach (var kvp in _cache)
+                    kvp.Value.Bitmap.Dispose();
+                _cache.Clear();
+                _accessOrder.Clear();
+            }
         }
     }
 }

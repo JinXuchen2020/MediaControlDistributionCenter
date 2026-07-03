@@ -130,8 +130,12 @@ namespace MediaControlDistributionCenter.Rendering
             _resizeHandleIndex = -1;
         }
 
+        private DateTime _lastZoomChange = DateTime.MinValue;
+
         public void OnMouseWheel(int delta, float zoomFactor = 0.1f)
         {
+            if ((DateTime.UtcNow - _lastZoomChange).TotalMilliseconds < 50) return;
+            _lastZoomChange = DateTime.UtcNow;
             if (delta > 0)
                 _engine.CanvasRatio += zoomFactor;
             else

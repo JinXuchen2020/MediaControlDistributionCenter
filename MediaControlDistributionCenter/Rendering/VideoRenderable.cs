@@ -43,7 +43,7 @@ namespace MediaControlDistributionCenter.Rendering
                 if (_cachedPath == null || Math.Abs(_cachedSize - size) > 0.5f)
                 {
                     _cachedPath?.Dispose();
-                    _cachedPath = new SKPath();
+                    _cachedPath = RenderResourcePool.Shared.RentPath();
                     _cachedPath.MoveTo(cx - size * 0.4f, cy - size * 0.5f);
                     _cachedPath.LineTo(cx - size * 0.4f, cy + size * 0.5f);
                     _cachedPath.LineTo(cx + size * 0.5f, cy);
