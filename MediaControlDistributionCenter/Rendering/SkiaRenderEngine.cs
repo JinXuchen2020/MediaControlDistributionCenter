@@ -12,7 +12,6 @@ namespace MediaControlDistributionCenter.Rendering
         private SKRect? _dirtyRect;
         // Lock-free: _renderables is volatile, writers swap via copy-modify-swap
         private readonly SKPaint _globalAnimPaint = new() { Color = new SKColor(255, 255, 255, 255) };
-        private volatile HashSet<IRenderable> _renderableSet = new();
         private int _lastPoolHits;
         private int _lastPoolMisses;
 
@@ -99,7 +98,6 @@ namespace MediaControlDistributionCenter.Rendering
             }
 
             _renderables = newSet;
-            _renderableSet = newSetHash;
 
             foreach (var item in newSet)
                 item.Invalidated += OnRenderableInvalidated;
@@ -110,10 +108,8 @@ namespace MediaControlDistributionCenter.Rendering
         public void RemoveRenderable(IRenderable renderable)
         {
             _animationEngine.Stop(renderable);
-            var oldList = _renderables;
-            var newList = new List<IRenderable>(oldList.Count);
-            foreach (var r in oldList)
-                if (r != renderable) newList.Add(r);
+            var newList = new List<IRenderable>(_renderables);
+            newList.Remove(renderable);
             _renderables = newList;
             renderable.Invalidated -= OnRenderableInvalidated;
             _needsRedraw = true;
@@ -125,7 +121,6 @@ namespace MediaControlDistributionCenter.Rendering
             _animationEngine.StopAll();
             var oldList = _renderables;
             _renderables = new List<IRenderable>();
-            _renderableSet = new HashSet<IRenderable>();
             foreach (var r in oldList)
             {
                 r.Invalidated -= OnRenderableInvalidated;
@@ -154,8 +149,6 @@ namespace MediaControlDistributionCenter.Rendering
 
             if (hasAnims)
             {
-                int globalLayer = canvas.Save();
-                Statistics.LayerSavesPerFrame++;
                 foreach (var renderable in snapshot)
                 {
                     if (!renderable.IsVisible)
@@ -185,8 +178,6 @@ namespace MediaControlDistributionCenter.Rendering
                     while (canvas.SaveCount > baseCount)
                         canvas.Restore();
                 }
-                while (canvas.SaveCount > globalLayer)
-                    canvas.Restore();
             }
             else
             {

@@ -2,6 +2,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace MediaControlDistributionCenter.Rendering
@@ -17,6 +18,7 @@ namespace MediaControlDistributionCenter.Rendering
         private float _maxFadeInAlpha = 1f;
         private readonly List<IRenderable> _emptyTargetBuffer = new();
         private readonly List<IAnimation> _completedBuffer = new();
+        private readonly Stopwatch _tickWatch = Stopwatch.StartNew();
 
         public bool HasActiveAnimations => _animationCount > 0;
 
@@ -30,12 +32,14 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 try { Tick(); }
                 catch { }
-            }, null, 16, 16);
+            }, null, 10, 10);
         }
 
         private void Tick()
         {
-            const float dt = 0.016f;
+            float dt = (float)_tickWatch.Elapsed.TotalSeconds;
+            _tickWatch.Restart();
+            if (dt > 0.1f) dt = 0.016f;
             _emptyTargetBuffer.Clear();
 
             lock (_animLock)
