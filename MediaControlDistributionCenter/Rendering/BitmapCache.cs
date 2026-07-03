@@ -72,7 +72,8 @@ namespace MediaControlDistributionCenter.Rendering
                 return cached;
 
             if (!File.Exists(filePath)) return null;
-            var decoded = SKBitmap.Decode(filePath);
+            using var stream = File.OpenRead(filePath);
+            var decoded = SKBitmap.Decode(stream);
             if (decoded == null) return null;
 
             return AddToCache(filePath, decoded);
@@ -86,7 +87,8 @@ namespace MediaControlDistributionCenter.Rendering
             return Task.Run(() =>
             {
                 if (!File.Exists(filePath)) return null;
-                var decoded = SKBitmap.Decode(filePath);
+                using var stream = File.OpenRead(filePath);
+                var decoded = SKBitmap.Decode(stream);
                 if (decoded == null) return null;
                 return AddToCache(filePath, decoded);
             });
@@ -101,6 +103,18 @@ namespace MediaControlDistributionCenter.Rendering
                     _cache.Remove(filePath);
                     _accessOrder.Remove(filePath);
                     entry.Bitmap.Dispose();
+                }
+            }
+        }
+
+        public void PreWarm(IEnumerable<string> filePaths)
+        {
+            foreach (var path in filePaths)
+            {
+                if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                {
+                    try { GetOrDecode(path); }
+                    catch { }
                 }
             }
         }

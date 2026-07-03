@@ -1,19 +1,18 @@
 using SkiaSharp;
-using System.Threading;
 
 namespace MediaControlDistributionCenter.Rendering
 {
     public class SkiaRenderEngine : IDisposable
     {
-        private readonly List<IRenderable> _renderables = new();
+        private volatile List<IRenderable> _renderables = new();
         private readonly AnimationEngine _animationEngine;
         private float _canvasRatio = 1f;
         private static readonly Lazy<bool> _gpuAvailable = new(CheckGpuAvailability);
         private bool _needsRedraw = true;
         private SKRect? _dirtyRect;
-        private readonly ReaderWriterLockSlim _rwLock = new();
+        // Lock-free: _renderables is volatile, writers swap via copy-modify-swap
         private readonly SKPaint _globalAnimPaint = new() { Color = new SKColor(255, 255, 255, 255) };
-        private readonly Dictionary<IRenderable, int> _renderableIndex = new();
+        private volatile HashSet<IRenderable> _renderableSet = new();
         private int _lastPoolHits;
         private int _lastPoolMisses;
 
@@ -57,18 +56,11 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void AddRenderable(IRenderable renderable)
         {
-            _rwLock.EnterWriteLock();
-            try
-            {
-                int index = _renderables.BinarySearch(renderable, ZIndexComparer.Instance);
-                if (index < 0) index = ~index;
-                _renderables.Insert(index, renderable);
-                UpdateRenderableIndex();
-            }
-            finally
-            {
-                _rwLock.ExitWriteLock();
-            }
+            var newList = new List<IRenderable>(_renderables);
+            int index = newList.BinarySearch(renderable, ZIndexComparer.Instance);
+            if (index < 0) index = ~index;
+            newList.Insert(index, renderable);
+            _renderables = newList;
             renderable.Invalidated += OnRenderableInvalidated;
             _needsRedraw = true;
             _dirtyRect = null;
@@ -76,18 +68,11 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void AddRenderables(IEnumerable<IRenderable> renderables)
         {
-            _rwLock.EnterWriteLock();
-            try
-            {
-                foreach (var r in renderables)
-                    _renderables.Add(r);
-                _renderables.Sort(ZIndexComparer.Instance);
-                UpdateRenderableIndex();
-            }
-            finally
-            {
-                _rwLock.ExitWriteLock();
-            }
+            var newList = new List<IRenderable>(_renderables);
+            foreach (var r in renderables)
+                newList.Add(r);
+            newList.Sort(ZIndexComparer.Instance);
+            _renderables = newList;
             foreach (var r in renderables)
                 r.Invalidated += OnRenderableInvalidated;
             _needsRedraw = true;
@@ -100,66 +85,36 @@ namespace MediaControlDistributionCenter.Rendering
             newSet.Sort(ZIndexComparer.Instance);
             var newSetHash = new HashSet<IRenderable>(newSet);
 
-            _rwLock.EnterWriteLock();
-            try
+            var oldList = _renderables;
+            foreach (var r in oldList)
+                r.Invalidated -= OnRenderableInvalidated;
+
+            foreach (var r in oldList)
             {
-                foreach (var r in _renderables)
-                    r.Invalidated -= OnRenderableInvalidated;
-
-                for (int i = _renderables.Count - 1; i >= 0; i--)
+                if (!newSetHash.Contains(r))
                 {
-                    if (!newSetHash.Contains(_renderables[i]))
-                    {
-                        _animationEngine.Stop(_renderables[i]);
-                        _renderables[i].Dispose();
-                        _renderables.RemoveAt(i);
-                    }
+                    _animationEngine.Stop(r);
+                    r.Dispose();
                 }
-
-                var insertList = new List<IRenderable>(newSet.Count);
-                foreach (var item in newSet)
-                {
-                    if (!_renderableIndex.ContainsKey(item))
-                        insertList.Add(item);
-                }
-
-                if (insertList.Count > 0)
-                {
-                    _renderables.AddRange(insertList);
-                    _renderables.Sort(ZIndexComparer.Instance);
-                }
-
-                foreach (var item in newSet)
-                    item.Invalidated += OnRenderableInvalidated;
-            }
-            catch
-            {
-                foreach (var r in _renderables)
-                    r.Invalidated += OnRenderableInvalidated;
-                throw;
-            }
-            finally
-            {
-                _rwLock.ExitWriteLock();
             }
 
-            UpdateRenderableIndex();
+            _renderables = newSet;
+            _renderableSet = newSetHash;
+
+            foreach (var item in newSet)
+                item.Invalidated += OnRenderableInvalidated;
+
             _needsRedraw = true;
         }
 
         public void RemoveRenderable(IRenderable renderable)
         {
             _animationEngine.Stop(renderable);
-            _rwLock.EnterWriteLock();
-            try
-            {
-                _renderables.Remove(renderable);
-                UpdateRenderableIndex();
-            }
-            finally
-            {
-                _rwLock.ExitWriteLock();
-            }
+            var oldList = _renderables;
+            var newList = new List<IRenderable>(oldList.Count);
+            foreach (var r in oldList)
+                if (r != renderable) newList.Add(r);
+            _renderables = newList;
             renderable.Invalidated -= OnRenderableInvalidated;
             _needsRedraw = true;
             _dirtyRect = null;
@@ -168,20 +123,13 @@ namespace MediaControlDistributionCenter.Rendering
         public void Clear()
         {
             _animationEngine.StopAll();
-            _rwLock.EnterWriteLock();
-            try
+            var oldList = _renderables;
+            _renderables = new List<IRenderable>();
+            _renderableSet = new HashSet<IRenderable>();
+            foreach (var r in oldList)
             {
-                foreach (var r in _renderables)
-                {
-                    r.Invalidated -= OnRenderableInvalidated;
-                    r.Dispose();
-                }
-                _renderables.Clear();
-                _renderableIndex.Clear();
-            }
-            finally
-            {
-                _rwLock.ExitWriteLock();
+                r.Invalidated -= OnRenderableInvalidated;
+                r.Dispose();
             }
             _needsRedraw = true;
             _dirtyRect = null;
@@ -196,86 +144,79 @@ namespace MediaControlDistributionCenter.Rendering
         public void RenderFrame(SKCanvas canvas, float deltaSeconds)
         {
             Statistics.ResetFrame();
-            _animationEngine.Update(deltaSeconds);
+            _animationEngine.DrainCompleted();
             _needsRedraw = false;
             var dirty = _dirtyRect;
             _dirtyRect = null;
+            var snapshot = _renderables;
 
             bool hasAnims = HasActiveAnimations;
 
-            _rwLock.EnterReadLock();
-            try
+            if (hasAnims)
             {
-                if (hasAnims)
+                int globalLayer = canvas.Save();
+                Statistics.LayerSavesPerFrame++;
+                foreach (var renderable in snapshot)
                 {
-                    int globalLayer = canvas.Save();
-                    Statistics.LayerSavesPerFrame++;
-                    foreach (var renderable in _renderables)
+                    if (!renderable.IsVisible)
+                        continue;
+                    if (dirty.HasValue && !renderable.Bounds.IntersectsWith(dirty.Value))
+                        continue;
+                    Statistics.DrawCallsPerFrame++;
+                    int baseCount = canvas.SaveCount;
+                    canvas.Save();
+                    try
                     {
-                        if (!renderable.IsVisible)
-                            continue;
-                        if (dirty.HasValue && !renderable.Bounds.IntersectsWith(dirty.Value))
-                            continue;
-                        Statistics.DrawCallsPerFrame++;
-                        int baseCount = canvas.SaveCount;
-                        canvas.Save();
-                        try
+                        if (renderable.ScaleX != 1f || renderable.ScaleY != 1f)
                         {
-                            if (renderable.ScaleX != 1f || renderable.ScaleY != 1f)
-                            {
-                                var b = renderable.Bounds;
-                                float cx = b.MidX;
-                                float cy = b.MidY;
-                                canvas.Scale(renderable.ScaleX, renderable.ScaleY, cx, cy);
-                            }
-                            _animationEngine.ApplyAnimations(canvas, renderable);
-                            renderable.Draw(canvas);
-                            DrawChildren(canvas, renderable);
+                            var b = renderable.Bounds;
+                            float cx = b.MidX;
+                            float cy = b.MidY;
+                            canvas.Scale(renderable.ScaleX, renderable.ScaleY, cx, cy);
                         }
-                        catch (Exception ex)
-                        {
-                            Serilog.Log.Error(ex, "RenderFrame: exception in {Type}", renderable.Type);
-                        }
-                        while (canvas.SaveCount > baseCount)
-                            canvas.Restore();
+                        _animationEngine.ApplyAnimations(canvas, renderable);
+                        renderable.Draw(canvas);
+                        DrawChildren(canvas, renderable);
                     }
-                    while (canvas.SaveCount > globalLayer)
+                    catch (Exception ex)
+                    {
+                        Serilog.Log.Error(ex, "RenderFrame: exception in {Type}", renderable.Type);
+                    }
+                    while (canvas.SaveCount > baseCount)
                         canvas.Restore();
                 }
-                else
+                while (canvas.SaveCount > globalLayer)
+                    canvas.Restore();
+            }
+            else
+            {
+                foreach (var renderable in snapshot)
                 {
-                    foreach (var renderable in _renderables)
+                    if (!renderable.IsVisible)
+                        continue;
+                    if (dirty.HasValue && !renderable.Bounds.IntersectsWith(dirty.Value))
+                        continue;
+                    Statistics.DrawCallsPerFrame++;
+                    try
                     {
-                        if (!renderable.IsVisible)
-                            continue;
-                        if (dirty.HasValue && !renderable.Bounds.IntersectsWith(dirty.Value))
-                            continue;
-                        Statistics.DrawCallsPerFrame++;
-                        try
+                        if (renderable.ScaleX != 1f || renderable.ScaleY != 1f)
                         {
-                            if (renderable.ScaleX != 1f || renderable.ScaleY != 1f)
-                            {
-                                var b = renderable.Bounds;
-                                float cx = b.MidX;
-                                float cy = b.MidY;
-                                canvas.Scale(renderable.ScaleX, renderable.ScaleY, cx, cy);
-                            }
-                            renderable.Draw(canvas);
-                            DrawChildren(canvas, renderable);
+                            var b = renderable.Bounds;
+                            float cx = b.MidX;
+                            float cy = b.MidY;
+                            canvas.Scale(renderable.ScaleX, renderable.ScaleY, cx, cy);
                         }
-                        catch (Exception ex)
-                        {
-                            Serilog.Log.Error(ex, "RenderFrame: exception in {Type}", renderable.Type);
-                        }
+                        renderable.Draw(canvas);
+                        DrawChildren(canvas, renderable);
+                    }
+                    catch (Exception ex)
+                    {
+                        Serilog.Log.Error(ex, "RenderFrame: exception in {Type}", renderable.Type);
                     }
                 }
             }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
 
-            Statistics.AnimatedElements = hasAnims ? _renderables.Count : 0;
+            Statistics.AnimatedElements = hasAnims ? snapshot.Count : 0;
             int currentHits = RenderResourcePool.Shared.PaintHits;
             int currentMisses = RenderResourcePool.Shared.PaintMisses;
             Statistics.PoolHitsPerFrame = currentHits - _lastPoolHits;
@@ -287,15 +228,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public IRenderable? HitTest(SKPoint point)
         {
-            _rwLock.EnterReadLock();
-            try
-            {
-                return HitTestRecursive(_renderables, point);
-            }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
+            return HitTestRecursive(_renderables, point);
         }
 
         private static IRenderable? HitTestRecursive(IReadOnlyList<IRenderable> items, SKPoint point, int maxDepth = 16)
@@ -332,16 +265,8 @@ namespace MediaControlDistributionCenter.Rendering
         {
             _dirtyRect = null;
             _needsRedraw = true;
-            _rwLock.EnterReadLock();
-            try
-            {
-                foreach (var r in _renderables)
-                    r.Invalidate();
-            }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
+            foreach (var r in _renderables)
+                r.Invalidate();
         }
 
         private void OnRenderableInvalidated(IRenderable renderable, SKRect rect)
@@ -363,7 +288,8 @@ namespace MediaControlDistributionCenter.Rendering
 
         public byte[]? CaptureSnapshot(int width, int height)
         {
-            if (_renderables.Count == 0) return null;
+            var snapshot = _renderables;
+            if (snapshot.Count == 0) return null;
 
             var info = new SKImageInfo(width, height);
             var surface = SurfacePool?.GetOrCreate(info) ?? SKSurface.Create(info);
@@ -377,13 +303,6 @@ namespace MediaControlDistributionCenter.Rendering
             var result = data.ToArray();
             if (SurfacePool == null) surface.Dispose();
             return result;
-        }
-
-        private void UpdateRenderableIndex()
-        {
-            _renderableIndex.Clear();
-            for (int i = 0; i < _renderables.Count; i++)
-                _renderableIndex[_renderables[i]] = i;
         }
 
         public void PlayAnimation(IRenderable target, IAnimation animation)
@@ -471,7 +390,6 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Dispose()
         {
-            _rwLock?.Dispose();
             _grContext?.Dispose();
             _grContext = null;
         }

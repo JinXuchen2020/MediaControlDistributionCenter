@@ -58,7 +58,11 @@ namespace MediaControlDistributionCenter.Rendering
                     Interlocked.Increment(ref PendingDecodeCount);
                     _decodeTask = Task.Run(() =>
                     {
-                        try { return SKBitmap.Decode(_filePath); }
+                        try
+                        {
+                            using var stream = File.OpenRead(_filePath);
+                            return SKBitmap.Decode(stream);
+                        }
                         catch (Exception ex) { Log.Error(ex, "Async decode failed: {FilePath}", _filePath); return null; }
                     });
                 }
