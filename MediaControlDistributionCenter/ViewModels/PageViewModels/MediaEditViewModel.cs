@@ -197,6 +197,10 @@ namespace MediaControlDistributionCenter.ViewModels
                     component.Width = Math.Min(maxW, 300 / component.Ratio / CanvasRatio);
                     component.Height = Math.Min(maxH, 200 / component.Ratio / CanvasRatio);
                     break;
+                case "Image":
+                    component.Width = Math.Min(maxW, 300 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 200 / component.Ratio / CanvasRatio);
+                    break;
                 case "Web":
                     component.Width = Math.Min(maxW, 220 / component.Ratio / CanvasRatio);
                     component.Height = Math.Min(maxH, 220 / component.Ratio / CanvasRatio);
@@ -280,11 +284,10 @@ namespace MediaControlDistributionCenter.ViewModels
             var snapshot = Surface.CaptureSnapshot();
             if (snapshot == null) return;
 
-            var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
             var filePath = Path.Combine(Constants.OutPath, CurrentUser.Account, CurrentMedia.Name, SelectedPage.Name);
             var fileName = "thumbnail.png";
             using var memoryStream = new MemoryStream(snapshot);
-            filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
+            filePath = this.fileService.SaveFileContent(filePath, fileName, memoryStream);
 
             SelectedPage.ThumbnailFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
             SelectedPage.Thumbnail = GetBitmap(SelectedPage.ThumbnailFilePath);

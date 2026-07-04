@@ -106,7 +106,27 @@ namespace MediaControlDistributionCenter.Rendering
                 }
             }
 
-            if (_bitmap == null) return;
+            if (_bitmap == null)
+            {
+                var bg = RenderResourcePool.Shared.RentPaint();
+                bg.Color = new SKColor(50, 50, 50, 200);
+                bg.Style = SKPaintStyle.Fill;
+                canvas.DrawRect(_bounds, bg);
+                RenderResourcePool.Shared.ReturnPaint(bg);
+
+                var font = RenderResourcePool.Shared.RentFont(13f);
+                font.Typeface = RenderResourcePool.BoldTypeface;
+                string label = string.IsNullOrEmpty(_filePath) ? "Empty" : "Loading...";
+                float tw = font.MeasureText(label);
+                float lx = _bounds.MidX - tw / 2;
+                float ly = _bounds.MidY + 5;
+                var textPaint = RenderResourcePool.Shared.RentPaint();
+                textPaint.Color = new SKColor(180, 180, 180, 255);
+                canvas.DrawText(label, lx, ly, SKTextAlign.Left, font, textPaint);
+                RenderResourcePool.Shared.ReturnPaint(textPaint);
+                RenderResourcePool.Shared.ReturnFont(font);
+                return;
+            }
 
             var paint = RenderResourcePool.Shared.RentPaint();
             canvas.DrawBitmap(_bitmap, _bounds, new SKSamplingOptions(), paint);

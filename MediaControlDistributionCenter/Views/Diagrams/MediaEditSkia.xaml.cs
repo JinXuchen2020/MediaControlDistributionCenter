@@ -310,8 +310,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
-
-                _surface?.AddComponent(viewModel);
             }
             else if (IsVideoFile(filePath))
             {
@@ -337,8 +335,6 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
-
-                _surface?.AddComponent(viewModel);
             }
             else if (IsWordFile(filePath))
             {
@@ -364,9 +360,9 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 viewModel.Source = uploadPath;
                 viewModel.FileName = fileName;
                 viewModel.IsShowInfo = true;
-
-                _surface?.AddComponent(viewModel);
             }
+
+            LoadComponents();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -712,6 +708,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     {
                         _viewModel.PrepareComponentDefaults(_viewModel.SelectedComponent);
                         _surface?.AddComponent(_viewModel.SelectedComponent);
+                        SkCanvas.InvalidateVisual();
                     }
 
                     _viewModel.SelectedPage.Components.Add(_viewModel.SelectedComponent);

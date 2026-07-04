@@ -26,22 +26,13 @@ namespace MediaControlDistributionCenter.Rendering
 
         private static string ResolveFilePath(BaseComponentViewModel vm)
         {
+            if (!string.IsNullOrEmpty(vm.Source) && File.Exists(vm.Source))
+                return vm.Source;
             if (!string.IsNullOrEmpty(vm.FileName))
             {
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                var assetsDir = Path.GetFullPath(Path.Combine(baseDir, "Assets"));
                 var fullPath = Path.GetFullPath(Path.Combine(baseDir, "Assets", vm.FileName));
-                if (!fullPath.StartsWith(assetsDir, StringComparison.OrdinalIgnoreCase))
-                    return string.Empty;
                 if (File.Exists(fullPath))
-                    return fullPath;
-            }
-            if (!string.IsNullOrEmpty(vm.Source))
-            {
-                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                var assetsDir = Path.GetFullPath(Path.Combine(baseDir, "Assets"));
-                var fullPath = Path.GetFullPath(Path.Combine(baseDir, "Assets", vm.Source));
-                if (fullPath.StartsWith(assetsDir, StringComparison.OrdinalIgnoreCase) && File.Exists(fullPath))
                     return fullPath;
             }
             return string.Empty;
