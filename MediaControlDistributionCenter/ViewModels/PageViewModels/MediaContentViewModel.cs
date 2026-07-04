@@ -45,13 +45,13 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IMediaGroupService mediaGroupService;
         private readonly IFileService fileService;
 
-        public MediaContentViewModel(LoginViewModel loginViewModel, IFileService fileService)
+        public MediaContentViewModel(LoginViewModel loginViewModel)
         {
             CurrentUser = loginViewModel.CurrentUser;
 
             this.mediaService = GetService<IMediaService>();
             this.mediaGroupService = GetService<IMediaGroupService>();
-            this.fileService = fileService;
+            this.fileService = GetService<IFileService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 

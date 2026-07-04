@@ -1,5 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.ViewModels;
 using MediaControlDistributionCenter.Views.CustomControls;
@@ -29,10 +30,12 @@ namespace MediaControlDistributionCenter.Views
         private readonly IServiceProvider serviceProvider;
         private readonly MediaEditViewModel manageViewModel;
         
-        public MediaEdit(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, MediaEditViewModel mediaEditViewModel, IFileService fileService, IServiceProvider serviceProvider)
+        public MediaEdit(DashboardViewModel dashboardViewModel, MediaManageViewModel mediaManageViewModel, MediaEditViewModel mediaEditViewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            this.fileService = fileService;
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            var key = connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri) ? "Local" : "Remote";
+            this.fileService = App.ServicesProvider.GetRequiredKeyedService<IFileService>(key);
             this.serviceProvider = serviceProvider;
 
             if (dashboardViewModel.CurrentUser.Role == "user")
@@ -49,8 +52,9 @@ namespace MediaControlDistributionCenter.Views
             }
 
             manageViewModel = mediaEditViewModel;
-            manageViewModel.Canvas = MainCanvas;
             manageViewModel.CanvasRatio = 1;
+            var surface = new WpfEditorSurface(MainCanvas) { Ratio = 1 };
+            manageViewModel.Surface = surface;
             manageViewModel.SelectedComponent = null;
             manageViewModel.SelectedElement = null;
             DataContext = mediaEditViewModel;
@@ -61,7 +65,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void MediaEdit_Unloaded(object sender, RoutedEventArgs e)
         {
-            MainCanvas.Children.Clear();
+            manageViewModel.Surface?.Clear();
             manageViewModel.DisposeCommand.Execute(null);
         }
 
@@ -84,53 +88,9 @@ namespace MediaControlDistributionCenter.Views
 
         private void LoadCanvasComponents(MediaEditViewModel viewModel)
         {
-            MainCanvas.Children.Clear();
-            if (viewModel.SelectedPage != null)
-            {
-                foreach (var component in viewModel.SelectedPage.Components.Where(c => !c.IsDeleted))
-                {
-                    if (component == null) continue;
-                    switch (component.Type)
-                    {
-                        case "Image":
-                            var imageComponent = component as ImageComponentViewModel;
-                            imageComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Video":
-                            var videoComponent = component as VideoComponentViewModel;
-                            videoComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Text":
-                            var textComponent = component as TextComponentViewModel;
-                            textComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Hdmi":
-                            var hdmiComponent = component as HdmiComponentViewModel;
-                            hdmiComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Stream":
-                            var streamComponent = component as StreamComponentViewModel;
-                            streamComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Web":
-                            var webComponent = component as WebComponentViewModel;
-                            webComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Rss":
-                            var rssComponent = component as RssComponentViewModel;
-                            rssComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "Word":
-                            var wordComponent = component as WordComponentViewModel;
-                            wordComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                        case "ColorText":
-                            var colorComponent = component as ColorTextComponentViewModel;
-                            colorComponent!.DrawContentCommand.Execute(MainCanvas);
-                            break;
-                    }
-                }
-            }
+            var surface = manageViewModel.Surface as WpfEditorSurface;
+            if (surface == null || viewModel.SelectedPage == null) return;
+            surface.LoadComponents(viewModel.SelectedPage.Components);
         }
 
         private void btnBack_MouseDown(object sender, MouseButtonEventArgs e)
@@ -312,7 +272,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void SaveContent()
         {
-            manageViewModel.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(null);
 
             var configModel = manageViewModel.MediaConfig.ToModel();
 
@@ -452,7 +412,7 @@ namespace MediaControlDistributionCenter.Views
             viewModel.IsSelected = true;
             manageViewModel.MediaConfig.Pages.Add(viewModel);
             LoadCanvasComponents(manageViewModel);
-            manageViewModel.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(null);
         }
 
         private void btnPageDelete_Click(object sender, RoutedEventArgs e)
@@ -687,7 +647,8 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.SelectedComponent.IsSelected = true;
                     if (!manageViewModel.SelectedComponent.IsFile)
                     {
-                        manageViewModel.DrawingComponent(MainCanvas, manageViewModel.SelectedComponent);
+                        manageViewModel.PrepareComponentDefaults(manageViewModel.SelectedComponent);
+                        manageViewModel.Surface?.AddComponent(manageViewModel.SelectedComponent);
                         manageViewModel.SelectedElement = manageViewModel.SelectedComponent.FrameworkElement;
                     }
 
@@ -786,7 +747,7 @@ namespace MediaControlDistributionCenter.Views
 
         private void btnPageCapture_Click(object sender, RoutedEventArgs e)
         {
-            manageViewModel.CaptureCommand.Execute(MainCanvas);
+            manageViewModel.CaptureCommand.Execute(null);
         }
 
         private void LeftTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -796,7 +757,7 @@ namespace MediaControlDistributionCenter.Views
                 var tabItem = tab.SelectedIndex;
                 if (tabItem == 1)
                 {
-                    manageViewModel?.CaptureCommand.Execute(MainCanvas);
+                    manageViewModel?.CaptureCommand.Execute(null);
                 }
             }
         }

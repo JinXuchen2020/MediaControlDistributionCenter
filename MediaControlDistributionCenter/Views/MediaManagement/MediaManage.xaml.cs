@@ -24,9 +24,11 @@ namespace MediaControlDistributionCenter.Views.MediaManagement
         private readonly MediaManageViewModel manageViewModel;
         private readonly UserManageViewModel userManageViewModel;
 
-        public MediaManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IFileService fileService, IServiceProvider serviceProvider)
+        public MediaManage(DashboardViewModel dashboardViewModel, UserManageViewModel userManageViewModel, MediaManageViewModel mediaManageViewModel, IServiceProvider serviceProvider)
         {
-            this.fileService = fileService; 
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            var key = connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri) ? "Local" : "Remote";
+            this.fileService = App.ServicesProvider.GetRequiredKeyedService<IFileService>(key);
             this.serviceProvider = serviceProvider;
             this.userManageViewModel = userManageViewModel;
 

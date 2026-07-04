@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediaControlDistributionCenter.Converters;
 using MediaControlDistributionCenter.Helpers;
 using MediaControlDistributionCenter.Models;
+using MediaControlDistributionCenter.Rendering;
 using MediaControlDistributionCenter.Services;
 using MediaControlDistributionCenter.Services.ApiImps;
 using MediaControlDistributionCenter.Services.DTO.Models;
@@ -13,8 +14,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using Azure;
 
 namespace MediaControlDistributionCenter.ViewModels
 {
@@ -29,7 +28,7 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public List<SchedulerDayViewModel> SchedulerDays { get; set; }
 
-        public Canvas Canvas { get; set; }
+        public IEditorSurface? Surface { get; set; }
 
         [ObservableProperty]
         private string selectedType = "All";
@@ -59,9 +58,9 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IProgramService programService;
         private readonly IMediaService mediaService;
 
-        public MediaEditViewModel(IFileService fileService)
-        {            
-            this.fileService = fileService;
+        public MediaEditViewModel()
+        {
+            this.fileService = GetService<IFileService>();
             this.programService = GetService<IProgramService>();
             this.mediaService = GetService<IMediaService>();
         }
@@ -69,25 +68,28 @@ namespace MediaControlDistributionCenter.ViewModels
         public override async Task LoadData()
         {
             MediaConfig? config = null;
-            double ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
+            var surface = Surface;
+            if (surface == null) return;
+
+            double ratio = surface.Width / double.Parse(CurrentMedia.Width);
 
             if (double.Parse(CurrentMedia.Width) > double.Parse(CurrentMedia.Height))
             {
-                ratio = Canvas.Width / double.Parse(CurrentMedia.Width);
-                Canvas.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * Canvas.Width;
+                ratio = surface.Width / double.Parse(CurrentMedia.Width);
+                surface.Height = double.Parse(CurrentMedia.Height) / double.Parse(CurrentMedia.Width) * surface.Width;
             }
             else
             {
-                ratio = Canvas.Height / double.Parse(CurrentMedia.Height);
-                Canvas.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * Canvas.Height;
+                ratio = surface.Height / double.Parse(CurrentMedia.Height);
+                surface.Width = double.Parse(CurrentMedia.Width) / double.Parse(CurrentMedia.Height) * surface.Height;
             }
 
             ratio = 1;
-            Canvas.Width = double.Parse(CurrentMedia.Width);
-            Canvas.Height = double.Parse(CurrentMedia.Height);
+            surface.Width = double.Parse(CurrentMedia.Width);
+            surface.Height = double.Parse(CurrentMedia.Height);
 
-            Canvas.Width = CanvasRatio * Canvas.Width;
-            Canvas.Height = CanvasRatio * Canvas.Height;
+            surface.Width = CanvasRatio * surface.Width;
+            surface.Height = CanvasRatio * surface.Height;
 
             if (Directory.Exists(System.IO.Path.Combine(Helpers.Constants.OutPath, CurrentUser.Account, CurrentMedia.Name)))
             {
@@ -185,51 +187,39 @@ namespace MediaControlDistributionCenter.ViewModels
             }
         }
 
-        public void DrawingComponent(Canvas canvas, BaseComponentViewModel component)
+        public void PrepareComponentDefaults(BaseComponentViewModel component)
         {
+            var maxW = double.Parse(CurrentMedia.Width);
+            var maxH = double.Parse(CurrentMedia.Height);
             switch (component.Type)
             {
                 case "Text":
-                    var textComponent = (component as TextComponentViewModel)!;
-                    textComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 300 / component.Ratio / CanvasRatio);
-                    textComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
-                    textComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 300 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 200 / component.Ratio / CanvasRatio);
                     break;
                 case "Web":
-                    var webComponent = (component as WebComponentViewModel)!;
-                    webComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 220 / component.Ratio / CanvasRatio);
-                    webComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 220 / component.Ratio / CanvasRatio);
-                    webComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 220 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 220 / component.Ratio / CanvasRatio);
                     break;
                 case "Stream":
-                    var streamComponent = (component as StreamComponentViewModel)!;
-                    streamComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 220 / component.Ratio / CanvasRatio);
-                    streamComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 220 / component.Ratio / CanvasRatio);
-                    streamComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 220 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 220 / component.Ratio / CanvasRatio);
                     break;
                 case "Hdmi":
-                    var hdmiComponent = (component as HdmiComponentViewModel)!;
-                    hdmiComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 241 / component.Ratio / CanvasRatio);
-                    hdmiComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 160 / component.Ratio / CanvasRatio);
-                    hdmiComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 241 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 160 / component.Ratio / CanvasRatio);
                     break;
                 case "Rss":
-                    var rssComponent = (component as RssComponentViewModel)!;
-                    rssComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 200 / component.Ratio / CanvasRatio);
-                    rssComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
-                    rssComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 200 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 200 / component.Ratio / CanvasRatio);
                     break;
                 case "Word":
-                    var wordComponent = (component as WordComponentViewModel)!;
-                    wordComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 229 / component.Ratio / CanvasRatio);
-                    wordComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 329 / component.Ratio / CanvasRatio);
-                    wordComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 229 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 329 / component.Ratio / CanvasRatio);
                     break;
                 case "ColorText":
-                    var colorTextComponent = (component as ColorTextComponentViewModel)!;
-                    colorTextComponent.Width = Math.Min(double.Parse(CurrentMedia.Width), 300 / component.Ratio / CanvasRatio);
-                    colorTextComponent.Height = Math.Min(double.Parse(CurrentMedia.Height), 200 / component.Ratio / CanvasRatio);
-                    colorTextComponent.DrawContentCommand.Execute(canvas);
+                    component.Width = Math.Min(maxW, 300 / component.Ratio / CanvasRatio);
+                    component.Height = Math.Min(maxH, 200 / component.Ratio / CanvasRatio);
                     break;
             }
         }
@@ -283,38 +273,21 @@ namespace MediaControlDistributionCenter.ViewModels
         }
 
         [RelayCommand]
-        private void Capture(Canvas canvas)
+        private void Capture()
         {
-            if(SelectedPage != null)
-            {
-                SelectedPage.ThumbnailFilePath = canvas.Dispatcher.Invoke<string>(() =>
-                {
-                    // 创建一个RenderTargetBitmap
-                    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
-                        (int)canvas.Width,
-                        (int)canvas.Height,
-                        96, 96,
-                        PixelFormats.Pbgra32);
-                    //canvas.Measure(new Size(canvas.Width, canvas.Height));
-                    canvas.Arrange(new Rect(new Size(canvas.Width, canvas.Height)));
+            if (SelectedPage == null || Surface == null) return;
 
-                    // 将MediaElement绘制到RenderTargetBitmap
-                    renderTargetBitmap.Render(canvas);
-                    PngBitmapEncoder png = new PngBitmapEncoder();
-                    png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-                    using var memoryStream = new MemoryStream();
-                    png.Save(memoryStream);
-                    var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
-                    var filePath = Path.Combine(Constants.OutPath, CurrentUser.Account, CurrentMedia.Name, SelectedPage.Name);
-                    var fileName = "thumbnail.png";
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
+            var snapshot = Surface.CaptureSnapshot();
+            if (snapshot == null) return;
 
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                });
+            var fileService = App.ServicesProvider.GetRequiredService<IFileService>();
+            var filePath = Path.Combine(Constants.OutPath, CurrentUser.Account, CurrentMedia.Name, SelectedPage.Name);
+            var fileName = "thumbnail.png";
+            using var memoryStream = new MemoryStream(snapshot);
+            filePath = fileService.SaveFileContent(filePath, fileName, memoryStream);
 
-                SelectedPage.Thumbnail = GetBitmap(SelectedPage.ThumbnailFilePath);
-            }
+            SelectedPage.ThumbnailFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+            SelectedPage.Thumbnail = GetBitmap(SelectedPage.ThumbnailFilePath);
         }
 
         private BitmapImage? GetBitmap(string? source)

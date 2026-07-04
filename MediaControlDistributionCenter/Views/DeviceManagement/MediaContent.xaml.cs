@@ -26,12 +26,14 @@ namespace MediaControlDistributionCenter.Views
     {
         private readonly MediaContentViewModel manageViewModel;
         private IFileService fileService;
-        public MediaContent(MediaContentViewModel mediaContentViewModel, IFileService fileService)
+        public MediaContent(MediaContentViewModel mediaContentViewModel)
         {
             InitializeComponent();
             manageViewModel = mediaContentViewModel;
             DataContext = mediaContentViewModel;
-            this.fileService = fileService;
+            var connectionMode = App.ServicesProvider.GetRequiredService<ConnectionMode>();
+            var key = connectionMode.Mode == "Local" || string.IsNullOrEmpty(connectionMode.ServiceUri) ? "Local" : "Remote";
+            this.fileService = App.ServicesProvider.GetRequiredKeyedService<IFileService>(key);
 
             this.Loaded += MediaContent_Loaded;
         }

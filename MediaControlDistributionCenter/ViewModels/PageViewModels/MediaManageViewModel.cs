@@ -50,12 +50,12 @@ namespace MediaControlDistributionCenter.ViewModels
         private readonly IFileService fileService;
         private readonly IPlaybackRecordService playbackRecordService;
 
-        public MediaManageViewModel(IFileService fileService) 
+        public MediaManageViewModel()
         {
             this.programService = GetService<IProgramService>();
             this.programGroupService = GetService<IProgramGroupService>();
             this.playbackRecordService = GetService<IPlaybackRecordService>();
-            this.fileService = fileService;
+            this.fileService = GetService<IFileService>();
             RegisterLanguageProperty(this.GetType(), nameof(LoadData));
         }
 

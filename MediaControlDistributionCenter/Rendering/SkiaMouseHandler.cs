@@ -179,6 +179,14 @@ namespace MediaControlDistributionCenter.Rendering
             _isResizing = false;
         }
 
+        public void SetSelection(IRenderable? renderable, BaseComponentViewModel? viewModel)
+        {
+            _selectedRenderable = renderable;
+            _selectedVm = viewModel;
+            _isDragging = false;
+            _isResizing = false;
+        }
+
     }
 }
 
