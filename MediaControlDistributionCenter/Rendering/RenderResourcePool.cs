@@ -47,6 +47,7 @@ namespace MediaControlDistributionCenter.Rendering
             paint.Style = SKPaintStyle.Fill;
             paint.StrokeWidth = 0;
             paint.IsAntialias = true;
+            paint.BlendMode = SKBlendMode.SrcOver;
             paint.Shader = null;
             paint.ImageFilter = null;
             paint.ColorFilter = null;

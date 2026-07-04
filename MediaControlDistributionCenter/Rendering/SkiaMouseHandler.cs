@@ -24,6 +24,9 @@ namespace MediaControlDistributionCenter.Rendering
         public bool IsLeftButtonPressed { get; private set; }
         public SKPoint CurrentPosition { get; private set; }
 
+        public bool IsDragging => _isDragging;
+        public bool IsResizing => _isResizing;
+
         public MediaEditViewModel? ViewModel { get; set; }
 
         public SkiaMouseHandler(SkiaRenderEngine engine) : this(engine, new SkiaResizeHandles())

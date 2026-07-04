@@ -52,6 +52,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             CompositionTarget.Rendering += OnRendering;
             this.PreviewKeyDown += OnPreviewKeyDown;
             SkCanvas.PaintSurface += SkCanvas_PaintSurface;
+            SkCanvas.MouseLeave += SkCanvas_MouseLeave;
         }
 
         public void SetViewModel(MediaEditViewModel viewModel)
@@ -82,6 +83,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                         {
                             Log.Error(ex, "LoadData failed");
                         }
+                        UpdateCanvasSize();
                         LoadComponents();
                     });
                 }
@@ -165,24 +167,42 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             SkCanvas.InvalidateVisual();
         }
 
+        private Rendering.CursorType _lastCursorType = Rendering.CursorType.Arrow;
+
         private void SkCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (_surface == null) return;
             var pos = GetCanvasPosition(e);
+
+            bool shouldInvalidate = false;
+
+            var cursorType = _surface.MouseHandler.GetCursor(pos);
+            if (cursorType != _lastCursorType)
+            {
+                _lastCursorType = cursorType;
+                SkCanvas.Cursor = cursorType switch
+                {
+                    Rendering.CursorType.SizeAll => Cursors.SizeAll,
+                    Rendering.CursorType.SizeWE => Cursors.SizeWE,
+                    Rendering.CursorType.SizeNS => Cursors.SizeNS,
+                    Rendering.CursorType.SizeNWSE => Cursors.SizeNWSE,
+                    Rendering.CursorType.SizeNESW => Cursors.SizeNESW,
+                    _ => Cursors.Arrow,
+                };
+                shouldInvalidate = true;
+            }
+
             _surface.MouseHandler.OnMouseMove(pos);
 
-            var cursor = _surface.MouseHandler.GetCursor(pos);
-            SkCanvas.Cursor = cursor switch
+            if (_surface.MouseHandler.IsDragging || _surface.MouseHandler.IsResizing)
             {
-                Rendering.CursorType.SizeAll => Cursors.SizeAll,
-                Rendering.CursorType.SizeWE => Cursors.SizeWE,
-                Rendering.CursorType.SizeNS => Cursors.SizeNS,
-                Rendering.CursorType.SizeNWSE => Cursors.SizeNWSE,
-                Rendering.CursorType.SizeNESW => Cursors.SizeNESW,
-                _ => Cursors.Arrow,
-            };
+                shouldInvalidate = true;
+            }
 
-            SkCanvas.InvalidateVisual();
+            if (shouldInvalidate)
+            {
+                SkCanvas.InvalidateVisual();
+            }
         }
 
         private void SkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
@@ -191,6 +211,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             _surface.MouseHandler.OnMouseUp();
             _surface.Controller.RenderEngine.IsInteracting = false;
             SkCanvas.InvalidateVisual();
+        }
+
+        private void SkCanvas_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (_surface == null) return;
+            _surface.MouseHandler.OnMouseUp();
+            _surface.Controller.RenderEngine.IsInteracting = false;
         }
 
         private void SkCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -894,12 +921,22 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             viewModel.VerticalContentAlignment = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), button.Tag?.ToString());
         }
 
+        private void UpdateCanvasSize()
+        {
+            if (_viewModel?.CurrentMedia != null)
+            {
+                SkCanvas.Width = _viewModel.CanvasRatio * double.Parse(_viewModel.CurrentMedia.Width);
+                SkCanvas.Height = _viewModel.CanvasRatio * double.Parse(_viewModel.CurrentMedia.Height);
+            }
+        }
+
         private void canvasRatio_LostFocus(object sender, RoutedEventArgs e)
         {
             if (_viewModel == null) return;
             if (sender is TextBox textBox && _viewModel.CanvasRatio != Convert.ToDouble(textBox.Text) / 100)
             {
                 _viewModel.CanvasRatio = Math.Max(0.2, Math.Min(4, Convert.ToDouble(textBox.Text) / 100));
+                UpdateCanvasSize();
                 _viewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
                 LoadComponents();
             }
@@ -909,6 +946,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             if (_viewModel == null) return;
             _viewModel.CanvasRatio = Math.Max(0.2, _viewModel.CanvasRatio - 0.1);
+            UpdateCanvasSize();
             _viewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
             LoadComponents();
         }
@@ -917,6 +955,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
         {
             if (_viewModel == null) return;
             _viewModel.CanvasRatio = Math.Min(4, _viewModel.CanvasRatio + 0.1);
+            UpdateCanvasSize();
             _viewModel.SelectedPage.Components.ToList().ForEach(c => c!.FrameworkElement = null);
             LoadComponents();
         }

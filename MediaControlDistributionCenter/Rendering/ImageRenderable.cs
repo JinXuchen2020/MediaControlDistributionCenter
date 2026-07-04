@@ -16,6 +16,8 @@ namespace MediaControlDistributionCenter.Rendering
         private readonly BitmapCache? _cache = null;
         private string? _filePath;
         private Task<SKBitmap?>? _decodeTask;
+        private volatile bool _disposed;
+        private int _pdcDecremented;
 
         public string Type => "Image";
         public int ZIndex { get; set; }
@@ -49,7 +51,19 @@ namespace MediaControlDistributionCenter.Rendering
                     Interlocked.Increment(ref PendingDecodeCount);
                     _decodeTask = cache.GetOrDecodeAsync(filePath).ContinueWith(t =>
                     {
-                        try { return t.Result; }
+                        try
+                        {
+                            var result = t.Result;
+                            if (_disposed)
+                            {
+                                if (result != null)
+                                    cache.Release(filePath);
+                                if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
+                                    Interlocked.Decrement(ref PendingDecodeCount);
+                                return null;
+                            }
+                            return result;
+                        }
                         catch (Exception ex) { Log.Error(ex, "Cache decode failed: {FilePath}", _filePath); return null; }
                     });
                 }
@@ -61,7 +75,15 @@ namespace MediaControlDistributionCenter.Rendering
                         try
                         {
                             using var stream = File.OpenRead(_filePath);
-                            return SKBitmap.Decode(stream);
+                            var decoded = SKBitmap.Decode(stream);
+                            if (_disposed)
+                            {
+                                decoded?.Dispose();
+                                if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
+                                    Interlocked.Decrement(ref PendingDecodeCount);
+                                return null;
+                            }
+                            return decoded;
                         }
                         catch (Exception ex) { Log.Error(ex, "Async decode failed: {FilePath}", _filePath); return null; }
                     });
@@ -79,58 +101,79 @@ namespace MediaControlDistributionCenter.Rendering
                 {
                     _bitmap = _decodeTask.Result;
                     _decodeTask = null;
-                    Interlocked.Decrement(ref PendingDecodeCount);
+                    if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
+                        Interlocked.Decrement(ref PendingDecodeCount);
+                    if (_disposed)
+                    {
+                        if (_cache != null && !string.IsNullOrEmpty(_filePath))
+                            _cache.Release(_filePath);
+                        _bitmap = null;
+                        return;
+                    }
                     Invalidated?.Invoke(this, Bounds);
                 }
                 else
                 {
-                    // loading placeholder
-                    var bg = RenderResourcePool.Shared.RentPaint();
-                    bg.Color = new SKColor(60, 60, 60, 180);
-                    bg.Style = SKPaintStyle.Fill;
-                    canvas.DrawRect(_bounds, bg);
-                    RenderResourcePool.Shared.ReturnPaint(bg);
-                    
-                    var font = RenderResourcePool.Shared.RentFont(14f);
-                    font.Typeface = RenderResourcePool.BoldTypeface;
-                    string label = "Loading...";
-                    float tw = font.MeasureText(label);
-                    float lx = _bounds.MidX - tw / 2;
-                    float ly = _bounds.MidY + 5;
-                    var textPaint = RenderResourcePool.Shared.RentPaint();
-                    textPaint.Color = new SKColor(200, 200, 200, 255);
-                    canvas.DrawText(label, lx, ly, SKTextAlign.Left, font, textPaint);
-                    RenderResourcePool.Shared.ReturnPaint(textPaint);
-                    RenderResourcePool.Shared.ReturnFont(font);
+                    DrawPlaceholder(canvas, "Loading...");
                     return;
                 }
             }
 
             if (_bitmap == null)
             {
-                var bg = RenderResourcePool.Shared.RentPaint();
-                bg.Color = new SKColor(50, 50, 50, 200);
-                bg.Style = SKPaintStyle.Fill;
-                canvas.DrawRect(_bounds, bg);
-                RenderResourcePool.Shared.ReturnPaint(bg);
-
-                var font = RenderResourcePool.Shared.RentFont(13f);
-                font.Typeface = RenderResourcePool.BoldTypeface;
-                string label = string.IsNullOrEmpty(_filePath) ? "Empty" : "Loading...";
-                float tw = font.MeasureText(label);
-                float lx = _bounds.MidX - tw / 2;
-                float ly = _bounds.MidY + 5;
-                var textPaint = RenderResourcePool.Shared.RentPaint();
-                textPaint.Color = new SKColor(180, 180, 180, 255);
-                canvas.DrawText(label, lx, ly, SKTextAlign.Left, font, textPaint);
-                RenderResourcePool.Shared.ReturnPaint(textPaint);
-                RenderResourcePool.Shared.ReturnFont(font);
+                DrawPlaceholder(canvas, string.IsNullOrEmpty(_filePath) ? "Empty" : "Loading...");
                 return;
             }
 
-            var paint = RenderResourcePool.Shared.RentPaint();
-            canvas.DrawBitmap(_bitmap, _bounds, new SKSamplingOptions(), paint);
-            RenderResourcePool.Shared.ReturnPaint(paint);
+            if (float.IsNaN(_bounds.Left) || float.IsNaN(_bounds.Top) ||
+                float.IsNaN(_bounds.Right) || float.IsNaN(_bounds.Bottom) ||
+                _bounds.Width <= 0 || _bounds.Height <= 0)
+            {
+                return;
+            }
+
+            Log.Debug("ImageRenderable.Draw: bitmap={BitmapSize}, bounds={Bounds}, disposed={Disposed}", 
+                _bitmap?.Width + "x" + _bitmap?.Height, _bounds, _disposed);
+
+            try
+            {
+                var paint = RenderResourcePool.Shared.RentPaint();
+                paint.Color = new SKColor(0xFF, 0x00, 0x00, 0xFF); // 红色实心，确认 bounds 位置
+                canvas.DrawRect(_bounds, paint);
+                canvas.DrawBitmap(_bitmap, _bounds, new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None), paint);
+                RenderResourcePool.Shared.ReturnPaint(paint);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to draw image bitmap: {FilePath}", _filePath);
+            }
+        }
+
+        private void DrawPlaceholder(SKCanvas canvas, string label)
+        {
+            if (float.IsNaN(_bounds.Left) || float.IsNaN(_bounds.Top) ||
+                float.IsNaN(_bounds.Right) || float.IsNaN(_bounds.Bottom) ||
+                _bounds.Width <= 0 || _bounds.Height <= 0)
+            {
+                return;
+            }
+
+            var bg = RenderResourcePool.Shared.RentPaint();
+            bg.Color = new SKColor(50, 50, 50, 200);
+            bg.Style = SKPaintStyle.Fill;
+            canvas.DrawRect(_bounds, bg);
+            RenderResourcePool.Shared.ReturnPaint(bg);
+
+            var font = RenderResourcePool.Shared.RentFont(13f);
+            font.Typeface = RenderResourcePool.BoldTypeface;
+            float tw = font.MeasureText(label);
+            float lx = _bounds.MidX - tw / 2;
+            float ly = _bounds.MidY + 5;
+            var textPaint = RenderResourcePool.Shared.RentPaint();
+            textPaint.Color = new SKColor(180, 180, 180, 255);
+            canvas.DrawText(label, lx, ly, SKTextAlign.Left, font, textPaint);
+            RenderResourcePool.Shared.ReturnPaint(textPaint);
+            RenderResourcePool.Shared.ReturnFont(font);
         }
 
         public bool HitTest(SKPoint point)
@@ -151,6 +194,12 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Dispose()
         {
+            if (_disposed) return;
+            _disposed = true;
+
+            if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
+                Interlocked.Decrement(ref PendingDecodeCount);
+
             if (_cache != null && !string.IsNullOrEmpty(_filePath))
             {
                 _cache.Release(_filePath);

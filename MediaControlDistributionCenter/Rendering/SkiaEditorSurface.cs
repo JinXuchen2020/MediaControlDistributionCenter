@@ -28,13 +28,23 @@ namespace MediaControlDistributionCenter.Rendering
 
         public double Width
         {
-            get => _controller.RenderEngine.CanvasRatio * 768;
+            get
+            {
+                if (_viewModel?.CurrentMedia != null && double.TryParse(_viewModel.CurrentMedia.Width, out var mw))
+                    return _controller.RenderEngine.CanvasRatio * mw;
+                return _controller.RenderEngine.CanvasRatio * 768;
+            }
             set { }
         }
 
         public double Height
         {
-            get => _controller.RenderEngine.CanvasRatio * 576;
+            get
+            {
+                if (_viewModel?.CurrentMedia != null && double.TryParse(_viewModel.CurrentMedia.Height, out var mh))
+                    return _controller.RenderEngine.CanvasRatio * mh;
+                return _controller.RenderEngine.CanvasRatio * 576;
+            }
             set { }
         }
 
@@ -97,9 +107,9 @@ namespace MediaControlDistributionCenter.Rendering
 
         public byte[]? CaptureSnapshot()
         {
-            var width = (int)(_controller.RenderEngine.CanvasRatio * 768);
-            var height = (int)(_controller.RenderEngine.CanvasRatio * 576);
-            return _controller.RenderEngine.CaptureSnapshot(width, height);
+            var w = (float)Width;
+            var h = (float)Height;
+            return _controller.RenderEngine.CaptureSnapshot((int)w, (int)h);
         }
 
         public void InvalidateVisual()
@@ -121,11 +131,8 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Render(SKCanvas canvas, int width, int height)
         {
-            if (!_controller.RenderEngine.RenderFrameGpu(canvas, width, height, _controller.LastDeltaSeconds, new SKColor(0x00, 0x00, 0x00)))
-            {
-                canvas.Clear(new SKColor(0x00, 0x00, 0x00));
-                _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
-            }
+            canvas.Clear(new SKColor(0x11, 0x11, 0x11));
+            _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
         }
 
         public float UpdateDeltaTime()
@@ -160,9 +167,20 @@ namespace MediaControlDistributionCenter.Rendering
             }
 
             if (selected?.ViewModel != null)
-                _viewModel.SelectedComponent = selected.ViewModel;
-            else
+            {
+                var vm = selected.ViewModel;
+                if (_viewModel.CurrentMedia != null)
+                {
+                    vm.MaxLeft = double.Parse(_viewModel.CurrentMedia.Width) - vm.Width;
+                    vm.MaxTop = double.Parse(_viewModel.CurrentMedia.Height) - vm.Height;
+                }
                 _viewModel.SelectedComponent = null;
+                _viewModel.SelectedComponent = vm;
+            }
+            else
+            {
+                _viewModel.SelectedComponent = null;
+            }
 
             SelectedComponentChanged?.Invoke(_viewModel.SelectedComponent);
         }
