@@ -2,6 +2,7 @@
 using MediaControlDistributionCenter.Data;
 using MediaControlDistributionCenter.Data.Entity;
 using MediaControlDistributionCenter.Services.DTO.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,9 @@ namespace MediaControlDistributionCenter.Services.ApiImps
             {"DeleteBatch", "/user/batch"},
         };
 
-        public UserService(IEnumerable<IUserGroupService> userGroupServices, ConnectionMode options) : base(options)
+        public UserService([FromKeyedServices("Remote")] IUserGroupService userGroupService, ConnectionMode options) : base(options)
         {
-            userGroupService = userGroupServices.First(c => !c.GetType().Name.EndsWith("Local"));
+            this.userGroupService = userGroupService;
         }
 
         //public override async Task<ResultResponse<IEnumerable<UserDto>>> GetAll(UserDto? request, bool isSearch = false)

@@ -1,5 +1,6 @@
 ﻿using MediaControlDistributionCenter.Services.DTO.Models;
 using MediaControlDistributionCenter.Data.Entity;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +30,9 @@ namespace MediaControlDistributionCenter.Services.ApiImps
 
         private readonly IUserService userService;
 
-        public MonitorService(ConnectionMode options, IEnumerable<IUserService> userServices) : base(options)
+        public MonitorService([FromKeyedServices("Remote")] IUserService userService, ConnectionMode options) : base(options)
         {
-            this.userService = userServices.First(c => !c.GetType().Name.EndsWith("Local"));
+            this.userService = userService;
         }
 
         public async Task<ResultResponse<bool>> EnableById(long id, bool isEnable)
