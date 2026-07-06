@@ -27,6 +27,9 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Apply(SKCanvas canvas)
         {
+            float t = Math.Clamp(_elapsed / _duration, 0f, 1f);
+            _layerPaint.Color = new SKColor(255, 255, 255, (byte)(t * 255));
+            canvas.SaveLayer(_layerPaint);
         }
 
         public void Dispose()
