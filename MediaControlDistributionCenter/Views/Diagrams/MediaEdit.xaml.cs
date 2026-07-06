@@ -647,6 +647,7 @@ namespace MediaControlDistributionCenter.Views
                     manageViewModel.SelectedComponent.IsSelected = true;
                     if (!manageViewModel.SelectedComponent.IsFile)
                     {
+                        manageViewModel.SelectedComponent.CanvasRatio = manageViewModel.CanvasRatio;
                         manageViewModel.PrepareComponentDefaults(manageViewModel.SelectedComponent);
                         manageViewModel.Surface?.AddComponent(manageViewModel.SelectedComponent);
                         manageViewModel.SelectedElement = manageViewModel.SelectedComponent.FrameworkElement;

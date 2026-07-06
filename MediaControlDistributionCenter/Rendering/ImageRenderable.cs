@@ -49,6 +49,7 @@ namespace MediaControlDistributionCenter.Rendering
                 if (cache != null)
                 {
                     Interlocked.Increment(ref PendingDecodeCount);
+                    _cache = cache;
                     _decodeTask = cache.GetOrDecodeAsync(filePath).ContinueWith(t =>
                     {
                         try
@@ -56,8 +57,6 @@ namespace MediaControlDistributionCenter.Rendering
                             var result = t.Result;
                             if (_disposed)
                             {
-                                if (result != null)
-                                    cache.Release(filePath);
                                 if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
                                     Interlocked.Decrement(ref PendingDecodeCount);
                                 return null;
@@ -105,8 +104,6 @@ namespace MediaControlDistributionCenter.Rendering
                         Interlocked.Decrement(ref PendingDecodeCount);
                     if (_disposed)
                     {
-                        if (_cache != null && !string.IsNullOrEmpty(_filePath))
-                            _cache.Release(_filePath);
                         _bitmap = null;
                         return;
                     }
@@ -132,13 +129,12 @@ namespace MediaControlDistributionCenter.Rendering
                 return;
             }
 
-            Log.Debug("ImageRenderable.Draw: bitmap={BitmapSize}, bounds={Bounds}, disposed={Disposed}", 
-                _bitmap?.Width + "x" + _bitmap?.Height, _bounds, _disposed);
+            if (_disposed) return;
 
             try
             {
                 var paint = RenderResourcePool.Shared.RentPaint();
-                paint.Color = new SKColor(0xFF, 0x00, 0x00, 0xFF); // 红色实心，确认 bounds 位置
+                paint.Color = new SKColor(0xFF, 0x00, 0x00, 0xFF);
                 canvas.DrawRect(_bounds, paint);
                 canvas.DrawBitmap(_bitmap, _bounds, new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None), paint);
                 RenderResourcePool.Shared.ReturnPaint(paint);
@@ -200,16 +196,11 @@ namespace MediaControlDistributionCenter.Rendering
             if (Interlocked.Exchange(ref _pdcDecremented, 1) == 0)
                 Interlocked.Decrement(ref PendingDecodeCount);
 
-            if (_cache != null && !string.IsNullOrEmpty(_filePath))
+            if (_cache == null && _bitmap != null)
             {
-                _cache.Release(_filePath);
-                _bitmap = null;
+                _bitmap.Dispose();
             }
-            else
-            {
-                _bitmap?.Dispose();
-                _bitmap = null;
-            }
+            _bitmap = null;
             _decodeTask = null;
         }
     }

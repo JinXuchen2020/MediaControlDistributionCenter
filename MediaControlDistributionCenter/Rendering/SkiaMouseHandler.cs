@@ -96,8 +96,10 @@ namespace MediaControlDistributionCenter.Rendering
 
             if (_isDragging && _selectedVm != null)
             {
-                _selectedVm.Left += delta.X / ratio;
-                _selectedVm.Top += delta.Y / ratio;
+                double newLeft = _selectedVm.Left + delta.X / ratio;
+                double newTop = _selectedVm.Top + delta.Y / ratio;
+                _selectedVm.Left = Math.Max(0, Math.Min(newLeft, _selectedVm.MaxLeft));
+                _selectedVm.Top = Math.Max(0, Math.Min(newTop, _selectedVm.MaxTop));
                 _selectedRenderable?.Invalidate();
             }
             else if (_isResizing && _selectedVm != null)
@@ -119,6 +121,8 @@ namespace MediaControlDistributionCenter.Rendering
 
                 if (_selectedVm.Width < 10) _selectedVm.Width = 10;
                 if (_selectedVm.Height < 10) _selectedVm.Height = 10;
+                if (_selectedVm.Left < 0) _selectedVm.Left = 0;
+                if (_selectedVm.Top < 0) _selectedVm.Top = 0;
                 _selectedRenderable?.Invalidate();
             }
 

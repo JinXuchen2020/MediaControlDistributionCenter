@@ -94,6 +94,8 @@ namespace MediaControlDistributionCenter.ViewModels
 
         public double Ratio { get; set; }
 
+        public double CanvasRatio { get; set; }
+
         public List<ComponentEffect> Effects => new List<ComponentEffect>
             {
                 new ComponentEffect()

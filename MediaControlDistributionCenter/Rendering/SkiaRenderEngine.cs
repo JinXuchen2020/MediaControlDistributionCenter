@@ -136,6 +136,16 @@ namespace MediaControlDistributionCenter.Rendering
             renderable.Dispose();
         }
 
+        public void UpdateZIndex(IRenderable renderable, int newZIndex)
+        {
+            renderable.ZIndex = newZIndex;
+            var newList = new List<IRenderable>(_renderables);
+            newList.Sort(ZIndexComparer.Instance);
+            _renderables = newList;
+            _needsRedraw = true;
+            _dirtyRect = null;
+        }
+
         public void RenderFrame(SKCanvas canvas, float deltaSeconds)
         {
             Statistics.ResetFrame();

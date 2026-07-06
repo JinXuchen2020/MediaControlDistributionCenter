@@ -32,7 +32,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (_viewModel?.CurrentMedia != null && double.TryParse(_viewModel.CurrentMedia.Width, out var mw))
                     return _controller.RenderEngine.CanvasRatio * mw;
-                return _controller.RenderEngine.CanvasRatio * 768;
+                return 0;
             }
             set { }
         }
@@ -43,7 +43,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (_viewModel?.CurrentMedia != null && double.TryParse(_viewModel.CurrentMedia.Height, out var mh))
                     return _controller.RenderEngine.CanvasRatio * mh;
-                return _controller.RenderEngine.CanvasRatio * 576;
+                return 0;
             }
             set { }
         }
@@ -90,6 +90,7 @@ namespace MediaControlDistributionCenter.Rendering
             {
                 if (_controller.Registry.CanCreate(component.Type))
                 {
+                    component.CanvasRatio = _viewModel?.CanvasRatio ?? component.CanvasRatio;
                     var renderable = _controller.Registry.Create(component);
                     _controller.RenderEngine.AddRenderable(renderable);
                 }
@@ -131,7 +132,7 @@ namespace MediaControlDistributionCenter.Rendering
 
         public void Render(SKCanvas canvas, int width, int height)
         {
-            canvas.Clear(new SKColor(0x11, 0x11, 0x11));
+            canvas.Clear(SKColors.Black);
             _controller.RenderEngine.RenderFrame(canvas, _controller.LastDeltaSeconds);
         }
 

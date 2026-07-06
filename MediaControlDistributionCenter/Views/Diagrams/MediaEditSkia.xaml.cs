@@ -68,6 +68,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             viewModel.CanvasRatio = 1;
             viewModel.SelectedComponent = null;
             DataContext = viewModel;
+            UpdateCanvasSize();
 
             this.Loaded += (s, e) =>
             {
@@ -95,6 +96,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
             try
             {
                 if (_viewModel?.SelectedPage == null) return;
+                foreach (var c in _viewModel.SelectedPage.Components)
+                    c.CanvasRatio = _viewModel.CanvasRatio;
                 _viewModel.Surface?.LoadComponents(_viewModel.SelectedPage.Components);
                 SkCanvas.InvalidateVisual();
             }
@@ -222,9 +225,12 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void SkCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (_surface == null) return;
+            if (_surface == null || _viewModel == null) return;
             _surface.MouseHandler.OnMouseWheel(e.Delta);
-            SkCanvas.InvalidateVisual();
+            _viewModel.CanvasRatio = _surface.Ratio;
+            UpdateCanvasSize();
+            _viewModel.SelectedPage?.Components.ToList().ForEach(c => c!.FrameworkElement = null);
+            LoadComponents();
         }
 
         private void SkCanvas_DragEnter(object sender, DragEventArgs e)
@@ -490,7 +496,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void NumericUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (_viewModel?.SelectedComponent == null) return;
+            if (_viewModel?.SelectedComponent == null || _surface == null) return;
+            var vm = _viewModel.SelectedComponent;
+            var renderable = _surface.Controller.RenderEngine.Renderables
+                .FirstOrDefault(r => r.ViewModel?.Id == vm.Id);
+            if (renderable != null)
+                renderable.Invalidate();
+            SkCanvas.InvalidateVisual();
         }
 
         private void btnPageSave_Click(object sender, RoutedEventArgs e)
@@ -733,6 +745,7 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                     _viewModel.SelectedComponent.IsSelected = true;
                     if (!_viewModel.SelectedComponent.IsFile)
                     {
+                        _viewModel.SelectedComponent.CanvasRatio = _viewModel.CanvasRatio;
                         _viewModel.PrepareComponentDefaults(_viewModel.SelectedComponent);
                         _surface?.AddComponent(_viewModel.SelectedComponent);
                         SkCanvas.InvalidateVisual();
@@ -781,7 +794,13 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void Level_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (_viewModel?.SelectedComponent == null) return;
+            if (_viewModel?.SelectedComponent == null || _surface == null) return;
+            var vm = _viewModel.SelectedComponent;
+            var renderable = _surface.Controller.RenderEngine.Renderables
+                .FirstOrDefault(r => r.ViewModel?.Id == vm.Id);
+            if (renderable != null)
+                _surface.Controller.RenderEngine.UpdateZIndex(renderable, vm.ZIndex);
+            SkCanvas.InvalidateVisual();
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
@@ -911,7 +930,15 @@ namespace MediaControlDistributionCenter.Views.Diagrams
 
         private void Screen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
         {
-            if (_viewModel?.SelectedComponent == null) return;
+            if (_viewModel?.SelectedComponent == null || _viewModel.CurrentMedia == null || _surface == null) return;
+            var vm = _viewModel.SelectedComponent;
+            vm.MaxLeft = double.Parse(_viewModel.CurrentMedia.Width) - vm.Width;
+            vm.MaxTop = double.Parse(_viewModel.CurrentMedia.Height) - vm.Height;
+            var renderable = _surface.Controller.RenderEngine.Renderables
+                .FirstOrDefault(r => r.ViewModel?.Id == vm.Id);
+            if (renderable != null)
+                renderable.Invalidate();
+            SkCanvas.InvalidateVisual();
         }
 
         private void btnChangeContentVerticalAlign_Click(object sender, RoutedEventArgs e)
@@ -928,6 +955,8 @@ namespace MediaControlDistributionCenter.Views.Diagrams
                 SkCanvas.Width = _viewModel.CanvasRatio * double.Parse(_viewModel.CurrentMedia.Width);
                 SkCanvas.Height = _viewModel.CanvasRatio * double.Parse(_viewModel.CurrentMedia.Height);
             }
+            if (_surface != null)
+                _surface.Ratio = _viewModel?.CanvasRatio ?? 1;
         }
 
         private void canvasRatio_LostFocus(object sender, RoutedEventArgs e)
